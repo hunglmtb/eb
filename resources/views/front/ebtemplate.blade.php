@@ -28,6 +28,9 @@
 </head>
     <body style="background:#222222">
 	<script>var func_code="ROOT";</script>
+	<userbox>
+		@yield('userbox')
+	</userbox>
 <?php
 // include('userbox.php');
 ?>
