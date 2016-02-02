@@ -1,0 +1,67 @@
+@charset "utf-8";
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans'), local('OpenSans'), url(../../common/css/font/opensans.ttf) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+
+* {
+	font-family: 'Open Sans', sans-serif;
+}
+.center_content{position: absolute;top: 50%;left:50%;transform: translate(-50%,-50%);}
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+	font-family: 'Open Sans', sans-serif;
+    font-size: 10pt !important;
+}
+
+table td {font-size:9pt}
+div {font-size:9pt}
+input {border:1px solid #888}
+th {font-size: 9pt; text-align: left;}
+a, h2 a:hover, h3 a:hover {
+    color: #0000ff;
+    text-decoration: none;
+}
+a:hover {
+    color: #0000ff;
+    text-decoration: underline;
+}
+input[type="button"], button
+{
+	background-color:#378de5;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-size:13px;
+	font-weight:bold;
+	padding:3px 5px;
+	border:none;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #528ecc;
+	min-width:50px;
+	min-height:25px;
+}
+input[type="button"]:hover, button:hover {
+	background-color:#79bbff;
+}
+input[type="button"]:active, button:active {
+	position:relative;
+	top:1px;
+}
+input[type="button"]:focus, button:focus{
+    outline: 0;
+}
+._numeric{text-align:right}
+.function_title{
+	color:#378de5;
+	font-size:16pt;
+	font-weight:550;
+	margin:5px 0px;
+}
+.ui-dialog-title{
+	font-size:10pt;
+	font-weight:bold;
+}

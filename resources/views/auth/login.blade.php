@@ -12,7 +12,7 @@
 				<hr>
 				<p>{{ trans('front/login.text') }}</p>				
 				
-				{!! Form::open(['url' => 'auth/login', 'method' => 'post', 'role' => 'form']) !!}	
+				{!! Form::open(['url' => 'auth/eblogin', 'method' => 'post', 'role' => 'form']) !!}	
 				
 				<div class="row">
 

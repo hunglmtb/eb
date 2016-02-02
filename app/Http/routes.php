@@ -1,9 +1,13 @@
 <?php
-
 // Home
 Route::get('/', [
-	'uses' => 'HomeController@index', 
+	'uses' => 'EBHomeController@index', 
 	'as' => 'home'
+]); 
+// Home
+Route::get('/old', [
+		'uses' => 'HomeController@index',
+		'as' => 'home'
 ]);
 Route::get('language/{lang}', 'HomeController@language')->where('lang', '[A-Za-z_-]+');
 
@@ -61,6 +65,7 @@ Route::resource('user', 'UserController');
 // Authentication routes...
 Route::get('auth/login', 'Auth\AuthController@getLogin');
 Route::post('auth/login', 'Auth\AuthController@postLogin');
+Route::post('auth/eblogin', 'Auth\AuthController@postEBLogin');
 Route::get('auth/logout', 'Auth\AuthController@getLogout');
 Route::get('auth/confirm/{token}', 'Auth\AuthController@getConfirm');
 

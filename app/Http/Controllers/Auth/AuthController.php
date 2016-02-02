@@ -91,6 +91,89 @@ class AuthController extends Controller
 
 
 	/**
+	 * Handle a login request to the application.
+	 *
+	 * @param  App\Http\Requests\LoginRequest  $request
+	 * @param  Guard  $auth
+	 * @return Response
+	 */
+	public function postEBLogin(
+			LoginRequest $request,
+			Guard $auth)
+	{
+		/* $data = Input::all();
+		print_r($data);die; */
+/* 		return response(['msg' => 'Login Successfull test'], 200) // 200 Status Code: Standard response for successful HTTP request
+		->header('Content-Type', 'application/json');
+ */		
+		
+		/* $credentials = $request->only('email', 'password');
+		
+		if ($this->auth->attempt($credentials))
+		{
+			return response(['msg' => 'Login Successfull'], 200) // 200 Status Code: Standard response for successful HTTP request
+			->header('Content-Type', 'application/json');
+		}
+		
+		return response(['msg' => $this->getFailedLoginMessage()], 401) // 401 Status Code: Forbidden, needs authentication
+		->header('Content-Type', 'application/json'); */
+// 		$logValue = $request->input('log');
+	
+// 		$logAccess = filter_var($logValue, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+	
+		$throttles = in_array(
+				ThrottlesLogins::class, class_uses_recursive(get_class($this))
+				);
+	
+		if ($throttles && $this->hasTooManyLoginAttempts($request)) {
+			return redirect('/auth/login')
+			->with('error', trans('front/login.maxattempt'))
+			->withInput($request->only('username'));
+		}
+		
+		$credentials = $request->only('username', 'password');
+	
+// 		$credentials = [
+// 				$logAccess  => $logValue,
+// 				'password'  => $request->input('password')
+// 		];
+	
+		if(!$auth->validate($credentials)) {
+			if ($throttles) {
+				$this->incrementLoginAttempts($request);
+			}
+	
+			return redirect('/auth/login')
+			->with('error', trans('front/login.credentials'))
+			->withInput($request->only('username'));
+		}
+			
+		$user = $auth->getLastAttempted();
+	
+// 		if($user->confirmed) {
+			if ($throttles) {
+				$this->clearLoginAttempts($request);
+			}
+	
+			$auth->login($user, $request->has('memory'));
+	
+			if($request->session()->has('user_id'))	{
+				$request->session()->forget('user_id');
+			}
+			
+			return response(['msg' => 'ok'], 200) // 200 Status Code: Standard response for successful HTTP request
+			->header('Content-Type', 'application/json');
+	
+// 			return redirect('/login/success');
+// 		}
+	
+		$request->session()->put('user_id', $user->id);
+	
+		return redirect('/auth/login')->with('error', trans('front/verify.again'));
+	}
+	
+
+	/**
 	 * Handle a registration request for the application.
 	 *
 	 * @param  App\Http\Requests\RegisterRequest  $request

@@ -8,14 +8,16 @@
         "php": ">=5.5.9",
         "laravel/framework": "5.2.*",
         "laravelcollective/html": "5.2.*",
-        "bestmomo/filemanager": "1.1.2"
+        "bestmomo/filemanager": "1.1.2",
+        "barryvdh/laravel-ide-helper": "^2.1"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
         "phpunit/phpunit": "~4.0",
         "symfony/css-selector": "2.8.*|3.0.*",
-        "symfony/dom-crawler": "2.8.*|3.0.*"
+        "symfony/dom-crawler": "2.8.*|3.0.*",
+        "laracasts/generators": "^1.1"
     },
     "autoload": {
         "classmap": [
@@ -55,4 +57,3 @@
         "preferred-install": "dist"
     }
 }
-

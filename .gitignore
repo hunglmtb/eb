@@ -1,0 +1,4 @@
+public/filemanager/
+vendor/
+.settings/
+composer.lock
