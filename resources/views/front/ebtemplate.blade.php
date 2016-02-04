@@ -387,7 +387,7 @@ $.ajaxSetup({
 });
 function logout()
 {
-	window.location.href="../logout";
+	window.location.href="../auth/logout";
 }
 var is_logging_in=false;
 function login()
@@ -718,11 +718,11 @@ function logineb(){
   });    
 }
 	</script>
-	<div>here______
+	<!-- <div>here______
 		<span>
 			{!! var_dump(session()) !!}
 		</span>
-	</div>
+	</div> -->
 
 	@if((session('statut') != null) && (session('statut') != '') && session('statut') != 'visitor')
 		<script type="text/javascript">
