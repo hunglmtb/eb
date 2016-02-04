@@ -719,11 +719,6 @@ function logineb(){
   });    
 }
 	</script>
-	<!-- <div>here______
-		<span>
-			{!! var_dump(session()) !!}
-		</span>
-	</div> -->
 
 	@if((session('statut') != null) && (session('statut') != '') && session('statut') != 'visitor')
 		<script type="text/javascript">
