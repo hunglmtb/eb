@@ -28,16 +28,17 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	protected $hidden = ['password', 'remember_token'];
 
-	/**
-	 * One to Many relation
-	 *
-	 * @return Illuminate\Database\Eloquent\Relations\BelongsTo
-	 */
-	/* public function role() 
-	{
-		return $this->belongsTo('App\Models\Role');
+
+	public function __construct() {
+		parent::__construct();
+		$cn = config('database.default');
+		if ($cn==='oracle'){
+			$this->table = $this->table.'_';
+		}
+	
 	}
-	 */
+	
+	
 	
 
 	/**

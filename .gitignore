@@ -3,3 +3,4 @@ vendor/
 .settings/
 composer.lock
 .env
+config/database.php

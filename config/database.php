@@ -26,9 +26,9 @@ return [
 	|
 	*/
 
-	// 'default' => 'mysql',
+	'default' => 'mysql',
 	// 'default' => 'sqlsrv',
-	'default' => 'oracle',
+// 	'default' => 'oracle',
 
 	/*
 	|--------------------------------------------------------------------------
