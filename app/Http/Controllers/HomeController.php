@@ -14,7 +14,7 @@ class HomeController extends Controller
 	 */
 	public function index()
 	{
-		return view('front.index');
+		return view('front.ebindex');
 	}
 
 	/**
@@ -34,4 +34,10 @@ class HomeController extends Controller
 		return redirect()->back();
 	}
 
+	public function loginSuccess()
+	{
+		$au = auth();
+		$un  = $au->user();
+		return view('front.logginned');
+	}
 }

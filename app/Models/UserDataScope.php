@@ -15,6 +15,6 @@ class UserDataScope extends Model
 	 */
 	public function user()
 	{
-		return $this->hasMany('App\Models\EBUser', 'USER_ID', 'ID');
+		return $this->hasMany('App\Models\User', 'USER_ID', 'ID');
 	}
 }

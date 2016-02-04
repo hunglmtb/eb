@@ -28,7 +28,7 @@ class UserUserRole extends Model  {
 	 */
 	public function user()
 	{
-		return $this->belongsTo('App\Models\EBUser', 'USER_ID', 'ID');
+		return $this->belongsTo('App\Models\User', 'USER_ID', 'ID');
 	}
 	
 }

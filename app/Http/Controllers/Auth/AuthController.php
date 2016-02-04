@@ -160,11 +160,11 @@ class AuthController extends Controller
 			if($request->session()->has('user_id'))	{
 				$request->session()->forget('user_id');
 			}
-			
+				
 			return response(['msg' => 'ok'], 200) // 200 Status Code: Standard response for successful HTTP request
 			->header('Content-Type', 'application/json');
 	
-// 			return redirect('/login/success');
+//  			return redirect('/login/success');
 // 		}
 	
 		$request->session()->put('user_id', $user->id);

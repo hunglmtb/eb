@@ -390,7 +390,7 @@ function logout()
 	window.location.href="../auth/logout";
 }
 var is_logging_in=false;
-function login()
+/* function login()
 {
 	if(!$('#username').val())
 	{
@@ -430,7 +430,7 @@ function login()
              }
 
           );
-}
+} */
 
 	var curCell=0;
 	function randomCell()
@@ -681,6 +681,7 @@ function logineb(){
     success: function(data){
 //       alert(data);
 		is_logging_in=false;
+// 		var _redirect = '/login/success';
 		var _redirect = false;
       if(_redirect) 
 			window.location.href=_redirect;

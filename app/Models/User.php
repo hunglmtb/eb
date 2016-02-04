@@ -9,13 +9,17 @@ use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract {
 
 	use Authenticatable, CanResetPassword;
+	
+	protected $primaryKey = 'ID';
+	
+	public $timestamps = false;
 
 	/**
 	 * The database table used by the model.
 	 *
 	 * @var string
 	 */
-	protected $table = 'users';
+	protected $table = 'user';
 
 	/**
 	 * The attributes excluded from the model's JSON form.
@@ -29,9 +33,47 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 *
 	 * @return Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
-	public function role() 
+	/* public function role() 
 	{
 		return $this->belongsTo('App\Models\Role');
+	}
+	 */
+	
+
+	/**
+	 * One to Many relation
+	 *
+	 * @return Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function user_data_scope()
+	{
+		return $this->hasMany('App\Models\UserDataScope', 'USER_ID', 'ID');
+	}
+	
+	/**
+	 * One to Many relation
+	 *
+	 * @return Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function role()
+	{
+		$uur = $this->user_user_role()->first();
+		$userId =  $uur->USER_ID;
+		$roleId =  $uur->ROLE_ID;
+		$ur = $uur->user_role()->first();
+		$role = $ur->CODE;
+		return $role;
+	}
+	
+	
+	/**
+	 * One to Many relation
+	 *
+	 * @return Illuminate\Database\Eloquent\Relations\hasMany
+	 */
+	public function user_user_role()
+	{
+		return $this->hasMany('App\Models\UserUserRole', 'USER_ID', 'ID');
 	}
 
 	/**

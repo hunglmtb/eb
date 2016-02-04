@@ -1,11 +1,11 @@
 <?php
 // Home
-Route::get('/', [
+/* Route::get('/', [
 	'uses' => 'EBHomeController@index', 
 	'as' => 'home'
-]); 
+]);  */
 // Home
-Route::get('/old', [
+Route::get('/', [
 		'uses' => 'HomeController@index',
 		'as' => 'home'
 ]);
@@ -68,6 +68,7 @@ Route::post('auth/login', 'Auth\AuthController@postLogin');
 Route::post('auth/eblogin', 'Auth\AuthController@postEBLogin');
 Route::get('auth/logout', 'Auth\AuthController@getLogout');
 Route::get('auth/confirm/{token}', 'Auth\AuthController@getConfirm');
+Route::get('login/success', 'HomeController@loginSuccess');
 
 // Registration routes...
 Route::get('auth/register', 'Auth\AuthController@getRegister');
