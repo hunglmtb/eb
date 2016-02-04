@@ -636,14 +636,16 @@ $("#boxMenu").children().each(function(){
 	//alert($(this).attr("old_class"));
 });
 
+
+
 <?php
-$is_logged_in = false;
+/* $is_logged_in = false;
 if($is_logged_in)
 {
 	echo "layoutUserLoggedIn();";
 }
 else
-	echo "$('#boxUserInfo').hide();";
+	echo "$('#boxUserInfo').hide();"; */
 
 // echo "\r\nvar _redirect='".($_REQUEST['redirect']?base64_decode($_REQUEST['redirect']):"")."';";
 ?>
@@ -715,8 +717,22 @@ function logineb(){
     }
   });    
 }
-
 	</script>
-        
-    </body>
+	<div>here______
+		<span>
+			{!! var_dump(session()) !!}
+		</span>
+	</div>
+
+	@if((session('statut') != null) && (session('statut') != '') && session('statut') != 'visitor')
+		<script type="text/javascript">
+			layoutUserLoggedIn();
+		</script>
+	@else
+		<script type="text/javascript">
+			$('#boxUserInfo').hide();
+		</script>
+	@endif
+
+</body>
 </html>

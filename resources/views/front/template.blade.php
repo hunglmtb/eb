@@ -109,7 +109,11 @@
 		</nav>
 		@yield('header')	
 	</header>
-
+<div>here______
+		<span>
+			{!! session('statut') !!}
+		</span>
+	</div>
 	<main role="main" class="container">
 		@if(session()->has('ok'))
 			@include('partials/error', ['type' => 'success', 'message' => session('ok')])
