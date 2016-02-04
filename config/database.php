@@ -26,7 +26,9 @@ return [
 	|
 	*/
 
-	'default' => 'mysql',
+	// 'default' => 'mysql',
+	'default' => 'sqlsrv',
+	// 'default' => 'oracle',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -77,10 +79,21 @@ return [
 		'sqlsrv' => [
 			'driver'   => 'sqlsrv',
 			'host' 	   => env('DB_HOST', 'localhost'),
-			'database' => env('DB_DATABASE', 'forge'),
-			'username' => env('DB_USERNAME', 'forge'),
-			'password' => env('DB_PASSWORD', ''),
+			'database' => env('DB_DATABASE', 'eb7'),
+			'username' => env('DB_USERNAME', 'root'),
+			'password' => env('DB_PASSWORD', '123456'),
 			'prefix'   => '',
+		],
+		'oracle' => [
+			'driver'   => 'oracle',
+			'tns'      => env('DB_TNS', ''),
+			'host'     => env('DB_HOST', ''),
+			'port'     => env('DB_PORT', '1521'),
+			'database' => env('DB_DATABASE', ''),
+			'username' => env('DB_USERNAME', ''),
+			'password' => env('DB_PASSWORD', ''),
+			'charset'  => env('DB_CHARSET', 'AL32UTF8'),
+			'prefix'   => env('DB_PREFIX', ''),
 		],
 
 	],
