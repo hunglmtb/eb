@@ -34,10 +34,9 @@
 	*/
 	</script>
 	
+	{{$current_username = ''}}
 	@if((auth()->user() != null))
 		{{ $current_username = auth()->user()->username }}
-	@else
-		{{$current_username = ''}}
 	@endif
 	<div id="boxUserInfo" style='position:fixed;z-index:2;display:;top:10px;right:10px;font-size:10pt;overflow:none;padding:3px 6px 3px 10px;background:#555555;border:1px solid #505050;border-radius:3px;color:#bbbbbb;font-size:10pt'>
 	User <span style="cursor:pointer" onclick="location.href='/user/settings.php';"><font color="#33b5e8"><span id="textUsername">{{$current_username}}</span></font></span> &nbsp;|&nbsp; <div style="display:none;width:50px;cursor:pointer;padding:2px;color:#33b5e8;margin:2px;font-size:8pt">Alert: 0</div>
@@ -118,7 +117,7 @@
 		});
 	}
 	var taskCountingTimer;
-	var username= {{$current_username}};
+	var username= '{{$current_username}}';
 	function _loadTasksCounting(){
 		//alert("_loadTasksCounting");
 		$.get("/taskman/ajaxs/WorkflowTaskCounter.php?user="+username,function(data){

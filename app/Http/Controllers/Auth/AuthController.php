@@ -12,6 +12,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Repositories\UserRepository;
 use App\Jobs\SendMail;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -101,51 +102,59 @@ class AuthController extends Controller
 			LoginRequest $request,
 			Guard $auth)
 	{
-		/* $data = Input::all();
-		print_r($data);die; */
-/* 		return response(['msg' => 'Login Successfull test'], 200) // 200 Status Code: Standard response for successful HTTP request
-		->header('Content-Type', 'application/json');
- */		
-		
-		/* $credentials = $request->only('email', 'password');
-		
-		if ($this->auth->attempt($credentials))
-		{
-			return response(['msg' => 'Login Successfull'], 200) // 200 Status Code: Standard response for successful HTTP request
-			->header('Content-Type', 'application/json');
-		}
-		
-		return response(['msg' => $this->getFailedLoginMessage()], 401) // 401 Status Code: Forbidden, needs authentication
-		->header('Content-Type', 'application/json'); */
-// 		$logValue = $request->input('log');
-	
-// 		$logAccess = filter_var($logValue, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-	
 		$throttles = in_array(
 				ThrottlesLogins::class, class_uses_recursive(get_class($this))
 				);
 	
 		if ($throttles && $this->hasTooManyLoginAttempts($request)) {
-			return redirect('/auth/login')
-			->with('error', trans('front/login.maxattempt'))
-			->withInput($request->only('username'));
+			if ($request->ajax())
+			{
+				return response(trans('front/login.maxattempt'), 422 )->header('Content-Type', 'application/json');
+			}
+			else {
+				return redirect('/auth/login')
+				->with('error', trans('front/login.maxattempt'))
+				->withInput($request->only('username'));
+					
+			}
+			
 		}
 		
 		$credentials = $request->only('username', 'password');
 	
-// 		$credentials = [
-// 				$logAccess  => $logValue,
-// 				'password'  => $request->input('password')
-// 		];
 	
 		if(!$auth->validate($credentials)) {
 			if ($throttles) {
 				$this->incrementLoginAttempts($request);
 			}
-	
-			return redirect('/auth/login')
-			->with('error', trans('front/login.credentials'))
-			->withInput($request->only('username'));
+			
+			$user = User::where('username', '=', $request->input('username'))->first();
+			if ($user === null) {
+				// user doesn't exist
+				if ($request->ajax())
+				{
+					return response('Wrong username', 422 )->header('Content-Type', 'application/json'); 
+				}
+				else {
+					return redirect('/auth/login')
+					->with('error', 'Wrong username')
+					->withInput();
+					
+				}
+			}
+			else{
+				// Wrong username
+				if ($request->ajax())
+				{
+					return response('Wrong password', 422 )->header('Content-Type', 'application/json');
+				}
+				else {
+					return redirect('/auth/login')
+					->with('error', 'Wrong password')
+					->withInput();
+						
+				}
+			}
 		}
 			
 		$user = $auth->getLastAttempted();
@@ -163,13 +172,7 @@ class AuthController extends Controller
 				
 			return response(['msg' => 'ok'], 200) // 200 Status Code: Standard response for successful HTTP request
 			->header('Content-Type', 'application/json');
-	
-//  			return redirect('/login/success');
 // 		}
-	
-		$request->session()->put('user_id', $user->id);
-	
-		return redirect('/auth/login')->with('error', trans('front/verify.again'));
 	}
 	
 

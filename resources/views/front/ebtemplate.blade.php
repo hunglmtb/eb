@@ -694,27 +694,8 @@ function logineb(){
 		}
     },
     error: function(data) {
-        if( data.status === 401 ) {//redirect if not authenticated user
-            $( location ).prop( 'pathname', 'auth/login' );
-            var errors = data.responseJSON.msg;
-            errorsHtml = '<div class="alert alert-danger">'+errors+'</div>';
-            $( '#form-errors' ).html( errorsHtml ); 
-        }
-        if( data.status === 422 ) {
-        //process validation errors here.
-        var errors = data.responseJSON; 
-
-        errorsHtml = '<div class="alert alert-danger"><ul>';
-
-        $.each( errors , function( key, value ) {
-            errorsHtml += '<li>' + value[0] + '</li>'; 
-        });
-        errorsHtml += '</ul></di>';
-
-        $( '#form-errors' ).html( errorsHtml ); 
-        } else {
-
-        }
+		is_logging_in=false;
+    	alert(data.responseText);
     }
   });    
 }
