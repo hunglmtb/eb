@@ -500,7 +500,7 @@ function layoutUserLoggedOut()
 var menuBox;
 var menu={};
 menu["production"]=[
-		{menutext:"Flow Stream",desc:"",url:"../dc/flow.php"},
+		{menutext:"Flow Stream",desc:"",url:"dc/flow"},
 		{menutext:"Energy Unit",desc:"",url:"../dc/eu.php"},
 		{menutext:"Tank & Storage",desc:"",url:"../dc/storage.php"},
 		{menutext:"Ticket",desc:"",url:"../dc/ticket.php"},

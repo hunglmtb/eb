@@ -63,7 +63,7 @@ Route::put('userseen/{user}', 'UserController@updateSeen');
 Route::resource('user', 'UserController');
 
 // Authentication routes...
-Route::get('auth/login', 'Auth\AuthController@getLogin');
+Route::get('auth/login', 'HomeController@index');
 Route::post('auth/login', 'Auth\AuthController@postLogin');
 Route::post('auth/eblogin', 'Auth\AuthController@postEBLogin');
 Route::get('auth/logout', 'Auth\AuthController@getLogout');
@@ -81,3 +81,7 @@ Route::post('password/email', 'Auth\PasswordController@postEmail');
 // Password reset routes...
 Route::get('password/reset/{token}', 'Auth\PasswordController@getReset');
 Route::post('password/reset', 'Auth\PasswordController@postReset');
+
+
+//-----EB
+Route::get('dc/flow', 'FlowController@index');
