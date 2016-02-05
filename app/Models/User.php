@@ -14,6 +14,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	
 	public $timestamps = false;
 
+	protected $user_id_col = 'USER_ID';
+
 	/**
 	 * The database table used by the model.
 	 *
@@ -34,6 +36,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		$cn = config('database.default');
 		if ($cn==='oracle'){
 			$this->table = $this->table.'_';
+			$this->primaryKey = 'id';
+			$this->user_id_col = 'user_id';
 		}
 	
 	}
@@ -48,7 +52,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function user_data_scope()
 	{
-		return $this->hasMany('App\Models\UserDataScope', 'USER_ID', 'ID');
+		return $this->hasMany('App\Models\UserDataScope', $this->user_id_col, $this->primaryKey);
 	}
 	
 	/**
@@ -58,12 +62,17 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function role()
 	{
-		$uur = $this->user_user_role()->first();
-		$userId =  $uur->USER_ID;
-		$roleId =  $uur->ROLE_ID;
+		
+		// \DB::enableQueryLog();
+		//\Log::info(var_dump($this));
+		// $user_user_role = \DB::table('user_user_role')->where('role_id', $this->id)->first();
+		$uk = $this->user_user_role();
+		$uur = $uk->first();
+		// \Log::info('hehe----------------------');
+        // \Log::info(\DB::getQueryLog());  
 		$ur = $uur->user_role()->first();
-		$role = $ur->CODE;
-		return $role;
+		$role = $ur->code;
+		return $role ;
 	}
 	
 	
@@ -74,7 +83,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function user_user_role()
 	{
-		return $this->hasMany('App\Models\UserUserRole', 'USER_ID', 'ID');
+		return $this->hasMany('App\Models\UserUserRole',$this->user_id_col, $this->primaryKey);
 	}
 
 	/**

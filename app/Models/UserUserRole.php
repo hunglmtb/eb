@@ -10,15 +10,30 @@ class UserUserRole extends Model  {
 	 * @var string
 	 */
 	protected $table = 'user_user_role';
+	protected $primaryKey = 'ID';
+	protected $user_id_col = 'USER_ID';
+	protected $role_id_col = 'ROLE_ID';
 
-	/**
+	
+	public function __construct() {
+		parent::__construct();
+		$cn = config('database.default');
+		if ($cn==='oracle'){
+			$this->table = $this->table.'_';
+			$this->primaryKey = 'id';
+			$this->user_id_col = 'user_id';
+			$this->role_id_col = 'role_id';
+		}
+	
+	}
+	/*
 	 * One to Many relation
 	 *
 	 * @return Illuminate\Database\Eloquent\Relations\hasMany
 	 */
 	public function user_role() 
 	{
-		return $this->belongsTo('App\Models\UserRole', 'ROLE_ID', 'ID');
+		return $this->belongsTo('App\Models\UserRole', $this->role_id_col, $this->primaryKey);
 	}
 	
 	/**
@@ -28,7 +43,7 @@ class UserUserRole extends Model  {
 	 */
 	public function user()
 	{
-		return $this->belongsTo('App\Models\User', 'USER_ID', 'ID');
+		return $this->belongsTo('App\Models\User',  $this->user_id_col, $this->primaryKey);
 	}
 	
 }
