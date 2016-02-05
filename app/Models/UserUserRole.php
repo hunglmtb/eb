@@ -19,7 +19,6 @@ class UserUserRole extends Model  {
 		parent::__construct();
 		$cn = config('database.default');
 		if ($cn==='oracle'){
-			$this->table = $this->table.'_';
 			$this->primaryKey = 'id';
 			$this->user_id_col = 'user_id';
 			$this->role_id_col = 'role_id';

@@ -11,6 +11,18 @@ class UserRole extends Model  {
 	 */
 	protected $table = 'user_role';
 
+	
+	// public function role() 
+	// {
+		// $cn = config('database.default');
+		// if ($cn==='oracle'){
+			// return $this->code;
+		// }
+		// else{
+			// return $this->CODE;
+		// }
+	// }
+	
 	/**
 	 * One to Many relation
 	 *

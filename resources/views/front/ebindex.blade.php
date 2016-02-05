@@ -152,8 +152,6 @@
 	</div> -->
 	<div id="boxHelp" style="display:none;width:100%;height:100%"><img class="center_content" src="/wf/images/loading.gif"></div>
 	<div id="boxTaskLog" style="display:none;z-index:100;width:100%;height:100%"></div>
-
-
 @stop
 
 

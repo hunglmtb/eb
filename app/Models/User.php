@@ -63,15 +63,21 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	public function role()
 	{
 		
-		// \DB::enableQueryLog();
+		\DB::enableQueryLog();
 		//\Log::info(var_dump($this));
 		// $user_user_role = \DB::table('user_user_role')->where('role_id', $this->id)->first();
 		$uk = $this->user_user_role();
 		$uur = $uk->first();
-		// \Log::info('hehe----------------------');
-        // \Log::info(\DB::getQueryLog());  
 		$ur = $uur->user_role()->first();
-		$role = $ur->code;
+		$cn = config('database.default');
+		if ($cn==='oracle'){
+			$role = $ur->code;
+		}
+		else{
+			$role = $ur->CODE;
+		}
+		\Log::error('hehe------------ROLE----------'.$role .' HEHE' );
+        \Log::info(\DB::getQueryLog());  
 		return $role ;
 	}
 	
