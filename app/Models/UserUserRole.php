@@ -1,8 +1,8 @@
 <?php namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\DynamicModel;
 
-class UserUserRole extends Model  {
+class UserUserRole extends DynamicModel  {
 
 	/**
 	 * The database table used by the model.
@@ -19,9 +19,9 @@ class UserUserRole extends Model  {
 		parent::__construct();
 		$cn = config('database.default');
 		if ($cn==='oracle'){
-			$this->primaryKey = 'id';
-			$this->user_id_col = 'user_id';
-			$this->role_id_col = 'role_id';
+// 			$this->primaryKey = 'id';
+// 			$this->user_id_col = 'user_id';
+// 			$this->role_id_col = 'role_id';
 		}
 	
 	}

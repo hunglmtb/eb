@@ -1,19 +1,18 @@
 <?php namespace App\Models;
 
+use App\Models\DynamicModel;
+
 use Illuminate\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
-class User extends Model implements AuthenticatableContract, CanResetPasswordContract {
+class User extends DynamicModel implements AuthenticatableContract, CanResetPasswordContract {
 
 	use Authenticatable, CanResetPassword;
 	
-	protected $primaryKey = 'ID';
-	
 	public $timestamps = false;
-
+	protected $primaryKey = 'ID';
 	protected $user_id_col = 'USER_ID';
 
 	/**
@@ -32,12 +31,13 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
 
 	public function __construct() {
+		$this->isReservedName = config('database.default')==='oracle';
 		parent::__construct();
 		$cn = config('database.default');
 		if ($cn==='oracle'){
-			$this->table = $this->table.'_';
-			$this->primaryKey = 'id';
-			$this->user_id_col = 'user_id';
+// 			$this->table = $this->table.'_';
+// 			$this->primaryKey = 'id';
+// 			$this->user_id_col = 'user_id';
 		}
 	
 	}
@@ -69,13 +69,16 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		$uk = $this->user_user_role();
 		$uur = $uk->first();
 		$ur = $uur->user_role()->first();
+		$role = $ur->CODE;
+/* 		
 		$cn = config('database.default');
-		if ($cn==='oracle'){
+ 		if ($cn==='oracle'){
 			$role = $ur->code;
 		}
 		else{
 			$role = $ur->CODE;
 		}
+ */		
 		\Log::error('hehe------------ROLE----------'.$role .' HEHE' );
         \Log::info(\DB::getQueryLog());  
 		return $role ;
