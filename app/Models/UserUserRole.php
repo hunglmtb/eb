@@ -14,17 +14,6 @@ class UserUserRole extends DynamicModel  {
 	protected $user_id_col = 'USER_ID';
 	protected $role_id_col = 'ROLE_ID';
 
-	
-	public function __construct() {
-		parent::__construct();
-		$cn = config('database.default');
-		if ($cn==='oracle'){
-// 			$this->primaryKey = 'id';
-// 			$this->user_id_col = 'user_id';
-// 			$this->role_id_col = 'role_id';
-		}
-	
-	}
 	/*
 	 * One to Many relation
 	 *

@@ -12,6 +12,9 @@ class DynamicModel extends Model {
 		$this->isOracleModel = config('database.default')==='oracle';
 		if ($this->isReservedName){
 			$this->table = $this->table.'_';
+		}
+		
+		if ($this->isOracleModel){
 			$this->primaryKey = strtolower($this->primaryKey);
 		}
 	}

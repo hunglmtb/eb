@@ -33,13 +33,6 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 	public function __construct() {
 		$this->isReservedName = config('database.default')==='oracle';
 		parent::__construct();
-		$cn = config('database.default');
-		if ($cn==='oracle'){
-// 			$this->table = $this->table.'_';
-// 			$this->primaryKey = 'id';
-// 			$this->user_id_col = 'user_id';
-		}
-	
 	}
 	
 	
@@ -63,24 +56,15 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 	public function role()
 	{
 		
-		\DB::enableQueryLog();
+// 		\DB::enableQueryLog();
 		//\Log::info(var_dump($this));
 		// $user_user_role = \DB::table('user_user_role')->where('role_id', $this->id)->first();
 		$uk = $this->user_user_role();
 		$uur = $uk->first();
 		$ur = $uur->user_role()->first();
 		$role = $ur->CODE;
-/* 		
-		$cn = config('database.default');
- 		if ($cn==='oracle'){
-			$role = $ur->code;
-		}
-		else{
-			$role = $ur->CODE;
-		}
- */		
-		\Log::error('hehe------------ROLE----------'.$role .' HEHE' );
-        \Log::info(\DB::getQueryLog());  
+// 		\Log::error('hehe------------ROLE----------'.$role .' HEHE' );
+//         \Log::info(\DB::getQueryLog());  
 		return $role ;
 	}
 	

@@ -1,8 +1,8 @@
 <?php namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\DynamicModel;
 
-class UserRoleRight extends Model  {
+class UserRoleRight extends DynamicModel  {
 
 	/**
 	 * The database table used by the model.

@@ -2,9 +2,9 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\DynamicModel;
 
-class UserRight extends Model
+class UserRight extends DynamicModel
 {
 	protected $table = 'user_right';
 	

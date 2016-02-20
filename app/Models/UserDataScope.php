@@ -2,9 +2,9 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\DynamicModel;
 
-class UserDataScope extends Model
+class UserDataScope extends DynamicModel
 {
 	protected $table = 'user_data_scope';
 	
