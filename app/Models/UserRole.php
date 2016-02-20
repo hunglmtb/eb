@@ -1,17 +1,14 @@
 <?php namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
+use App\Models\DynamicModel;
 
-class UserRole extends Model  {
-
+class UserRole extends DynamicModel  {
 	/**
 	 * The database table used by the model.
 	 *
 	 * @var string
 	 */
 	protected $table = 'user_role';
-
-	
 	// public function role() 
 	// {
 		// $cn = config('database.default');
@@ -22,7 +19,6 @@ class UserRole extends Model  {
 			// return $this->CODE;
 		// }
 	// }
-	
 	/**
 	 * One to Many relation
 	 *
@@ -32,7 +28,6 @@ class UserRole extends Model  {
 	{
 	  return $this->hasMany('App\Models\UserUserRole','ROLE_ID', 'ID');
 	}
-	
 	/**
 	 * One to Many relation
 	 *
@@ -42,5 +37,4 @@ class UserRole extends Model  {
 	{
 		return $this->hasMany('App\Models\UserRoleRight','ROLE_ID', 'ID');
 	}
-
 }
