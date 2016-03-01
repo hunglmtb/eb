@@ -29,15 +29,11 @@ class ProductManagementController extends Controller {
 	 * @return Response
 	 */
 	public function flow() {
-		return view ( 'front.flow' ,['subMenus' => $this->subMenus,
-									 'currentSubMenu' => 'flow'
-									]);
+		return view ( 'front.flow' ,['subMenus' => array('pairs' => $this->subMenus, 'currentSubMenu' => 'flow')]);
 	}
 	
 	public function eu() {
-		return view ( 'front.eu',['subMenus' => $this->subMenus2,
-									 'currentSubMenu' => 'flow'
-									]);
+		return view ( 'front.eu',['subMenus' => array('pairs' => $this->subMenus, 'currentSubMenu' => 'eu')]);
 	}
 	
 }
