@@ -28,9 +28,10 @@
 </head>
     <body style="background:#222222">
 	<script>var func_code="ROOT";</script>
-	<userbox>
-		@yield('userbox')
-	</userbox>
+		@include('partials.user')
+	<div>
+		@yield('eu')
+	</div>
 <?php
 // include('userbox.php');
 ?>
@@ -501,7 +502,7 @@ var menuBox;
 var menu={};
 menu["production"]=[
 		{menutext:"Flow Stream",desc:"",url:"dc/flow"},
-		{menutext:"Energy Unit",desc:"",url:"../dc/eu.php"},
+		{menutext:"Energy Unit",desc:"",url:"../dc/eu"},
 		{menutext:"Tank & Storage",desc:"",url:"../dc/storage.php"},
 		{menutext:"Ticket",desc:"",url:"../dc/ticket.php"},
 		{menutext:"Well Test",desc:"",url:"../dc/eutest.php"},

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-class FlowController extends Controller {
+class EnergyUnitController extends Controller {
 	
 	
 	public function __construct() {
@@ -15,6 +15,6 @@ class FlowController extends Controller {
 	 * @return Response
 	 */
 	public function index() {
-		return view ( 'front.flow' );
+		return view ( 'front.eu' );
 	}
 }
