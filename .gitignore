@@ -1,5 +1,7 @@
 public/filemanager/
-vendor/
+vendor/*
+!vendor/autoload.php
+!vendor/composer
 .settings/
 composer.lock
 .env
