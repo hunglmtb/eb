@@ -50,7 +50,9 @@
 	</tr>
 	<tr>
 		<td valign="top">
-		<a href='http://www.centralpetroleum.com.au' target='_blank'><img src='../img/cplogo.png' style='position: absolute;top: 50%;left:50%;transform: translate(390px,-120px);width:180px'></a>
+<!-- 		<a href='http://www.centralpetroleum.com.au' target='_blank'>
+			<img src='../img/cplogo.png' style='position: absolute;top: 50%;left:50%;transform: translate(390px,-120px);width:180px'>
+		</a> -->
 		<div id="poweredBy">	
 
 	<div class="hex" style="background:#ffffff">		
