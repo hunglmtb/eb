@@ -28,13 +28,8 @@
 </head>
     <body style="background:#222222">
 	<script>var func_code="ROOT";</script>
-		@include('partials.user')
-	<div>
-		@yield('eu')
-	</div>
-<?php
-// include('userbox.php');
-?>
+	@include('partials.user')
+
 <table border="0" cellpadding="0" cellspacing="0" width="100%" id="table2" height="100%">
 	<tr>
 		<td height="120" valign="top">
@@ -46,9 +41,6 @@
 				<div style="display:none;position: absolute; width: 78px; height: 26px; z-index: 1; left: 76px; top: 187px" id="menu_holder">
 <ul id="css3menu0" class="topmenu">
 	<li class="topmenu"><a href="#" style="width:30px;height:10px;line-height:10px;"><p align=center>...</p></a>
-<?php
-// include('../home/menu_functions.php');
-?>
 	</li>
 </ul>
 			</div>

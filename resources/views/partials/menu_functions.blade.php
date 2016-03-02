@@ -4,42 +4,42 @@
 
 		<ul>
 
-			<li><a href="/eb/dc/flow.php">Flow Stream</a></li>
-			<li><a href="/eb/dc/eu.php">Energy Unit </a></li>
-			<li><a href="/eb/dc/storage.php">Tank &amp; Storage </a>
+			<li><a href="/dc/flow">Flow Stream</a></li>
+			<li><a href="/dc/eu">Energy Unit </a></li>
+			<li><a href="/dc/storage">Tank &amp; Storage </a>
 
 			</li>
 
-			<li><a href="/eb/dc/eutest.php">Test (Lab Data)</a>
+			<li><a href="/dc/eutest">Test (Lab Data)</a>
 
 			</li>
 
-			<li><a href="/eb/dc/deferment.php">Deferment</a>
+			<li><a href="/dc/deferment">Deferment</a>
 
 			</li>
 
-			<li><a href="/eb/dc/quality.php">Quality </a></li>
+			<li><a href="/dc/quality">Quality </a></li>
 		</ul></li>
 
 		<li><a href="#"><span>Field Operations</span></a>
 
 		<ul>
 
-			<li><a href="/eb/dc2/safety.php">Safety</a>
+			<li><a href="/dc2/safety">Safety</a>
 
 			</li>
 
-			<li><a href="/eb/dc2/comment.php">Comments</a>
+			<li><a href="/dc2/comment">Comments</a>
 
 			</li>
 
-			<li><a href="/eb/dc2/equipment.php">Equipment</a>
+			<li><a href="/dc2/equipment">Equipment</a>
 
 			</li>
-			<li><a href="/eb/dc2/chemical.php">Chemical</a>
+			<li><a href="/dc2/chemical">Chemical</a>
 
 			</li>
-			<li><a href="/eb/dc2/personnel.php">Personnel</a>
+			<li><a href="/dc2/personnel">Personnel</a>
 
 			</li>
 
@@ -49,7 +49,7 @@
 
 		<ul>
 
-			<li><a href="/eb/ce/?act=allocset">Production Allocation</a>
+			<li><a href="ce/?act=allocset">Production Allocation</a>
 
 			</li>
 
@@ -142,9 +142,9 @@
 
 			<li class="subfirst"><a href="../diagram">Network Model</a></li>
 
-			<li><a href="/eb/graph">Data Plotting</a></li>
+			<li><a href="graph">Data Plotting</a></li>
 
-			<li><a href="/eb/view">Data View</a></li>
+			<li><a href="view">Data View</a></li>
 
 			<li class="sublast"><a href="../report">Report</a></li>
 		</ul>
@@ -153,16 +153,16 @@
 
 		<ul>
 
-			<li class="subfirst"><a href="/eb/pd/?func=cargonomination">Cargo Nomination</a></li>
-			<li><a href="/eb/pd/?func=cargoschedule">Cargo Schedule</a></li>
-			<li><a href="/eb/pd/?func=cargovoyage">Cargo Voyage</a></li>
-			<li><a href="/eb/pd/?func=cargoload">Cargo Load</a></li>
-			<li><a href="/eb/pd/?func=cargounload">Cargo Unload</a></li>
-			<li><a href="/eb/pd/?func=voyagemarine">Voyage Marine</a></li>
-			<li><a href="/eb/pd/?func=voyageground">Voyage Ground</a></li>
-			<li><a href="/eb/pd/?func=voyagepipeline">Voyage Pipeline</a></li>
-			<li><a href="/eb/pd/?func=storagedisplay">Storage Display</a></li>
-			<li class="sublast"><a href="/eb/configpd/">Config</a></li>
+			<li class="subfirst"><a href="pd/?func=cargonomination">Cargo Nomination</a></li>
+			<li><a href="pd/?func=cargoschedule">Cargo Schedule</a></li>
+			<li><a href="pd/?func=cargovoyage">Cargo Voyage</a></li>
+			<li><a href="pd/?func=cargoload">Cargo Load</a></li>
+			<li><a href="pd/?func=cargounload">Cargo Unload</a></li>
+			<li><a href="pd/?func=voyagemarine">Voyage Marine</a></li>
+			<li><a href="pd/?func=voyageground">Voyage Ground</a></li>
+			<li><a href="pd/?func=voyagepipeline">Voyage Pipeline</a></li>
+			<li><a href="pd/?func=storagedisplay">Storage Display</a></li>
+			<li class="sublast"><a href="configpd/">Config</a></li>
 		</ul>
 		</li>
 	</ul>

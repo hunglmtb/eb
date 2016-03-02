@@ -4,21 +4,6 @@ namespace App\Http\Controllers;
 
 class ProductManagementController extends Controller {
 	 
-	protected $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
-			array('title' => 'ENERGY UNIT', 'link' => 'eu'),
-			array('title' => 'STORAGE', 'link' => 'storage'),
-			array('title' => 'TICKET', 'link' => 'ticket'),
-			array('title' => 'WELL TEST', 'link' => 'eutest'),
-			array('title' => 'DEFERMENT', 'link' => 'deferment'),
-			array('title' => 'QUALITY', 'link' => 'quality')
-	];
-	
-	protected $subMenus2 = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
-			array('title' => 'ENERGY UNIT', 'link' => 'eu'),
-			array('title' => 'STORAGE', 'link' => 'storage'),
-			array('title' => 'QUALITY', 'link' => 'quality')
-	];
-	
 	public function __construct() {
 		$this->middleware ( 'auth' );
 	}
@@ -29,11 +14,11 @@ class ProductManagementController extends Controller {
 	 * @return Response
 	 */
 	public function flow() {
-		return view ( 'front.flow' ,['subMenus' => array('pairs' => $this->subMenus, 'currentSubMenu' => 'flow')]);
+		return view ( 'front.flow');
 	}
 	
 	public function eu() {
-		return view ( 'front.eu',['subMenus' => array('pairs' => $this->subMenus, 'currentSubMenu' => 'eu')]);
+		return view ( 'front.eu');
 	}
 	
 }
