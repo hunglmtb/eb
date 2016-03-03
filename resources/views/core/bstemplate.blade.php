@@ -16,7 +16,7 @@
 <!-- <link rel="stylesheet" href="common/css/jquery-ui.css" /> -->
 <link rel="stylesheet" href="/common/css/style.css" />
 <link rel="stylesheet" href="/css/css3menu0/style.css?4" />
-<script src="/common/js/jquery-1.10.2.js"></script>
+@yield('script')
 </head>
 
 <body style="margin:0; overeu-x:hidden">
@@ -29,10 +29,8 @@
 	 </main>
 
 	<footer role="contentinfo">
+		@include('partials.footer')
 		@yield('footer')
-		<div style="text-align: center; padding: 10px; color: #666">
-			<font face="Arial" size="1">Copyright &copy; 2016 eDataViz LLC</font>
-		</div>
 	</footer>
 </body>
 </html>

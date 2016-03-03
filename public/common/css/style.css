@@ -65,3 +65,27 @@ input[type="button"]:focus, button:focus{
 	font-size:10pt;
 	font-weight:bold;
 }
+
+.product_filter, .date_filter{
+    margin-right: 10px;
+    float: left;
+   	background-color: #E6E6E6;
+}
+
+.filter,.date_input {
+	width: 150px;
+	float: left;
+    padding: 3px;
+}
+
+.date_input {
+	width: 80px;
+}
+.date_input input {
+    margin-top: 5px;
+	width: 100%;
+}
+.filter select {
+    margin-top: 5px;
+	width: 100%;
+}
