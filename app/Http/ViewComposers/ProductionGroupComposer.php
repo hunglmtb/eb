@@ -37,8 +37,8 @@ class ProductionGroupComposer
     {
     	$productionUnits = LoProductionUnit::all(['ID', 'NAME']);
     	$areas = $productionUnits->first()->areas()->getResults();
-    	$fArea = $areas->first();
-    	$facilities = $fArea->facilities()->getResults();
+    	$fArea = $areas!=null?$areas->first():null;
+    	$facilities = $fArea!=null?$fArea->facilities()->getResults():null;
     	 
     	$filterGroup = [array(	'type' => 'options',
     			'id' => 'cboProdUnit',
