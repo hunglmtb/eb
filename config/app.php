@@ -172,7 +172,7 @@ return [
 		Bestmomo\Filemanager\FilemanagerServiceProvider::class,
 		Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
 		Yajra\Oci8\Oci8ServiceProvider::class,
-
+		App\Providers\ComposerServiceProvider::class,
 	],
 
 	/*

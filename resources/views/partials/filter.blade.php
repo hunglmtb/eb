@@ -21,7 +21,7 @@
 				<td width="140">
 						<select style="width:100%;" id="{{ $filter['id']}}" size="1" name="{{ $filter['selectName']}}">
 							@foreach($filter['options'] as $option )
-								<option value="{{ $option['value']}}">{{ $option['name']}}</option>
+								<option value='{{ $option->ID }}'>{{ $option->NAME }}</option>
 							@endforeach
 						</select>
 				</td>

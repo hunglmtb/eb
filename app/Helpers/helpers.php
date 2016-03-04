@@ -2,29 +2,34 @@
 class Helper {
 	public static function filter($model,$filteName,$option=array()) {
 		if (!isset($model)) return;
-		
+		$collection = $model::all(['ID', 'NAME']);
+		Helper::buildFilter($collection,$filteName,$option);
+	}
+	
+	public static function buildFilter($collection,$filteName,$option=array()) {
+		if (!isset($collection)) return;
+	
 		$addAllOption=array_key_exists('addAll', $option)?$option['addAll']:false;
 		$id=array_key_exists('id', $option)?$option['id']:'';
 		$name=array_key_exists('name', $option)?$option['name']:'';
-		
+	
 		$htmlFilter = 	"<div class=\"filter\"><div><b>$filteName</b>".
-						'</div>
+				'</div>
 				<select id="'.$id.'" size="1" name="'.$name.'">';
 		if ($addAllOption) {
 			$htmlFilter .= '<option value="0" selected >All</option>';
 		}
-		
-		$collection = $model::all(['ID', 'NAME'])->toArray();
-		
+	
+	
 		foreach($collection as $item ){
-			$htmlFilter .= '<option value="'.$item['ID'].'">'.$item['NAME'].'</option>';
-			
+			$htmlFilter .= '<option value="'.($item->ID).'">'.($item->NAME).'</option>';
+				
 		}
-		
-		
-		
+	
+	
+	
 		$htmlFilter .= '</select></div>';
-		
+	
 		echo $htmlFilter;
 	}
 	
