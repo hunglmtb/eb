@@ -15,4 +15,16 @@ class Facility extends DynamicModel
 	{
 		return $this->belongsTo('App\Models\LoArea', 'AREA_ID', 'ID');
 	}
+	
+	public function tank()
+	{
+		return $this->hasMany('App\Models\Tank', 'FACILITY_ID', 'ID');
+	}
+	
+	public function energyUnitGroup()
+	{
+		return $this->hasMany('App\Models\EnergyUnitGroup', 'FACILITY_ID', 'ID');
+	}
+	
+	
 }

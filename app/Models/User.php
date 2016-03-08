@@ -36,6 +36,27 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 	}
 	
 	
+	public function userWorkspace()
+	{
+		return $this->hasOne('App\Models\UserWorkspace',$user_id_col,$primaryKey);
+	}
+	
+	public function workspace()
+	{
+		\DB::enableQueryLog();
+	
+		$wp = User::join('USER_WORKSPACE', 'USER.ID', '=', 'USER_WORKSPACE.USER_ID')
+		->join('FACILITY', 'USER_WORKSPACE.W_FACILITY_ID', '=', 'FACILITY.ID')
+		->join('LO_AREA', 'FACILITY.AREA_ID', '=', 'LO_AREA.ID')
+		->join('LO_PRODUCTION_UNIT', 'LO_AREA.PRODUCTION_UNIT_ID', '=', 'LO_PRODUCTION_UNIT.ID')
+		->where('USER.ID', '=', $this->ID)
+		->select('USER_WORKSPACE.*', 'USER_WORKSPACE.W_DATE_BEGIN','USER_WORKSPACE.W_DATE_END', 'FACILITY.AREA_ID', 'LO_AREA.PRODUCTION_UNIT_ID')
+		->get()->first();
+	
+		\Log::info(\DB::getQueryLog());
+	
+		return $wp;
+	}
 	
 
 	/**

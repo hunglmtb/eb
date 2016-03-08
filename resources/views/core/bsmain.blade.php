@@ -13,7 +13,7 @@ if (!isset($currentSubmenu)) $currentSubmenu ='';
 		<input name="fields_alloc" value="" type="hidden">
 		<input name="fields_plan" value="" type="hidden">
 		<input name="fields_forecast" value="" type="hidden">
-		@include('partials.group',['groups'=>$groups])
+		@include('group.production')
 		<br>
 		@yield('content') 
 	</form>

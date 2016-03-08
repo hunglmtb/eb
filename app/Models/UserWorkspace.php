@@ -3,16 +3,16 @@
 namespace App\Models;
 use App\Models\DynamicModel;
 
-class LoProductionUnit extends DynamicModel
+class UserWorkspace extends DynamicModel
 {
-	protected $table = 'LO_PRODUCTION_UNIT';
+	protected $table = 'USER_WORKSPACE';
 	
 	/**
 	 * One to Many relation
 	 *
 	 * @return Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
-	public function area()
+	public function areas()
 	{
 		return $this->hasMany('App\Models\LoArea', 'PRODUCTION_UNIT_ID', 'ID');
 	}

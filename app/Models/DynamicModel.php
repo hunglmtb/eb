@@ -29,15 +29,6 @@ class DynamicModel extends Model {
 		return $this->getAttribute($key);
 	}
 	
-	/**
-	 * Define an inverse one-to-one or many relationship.
-	 *
-	 * @param  string  $related
-	 * @param  string  $foreignKey
-	 * @param  string  $otherKey
-	 * @param  string  $relation
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-	 */
 	public function belongsTo($related, $foreignKey = null, $otherKey = null, $relation = null)
 	{
 		return parent::belongsTo($related,$foreignKey,$this->isOracleModel?strtolower($otherKey):$otherKey,$relation);
@@ -46,5 +37,10 @@ class DynamicModel extends Model {
 	public function hasMany($related, $foreignKey = null, $localKey = null)
 	{
 		return parent::hasMany($related,$foreignKey,$this->isOracleModel?strtolower($localKey):$localKey);
+	}
+	
+	public function hasOne($related, $foreignKey = null, $localKey = null)
+	{
+		return parent::hasOne($related,$foreignKey,$this->isOracleModel?strtolower($localKey):$localKey);
 	}
 }
