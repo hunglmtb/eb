@@ -12,7 +12,7 @@ class Tank extends DynamicModel
 	 *
 	 * @return Illuminate\Database\Eloquent\Relations\hasMany
 	 */
-	public function facility()
+	public function Facility()
 	{
 		return $this->belongsTo('App\Models\Facility', 'FACILITY_ID', 'ID');
 	}	

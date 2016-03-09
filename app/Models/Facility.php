@@ -11,17 +11,17 @@ class Facility extends DynamicModel
 	 *
 	 * @return Illuminate\Database\Eloquent\Relations\hasMany
 	 */
-	public function area()
+	public function Area()
 	{
 		return $this->belongsTo('App\Models\LoArea', 'AREA_ID', 'ID');
 	}
 	
-	public function tank()
+	public function Tank()
 	{
 		return $this->hasMany('App\Models\Tank', 'FACILITY_ID', 'ID');
 	}
 	
-	public function energyUnitGroup()
+	public function EnergyUnitGroup()
 	{
 		return $this->hasMany('App\Models\EnergyUnitGroup', 'FACILITY_ID', 'ID');
 	}

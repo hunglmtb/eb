@@ -2,7 +2,7 @@
 class Helper {
 	public static function filter($option=null) {
 		if ($option==null) return;
-		$model=$option['model'];
+		$model='App\\Models\\'.$option['model'];
 		$collection = $model::all(['ID', 'NAME']);
 		$option['collection']=$collection;
 		Helper::buildFilter($option);
@@ -11,13 +11,13 @@ class Helper {
 	public static function buildFilter($option=null) {
 		if ($option==null) return;
 		$collection = $option['collection'];
-		$filteName = $option['filteName'];
+		$filterName = $option['filterName'];
 	
 		$default=array_key_exists('default', $option)?$option['default']:false;
-		$id=array_key_exists('id', $option)?$option['id']:'';
-		$name=array_key_exists('name', $option)?$option['name']:'';
+		$id=array_key_exists('id', $option)?$option['id']:false;
+		$name=array_key_exists('name', $option)?$option['name']:false;
 	
-		$htmlFilter = 	"<div class=\"filter\"><div><b>$filteName</b>".
+		$htmlFilter = 	"<div class=\"filter\"><div><b>$filterName</b>".
 				'</div>
 				<select id="'.$id.'" size="1" name="'.$name.'">';
 		if ($default) {
@@ -29,10 +29,13 @@ class Helper {
 			$htmlFilter .= '<option value="'.($item->ID).'"'.($currentId==$item->ID?'selected':'').'>'.($item->NAME).'</option>';
 				
 		}
-	
+		
 	
 	
 		$htmlFilter .= '</select></div>';
+		if ($id&&array_key_exists('dependences', $option)) {
+			$htmlFilter.= "<script>registerOnChange('$id',['".implode("','", $option['dependences'])."'])</script>";
+		}
 	
 		echo $htmlFilter;
 	}

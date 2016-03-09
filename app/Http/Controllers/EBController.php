@@ -6,6 +6,10 @@ use App\Jobs\ChangeLocale;
 
 class EBController extends Controller {
 	
+	public function __construct() {
+		$this->middleware ( 'auth' );
+	}
+	
 	/**
 	 * Change language.
 	 *

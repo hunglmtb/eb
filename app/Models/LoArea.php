@@ -12,7 +12,7 @@ class LoArea extends DynamicModel
 	 *
 	 * @return Illuminate\Database\Eloquent\Relations\hasMany
 	 */
-	public function productionUnit()
+	public function ProductionUnit()
 	{
 		return $this->belongsTo('App\Models\LoProductionUnit', 'PRODUCTION_UNIT_ID', 'ID');
 	}
@@ -22,7 +22,7 @@ class LoArea extends DynamicModel
 	 *
 	 * @return Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
-	public function facility()
+	public function Facility()
 	{
 		return $this->hasMany('App\Models\Facility', 'AREA_ID', 'ID');
 	}

@@ -12,7 +12,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>ENERGY BUILDER</title>
 <meta name="description" content="">
-<meta name="_token" content="{!! csrf_token() !!}" />
+<meta name="_token" content="{{ app('Illuminate\Encryption\Encrypter')->encrypt(csrf_token()) }}" />
 <!-- <link rel="stylesheet" href="common/css/jquery-ui.css" /> -->
 <link rel="stylesheet" href="/common/css/style.css" />
 <link rel="stylesheet" href="/css/css3menu0/style.css?4" />

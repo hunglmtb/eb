@@ -35,7 +35,7 @@ class ProductionGroupComposer
      */
     public function compose(View $view)
     {
-    	$fgs = $view->filterGroups;
+    	$fgs = $view->filters;
     	$filterGroups = array();
     	$workspace = $this->user->workspace();
     	
@@ -53,20 +53,6 @@ class ProductionGroupComposer
     		 
     	
     	$view->with('filterGroups', $filterGroups);
-    }
-    
-    public function getCurrentSelect($collection,$id=null)
-    {
-    	if ($collection!=null) {
-	    	$units = $collection->keyBy('ID');
-	    	$unit = $units->get($id);
-	    	 
-	    	if ($unit==null) {
-	    		$unit = $units->first();
-	    	}
-	    	return $unit;
-    	}
-    	return null;
     }
     
     public function initDateFilterGroup($workspace,$extra=null){
@@ -92,42 +78,54 @@ class ProductionGroupComposer
     }
     
     
-    public function initProductionFilterGroup($workspace,$extra=null)
+    public function initProductionFilterGroup($workspace,$extras=null)
     {
     	$pid = $workspace->PRODUCTION_UNIT_ID;
     	$aid = $workspace->AREA_ID;
     	$fid = $workspace->W_FACILITY_ID;
     	
     	$productionUnits = LoProductionUnit::all(['ID', 'NAME']);
-    	$currentProductUnit = $this->getCurrentSelect($productionUnits,$pid);
-    	$areas = $currentProductUnit->area()->getResults();
-    	$currentArea = $this->getCurrentSelect($areas,$aid);
-    	$facilities = $currentArea->facility()->getResults();
-    	$currentFacility = $this->getCurrentSelect($facilities,$fid);
-	    $productionFilterGroup =[$this->getFilterArray('Production Unit',$productionUnits,$currentProductUnit),
-						    		$this->getFilterArray('Area',$areas,$currentArea),
-						    		$this->getFilterArray('Facility',$facilities,$currentFacility)
+    	$currentProductUnit = ProductionGroupComposer::getCurrentSelect($productionUnits,$pid);
+    	$areas = $currentProductUnit->LoArea()->getResults();
+    	$currentArea = ProductionGroupComposer::getCurrentSelect($areas,$aid);
+    	$facilities = $currentArea->Facility()->getResults();
+    	$currentFacility = ProductionGroupComposer::getCurrentSelect($facilities,$fid);
+	    $productionFilterGroup =[ProductionGroupComposer::getFilterArray('LoProductionUnit',$productionUnits,$currentProductUnit),
+					    		ProductionGroupComposer::getFilterArray('LoArea',$areas,$currentArea),
+					    		ProductionGroupComposer::getFilterArray('Facility',$facilities,$currentFacility)
     							];
-	    if ($extra!=null) {
-	    	$model = $extra['model'];
-// 	    	$extraId = 1;
-	    	$extras = $currentFacility->$model()->getResults();
-	    	$extraFilter = $this->getCurrentSelect($extras);
-// 	    	$extras[]= array('ID'=>55,'NAME'=>'No Group');
-	    	
-		    $productionFilterGroup[] = $this->getFilterArray($extra['name'],$extras,$extraFilter,$extra);
+	    
+	    foreach($extras as $model ){
+	    	$eCollection = $currentFacility->$model()->getResults();
+	    	$extraFilter = ProductionGroupComposer::getCurrentSelect($eCollection);
+		    $productionFilterGroup[] = ProductionGroupComposer::getFilterArray($model,$eCollection,$extraFilter);
+	    
 	    }
 	    return $productionFilterGroup;
     }
-        
+       
     
-    public function getFilterArray($filteName,$collection,$currentUnit,$option=null)
+    public static function getCurrentSelect($collection,$id=null)
+    {
+    	if ($collection!=null) {
+    		$units = $collection->keyBy('ID');
+    		$unit = $units->get($id);
+    		 
+    		if ($unit==null) {
+    			$unit = $units->first();
+    		}
+    		return $unit;
+    	}
+    	return null;
+    }
+    
+    public static function getFilterArray($id,$collection,$currentUnit,$option=null)
     {
     	if ($option==null) {
     		$option = array();
     	}
+    	$option['id'] = $id;
     	$option['collection'] = $collection;
-    	$option['filteName'] = $filteName;
     	$option['currentId'] =  $currentUnit!=null?$currentUnit->ID:'';
     	return $option; 
     }
