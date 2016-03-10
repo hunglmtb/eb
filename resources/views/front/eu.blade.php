@@ -6,3 +6,7 @@
 	];
 ?>
 @extends('core.pm')
+
+@section('funtionName')
+ENERGY UNIT DATA CAPTURE
+@stop

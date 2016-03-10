@@ -21,7 +21,7 @@ class CodeController extends EBController {
 		$results = [];
 		
 		foreach($options['dependences'] as $model ){
-			$eCollection = $unit->$model()->getResults();
+			$eCollection = $unit->$model(['ID', 'NAME'])->getResults();
 			if (count ( $eCollection ) > 0) {
 				$unit = ProductionGroupComposer::getCurrentSelect ( $eCollection );
 				$results [] = ProductionGroupComposer::getFilterArray ( $model, $eCollection, $unit );

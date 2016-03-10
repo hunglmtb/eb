@@ -6,3 +6,6 @@
 				];
 ?>
 @extends('core.pm')
+@section('funtionName')
+FLOW DATA CAPTURE
+@stop

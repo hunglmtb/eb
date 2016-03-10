@@ -12,8 +12,11 @@ class LoProductionUnit extends DynamicModel
 	 *
 	 * @return Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
-	public function LoArea()
+	public function LoArea($fields=null)
 	{
+		if ($fields!=null&&is_array($fields)) {
+			return $this->hasMany('App\Models\LoArea', 'PRODUCTION_UNIT_ID', 'ID')->select($fields);
+		}
 		return $this->hasMany('App\Models\LoArea', 'PRODUCTION_UNIT_ID', 'ID');
 	}
 }
