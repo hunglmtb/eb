@@ -39,3 +39,16 @@ var registerOnChange = function(id, dependentIds) {
 	});
 };
 
+var actions = {
+		
+	url : 'mock url',
+
+	doLoad : function (data, valueDefault, columnName, width){
+		alert("doLoad"+this.url);
+		return true;
+	},
+	doSave : function (data, valueDefault, columnName, width){
+		alert("doSave"+this.url);
+		return true;
+	}
+}

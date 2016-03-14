@@ -25,10 +25,6 @@ if (!isset($currentSubmenu)) $currentSubmenu ='';
 		<br>
 		@yield('content')
 		
-		
-		
-		
-		
 		<div id="tabs">
 			<ul>
 				@foreach($tables as $key => $table )
@@ -54,6 +50,7 @@ if (!isset($currentSubmenu)) $currentSubmenu ='';
 		</div>
 	</form>
 </div>
+@yield('adaptData')
 @stop
 
 

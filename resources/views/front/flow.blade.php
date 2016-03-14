@@ -5,7 +5,14 @@
 				array('name' => 'group.frequency','data' => 'frequency')
 				];
 ?>
+
 @extends('core.pm')
 @section('funtionName')
 FLOW DATA CAPTURE
+@stop
+
+@section('adaptData')
+<script>
+actions.url = "keke";
+</script>
 @stop
