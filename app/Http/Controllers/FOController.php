@@ -21,8 +21,11 @@ class FOController extends Controller {
 	 * @return Response
 	 */
 	public function safety(){
-		
-		return view('front.safety');
+		$filterGroups = array('productionFilterGroup'=> [],
+				'dateFilterGroup'=> array(['id'=>'date_begin','name'=>'Date'],
+				)
+		);
+		return view ( 'front.safety',['filters'=>$filterGroups]);
 	}
 	
 	public function loadSafety(Request $request){
@@ -45,7 +48,7 @@ class FOController extends Controller {
 			->leftjoin('safety AS c', function ($ljoin) use ($facility_id, $created_date){
 				$ljoin->on('a.id', '=', 'c.category_id')
 				->where('c.facility_id', '=', [$facility_id])
-				->where('c.created_date','=', [$created_date]);
+				->where('c.created_date','=', [date('Y-m-d',strtotime($created_date))]);
 			})
 			->select($cfgFieldProps['listColumn'])
 			->where('a.active',1)
@@ -78,6 +81,8 @@ class FOController extends Controller {
 			
 			$obj['CATEGORY_ID'] = $obj['XID'];
 			unset($obj['XID']);
+			
+			$obj['CREATED_DATE'] = date('Y-m-d',strtotime($obj['CREATED_DATE']));
 			
 			$objSafety = new Safety();
 			

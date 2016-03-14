@@ -20,17 +20,3 @@ if (!isset($currentSubmenu)) $currentSubmenu ='';
 </div>
 @stop
 
-
-@section('script')
- 	<link rel="stylesheet" href="/common/css/jquery-ui.css" />
-	<script src="/common/js/jquery-1.10.2.js"></script>
-	<script src="/common/js/jquery-ui.js"></script>
-	<script src="/common/js/jquery-ui-timepicker-addon.js"></script>
-	<script>
-	/* 	$.ajaxSetup({
-		    headers: {
-		        'X-XSRF-Token': $('meta[name="_token"]').attr('content')
-		    }
-		}); */
-	</script>
-@stop

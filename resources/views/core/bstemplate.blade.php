@@ -18,9 +18,12 @@
 <link rel="stylesheet" href="/css/css3menu0/style.css?4" />
 <script src="/common/js/jquery-1.10.2.js"></script>
  <script type="text/javascript" src="/common/js/jquery.dataTables.js"></script> 
- <script type="text/javascript" src="/common/js/dataTables.fixedColumns.js"></script> 
-<link rel="stylesheet" href="/common/css/demo_table.css">
+ <script type="text/javascript" src="/common/js/dataTables.fixedColumns.js"></script>
+<link rel="stylesheet" href="/common/css/jquery.dataTables.css">
 <script type="text/javascript" src="/common/js/utils.js"></script>
+ 	<link rel="stylesheet" href="/common/css/jquery-ui.css" />
+	<script src="/common/js/jquery-ui.js"></script>
+	<script src="/common/js/jquery-ui-timepicker-addon.js"></script>
 </head>
 
 <body style="margin:0; overeu-x:hidden">

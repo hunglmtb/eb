@@ -20,14 +20,23 @@ $groups = [
 @section('content')
 
 <script type="text/javascript">
- $(function(){
-				
-	_safety.initData();	 
+$(function(){
+	
+	//_safety.initData();	 
 
-	$('#sub').click(function(){
+	$('#buttonSave').click(function(){
 		_safety.clickSubmit();
+	});	
+
+ 	$('#date_begin').change(function () {
+ 		_safety.initData();	
 	});
-});   
+ 
+ 	$('#Facility').change(function () {
+ 		_safety.initData();	
+	});
+	  
+});  
 
 var _safety = {
 		
@@ -36,6 +45,8 @@ var _safety = {
 	isDataChange : 0,
 
 	columnName : '',
+
+	tableSafety : '',
 	
 	loadCbo : function (data, valueDefault, columnName, width){
 		var cbo = '';	  
@@ -83,8 +94,7 @@ var _safety = {
 						if(column == "XID"){
 							str += ' <input type="hidden" value="'+safe[i][column]+'" class="'+column+'" />';
 						}else{
-							str += '<td data-order="'+i+'" style="background:none;color:black;width: '+width+'px;">' + _safety.checkValue(safe[i][column],1) +'</td>';
-							//str += '<td data-order="'+i+'" ><div>' + _safety.checkValue(safe[i][column],1) +'</div><input style="width: 100%" onkeypress="_safety.onchangeTextValue(this);" onkeydown="_safety.setChange(this);" type="text" value="' + _safety.checkValue(safe[i][column],1) +'"size="15" class="'+column+' _numeric"/></td>';
+							str += '<td data-order="'+i+'" style="background:none;color:black;width: '+width+'px;"><input style="width: 100%" onkeypress="_safety.onchangeTextValue(this);" onkeydown="_safety.setChange(this);" type="text" value="' + _safety.checkValue(safe[i][column],1) +'"size="15" class="'+column+'"></td>';
 						}
 					}
 				}
@@ -95,29 +105,26 @@ var _safety = {
 			str += ' <input type="hidden" value="0" class="changed" />';
 			str += '</tr>';
 		}
-	  	//$('#body_Safety').html('');
-		$('#body_Safety').html(str);
 		
-		_safety.freezeSafety();		
+		$('#body_Safety').html(str);
+		_safety.freezeSafety();
   	},
 
   	loadTitle : function(result){
   		var str = '';
   		var safe = result.thead;
-  		str += '<tr style="height:26" >';
 		for(var i = 0; i < safe.length-1; i++ ){// ko lay ptu cuoi cung
 			str += '<th style="font-size:9pt;text-align:left;white-space: nowrap;"><div style="width:'+(safe[i].FDC_WIDTH>1?safe[i].FDC_WIDTH : 100)+'px">'+ (safe[i].LABEL?safe[i].LABEL:safe[i].COLUMN_NAME) +'</div></th>';
 		}
-		str += '</tr>';
 		
-		//$('#title_thead').html('');
   		$('#title_thead').html(str);
   	},
 
-	initData : function(){	  
+	 initData : function(){	  
+		 
 		var tk = $('#token').val();
-		var facility_id = 18; 
-		var created_date = '2016-03-08';
+		var facility_id = $('#Facility').val(); 		
+		var created_date = $('#date_begin').val();
 		
 		param = {
 			_token : tk,
@@ -130,7 +137,11 @@ var _safety = {
 	    	type: "post",
 	    	dataType: 'json',
 	    	data: param,
-	    	success: function(_data){	
+	    	success: function(_data){
+
+	    		if($.fn.dataTable.isDataTable( '#table_Safety' ))
+	    			tableSafety.destroy();
+	    		
 	    		_safety.loadTitle(_data[0]);	    
 	    		_safety.loadData(_data[0]);
 	    		
@@ -138,20 +149,23 @@ var _safety = {
 			}
 		});
 	},
+	
 	onchangeTextValue : function(textbox) {
 		$(textbox).removeClass('error-input');
 		$(textbox).addClass('ts-txt-changed');	
 
 		_safety.isDataChange = 1;
 	},
+	
 	setChange : function(element){
 		var rowIndex = $(element).closest("tr").index();
 		 $("#body_Safety tr.row-data:eq(" + rowIndex +") .changed").val(_safety.isChange);
 	},
 
 	clickSubmit : function(){
-		var facility_id = 18; 
-		var created_date = '2016-03-08';
+		
+		var facility_id = $('#Facility').val(); 
+		var created_date = $('#date_begin').val();
 		var sData = [];	
 		$('#body_Safety tr.row-data').each(function(){
 			var rowIndex = $(this).index();
@@ -183,7 +197,7 @@ var _safety = {
 	    	dataType: 'json',
 	    	data: param,
 	    	success: function(_data){	
-	    		//_safety.initData();
+	    		_safety.initData();
 			}
 		});
 	}, 
@@ -211,13 +225,7 @@ var _safety = {
 	freezeSafety : function()
 	{
 
-		$('#table_Safety').dataTable( {
-			"bFilter": false,
-			"bPaginate" : false,
-			"bInfo": false
-		} );  
-		
-		/* if($.fn.dataTable.isDataTable( '#table_Safety' ))
+		if($.fn.dataTable.isDataTable( '#table_Safety' ))
 			tableSafety.destroy();
 		
 		tableSafety = $('#table_Safety').DataTable({
@@ -227,8 +235,8 @@ var _safety = {
 			paging:         false,
 			searching:		false,
 			info:			false
-		}); */
- 
+		});
+
 		//new $.fn.dataTable.FixedColumns(tableSafety,{leftColumns: 1});
 	}
 }
@@ -245,22 +253,17 @@ var _safety = {
 </style>
 
 <div style="width: 1010px; margin-top: 20px;">
-	<form action="">
+	
 		<input type="hidden" id="token" name="token" value='{{csrf_token()}}'>
 		<div id="containerSafety" style="overflow-x:hidden">
-		<table cellpadding="0" cellspacing="0" border="0" class="display" id="table_Safety">
-			<thead id="title_thead">
-		
+		<table border="0" cellpadding="3" id="table_Safety" class="fixedtable nowrap display compact">
+			<thead>
+                <tr style="height:26" id="title_thead"></tr>
 			</thead>
-			<tbody id = "body_Safety">
-				
+			<tbody id="body_Safety">
 			</tbody>
-			
 		</table>
 	</div>	
-		
-		<input type="button" value="submit" id="sub">
-	</form>
+	
 </div>
-
 @stop

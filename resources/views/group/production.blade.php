@@ -49,7 +49,7 @@ $mapping = ['LoProductionUnit'		=> 	array('filterName'	=>'Production Unit',
 
 <div class="action_filter">
 
-	<input type="button" value="Save" name="B3" onClick="save()"style="width: 85px;foat:left; height: 26px">
+	<input type="button" value="Save" name="B3" id = "buttonSave" style="width: 85px;foat:left; height: 26px">
 	<input type="button" value="Load data" id="buttonLoadData" name="B33"
-		onClick="doReloadData()" style="width: 85px; height: 26px;foat:left;">
+		style="width: 85px; height: 26px;foat:left;">
 </div>
