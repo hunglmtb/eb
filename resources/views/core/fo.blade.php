@@ -1,7 +1,9 @@
 <?php
-$subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
-		array('title' => 'ENERGY UNIT', 'link' => 'eu'),
-		array('title' => 'STORAGE', 'link' => 'storage'),
+$subMenus = [array('title' => 'COMMENTS', 'link' => 'flow'),
+		array('title' => 'EQUIPMENT', 'link' => 'eu'),
+		array('title' => 'CHEMICAL', 'link' => 'storage'),
+		array('title' => 'PERSONNEL', 'link' => 'storage'),
+		
 ];
 ?>
 @extends('core.bsmain',['subMenus' => $subMenus])

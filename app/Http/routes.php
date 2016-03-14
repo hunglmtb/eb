@@ -86,3 +86,10 @@ Route::post('password/reset', 'Auth\PasswordController@postReset');
 //-----EB
 Route::get('dc/flow', 'ProductManagementController@flow');
 Route::get('dc/eu', 'ProductManagementController@eu');
+
+
+//---------
+Route::post('fo/loadSafety', 'FOController@loadSafety');
+Route::get('fo/safety', 'FOController@safety');
+Route::post('fo/saveSafety', 'FOController@saveSafety');
+
