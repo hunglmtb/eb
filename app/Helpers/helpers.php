@@ -33,7 +33,7 @@ class Helper {
 	
 	
 		$htmlFilter .= '</select></div>';
-		if ($id&&array_key_exists('dependences', $option)) {
+		if ($id&&array_key_exists('dependences', $option)&&count($option['dependences'])>0) {
 			$htmlFilter.= "<script>registerOnChange('$id',['".implode("','", $option['dependences'])."'])</script>";
 		}
 	

@@ -14,11 +14,6 @@ class ProductManagementController extends EBController {
 							  'dateFilterGroup'=> array(['id'=>'date_begin','name'=>'Date'],
 													)
 		);
-		/* $filterGroups = array('productionFilterGroup'=> ['model'=>'tank','name'=>'Tank'],
-				'dateFilterGroup'=> array(['id'=>'date_begin','name'=>'Date'],
-				)
-		); */
-		
 		return view ( 'front.flow',['filters'=>$filterGroups]);
 	}
 	
@@ -27,6 +22,14 @@ class ProductManagementController extends EBController {
 							 'frequenceFilterGroup'=> ['CodeReadingFrequency','CodeFlowPhase']
 						);
 		return view ( 'front.eu',['filters'=>$filterGroups]);
+	}
+	
+	public function storage() {
+		$filterGroups = array('productionFilterGroup'=> [],
+				'dateFilterGroup'=> array(['id'=>'date_begin','name'=>'Date']),
+				'frequenceFilterGroup'=> ['CodeReadingFrequency']
+		);
+		return view ( 'front.flow',['filters'=>$filterGroups]);
 	}
 	
 	public function quality() {

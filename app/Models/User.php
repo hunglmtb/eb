@@ -43,7 +43,7 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 	
 	public function workspace()
 	{
-		\DB::enableQueryLog();
+// 		\DB::enableQueryLog();
 	
 		$wp = User::join('USER_WORKSPACE', $this->table.'.ID', '=', 'USER_WORKSPACE.USER_ID')
 		->join('FACILITY', 'USER_WORKSPACE.W_FACILITY_ID', '=', 'FACILITY.ID')
@@ -53,7 +53,7 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 		->select('USER_WORKSPACE.*', 'USER_WORKSPACE.W_DATE_BEGIN','USER_WORKSPACE.W_DATE_END', 'FACILITY.AREA_ID', 'LO_AREA.PRODUCTION_UNIT_ID')
 		->get()->first();
 	
-		\Log::info(\DB::getQueryLog());
+// 		\Log::info(\DB::getQueryLog());
 	
 		return $wp;
 	}

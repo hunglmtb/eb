@@ -18,5 +18,18 @@ if (!isset($currentSubmenu)) $currentSubmenu ='';
 		@yield('content')
 	</form>
 </div>
+@yield('adaptData')
+@stop
+
+@section('script')
+	<script src="/common/js/jquery-ui-timepicker-addon.js"></script>
+	
+	<script>
+		$(document).ready(function () {
+	 	    $("#tabs").tabs();
+// 			$("#tabs").tabs({active:2});
+	
+		});
+	</script>
 @stop
 
