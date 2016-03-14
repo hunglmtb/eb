@@ -86,6 +86,7 @@ Route::post('password/reset', 'Auth\PasswordController@postReset');
 //-----EB
 Route::get('dc/flow', 'ProductManagementController@flow');
 Route::get('dc/eu', 'ProductManagementController@eu');
+Route::get('dc/storage', 'ProductManagementController@storage');
 Route::post('code/list', 'CodeController@getCodes');
 
 

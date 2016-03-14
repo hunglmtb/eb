@@ -16,6 +16,10 @@
 <!-- <link rel="stylesheet" href="common/css/jquery-ui.css" /> -->
 <link rel="stylesheet" href="/common/css/style.css" />
 <link rel="stylesheet" href="/css/css3menu0/style.css?4" />
+<link rel="stylesheet" href="/common/css/jquery-ui.css" />
+	<script src="/dc/cdn/jquery-1.10.2.min.js"></script>
+	<script src="/common/js/jquery-ui.js"></script>
+	<script src="/common/js/jquery-ui-timepicker-addon.js"></script>
 @yield('script')
 </head>
 
