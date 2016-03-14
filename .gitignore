@@ -1,7 +1,5 @@
 public/filemanager/
 vendor/*
-!vendor/autoload.php
-!vendor/composer
 .settings/
 composer.lock
 .env

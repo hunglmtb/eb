@@ -1,10 +1,11 @@
-<?php
-	$filterGroup = [array(	'type' => 'options',
-					'id' => 'Frequency',
-					'name' => 'Record Frequency',
-					'selectName' => 'Frequency',
-					'options'=>[array('value' => '7', 'name' => 'Amazing Basin')])];
-	
-?>
-@include('partials.filter',['filterGroup'=>$filterGroup])
+<div class = "product_filter">
+{{ Helper::filter(array('default'=>array('value'=>'','name'=>'All'),'model'=>'App\Models\CodeReadingFrequency','filteName'=>'Record Frequency'))}}
 
+{{ Helper::filter(
+	array('default'=>array('value'=>'','name'=>'All'),
+		'model'=>'App\Models\CodeFlowPhase',
+		'filteName'=>'Phase Type'
+))
+}}
+
+</div>

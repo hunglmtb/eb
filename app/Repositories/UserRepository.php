@@ -13,7 +13,7 @@ class UserRepository extends BaseRepository
 	 * @var App\Models\Role
 	 */	
 	protected $role;
-
+	
 	/**
 	 * Create a new UserRepository instance.
 	 *
@@ -214,5 +214,5 @@ class UserRepository extends BaseRepository
 		$user->confirmation_code = null;
 		$user->save();
 	}
-
+	
 }

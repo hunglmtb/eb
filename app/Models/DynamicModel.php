@@ -28,4 +28,19 @@ class DynamicModel extends Model {
 		} 
 		return $this->getAttribute($key);
 	}
+	
+	public function belongsTo($related, $foreignKey = null, $otherKey = null, $relation = null)
+	{
+		return parent::belongsTo($related,$foreignKey,$this->isOracleModel?strtolower($otherKey):$otherKey,$relation);
+	}
+	
+	public function hasMany($related, $foreignKey = null, $localKey = null)
+	{
+		return parent::hasMany($related,$foreignKey,$this->isOracleModel?strtolower($localKey):$localKey);
+	}
+	
+	public function hasOne($related, $foreignKey = null, $localKey = null)
+	{
+		return parent::hasOne($related,$foreignKey,$this->isOracleModel?strtolower($localKey):$localKey);
+	}
 }

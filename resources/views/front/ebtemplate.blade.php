@@ -671,7 +671,7 @@ function logineb(){
   $.ajax({
     url: 'auth/eblogin',
     type: "post",
-    data: {username:usn,password:pw, _token: tk},
+    data: {username:usn,password:pw},
     success: function(data){
 //       alert(data);
 		is_logging_in=false;
