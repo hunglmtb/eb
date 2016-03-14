@@ -89,4 +89,8 @@ Route::get('dc/eu', 'ProductManagementController@eu');
 Route::get('dc/storage', 'ProductManagementController@storage');
 Route::post('code/list', 'CodeController@getCodes');
 
+//---------
+Route::post('fo/loadSafety', 'FOController@loadSafety');
+Route::get('fo/safety', 'FOController@safety');
+Route::post('fo/saveSafety', 'FOController@saveSafety');
 

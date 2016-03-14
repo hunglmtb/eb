@@ -19,12 +19,11 @@
 		<link rel="stylesheet" href="../common/css/jquery-ui.css">
 		<link rel="stylesheet" href="../common/css/style.css">
 
-    <script src="../common/js/jquery-1.9.1.js"></script> 
-	<script src="../common/js/jquery-ui.js"></script>
+	    <script src="../common/js/jquery-1.9.1.js"></script> 
+		<script src="../common/js/jquery-ui.js"></script>
 
 		<script type="text/javascript" src="../common/js/jquery.reveal.js"></script>
 		<script type="text/javascript" src="../common/utils.js"></script>
-
 </head>
     <body style="background:#222222">
 	<script>var func_code="ROOT";</script>
@@ -504,7 +503,7 @@ menu["production"]=[
 		{menutext:"Quality",desc:"",url:"../dc/quality.php"}
 	];
 menu["operation"]=[
-		{menutext:"Safety",desc:"",url:"../dc2/safety.php"},
+		{menutext:"Safety",desc:"",url:"fo/safety"},
 		{menutext:"Comments",desc:"",url:"../dc2/comment.php"},
 		{menutext:"Equipment",desc:"",url:"../dc2/equipment.php"},
 		{menutext:"Chemical",desc:"",url:"../dc2/chemical.php"},
