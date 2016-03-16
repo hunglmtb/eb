@@ -10,10 +10,10 @@ class ProductManagementController extends EBController {
 	 * @return Response
 	 */
 	public function flow() {
-		$filterGroups = array('productionFilterGroup'=> ['Tank'],
-							  'dateFilterGroup'=> array(['id'=>'date_begin','name'=>'Date'],
-													)
-		);
+		$filterGroups = array('productionFilterGroup'=> [],
+							  'dateFilterGroup'=> array(['id'=>'date_begin','name'=>'Date']),
+							 'frequenceFilterGroup'=> ['CodeReadingFrequency','CodeFlowPhase']
+						);
 		return view ( 'front.flow',['filters'=>$filterGroups]);
 	}
 	

@@ -43,4 +43,9 @@ class DynamicModel extends Model {
 	{
 		return parent::hasOne($related,$foreignKey,$this->isOracleModel?strtolower($localKey):$localKey);
 	}
+	
+	public static function getTableName()
+	{
+		return with(new static)->getTable();
+	}
 }

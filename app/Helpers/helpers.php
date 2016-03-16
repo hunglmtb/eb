@@ -2,7 +2,7 @@
 class Helper {
 	public static function filter($option=null) {
 		if ($option==null) return;
-		$model='App\\Models\\'.$option['model'];
+		$model='App\\Models\\'.$option['id'];
 		$collection = $model::all(['ID', 'NAME']);
 		$option['collection']=$collection;
 		Helper::buildFilter($option);

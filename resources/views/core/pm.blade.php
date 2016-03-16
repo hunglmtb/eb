@@ -25,21 +25,25 @@ $tables = ['flow_data_fdc_value'=>['name'=>'FDC VALUE'],
 					<li><a href="#tabs-{{$key}}"><font size="2">{{$table['name']}}</font></a></li>
 		 		@endforeach
 			</ul>
-			
 			@foreach($tables as $key => $table )
 				<div id="tabs-{{$key}}">
 					<div id="container_{{$key}}" style="width:1280px;overflow-x:hidden">
 						<table border="0" cellpadding="3" id="table_{{$key}}" class="fixedtable nowrap display compact">
-							<thead>
-				                <tr style="height:26"><th style='font-size:9pt;text-align:left;white-space: nowrap; background:#FFF'><div style="width:230px">Object name</div></th>
-								</tr>
-							</thead>
-							<tbody id="body_{{$key}}">
-							{{$table['name']}}
-							</tbody>
 						</table>
 					</div>
 				</div>
 	 		@endforeach
 		</div>
+@stop
+
+@section('adaptData')
+<script>
+// actions.loadUrl = "/pm/loaddf";
+// actions.loadParams : false,
+/* actions.prototype.loadSuccess = function(){
+	alert("bo day");
+}; */
+
+// actions.loadError = function(){};
+</script>
 @stop

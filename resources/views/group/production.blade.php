@@ -16,14 +16,17 @@ $mapping = ['LoProductionUnit'		=> 	array('filterName'	=>'Production Unit',
 											'default'		=>['value'=>'','name'=>'No Group']),
 			'CodeReadingFrequency'	=>	array('filterName'	=>'Record Frequency',
 											'name'			=>'CodeReadingFrequency',
-											'model'			=>'CodeReadingFrequency',
+											'id'			=>'CodeReadingFrequency',
 											'default'		=>['value'=>'','name'=>'All']),
 			'CodeFlowPhase'			=>	array('filterName'	=>'Phase Type',
 											'name'			=>'phaseType',
-											'model'			=>'CodeFlowPhase',
+											'id'			=>'CodeFlowPhase',
 											'default'		=>['value'=>'','name'=>'All']),
 			];
 ?>
+<script type='text/javascript'>
+var javascriptFilterGroups = <?php echo json_encode($filterGroups); ?>
+</script>
 <script src="/common/js/eb.js"></script>
 @foreach( $filterGroups as $key => $filters )
 		@if($key=='productionFilterGroup')

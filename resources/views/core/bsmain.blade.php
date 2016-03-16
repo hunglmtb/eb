@@ -26,8 +26,8 @@ if (!isset($currentSubmenu)) $currentSubmenu ='';
 	
 	<script>
 		$(document).ready(function () {
-	 	    $("#tabs").tabs();
-// 			$("#tabs").tabs({active:2});
+// 	 	    $("#tabs").tabs();
+			$("#tabs").tabs({active:1});
 	
 		});
 	</script>
