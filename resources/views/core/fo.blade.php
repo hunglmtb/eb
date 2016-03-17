@@ -1,8 +1,10 @@
 <?php
-$subMenus = [array('title' => 'COMMENTS', 'link' => 'flow'),
-		array('title' => 'EQUIPMENT', 'link' => 'eu'),
-		array('title' => 'CHEMICAL', 'link' => 'storage'),
-		array('title' => 'PERSONNEL', 'link' => 'storage'),
+$subMenus = [
+		array('title' => 'SAFETY', 'link' => 'safety'),
+		array('title' => 'COMMENTS', 'link' => 'comments'),
+		array('title' => 'EQUIPMENT', 'link' => 'equipment'),
+		array('title' => 'CHEMICAL', 'link' => 'chemical'),
+		array('title' => 'PERSONNEL', 'link' => 'personnel'),
 		
 ];
 ?>

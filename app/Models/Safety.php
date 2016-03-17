@@ -8,15 +8,7 @@ class Safety extends Model
 {
     protected $table = 'safety';
     public $timestamps = false;
-    protected $primaryKey = 'ID';
-    protected $safety_category_id = 'code_safety_category_id';
+    public $primaryKey  = 'ID';
     
-    public function __construct() {
-    	$this->isReservedName = config('database.default')==='oracle';
-    	parent::__construct();
-    }
-    
-    public function getCodeSafetyCategory(){
-    	return $this->belongsTo('App\Models\CodeSafetyCategory', $this->safety_category_id);
-    }
+    protected $fillable  = ['ID', 'FACILITY_ID', 'CATEGORY_ID', 'COUNT', 'COMMENTS', 'CREATED_DATE', 'SEVERITY_ID'];
 }

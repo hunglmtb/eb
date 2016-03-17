@@ -17,24 +17,30 @@ $groups = [
 ?>
 @extends('core.fo')
 
+@section('funtionName')
+SAFETY DATA CAPTURE
+@stop
+
 @section('content')
 
 <script type="text/javascript">
 $(function(){
-	
-	//_safety.initData();	 
 
 	$('#buttonSave').click(function(){
 		_safety.clickSubmit();
 	});	
 
- 	$('#date_begin').change(function () {
- 		_safety.initData();	
-	});
- 
- 	$('#Facility').change(function () {
- 		_safety.initData();	
-	});
+ 	actions.loadUrl = '/fo/loadSafety';
+ 	actions.loadSuccess =  function(_data){
+ 	 	
+ 		if($.fn.dataTable.isDataTable( '#table_Safety' ))
+			tableSafety.destroy();
+		
+		_safety.loadTitle(_data[0]);	    
+		_safety.loadData(_data[0]);
+		
+		//$("#containerSafety").width((_data[0]['totalWidth'])+"px");
+ 	};
 	  
 });  
 
@@ -45,13 +51,11 @@ var _safety = {
 	isDataChange : 0,
 
 	columnName : '',
-
-	tableSafety : '',
 	
 	loadCbo : function (data, valueDefault, columnName, width){
 		var cbo = '';	  
-		cbo += ' <select style = "width:'+(width+13)+'px;" class="'+columnName+'" onchange="_safety.onchangeTextValue(this); _safety.setChange(this);">';
-		cbo += ' <option value="-1"></option>';	
+		cbo += ' <select style = "width:'+(width+30)+'px;" class="'+columnName+'" onchange="_safety.onchangeTextValue(this); _safety.setChange(this);">';
+		cbo += ' <option value></option>';	
 		for(var i = 0; i < data.length; i++){
 			if(valueDefault === data[i].ID){
 				cbo += ' <option value="'+data[i].ID+'" selected="selected">'+data[i].NAME+'</option>';	
@@ -59,9 +63,6 @@ var _safety = {
 				cbo += ' <option value="'+data[i].ID+'">'+data[i].NAME+'</option>';
 			}						
 		}	
-		/* if(valueDefault == -1){
-			cbo += ' <option value="-1" selected="selected"></option>';	
-		}	 */			
 		cbo += ' </select> ';
 		
 		return cbo;
@@ -86,15 +87,15 @@ var _safety = {
 				var width = size[index]['FDC_WIDTH'];
 
 				if(column == "NAME"){
-					str += '<td data-order="'+i+'" style="background:none;color:black;width: '+width+'px;"><div>' + _safety.checkValue(safe[i][column],1) + '</div></td>';
+					str += '<td data-order="'+i+'" style="background:none;color:black;width: '+width+'px;"><div>' + _safety.checkValue(safe[i][column],'') + '</div></td>';
 				}else{
 					if(column == "SEVERITY_ID"){
-						str += '<td data-order="'+i+'" style="background:none;color:black;width: '+width+'px;">'+_safety.loadCbo(severity, _safety.checkValue(safe[i][column], 2), column, width)+' </td>';
+						str += '<td data-order="'+i+'" style="background:none;color:black;width: '+width+'px;">'+_safety.loadCbo(severity, _safety.checkValue(safe[i][column], ''), column, width)+' </td>';
 					}else{
 						if(column == "XID"){
 							str += ' <input type="hidden" value="'+safe[i][column]+'" class="'+column+'" />';
 						}else{
-							str += '<td data-order="'+i+'" style="background:none;color:black;width: '+width+'px;"><input style="width: 100%" onkeypress="_safety.onchangeTextValue(this);" onkeydown="_safety.setChange(this);" type="text" value="' + _safety.checkValue(safe[i][column],1) +'"size="15" class="'+column+'"></td>';
+							str += '<td style="background:none;color:black;width: '+width+'px;"><input style="width: 100%" onkeypress="_safety.onchangeTextValue(this);" onkeydown="_safety.setChange(this);" type="text" value="' + _safety.checkValue(safe[i][column],'') +'" class= "'+column+'"></td>';
 						}
 					}
 				}
@@ -107,6 +108,11 @@ var _safety = {
 		}
 		
 		$('#body_Safety').html(str);
+
+		$(".COUNT").keydown(function(e){
+			return inputNumber(e);
+		});
+		
 		_safety.freezeSafety();
   	},
 
@@ -119,41 +125,11 @@ var _safety = {
 		
   		$('#title_thead').html(str);
   	},
-
-	 initData : function(){	  
-		 
-		var tk = $('#token').val();
-		var facility_id = $('#Facility').val(); 		
-		var created_date = $('#date_begin').val();
-		
-		param = {
-			_token : tk,
-			_facility_id : facility_id,
-			_created_date : created_date
-		}
-		
-	  	$.ajax({
-	    	url: '/fo/loadSafety',
-	    	type: "post",
-	    	dataType: 'json',
-	    	data: param,
-	    	success: function(_data){
-
-	    		if($.fn.dataTable.isDataTable( '#table_Safety' ))
-	    			tableSafety.destroy();
-	    		
-	    		_safety.loadTitle(_data[0]);	    
-	    		_safety.loadData(_data[0]);
-	    		
-	    		$("#containerSafety").width((_data[0]['totalWidth'])+"px");
-			}
-		});
-	},
 	
 	onchangeTextValue : function(textbox) {
+						
 		$(textbox).removeClass('error-input');
 		$(textbox).addClass('ts-txt-changed');	
-
 		_safety.isDataChange = 1;
 	},
 	
@@ -176,7 +152,8 @@ var _safety = {
 				var record = {};		
 				for(var j = 1; j < columnName.length; j++){
 					var key = columnName[j];
-					record[key] = $("#body_Safety tr.row-data:eq(" + rowIndex +") ."+columnName[j]+"").val();
+					var value = $("#body_Safety tr.row-data:eq(" + rowIndex +") ."+columnName[j]+"").val();
+					record[key] = value;
 					record['FACILITY_ID'] = facility_id;
 					record['CREATED_DATE'] = created_date;
 				}
@@ -196,29 +173,22 @@ var _safety = {
 	    	type: "post",
 	    	dataType: 'json',
 	    	data: param,
-	    	success: function(_data){	
-	    		_safety.initData();
+	    	success: function(_data){
+		    	if(_data === 1){
+			    	alert('save successful');
+	    			actions.doLoad();
+		    	}
 			}
 		});
 	}, 
 
-	checkValue : function(sValue, type){
+	checkValue : function(sValue, valueDefault){
 		var result = sValue;
 
-		// string
-		if(type == 1){
-			if(sValue === null || sValue === undefined){
-				result = ([]);
-			}
+		if(sValue === null || sValue === undefined){
+			result = valueDefault;
 		}
-
-		// number
-		if(type == 2){
-			if(sValue === null || sValue === undefined){
-				result = -1;
-			}
-		}
-
+			
 		return result;
 	},
 
@@ -234,10 +204,13 @@ var _safety = {
 			scrollCollapse: true,
 			paging:         false,
 			searching:		false,
-			info:			false
+			info:			false,
+			columnDefs: [
+			             { orderable: false, targets: -1 },
+			             { orderable: false, targets: -2 },
+			             { orderable: false, targets: -3 }
+			          ]
 		});
-
-		//new $.fn.dataTable.FixedColumns(tableSafety,{leftColumns: 1});
 	}
 }
 </script>
@@ -253,8 +226,6 @@ var _safety = {
 </style>
 
 <div style="width: 1010px; margin-top: 20px;">
-	
-		<input type="hidden" id="token" name="token" value='{{csrf_token()}}'>
 		<div id="containerSafety" style="overflow-x:hidden">
 		<table border="0" cellpadding="3" id="table_Safety" class="fixedtable nowrap display compact">
 			<thead>

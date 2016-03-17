@@ -73,6 +73,87 @@ function zeroFill( number, width )
   }
   return number + ""; // always return a string
 }
+
+function inputNumber(keyEvent){
+	if (keyEvent.shiftKey) {
+		return false;
+	}
+	
+	var number = [ 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 109, 110];
+	var control = [/*backspace*/8, /*del*/ 46, /*tab*/9, /*esc*/ 27, /*enter*/13,/*arrow*/ 37, 38, 39, 40];
+	var keyCode = keyEvent.charCode || keyEvent.keyCode || 0;
+	
+	if ($.inArray(keyCode, number.concat(control)) < 0){
+		return false;
+	}
+	
+	return true;
+}
+
+function preventDecimalInput(keyEvent, isNeg, left, right) {
+	if (keyEvent.shiftKey) {
+		return false;
+	}
+	var number = [ 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 109, 189, 190, 110];
+	var control = [/*backspace*/8, /*del*/ 46, /*tab*/9, /*esc*/ 27, /*enter*/13,/*arrow*/ 37, 38, 39, 40];
+	var keyCode = keyEvent.charCode || keyEvent.keyCode || 0;
+
+	if ($.inArray(keyCode, number.concat(control)) < 0){
+		return false;
+	}
+	if ($.inArray(keyCode, control) >= 0){
+		return true;
+	}
+	var ctrId = keyEvent.target.id + "";
+	
+	var index = document.getElementById(ctrId).selectionStart;
+	var current =  ($("#" + ctrId).val() + "").replace(",","");
+	var willStr = "";
+	var charDw = "";
+	if (keyCode == 189 || keyCode == 109) {
+		charDw = "-";
+	} else if (keyCode == 190 || keyCode == 110) {
+		charDw = ".";
+	} else {
+		if((current.length - (current.indexOf("-") + 1)) == left && current.indexOf(".") < 0) {
+			return false;
+		}
+		if (parseInt(keyCode) >= 96 && parseInt(keyCode) <= 105) {
+			charDw = (parseInt(keyCode) - 96) + '';
+		} else {
+			charDw = String.fromCharCode(keyCode);
+		}
+	}
+	if (index > 0) {
+		willStr = current.substring(0, index) + charDw + current.substring(index, current.length);
+	} else {
+		willStr = charDw + current;
+	}
+	var regexStr = "^";
+	if (isNeg) {
+		regexStr += "\\-?";
+	}
+	regexStr += "\\d{0," + left + "}";
+	if (right > 0) {
+		regexStr += "\\.?\\d{0," + right + "}";
+	}
+	//regexStr += "$";
+	var RE = new RegExp(regexStr);
+	if (RE.test(willStr)) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+function validateNumber(selector) {
+	var regex = /^-?[0-9]{1,5}$/;
+	if(!regex.test($(selector).val())) {
+		return false;
+	}
+	else return true;
+}
+
 var _alert;
 (function() {
     _alert = window.alert;       // <-- Reference
