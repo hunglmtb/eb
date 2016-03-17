@@ -14,6 +14,7 @@ class ProductManagementController extends EBController {
 							  'dateFilterGroup'=> array(['id'=>'date_begin','name'=>'Date']),
 							 'frequenceFilterGroup'=> ['CodeReadingFrequency','CodeFlowPhase']
 						);
+		
 		return view ( 'front.flow',['filters'=>$filterGroups]);
 	}
 	

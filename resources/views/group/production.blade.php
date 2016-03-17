@@ -17,11 +17,11 @@ $mapping = ['LoProductionUnit'		=> 	array('filterName'	=>'Production Unit',
 			'CodeReadingFrequency'	=>	array('filterName'	=>'Record Frequency',
 											'name'			=>'CodeReadingFrequency',
 											'id'			=>'CodeReadingFrequency',
-											'default'		=>['value'=>'','name'=>'All']),
+											'default'		=>['value'=>0,'name'=>'All']),
 			'CodeFlowPhase'			=>	array('filterName'	=>'Phase Type',
 											'name'			=>'phaseType',
 											'id'			=>'CodeFlowPhase',
-											'default'		=>['value'=>'','name'=>'All']),
+											'default'		=>['value'=>0,'name'=>'All']),
 			];
 ?>
 <script type='text/javascript'>
@@ -44,7 +44,7 @@ var javascriptFilterGroups = <?php echo json_encode($filterGroups); ?>
 		@elseif($key=='frequenceFilterGroup')
 		<div class = "product_filter">
 			@foreach( $filters as $filter )
-				{{ Helper::filter($mapping[$filter]) }}
+				{{ Helper::filter(array_merge($filter, $mapping[$filter['id']])) }}
 			@endforeach
 		</div>
 		@endif

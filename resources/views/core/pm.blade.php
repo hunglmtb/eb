@@ -7,14 +7,6 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 		array('title' => 'DEFERMENT', 'link' => 'deferment'),
 		array('title' => 'QUALITY', 'link' => 'quality')
 ];
-$tables = ['flow_data_fdc_value'=>['name'=>'FDC VALUE'],
-		'flow_data_value'=>['name'=>'STD VALUE'],
-		'flow_data_theor'=>['name'=>'THEORETICAL'],
-		'flow_data_alloc'=>['name'=>'ALLOCATION'],
-		'flow_comp_data_alloc'=>['name'=>'COMPOSITION ALLOC'],
-		'flow_data_plan'=>['name'=>'PLAN'],
-		'flow_data_forecast'=>['name'=>'FORECAST'],
-];
 ?>
 @extends('core.bsmain',['subMenus' => $subMenus])
 
@@ -22,7 +14,7 @@ $tables = ['flow_data_fdc_value'=>['name'=>'FDC VALUE'],
 <div id="tabs">
 			<ul>
 				@foreach($tables as $key => $table )
-					<li><a href="#tabs-{{$key}}"><font size="2">{{$table['name']}}</font></a></li>
+					<li id="{{$key}}"><a href="#tabs-{{$key}}"><font size="2">{{$table['name']}}</font></a></li>
 		 		@endforeach
 			</ul>
 			@foreach($tables as $key => $table )
@@ -37,13 +29,4 @@ $tables = ['flow_data_fdc_value'=>['name'=>'FDC VALUE'],
 @stop
 
 @section('adaptData')
-<script>
-// actions.loadUrl = "/pm/loaddf";
-// actions.loadParams : false,
-/* actions.prototype.loadSuccess = function(){
-	alert("bo day");
-}; */
-
-// actions.loadError = function(){};
-</script>
 @stop
