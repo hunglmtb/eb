@@ -1,9 +1,14 @@
 <?php
 	$currentSubmenu ='eu';
-	$groups = [array('name' => 'group.date','data' => 'Date'),
-			array('name' => 'group.production','data' => 'data'),
-			array('name' => 'group.frequency','data' => 'frequency')
+	$tables = ['FlowDataFdcValue'	=>['name'=>'FDC VALUE'],
+			'FlowDataValue'		=>['name'=>'STD VALUE'],
+			'FlowDataTheor'		=>['name'=>'THEORETICAL'],
+			'FlowDataAlloc'		=>['name'=>'ALLOCATION'],
+			'FlowCompDataAlloc'	=>['name'=>'COMPOSITION ALLOC'],
+			'FlowDataPlan'		=>['name'=>'PLAN'],
+			'FlowDataForecast'	=>['name'=>'FORECAST'],
 	];
+ 	$active = 2;
 ?>
 @extends('core.pm')
 

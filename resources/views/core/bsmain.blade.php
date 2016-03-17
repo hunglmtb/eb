@@ -15,13 +15,5 @@ if (!isset($currentSubmenu)) $currentSubmenu ='';
 
 @section('script')
 	<script src="/common/js/jquery-ui-timepicker-addon.js"></script>
-	
-	<script>
-		$(document).ready(function () {
-// 	 	    $("#tabs").tabs();
-			$("#tabs").tabs({active:1});
-	
-		});
-	</script>
 @stop
 

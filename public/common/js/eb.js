@@ -39,10 +39,28 @@ var registerOnChange = function(id, dependentIds) {
 	});
 };
 
+var getActiveTabID = function() {
+	var activeTabIdx = $("#tabs").tabs('option', 'active');
+	var selector = '#tabs > ul > li';
+	var activeTabID = $(selector).eq(activeTabIdx).attr('id');
+	return activeTabID;
+}
+
+
 var actions = {
 		
 	loadUrl : false,
+	readyToLoad : false,
+	loadedData : {},
 	initData : false,
+	loadSuccess : function(data){alert("success");},
+	loadError : function(data){alert("error");},
+	shouldLoad : function(data){return false;},
+	loadNeighbor: function (){
+		if (actions.shouldLoad()) {
+			actions.doLoad();
+		} 
+	},
 	loadParams : function (){
 		var params = {};
 		for (var key in javascriptFilterGroups) {
@@ -60,12 +78,11 @@ var actions = {
 		}
 		return params;
 	},
-	loadSuccess : function(data){alert("success");},
-	loadError : function(data){alert("error");},
 
 	doLoad : function (){
 		if (this.loadUrl) {
 			console.log ( "doLoad url: "+this.loadUrl );
+			actions.readyToLoad = true;
 			$.ajax({
 				url: this.loadUrl,
 				type: "post",

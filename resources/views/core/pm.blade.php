@@ -8,25 +8,27 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 		array('title' => 'QUALITY', 'link' => 'quality')
 ];
 ?>
-@extends('core.bsmain',['subMenus' => $subMenus])
-
-@section('content')
-<div id="tabs">
-			<ul>
-				@foreach($tables as $key => $table )
-					<li id="{{$key}}"><a href="#tabs-{{$key}}"><font size="2">{{$table['name']}}</font></a></li>
-		 		@endforeach
-			</ul>
-			@foreach($tables as $key => $table )
-				<div id="tabs-{{$key}}">
-					<div id="container_{{$key}}" style="width:1280px;overflow-x:hidden">
-						<table border="0" cellpadding="3" id="table_{{$key}}" class="fixedtable nowrap display compact">
-						</table>
-					</div>
-				</div>
-	 		@endforeach
-		</div>
-@stop
-
+@extends('core.bscontent',['subMenus' => $subMenus])
 @section('adaptData')
+@parent
+<script>
+	actions.loadSuccess =  function(data){
+		postData = data.postData;
+		var tab = postData['{{config("constants.tabTable")}}'];
+		actions.loadedData[tab] = postData;
+// 		alert("len nao "+tab);
+		
+		if($.fn.dataTable.isDataTable( '#table_'+tab ))
+			tbl.destroy();
+		
+		tbl = $('#table_'+tab).DataTable( {
+	          data: data.dataSet,
+	          columns: data.properties
+	    } );
+	
+		/* tbl.clear();
+		tbl.rows.add(data.dataSet);     // You might need to use eval(result)
+		tbl.draw(); */
+	};
+</script>
 @stop
