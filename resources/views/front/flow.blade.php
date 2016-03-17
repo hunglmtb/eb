@@ -23,16 +23,24 @@ actions.initData = function(data){
 	
 }
 actions.loadSuccess =  function(data){
-	alert("bo day");
-	data.properties.unshift({ title: "Object name" });
-	$('#'+"table_flow_data_value").DataTable( {
-        data: dataSet,
-        columns: data.properties
+	alert("len nao");
+// 	$('#'+"container_flow_data_value").empty();
+// 	$('#'+"table_flow_data_value").dataTable().clear();
+// 	data.properties.unshift({ title: "Object name" });
+	var tbl = $('#'+"table_flow_data_value").DataTable( {
+//          data: data.dataSet,
+//         data: dataSet,
+          columns: data.properties
+//         columns: [{ "data": "FL_NAME",title:"keke" },{ "data": "X_FL_ID" ,title:"jiji" },{ "data": "FL_FLOW_PHASE" }]
         /* columns: [
                   { title: "Name" },
                   { title: "Position" },
                   { title: "Office" }] */
     } );
+
+	tbl.clear();
+	tbl.rows.add(data.dataSet);     // You might need to use eval(result)
+	tbl.draw();
 //     columns: data.properties
 };
 </script>

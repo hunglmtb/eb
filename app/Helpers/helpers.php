@@ -49,6 +49,7 @@ class Helper {
 		$id=array_key_exists('id', $option)?$option['id']:'';
 		$sName=array_key_exists('sName', $option)?$option['sName']:'';
 	
+		$value=$value->format('m/d/Y');
 		$htmlFilter = '';
 		switch ($id) {
     			case 'date_begin':

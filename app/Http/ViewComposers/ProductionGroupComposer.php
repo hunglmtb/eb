@@ -47,10 +47,8 @@ class ProductionGroupComposer
     	$productionFilterGroup = $this->initProductionFilterGroup($workspace,$fgs['productionFilterGroup']);
     	$filterGroups['productionFilterGroup'] = $productionFilterGroup;
     	
-    	if (array_key_exists('frequenceFilterGroup', $fgs)) {
-    		$filterGroups['frequenceFilterGroup'] = array_key_exists('frequenceFilterGroup', $fgs)?$fgs['frequenceFilterGroup']:array();
-    	}
-    		 
+    	$frequenceFilterGroup = $this->initFrequenceFilterGroup(array_key_exists('frequenceFilterGroup', $fgs)?$fgs['frequenceFilterGroup']:array());
+    	$filterGroups['frequenceFilterGroup'] = $frequenceFilterGroup;
     	
     	$view->with('filterGroups', $filterGroups);
     }
@@ -103,6 +101,15 @@ class ProductionGroupComposer
 	    }
 	    return $productionFilterGroup;
     }
+    
+    public function initFrequenceFilterGroup($extras=null)
+    {
+    	$frequenceFilterGroup =[];
+    	foreach($extras as $model ){
+    		$frequenceFilterGroup[] = ProductionGroupComposer::getFilterArray($model);
+    	}
+    	return $frequenceFilterGroup;
+    }
        
     
     public static function getCurrentSelect($collection,$id=null)
@@ -119,7 +126,7 @@ class ProductionGroupComposer
     	return null;
     }
     
-    public static function getFilterArray($id,$collection,$currentUnit,$option=null)
+    public static function getFilterArray($id,$collection=null,$currentUnit=null,$option=null)
     {
     	if ($option==null) {
     		$option = array();
