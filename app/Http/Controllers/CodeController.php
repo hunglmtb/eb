@@ -67,15 +67,13 @@ class CodeController extends EBController {
     
     public function load(Request $request)
     {
-    	
-//      	$options = $request->only('type','value', 'dependences');
-//      	$tableName = FlowDataFdcValue::getTable();
-    	$input = $request->all();
-     	$dcTable = "FLOW_DATA_VALUE";
-     	$record_freq = $input['CodeReadingFrequency'];
-     	$phase_type = $input['CodeFlowPhase'];
-     	$facility_id = $input['Facility'];
-     	$occur_date = $input['date_begin'];
+    	$postData = $request->all();
+    	$mdl = "App\Models\\".($postData[config("constants.tabTable")]);
+     	$dcTable = $mdl::getTableName();//"FLOW_DATA_VALUE";
+     	$record_freq = $postData['CodeReadingFrequency'];
+     	$phase_type = $postData['CodeFlowPhase'];
+     	$facility_id = $postData['Facility'];
+     	$occur_date = $postData['date_begin'];
      	$occur_date = Carbon::parse($occur_date);
      	
      	$flow = Flow::getTableName();
@@ -99,33 +97,6 @@ class CodeController extends EBController {
  				     	->orderBy('FL_NAME')
  						->orderBy('FL_FLOW_PHASE')
  						->get();
-//  				     	->get();
-
- 				    /* $wp = Flow::join(CodeFlowPhase::getTableName(), $this->table.'.ID', '=', 'USER_WORKSPACE.USER_ID')
- 				     	->join('FACILITY', 'USER_WORKSPACE.W_FACILITY_ID', '=', 'FACILITY.ID')
- 				     	->join('LO_AREA', 'FACILITY.AREA_ID', '=', 'LO_AREA.ID')
- 				     	->join('LO_PRODUCTION_UNIT', 'LO_AREA.PRODUCTION_UNIT_ID', '=', 'LO_PRODUCTION_UNIT.ID')
- 				     	->where( $this->table.'.ID', '=', $this->ID)
- 				     	->select('USER_WORKSPACE.*', 'USER_WORKSPACE.W_DATE_BEGIN','USER_WORKSPACE.W_DATE_END', 'FACILITY.AREA_ID', 'LO_AREA.PRODUCTION_UNIT_ID')
- 				     	->get()->first(); */
-				     	
-     	
-//      	FLOW_DATA_VALUE
-//      	FLOW_DATA_FDC_VALUE
-     	
-    	/* $mdl = 'App\Models\\'.$options['type'];
-    	$unit = $mdl::find($options['value']);
-    	// 		->value('email');all(['ID', 'NAME']);
-    	$results = [];
-    
-    	foreach($options['dependences'] as $model ){
-    		$eCollection = $unit->$model(['ID', 'NAME'])->getResults();
-    		if (count ( $eCollection ) > 0) {
-    			$unit = ProductionGroupComposer::getCurrentSelect ( $eCollection );
-    			$results [] = ProductionGroupComposer::getFilterArray ( $model, $eCollection, $unit );
-    		}
-    		else break;
-    	} */
     	
     	$properties = CfgFieldProps::where('TABLE_NAME', '=', $dcTable)
             ->where('USE_FDC', '=', 1)
@@ -134,7 +105,7 @@ class CodeController extends EBController {
     	
         $properties->prepend(['data'=>'FL_NAME','title'=>'Object name']);
             
-    	return response()->json(['properties' => $properties,'dataSet'=>$dataSet]);
+    	return response()->json(['properties' => $properties,'dataSet'=>$dataSet,'postData'=>$postData]);
     }
     
 }

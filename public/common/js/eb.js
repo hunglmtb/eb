@@ -55,7 +55,7 @@ var actions = {
 		if (typeof(actions.initData) == "function") {
 			var extras = actions.initData();
 			if (extras) {
-				params.push(extras);
+				jQuery.extend(params, extras);
 			}
 		}
 		return params;
