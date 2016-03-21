@@ -20,14 +20,5 @@ FLOW DATA CAPTURE
 @parent
 <script>
 	actions.loadUrl = "/code/load";
-	actions.shouldLoad = function(data){
-		var activeTabID = getActiveTabID();
-		var postData = actions.loadedData[activeTabID];
-		var noData = jQuery.isEmptyObject(postData);
-		var dataNotMatching = false;
-		
-		var shouldLoad = actions.readyToLoad&&(noData||dataNotMatching);
-		return shouldLoad;
-	};
 </script>
 @stop

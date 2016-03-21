@@ -59,7 +59,24 @@ var actions = {
 	loadNeighbor: function (){
 		if (actions.shouldLoad()) {
 			actions.doLoad();
-		} 
+		}
+		else{
+			var activeTabID = getActiveTabID();
+			var postData = actions.loadedData[activeTabID];
+			var noData = jQuery.isEmptyObject(postData);
+			
+			if (!noData) {
+				for (var key in javascriptFilterGroups) {
+					filterGroup = javascriptFilterGroups[key];
+					for (var jkey in filterGroup) {
+						entry = filterGroup[jkey];
+						if ($('#'+entry.id).val()!=postData[entry.id]) {
+							$('#'+entry.id).val(postData[entry.id]).trigger('change');
+						}
+					}
+				}
+			}
+		}
 	},
 	loadParams : function (){
 		var params = {};
