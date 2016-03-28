@@ -14,8 +14,8 @@ if (!isset($active)) $active =1;
 			</ul>
 			@foreach($tables as $key => $table )
 				<div id="tabs-{{$key}}">
-					<div id="container_{{$key}}" style="width:1280px;overflow-x:hidden">
-						<table border="0" cellpadding="3" id="table_{{$key}}" class="fixedtable nowrap display compact">
+					<div id="container_{{$key}}" style="overflow-x:hidden">
+						<table border="0" cellpadding="3" id="table_{{$key}}" class="fixedtable nowrap display">
 						</table>
 					</div>
 				</div>

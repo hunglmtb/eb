@@ -73,7 +73,7 @@ class CodeController extends EBController {
      					->where('EFFECTIVE_DATE', '<=', $occur_date)
      					->where('OCCUR_DATE', '=', $occur_date)
      					->leftJoin($dcTable, "$flow.ID", '=', "$dcTable.flow_id")
- 				     	->select("$flow.name as FL_NAME", "$flow.ID as X_FL_ID","$flow.phase_id as FL_FLOW_PHASE", "$codeFlowPhase.name as PHASE_NAME","$dcTable.*")
+ 				     	->select("$flow.ID", "$flow.name as FL_NAME", "$flow.ID as X_FL_ID","$flow.phase_id as FL_FLOW_PHASE", "$codeFlowPhase.name as PHASE_NAME","$dcTable.*")
  				     	->orderBy('FL_NAME')
  						->orderBy('FL_FLOW_PHASE')
  						->get();
@@ -81,9 +81,9 @@ class CodeController extends EBController {
     	$properties = CfgFieldProps::where('TABLE_NAME', '=', $dcTable)
             ->where('USE_FDC', '=', 1)
             ->orderBy('FIELD_ORDER')
-            ->get(['COLUMN_NAME as data', 'FDC_WIDTH','LABEL as title']);
+            ->get(['COLUMN_NAME as data','COLUMN_NAME as name', 'FDC_WIDTH as width','LABEL as title']);
     	
-        $properties->prepend(['data'=>'FL_NAME','title'=>'Object name']);
+        $properties->prepend(['data'=>'FL_NAME','title'=>'Object name','width'=>230]);
         
         $uoms = $this->getUoms($properties,$facility_id);
             

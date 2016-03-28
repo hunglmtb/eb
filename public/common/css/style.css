@@ -93,3 +93,65 @@ input[type="button"]:focus, button:focus{
 #tabs{
     clear: both;
 }
+
+
+.ui-widget input {
+    width: 97px;
+}
+
+.editable-input {
+    width: 125px;
+}
+
+.dataTables_wrapper table{
+  margin: 0 auto;
+  width: 100%;
+  clear: both;
+  border-collapse: collapse;
+  table-layout: fixed; 
+  word-wrap:break-word;
+}
+
+table.dataTable {
+  margin: 0px;
+  /*
+   * Header and footer styles
+   */
+  /*
+   * Body styles
+   */
+}
+
+ .headcol {
+            position:absolute; 
+            width:230px;
+            left:0;
+            top:auto;
+    z-index: 100;
+ 	        	   background-color: white;
+            }
+/* .fixheader{
+	    width: 230px;
+    position: fixed;
+    margin-left: 20px;
+    background: #cd0a0a;
+    z-index: 100;
+}
+
+table.dataTable.compact tbody td {
+    position: relative;
+}
+
+.fixedtable {
+	    margin-left: 240px;	
+} */
+/* div.dataTables_wrapper {
+        width: 800px;
+        margin: 0 auto;
+    } */
+
+/* th, td { white-space: nowrap; }
+    div.dataTables_wrapper {
+        width: 800px;
+        margin: 0 auto;
+    } */

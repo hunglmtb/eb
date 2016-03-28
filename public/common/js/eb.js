@@ -1,3 +1,7 @@
+//inline editable
+//turn to inline mode
+$.fn.editable.defaults.mode = 'inline';
+
 var ebtoken = $('meta[name="_token"]').attr('content');
 $.ajaxSetup({
 	headers: {
@@ -52,40 +56,36 @@ var actions = {
 	loadUrl : false,
 	readyToLoad : false,
 	loadedData : {},
+	loadPostParams : null,
 	initData : false,
+	editedData : [],
 	loadSuccess : function(data){alert("success");},
 	loadError : function(data){alert("error");},
 	shouldLoad : function(data){return false;},
 	loadNeighbor: function (){
 		if (actions.shouldLoad()) {
-			actions.doLoad();
+			actions.doLoad(false);
 		}
 		else{
 			var activeTabID = getActiveTabID();
 			var postData = actions.loadedData[activeTabID];
-			var noData = jQuery.isEmptyObject(postData);
-			
-			if (!noData) {
-				for (var key in javascriptFilterGroups) {
-					filterGroup = javascriptFilterGroups[key];
-					for (var jkey in filterGroup) {
-						entry = filterGroup[jkey];
-						if ($('#'+entry.id).val()!=postData[entry.id]) {
-							$('#'+entry.id).val(postData[entry.id]).trigger('change');
-						}
-					}
-				}
-			}
+			actions.updateView(postData);
 		}
 	},
-	loadParams : function (){
-		var params = {};
-		for (var key in javascriptFilterGroups) {
-			filterGroup = javascriptFilterGroups[key];
-			for (var jkey in filterGroup) {
-				entry = filterGroup[jkey];
-				params[entry.id] = $('#'+entry.id).val();
+	loadParams : function (reLoadParams){
+		var params;
+		if (reLoadParams) {
+			params = {};
+			for (var key in javascriptFilterGroups) {
+				filterGroup = javascriptFilterGroups[key];
+				for (var jkey in filterGroup) {
+					entry = filterGroup[jkey];
+					params[entry.id] = $('#'+entry.id).val();
+				}
 			}
+			actions.loadPostParams = params;
+		} else {
+			params = actions.loadPostParams;
 		}
 		if (typeof(actions.initData) == "function") {
 			var extras = actions.initData();
@@ -96,14 +96,14 @@ var actions = {
 		return params;
 	},
 
-	doLoad : function (){
+	doLoad : function (reLoadParams){
 		if (this.loadUrl) {
 			console.log ( "doLoad url: "+this.loadUrl );
 			actions.readyToLoad = true;
 			$.ajax({
 				url: this.loadUrl,
 				type: "post",
-				data: this.loadParams(),
+				data: actions.loadParams(reLoadParams),
 				success:function(data){
 					if (typeof(actions.loadSuccess) == "function") {
 						actions.loadSuccess(data);
@@ -124,6 +124,20 @@ var actions = {
 		else{
 			alert("init load params");
 			return false;
+		}
+	},
+	updateView : function(postData){
+		var noData = jQuery.isEmptyObject(postData);
+		if (!noData) {
+			for (var key in javascriptFilterGroups) {
+				filterGroup = javascriptFilterGroups[key];
+				for (var jkey in filterGroup) {
+					entry = filterGroup[jkey];
+					if ($('#'+entry.id).val()!=postData[entry.id]) {
+						$('#'+entry.id).val(postData[entry.id]).trigger('change');
+					}
+				}
+			}
 		}
 	},
 	/*loadData : function (data, valueDefault, columnName, width){
