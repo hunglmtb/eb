@@ -192,14 +192,13 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 	actions.shouldLoad = function(data){
 		var activeTabID = getActiveTabID();
 		var postData = actions.loadedData[activeTabID];
-		actions.loadPostParams
 		var noData = jQuery.isEmptyObject(postData);
 		var dataNotMatching = false;
 		if (!noData&&actions.loadPostParams) {
-			/* for (var key in postData) {
+			for (var key in actions.loadPostParams) {
 				dataNotMatching = actions.loadPostParams[key]!=postData[key];
 				if(dataNotMatching) break;
-			} */
+			}
 		}
 		
 		var shouldLoad = actions.readyToLoad&&(noData||dataNotMatching);

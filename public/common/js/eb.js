@@ -92,7 +92,8 @@ var actions = {
 		if (typeof(actions.initData) == "function") {
 			var extras = actions.initData();
 			if (extras) {
-				jQuery.extend(params, extras);
+				jQuery.extend(extras, params);
+				return extras;
 			}
 		}
 		return params;

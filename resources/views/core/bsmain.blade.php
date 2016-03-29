@@ -14,16 +14,11 @@ if (!isset($currentSubmenu)) $currentSubmenu ='';
 @stop
 
 @section('script')
-	<link href="/common/css/fixedColumns.dataTables.min.css" rel="stylesheet"/>
 	<link href="/jqueryui-editable/css/jqueryui-editable.css" rel="stylesheet"/>
 	<link href="/common/css/fixedHeader.dataTables.min.css" rel="stylesheet"/>
 	
-<!-- 	<link href="http://zurb.com/playground/playground/responsive-tables/responsive-tables.css" rel="stylesheet"> -->
-	
 	<script src="/common/js/jquery-ui-timepicker-addon.js"></script>
 	<script src="/jqueryui-editable/js/jqueryui-editable.js"></script>
-	<script src="/common/js/jquery-ui-timepicker-addon.js"></script>
 	<script src="/common/js/tableHeadFixer.js"></script>
-	<!-- <link rel="stylesheet" href="/common/css/bootstrap.css"> -->
 @stop
 
