@@ -54,11 +54,13 @@ var getActiveTabID = function() {
 var actions = {
 		
 	loadUrl : false,
+	saveUrl : false,
 	readyToLoad : false,
 	loadedData : {},
 	loadPostParams : null,
 	initData : false,
-	editedData : [],
+	initSaveData :false,
+	editedData : {},
 	loadSuccess : function(data){alert("success");},
 	loadError : function(data){alert("error");},
 	shouldLoad : function(data){return false;},
@@ -95,7 +97,17 @@ var actions = {
 		}
 		return params;
 	},
-
+	
+	loadSaveParams : function (reLoadParams){
+		var params = actions.loadParams(reLoadParams);
+		if (reLoadParams) {
+			params['editedData'] = actions.editedData;
+		} else {
+//			params = actions.loadPostParams;
+		}
+		return params;
+	},
+	
 	doLoad : function (reLoadParams){
 		if (this.loadUrl) {
 			console.log ( "doLoad url: "+this.loadUrl );
@@ -144,9 +156,35 @@ var actions = {
 		alert("doSave"+this.url);
 		return true;
 	},*/
-	doSave : function (data, valueDefault, columnName, width){
-		alert("doSave"+this.url);
-		return true;
+	doSave : function (reLoadParams){
+		if (this.saveUrl) {
+			console.log ( "doLoad url: "+this.saveUrl );
+//			actions.readyToLoad = true;
+			$.ajax({
+				url: this.saveUrl,
+				type: "post",
+				data: actions.loadSaveParams(reLoadParams),
+				success:function(data){
+					if (typeof(actions.saveSuccess) == "function") {
+						actions.saveSuccess(data);
+					}
+					else{
+						alert("save success");
+					}
+				},
+				error: function(data) {
+					alert(JSON.stringify(data.responseText));
+					if (typeof(actions.loadError) == "function") {
+						actions.loadError(data);
+					}
+				}
+			});
+			return true;
+		}
+		else{
+			alert("save url not initial");
+			return false;
+		}
 	}
 }
 

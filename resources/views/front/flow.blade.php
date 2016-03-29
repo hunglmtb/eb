@@ -20,5 +20,6 @@ FLOW DATA CAPTURE
 @parent
 <script>
 	actions.loadUrl = "/code/load";
+	actions.saveUrl = "/code/save";
 </script>
 @stop

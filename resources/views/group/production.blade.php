@@ -52,7 +52,7 @@ var javascriptFilterGroups = <?php echo json_encode($filterGroups); ?>
 
 <div class="action_filter">
 
-	<input type="button" value="Save" name="B3" id = "buttonSave" style="width: 85px;foat:left; height: 26px">
+	<input type="button" value="Save" name="B3" id = "buttonSave" onClick="actions.doSave(true)" style="width: 85px;foat:left; height: 26px">
 	<input type="button" value="Load data" id="buttonLoadData" name="B33"
 		onClick="actions.doLoad(true)" style="width: 85px; height: 26px;foat:left;">
 </div>

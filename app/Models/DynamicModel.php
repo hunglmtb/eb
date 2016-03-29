@@ -6,6 +6,7 @@ class DynamicModel extends Model {
 	
 	protected $isOracleModel = false;
 	protected $isReservedName = false;
+	public $timestamps = false;
 	
 	public function __construct() {
 		parent::__construct();

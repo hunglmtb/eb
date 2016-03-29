@@ -97,6 +97,7 @@ input[type="button"]:focus, button:focus{
 
 .ui-widget input {
     width: 97px;
+    height: 30px;
 }
 
 .editable-input {
@@ -113,45 +114,14 @@ input[type="button"]:focus, button:focus{
 }
 
 table.dataTable {
-  margin: 0px;
-  /*
-   * Header and footer styles
-   */
-  /*
-   * Body styles
-   */
+	margin: 0px;
 }
 
- .headcol {
-            position:absolute; 
-            width:230px;
-            left:0;
-            top:auto;
-    z-index: 100;
- 	        	   background-color: white;
-            }
-/* .fixheader{
-	    width: 230px;
-    position: fixed;
-    margin-left: 20px;
-    background: #cd0a0a;
-    z-index: 100;
+.headcol {
+	position: absolute;
+	width: 230px;
+	left: 0;
+	top: auto;
+	z-index: 100;
+	background-color: white;
 }
-
-table.dataTable.compact tbody td {
-    position: relative;
-}
-
-.fixedtable {
-	    margin-left: 240px;	
-} */
-/* div.dataTables_wrapper {
-        width: 800px;
-        margin: 0 auto;
-    } */
-
-/* th, td { white-space: nowrap; }
-    div.dataTables_wrapper {
-        width: 800px;
-        margin: 0 auto;
-    } */
