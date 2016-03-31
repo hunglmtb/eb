@@ -16,13 +16,12 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 		postData = data.postData;
 		var tab = postData['{{config("constants.tabTable")}}'];
 		actions.loadedData[tab] = postData;
-// 		alert("len nao "+tab);
 		var exclude = [0];
 		var uoms = data.uoms;
 
 		var tabindex = 0;
 		var getEditSuccessfn  = function(td, cellData, rowData, row, col) {
-			/* $(td).attr('tabindex', tabindex++);
+			/* 
 			var enterHander = function(eInner) {
 		        if (eInner.keyCode == 13) //if its a enter key
 		        {
@@ -58,18 +57,12 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 	        	var result = $.grep(eData, function(e){ 
 								               	 return e['FLOW_ID'] == rowData['FLOW_ID'];
 								                });
-	            /*
-	        	var hd = table.columns( $(td).index() ).header();
-	        	var columns = table.settings().init().columns;
-	        	var title = $(hd).html();
-	        	var dt = $(hd).data(); */
 	        	var table = $('#table_'+tab).DataTable();
 	        	var columnName = table.settings()[0].aoColumns[col].data;
 	        	if (result.length == 0) {
 		        	var editedData = {"FLOW_ID":rowData['FLOW_ID']};
 		        	editedData[columnName] = newValue;
 	        		eData.push(editedData);
-	//	        		actions.editedData[tab] = eData;
 	        	}
 	        	else{
 	        		result[0][columnName] = newValue;
@@ -77,7 +70,8 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 	        	rowData[columnName] = newValue;
 				table.row( '#'+rowData['DT_RowId'] ).data(rowData).draw();
 	        	$(td).css('color', 'red');
-	        	
+	        	 var tabindex = $(this).attr('tabindex');
+	            $('[tabindex=' + (tabindex +1)+ ']').focus();
 		    };
 		}
 
@@ -95,7 +89,6 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
             	vl['value']=vl['ID'];
             	vl['text']=vl['CODE'];
             });
-//             uoms[index]["width"] = 150;
             uoms[index]["createdCell"] = function (td, cellData, rowData, row, col) {
 	        	$(td).editable({
 	        	    type: 'select',
@@ -125,6 +118,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 //  										var hd = $(td).column();
 //  										var $th = $(td).closest('table').find('th').eq($(td).index());
 // 								      	if ( cellData < 1 ) {
+											$(td).attr('tabindex', tabindex++);
 								        	$(td).editable({
 								        	    type : 'number',
 								        	    step: 'any',
@@ -139,6 +133,30 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 								        	    },
 								        	    success: getEditSuccessfn(td, cellData, rowData, row, col),
 								        	});
+
+								        	$(td).on("shown", function(e, editable) {
+								        		  editable.input.$input.get(0).select();
+								        	});
+
+								        	var enterHander = function(eInner) {
+										        if (eInner.keyCode == 13) //if its a enter key
+										        {
+										        	var tabindex = $(this).attr('tabindex');
+										            $('[tabindex=' + tabindex + ']').trigger( "click" );
+										            
+										            /* var e = jQuery.Event("keyup"); // or keypress/keydown
+												    e.keyCode = 27; // for Esc
+												    $(td).trigger(e); // trigger it on document
+										            var tabindex = $(this).attr('tabindex');
+										            tabindex++; //increment tabindex
+										            $('[tabindex=' + tabindex + ']').focus(); */
+
+
+										            return false;
+										        }
+										    };
+										    
+											$(td).bind('keypress', enterHander);
 // 								      	}
 								    }
 			  		};
@@ -225,7 +243,6 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 
 		actions.editedData = {};
 		alert(JSON.stringify(postData));
-// 		var tab = postData['{{config("constants.tabTable")}}'];
  	};
 </script>
 @stop

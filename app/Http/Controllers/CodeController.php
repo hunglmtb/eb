@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 use App\Http\ViewComposers\ProductionGroupComposer;
 use App\Models\CfgFieldProps;
 use App\Models\CodeFlowPhase;
+use App\Models\CodePressUom;
+use App\Models\Facility;
 use App\Models\Flow;
 use App\Models\StandardUom;
-use App\Models\Facility;
-use App\Models\CodePressUom;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -109,61 +109,26 @@ class CodeController extends EBController {
      	
      	$flow = Flow::getTableName();
      	$updatedData = [];
-     	\DB::enableQueryLog();
+     	$ids = [];
+//      	\DB::enableQueryLog();
      	foreach($editedData as $mdlName => $mdlData ){
      		$mdl = "App\Models\\".$mdlName;
      		$updatedData[$mdlName] = [];
+     		$ids[$mdlName] = [];
      		foreach($mdlData as $column => $newData ){
      			$columns = ['FLOW_ID'=>$newData['FLOW_ID'],'OCCUR_DATE'=>$occur_date];
       			$newData['OCCUR_DATE']=$occur_date;
-     			$updatedData[$mdlName][] = $mdl::updateOrCreate($columns, $newData);
+     			$returnRecord = $mdl::updateOrCreate($columns, $newData);
+     			$ids[$mdlName][] = $returnRecord['ID'];
+     			$updatedData[$mdlName][] = $returnRecord;
      		}
      	}
-     	\Log::info(\DB::getQueryLog());
      	
-     	
-//      	$codeFlowPhase = CodeFlowPhase::getTableName();
-     	
-     	
-//     	$order->location()->updateOrCreate(['data']);
-    	/* $mdl = "App\Models\\".($postData[config("constants.tabTable")]);
-    	$dcTable = $mdl::getTableName();//"FLOW_DATA_VALUE";
-    	$record_freq = $postData['CodeReadingFrequency'];
-    	$phase_type = $postData['CodeFlowPhase'];
-    	$facility_id = $postData['Facility'];
-    	$occur_date = $postData['date_begin'];
-    	$occur_date = Carbon::parse($occur_date);
-    
-    	$flow = Flow::getTableName();
-    	$codeFlowPhase = CodeFlowPhase::getTableName();
-    
-    	$where = ['facility_id' => $facility_id, 'FDC_DISPLAY' => 1];
-    	if ($record_freq>0) {
-    		$where["$flow.record_frequency"]= $record_freq;
-    	}
-    	if ($phase_type>0) {
-    		$where['phase_id']= $phase_type;
-    	}
-    
-    
-    	$dataSet = Flow::join($codeFlowPhase,'PHASE_ID', '=', "$codeFlowPhase.ID")
-    	->where($where)
-    	->where('EFFECTIVE_DATE', '<=', $occur_date)
-    	->where('OCCUR_DATE', '=', $occur_date)
-    	->leftJoin($dcTable, "$flow.ID", '=', "$dcTable.flow_id")
-    	->select("$flow.ID", "$flow.name as FL_NAME", "$flow.ID as X_FL_ID","$flow.phase_id as FL_FLOW_PHASE", "$codeFlowPhase.name as PHASE_NAME","$dcTable.*")
-    	->orderBy('FL_NAME')
-    	->orderBy('FL_FLOW_PHASE')
-    	->get();
-    	 
-    	$properties = CfgFieldProps::where('TABLE_NAME', '=', $dcTable)
-    	->where('USE_FDC', '=', 1)
-    	->orderBy('FIELD_ORDER')
-    	->get(['COLUMN_NAME as data','COLUMN_NAME as name', 'FDC_WIDTH as width','LABEL as title']);
-    	 
-    	$properties->prepend(['data'=>'FL_NAME','title'=>'Object name','width'=>230]);
-    
-    	$uoms = $this->getUoms($properties,$facility_id); */
+     	//doFormula 
+     	foreach($editedData as $mdlName => $mdlData ){
+     		\FormulaHelpers::doFormula($mdlName,'id',$ids[$mdlName]);
+     	}
+//      	\Log::info(\DB::getQueryLog());
     
     	return response()->json([
     			/* 'properties' => $properties,
@@ -238,5 +203,4 @@ class CodeController extends EBController {
     	}
     	return $uom_type;
     }
-    
 }
