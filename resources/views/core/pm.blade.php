@@ -19,7 +19,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 		var exclude = [0];
 		var uoms = data.uoms;
 
-		var tabindex = 0;
+// 		var tabindex = 0;
 		var getEditSuccessfn  = function(td, cellData, rowData, row, col) {
 			/* 
 			var enterHander = function(eInner) {
@@ -70,8 +70,8 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 	        	rowData[columnName] = newValue;
 				table.row( '#'+rowData['DT_RowId'] ).data(rowData).draw();
 	        	$(td).css('color', 'red');
-	        	 var tabindex = $(this).attr('tabindex');
-	            $('[tabindex=' + (tabindex +1)+ ']').focus();
+	        	 /* var tabindex = $(this).attr('tabindex');
+	            $('[tabindex=' + (tabindex +1)+ ']').focus(); */
 		    };
 		}
 
@@ -118,7 +118,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 //  										var hd = $(td).column();
 //  										var $th = $(td).closest('table').find('th').eq($(td).index());
 // 								      	if ( cellData < 1 ) {
-											$(td).attr('tabindex', tabindex++);
+// 											$(td).attr('tabindex', tabindex++);
 								        	$(td).editable({
 								        	    type : 'number',
 								        	    step: 'any',
@@ -138,25 +138,16 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 								        		  editable.input.$input.get(0).select();
 								        	});
 
-								        	var enterHander = function(eInner) {
+								        	/* var enterHander = function(eInner) {
 										        if (eInner.keyCode == 13) //if its a enter key
 										        {
 										        	var tabindex = $(this).attr('tabindex');
 										            $('[tabindex=' + tabindex + ']').trigger( "click" );
-										            
-										            /* var e = jQuery.Event("keyup"); // or keypress/keydown
-												    e.keyCode = 27; // for Esc
-												    $(td).trigger(e); // trigger it on document
-										            var tabindex = $(this).attr('tabindex');
-										            tabindex++; //increment tabindex
-										            $('[tabindex=' + tabindex + ']').focus(); */
-
-
 										            return false;
 										        }
 										    };
 										    
-											$(td).bind('keypress', enterHander);
+ 											$(td).bind('keypress', enterHander); */
 // 								      	}
 								    }
 			  		};
@@ -231,13 +222,17 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 			$.each(data.updatedData[key], function( index, value) {
 				row = table.row( '#'+value['FLOW_ID'] );
 				var tdata = row.data();
-				for (var key in value) {
-					tdata[key] = value[key];
+				if( typeof(tdata) !== "undefined" && tdata !== null ){
+					for (var key in value) {
+						if(tdata.hasOwnProperty(key)){
+							tdata[key] = value[key];
+						}
+					}
+					row.data(tdata).draw();
+					$.each($(row.node()).find('td'), function( index, td) {
+			        	$(td).css('color', '');
+			        });
 				}
-				row.data(tdata).draw();
-				$.each($(row.node()).find('td'), function( index, td) {
-		        	$(td).css('color', '');
-		        });
 	        });
 		}
 

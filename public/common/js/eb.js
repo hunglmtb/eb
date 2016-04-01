@@ -61,6 +61,7 @@ var actions = {
 	initData : false,
 	initSaveData :false,
 	editedData : {},
+	objectIds : [],
 	loadSuccess : function(data){alert("success");},
 	loadError : function(data){alert("error");},
 	shouldLoad : function(data){return false;},
@@ -103,6 +104,7 @@ var actions = {
 		var params = actions.loadParams(reLoadParams);
 		if (reLoadParams) {
 			params['editedData'] = actions.editedData;
+			params['objectIds'] = actions.objectIds;
 		} else {
 //			params = actions.loadPostParams;
 		}
@@ -118,6 +120,9 @@ var actions = {
 				type: "post",
 				data: actions.loadParams(reLoadParams),
 				success:function(data){
+					if(data!=null&&data.hasOwnProperty('objectIds')){
+						actions.objectIds = data.objectIds;
+					}
 					if (typeof(actions.loadSuccess) == "function") {
 						actions.loadSuccess(data);
 					}

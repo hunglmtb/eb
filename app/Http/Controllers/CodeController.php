@@ -86,10 +86,14 @@ class CodeController extends EBController {
         $properties->prepend(['data'=>'FL_NAME','title'=>'Object name','width'=>230]);
         
         $uoms = $this->getUoms($properties,$facility_id);
-            
+		
+        $dswk = $dataSet->keyBy('DT_RowId');
+        $objectIds = $dswk->keys();
+        
     	return response()->json(['properties' => $properties,
     							'dataSet'=>$dataSet,
     							'uoms'=>$uoms,
+     							'objectIds'=>$objectIds,
     							'postData'=>$postData]);
     }
     
@@ -106,6 +110,7 @@ class CodeController extends EBController {
      	$facility_id = $postData['Facility'];
      	$occur_date = $postData['date_begin'];
      	$occur_date = Carbon::parse($occur_date);
+     	$objectIds = $postData['objectIds'];
      	
      	$flow = Flow::getTableName();
      	$updatedData = [];
@@ -121,12 +126,27 @@ class CodeController extends EBController {
      			$returnRecord = $mdl::updateOrCreate($columns, $newData);
      			$ids[$mdlName][] = $returnRecord['ID'];
      			$updatedData[$mdlName][] = $returnRecord;
+//      			$objectIds[]=$newData['FLOW_ID'];
      		}
      	}
      	
-     	//doFormula 
+     	$objectIds = array_unique($objectIds);
+     	//doFormula in config table
      	foreach($editedData as $mdlName => $mdlData ){
      		\FormulaHelpers::doFormula($mdlName,'id',$ids[$mdlName]);
+     	}
+     	
+     	//apply Formula in formula table
+     	foreach($editedData as $mdlName => $mdlData ){
+     		$upids = \FormulaHelpers::applyFormula($mdlName,$objectIds,$occur_date,'FLOW');
+     		$ids[$mdlName] = array_merge($ids[$mdlName], $upids);
+     		$ids[$mdlName]  = array_unique($ids[$mdlName]);
+     	}
+     	
+     	//get updated data after apply formulas
+     	foreach($ids as $mdlName => $updatedIds ){
+//      		$updatedData[$mdlName] = $mdl::findMany($objectIds);
+      		$updatedData[$mdlName] = $mdl::findMany($updatedIds);
      	}
 //      	\Log::info(\DB::getQueryLog());
     
