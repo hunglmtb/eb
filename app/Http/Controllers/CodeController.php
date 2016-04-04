@@ -101,9 +101,6 @@ class CodeController extends EBController {
     public function save(Request $request)
     {
     	$postData = $request->all();
-//     	$mdl = "App\Models\\".($postData[config("constants.tabTable")]);
-//     	$mdl = "App\Models\\".($postData[config("constants.tabTable")]);
-//     	$dcTable = $mdl::getTableName();//"FLOW_DATA_VALUE";
     	$editedData = $postData['editedData'];
      	$record_freq = $postData['CodeReadingFrequency'];
      	$phase_type = $postData['CodeFlowPhase'];
@@ -120,7 +117,7 @@ class CodeController extends EBController {
      		$mdl = "App\Models\\".$mdlName;
      		$updatedData[$mdlName] = [];
      		$ids[$mdlName] = [];
-     		foreach($mdlData as $column => $newData ){
+     		foreach($mdlData as $key => $newData ){
      			$columns = ['FLOW_ID'=>$newData['FLOW_ID'],'OCCUR_DATE'=>$occur_date];
       			$newData['OCCUR_DATE']=$occur_date;
      			$returnRecord = $mdl::updateOrCreate($columns, $newData);
@@ -132,14 +129,33 @@ class CodeController extends EBController {
      	
      	$objectIds = array_unique($objectIds);
      	//doFormula in config table
+     	$affectColumns = [];
      	foreach($editedData as $mdlName => $mdlData ){
-     		\FormulaHelpers::doFormula($mdlName,'id',$ids[$mdlName]);
+     		$cls  = \FormulaHelpers::doFormula($mdlName,'id',$ids[$mdlName]);
+     		if (is_array($cls)&&count($cls)>0) {
+	     		$affectColumns[$mdlName] = $cls;
+     		}
      	}
+     	
+     	//get affected ids
+     	$affectedIds = [];
+     	foreach($editedData as $mdlName => $mdlData ){
+     		foreach($mdlData as $key => $newData ){
+     			$columns = array_keys($newData);
+     			$columns = array_merge($columns,$affectColumns[$mdlName]);
+				$columns = array_diff($columns, ['FLOW_ID']);
+     			
+	     		$aIds = \FormulaHelpers::getAffects($mdlName,$columns,$newData['FLOW_ID'],'FLOW');
+	     		$affectedIds = array_merge($affectedIds,$aIds);
+     		}	     
+     	}
+     	$affectedIds = array_unique($affectedIds);
      	
      	//apply Formula in formula table
      	foreach($editedData as $mdlName => $mdlData ){
-     		$upids = \FormulaHelpers::applyFormula($mdlName,$objectIds,$occur_date,'FLOW');
+     		$upids = \FormulaHelpers::applyFormula($mdlName,$affectedIds,$occur_date,'FLOW',true);
      		$ids[$mdlName] = array_merge($ids[$mdlName], $upids);
+//      		$ids[$mdlName] = array_intersect($ids[$mdlName], $objectIds);
      		$ids[$mdlName]  = array_unique($ids[$mdlName]);
      	}
      	

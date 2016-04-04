@@ -1,6 +1,7 @@
 <?php
 use App\Models\CfgFieldProps;
 use App\Models\Formula;
+use App\Models\Fovar;
 class FormulaHelpers {
 	
 	public static function doFormula($tName,$keyfield,$keyvalues,$echo_only=false){
@@ -109,18 +110,20 @@ class FormulaHelpers {
 // 		      	\DB::enableQueryLog();
 				$updateRecords = $mdl::whereIn($keyfield,$keyvalues)->update($values);
 // 				\Log::info(\DB::getQueryLog());
-	    		return $updateRecords;
+	    		if ($updateRecords) {
+					return array_keys($values);
+	    		}
      		}
     	}
     	return true;
     }
     
-    public static function applyFormula($mdlName,$objectIds,$occur_date,$object_type){
+    public static function applyFormula($mdlName,$objectIds,$occur_date,$object_type,$returnAffectedIds=false){
     	
 //     	global $object_id,$flow_phase,$occur_date,$facility_id;
     	$mdl = "App\Models\\$mdlName";
     	
-    	$upids = [];
+    	$result = [];
     	foreach($objectIds as $object_id){
 	    	$formulas = self::getFormulatedFields($mdl::getTableName(),$object_id,$object_type,$occur_date);
 	    	$values = [];
@@ -134,10 +137,16 @@ class FormulaHelpers {
 	    		$updateRecords = $mdl::where('OCCUR_DATE',$occur_date)
 							    		->where('flow_id',$object_id)
 							    		->update($values);
-    			$upids[] = $object_id;
+	    		if ($returnAffectedIds) {
+	    			$result[] = $mdl::where('OCCUR_DATE',$occur_date)
+								    		->where('flow_id',$object_id)
+								    		->select('ID')
+								    		->first()->ID;
+	    		}
+	    		else $result =$updateRecords;
 	    	}
     	}
-    	return $upids;
+    	return $result;
     }
     
     public static function getFormulatedFields($tableName,$object_id,$object_type,$occur_date,$flow_phase=false){
@@ -164,6 +173,32 @@ class FormulaHelpers {
 					        ->get();
 //     	\Log::info(\DB::getQueryLog());
     	return $fields;
+    }
+    
+    public static function getAffects($mdlName,$columns,$objectId,$objectType){
+    	
+    	$mdl = "App\Models\\$mdlName";
+    	$where = ['OBJECT_TYPE'		=>	$objectType,
+    			'OBJECT_ID'			=>	$objectId,
+    			'TABLE_NAME'		=>	$mdl::getTableName()];
+    	 
+    	//     	\DB::enableQueryLog();
+    	$foVars = FoVar::with('Formula')
+    						->where($where)
+    						->whereIn('VALUE_COLUMN',$columns)
+//     						->select('AFFFECT_ID')
+    						->get();
+    	//     	\Log::info(\DB::getQueryLog());
+    	$affectIds = [];
+	    foreach($foVars as $foVar ){
+	    	$fml = $foVar->Formula;
+	    	if ($fml) {
+		    	$affectIds[] = $fml->OBJECT_ID;
+	    	}
+	    }
+	    $affectIds = array_unique($affectIds);
+	     
+    	return $affectIds;
     }
     
     public static function evalFormula($formulaRow,$occur_date,  $show_echo = false){
