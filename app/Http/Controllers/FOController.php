@@ -10,10 +10,6 @@ use DB;
 use Illuminate\Http\Request;
  
 class FOController extends Controller {
-	 
-	public function __construct() {
-		$this->middleware ( 'auth' );
-	}
 	
 	/**
 	 * Display the home page.
@@ -71,15 +67,15 @@ class FOController extends Controller {
 		$data = $request->input('_sData');
 		$success = 1;
 		
-		DB::beginTransaction();
+		 DB::beginTransaction();
 		
- 		try { 
+ 		try {  
 			foreach ($data as $obj){
 				
 				$obj['CATEGORY_ID'] = $obj['XID'];
 				unset($obj['XID']);
 				$obj['CREATED_DATE'] = date('Y-m-d',strtotime($obj['CREATED_DATE']));
-				if(!is_null($obj['SEVERITY_ID']) && empty($obj['SEVERITY_ID'])){
+				if(!isset($obj['SEVERITY_ID']) && empty($obj['SEVERITY_ID'])){
 					$obj['SEVERITY_ID'] = null;
 				}
 				
@@ -99,7 +95,7 @@ class FOController extends Controller {
 			return response()->json($success);
 		} 
 		
-		DB::commit();
+		DB::commit(); 
 		
 		return response()->json($success);
 	}

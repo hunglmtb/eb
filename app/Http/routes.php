@@ -96,3 +96,44 @@ Route::post('fo/loadSafety', 'FOController@loadSafety');
 Route::get('fo/safety', 'FOController@safety');
 Route::post('fo/saveSafety', 'FOController@saveSafety');
 
+
+//----------admin
+Route::get('am/users', 'AdminController@_index');
+Route::post('am/loadData', 'AdminController@getData');
+Route::post('am/selectedID', 'AdminController@selectedID');
+Route::post('am/loadUserList', 'AdminController@getUsersList');
+Route::get('am/delete', 'AdminController@deleteUser');
+Route::get('am/editUser/{id}', 'AdminController@editUser');
+Route::get('am/new', 'AdminController@addUser');
+Route::post('am/save', 'AdminController@addNewUser');
+Route::post('am/updateUser', 'AdminController@updateUser');
+
+Route::get('am/roles', 'AdminController@_indexRoles');
+Route::post('am/editRoles', 'AdminController@editRole');
+Route::post('am/addRoles', 'AdminController@addRole');
+Route::post('am/deleteRoles', 'AdminController@deleteRole');
+Route::post('am/loadRightsList', 'AdminController@loadRightsList');
+Route::post('am/removeOrGrant', 'AdminController@removeOrGrant');
+
+Route::get('am/audittrail', 'AdminController@_indexAudittrail');
+Route::post('am/loadAudittrail', 'AdminController@loadAudittrail');
+
+Route::get('am/validatedata', 'AdminController@_indexValidatedata');
+Route::post('am/loadValidateData', 'AdminController@loadValidateData');
+Route::post('am/validateData', 'AdminController@validateData');
+
+Route::get('am/approvedata', 'AdminController@_indexApprove');
+Route::post('am/loadApproveData', 'AdminController@loadApproveData');
+Route::post('am/approveData', 'AdminController@ApproveData');
+
+Route::get('am/lockdata', 'AdminController@_indexLockData');
+Route::post('am/loadLockData', 'AdminController@loadLockData');
+Route::post('am/lockData', 'AdminController@lockData');
+
+Route::get('am/userlog', 'AdminController@_indexUserlog');
+Route::post('am/loadUserLog', 'AdminController@loadUserLog');
+
+Route::get('am/editGroup', 'AdminController@_indexEditGroup');
+Route::post('am/loadGroup', 'AdminController@loadGroup');
+Route::post('am/saveGroup', 'AdminController@saveGroup');
+Route::post('am/deleteGroup', 'AdminController@deleteGroup');

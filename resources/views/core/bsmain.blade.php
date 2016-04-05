@@ -11,7 +11,6 @@ if (!isset($currentSubmenu)) $currentSubmenu ='';
 	@yield('content')
 </div>
 @yield('adaptData')
-@stop
 
 @section('script')
 	<link href="/jqueryui-editable/css/jqueryui-editable.css" rel="stylesheet"/>

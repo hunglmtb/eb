@@ -64,6 +64,23 @@ function postRequest(target,variables,completedFunc,container)
     showWaiting(container);
     $.post(target,variables,function(data){hideWaiting();completedFunc(data);});
 }
+
+function sendAjax(url,param, func)
+{
+    return $.ajax({
+  		beforeSend: function(){
+  			showWaiting();
+  		},
+    	url: url,
+    	type: "post",
+    	data: param,
+    	success: function(_data){
+    		hideWaiting(); 
+    		func(_data);
+		}
+	});
+    
+}
 function zeroFill( number, width )
 {
   width -= number.toString().length;
@@ -144,6 +161,16 @@ function preventDecimalInput(keyEvent, isNeg, left, right) {
 	} else {
 		return false;
 	}
+}
+
+function checkValue(sValue, valueDefault){
+	var result = sValue;
+
+	if(sValue === null || sValue === undefined){
+		result = valueDefault;
+	}
+		
+	return result;
 }
 
 function validateNumber(selector) {
