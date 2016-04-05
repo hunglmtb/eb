@@ -51,7 +51,7 @@ var adminControl = {
 			} else{
 				cbo += ' <div class="filter">';
 				cbo += ' 	<div><b>' + value.label + '</b></div>';
-				cbo += ' <input id="'+value.ID+'" style="width: 140px; margin-top:6px; height: 17px;" type="text" value="'+value.default+'">';
+				cbo += ' <input id="'+value.ID+'" style="width: 140px; margin-top:0px; height: 21px;" type="text" value="'+value.default+'">';
 				cbo += ' </div>';
 			} 
 		}

@@ -105,8 +105,9 @@ input[type="button"]:focus, button:focus {
 }
 
 .filter select {
-	margin-top: 5px;
+	margin: 0px;
 	width: 100%;
+	height: 26px;
 }
 
 #tabs {

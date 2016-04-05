@@ -32,7 +32,7 @@ $listControls = [
 		),
 		
 		'loadData' => array(
-				'label' => 'load Data',
+				'label' => 'Load Data',
 				'ID' => 'loadData',
 				'TYPE' => 'BUTTON',
 				'onclick' => '_approve.loadData()'
