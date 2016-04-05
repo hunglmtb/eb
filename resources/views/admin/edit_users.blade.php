@@ -182,7 +182,7 @@ var obj= {
 			'middlename' : $('#txtMiddleName').val(),
 			'firstname' : $('#txtFirstName').val(),
 			'email' : $('#txtEmail').val(),
-			'expireDate' : $('#txtExpireDate').val(),
+			'expireDate' : $('#txtExpireDate').val().replace('-', '/'),
 			'roles' : roles.substring(0, roles.length-1),
 			'pu_id' : $('#ProductionUnit').val(),
 			'area_id' : $('#Area').val(),

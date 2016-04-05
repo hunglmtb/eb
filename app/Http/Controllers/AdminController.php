@@ -122,7 +122,7 @@ class AdminController extends Controller {
 			}else{
 				if($listControl['TYPE'] == 'DATE'){
 					$now = Carbon::now('Europe/London');
-					$listControl['default'] = date('m-d-Y', strtotime($now));				
+					$listControl['default'] = date('m/d/Y', strtotime($now));				
 					$result [$listControl ['ID']] = $listControl;
 				}else{
 					$result [$listControl ['ID']] = $listControl;
@@ -257,8 +257,8 @@ class AdminController extends Controller {
 				$data->EXPIRE_STATUS = 'Expired';
 			}
 			
-			$data->EXPIRE_DATE = date('m-d-Y',strtotime($data->EXPIRE_DATE));
-			$data->PASSWORD_CHANGED = date('m-d-Y H:i:s', strtotime($data->PASSWORD_CHANGED));
+			$data->EXPIRE_DATE = date('m/d/Y',strtotime($data->EXPIRE_DATE));
+			$data->PASSWORD_CHANGED = date('m/d/Y H:i:s', strtotime($data->PASSWORD_CHANGED));
 			
 			 if($data->EXPIRE_STATUS == ''){
 				$data->EXPIRE_STATUS = '';
@@ -299,7 +299,7 @@ class AdminController extends Controller {
 		->select($listColumn)->first();	
 		\Log::info(\DB::getQueryLog());
 		
-			$user->EXPIRE_DATE = date('m-d-Y',strtotime($user->EXPIRE_DATE));
+			$user->EXPIRE_DATE = date('m/d/Y',strtotime($user->EXPIRE_DATE));
 			
 			$userRole = UserRole::where(['ACTIVE'=>1])->get(['ID','NAME']);
 			
@@ -341,15 +341,16 @@ class AdminController extends Controller {
 				$user->MIDDLE_NAME = $data['middlename'];
 				$user->FIRST_NAME = $data['firstname'];
 				$user->EMAIL = $data['email'];
-				$user->EXPIRE_DATE = $data['expireDate'];
+				$user->EXPIRE_DATE = date('Y/m/d', strtotime($data['expireDate']));
 				$user->ACTIVE = $data['active'];
 				$user->save();
 				
 				$userDataScope = new UserDataScope;
 				$userDataScope->USER_ID = $user->ID;
-				$userDataScope->PU_ID = $data['pu_id'];
-				$userDataScope->AREA_ID = $data['area_id'];
-				$userDataScope->FACILITY_ID = $data['fa_id'];			
+				
+				$userDataScope->PU_ID = ($data['pu_id']==0)?null:$data['pu_id'];
+				$userDataScope->AREA_ID = ($data['area_id'] == 0)?null:$data['area_id'];
+				$userDataScope->FACILITY_ID = ($data['fa_id'] == 0)?null:$data['fa_id'];
 				UserDataScope::insert(json_decode(json_encode($userDataScope), true));
 				
 				$roles = explode(',',$data['roles']);
@@ -411,9 +412,9 @@ class AdminController extends Controller {
 				$user = new User;
 				$user->USERNAME = $data['username'];
 				
-				if($data['pass'] != ''){
+				if($data['pass'] != ""){
 					$now = Carbon::now('Europe/London');
-					$user->PASSWORD_CHANGED = date('m-d-Y H:i:s', strtotime($now));
+					$user->PASSWORD_CHANGED = date('m/d/Y H:i:s', strtotime($now));
 				}
 				
 				$user->PASSWORD = $obj->myencrypt($data['pass']);
@@ -421,19 +422,20 @@ class AdminController extends Controller {
 				$user->MIDDLE_NAME = $data['middlename'];
 				$user->FIRST_NAME = $data['firstname'];
 				$user->EMAIL = $data['email'];
-				$user->EXPIRE_DATE = $data['expireDate'];
+				$user->EXPIRE_DATE = date('Y/m/d', strtotime($data['expireDate']));
 				$user->ACTIVE = $data['active'];
+				\DB::enableQueryLog();
 				User::where(['ID'=>$data['ID']])->update(json_decode(json_encode($user), true));
-				
+				\Log::info(\DB::getQueryLog());
 				UserDataScope::where(['USER_ID'=>$data['ID']])->delete();
 				
 				UserUserRole::where(['USER_ID'=>$data['ID']])->delete();
 				
 				$userDataScope = new UserDataScope;
 				$userDataScope->USER_ID = $data['ID'];
-				$userDataScope->PU_ID = $data['pu_id'];
-				$userDataScope->AREA_ID = $data['area_id'];
-				$userDataScope->FACILITY_ID = $data['fa_id'];
+				$userDataScope->PU_ID = ($data['pu_id']==0)?null:$data['pu_id'];
+				$userDataScope->AREA_ID = ($data['area_id'] == 0)?null:$data['area_id'];
+				$userDataScope->FACILITY_ID = ($data['fa_id'] == 0)?null:$data['fa_id'];
 				UserDataScope::insert(json_decode(json_encode($userDataScope), true));
 				
 				$roles = explode(',',$data['roles']);	
@@ -447,9 +449,9 @@ class AdminController extends Controller {
 					}
 				}
 			}
-		  } catch(\Exception $e){
+		   } catch(\Exception $e){
 				DB::rollback();
-		  } 
+		  }  
 	 
 		DB::commit();
 	

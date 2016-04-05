@@ -65,7 +65,8 @@ var _users = {
 				width: 700,
 				modal: true,
 				title: "Edit User",
-				close: function( event, ui ) {					
+				close: function( event, ui ) {	
+					_users.loadData();
 				}
 			});
 
@@ -82,7 +83,8 @@ var _users = {
 				width: 700,
 				modal: true,
 				title: "Add User",
-				close: function( event, ui ) {					
+				close: function( event, ui ) {
+					_users.loadData();					
 				}
 			});
 
