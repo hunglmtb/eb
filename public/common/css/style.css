@@ -125,3 +125,26 @@ table.dataTable {
 	z-index: 100;
 	background-color: white;
 }
+
+.phase {
+	margin-right: 25px;
+	width: 60px;
+	height: 13px;
+	overflow: hidden;
+	padding: 2px;
+	float: right;
+	font-size: 8pt;
+	background: #bbb
+}
+
+.OIL {
+	background: #FBD070;
+}
+
+.GAS {
+	background: #FF9696;
+}
+
+.WTR {
+	background: #62CEFB;
+}

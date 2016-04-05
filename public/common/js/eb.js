@@ -116,6 +116,7 @@ var actions = {
 			console.log ( "doLoad url: "+this.loadUrl );
 			actions.readyToLoad = true;
 			showWaiting();
+			actions.editedData = {};
 			$.ajax({
 				url: this.loadUrl,
 				type: "post",

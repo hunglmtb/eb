@@ -60,7 +60,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 	        	var table = $('#table_'+tab).DataTable();
 	        	var columnName = table.settings()[0].aoColumns[col].data;
 	        	if (result.length == 0) {
-		        	var editedData = {"FLOW_ID":rowData['FLOW_ID']};
+		        	var editedData = {"FLOW_ID":rowData['X_FL_ID']};
 		        	editedData[columnName] = newValue;
 	        		eData.push(editedData);
 	        	}
@@ -83,22 +83,28 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 							                var result = $.grep(collection, function(e){ 
 								                return e['ID'] == data;
 								                });
-	                						return result[0]['CODE'];
+											if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined" &&result[0].hasOwnProperty('CODE')){
+		                						return result[0]['CODE'];
+											}
+											return data;
+								                
                 					};
             $.each(collection, function( i, vl ) {
             	vl['value']=vl['ID'];
             	vl['text']=vl['CODE'];
             });
             uoms[index]["createdCell"] = function (td, cellData, rowData, row, col) {
-	        	$(td).editable({
-	        	    type: 'select',
-	        	    title: 'edit',
-	        	    emptytext: '',
-	        	    value:cellData,
-	        	    showbuttons:false,
-	        	    source: collection,
-	        	    success: getEditSuccessfn(td, cellData, rowData, row, col),
-	        	});
+                if(data.properties[col].DATA_METHOD==1&&data.properties[col].DATA_METHOD=='1'){
+		        	$(td).editable({
+		        	    type: 'select',
+		        	    title: 'edit',
+		        	    emptytext: '',
+		        	    value:cellData,
+		        	    showbuttons:false,
+		        	    source: collection,
+		        	    success: getEditSuccessfn(td, cellData, rowData, row, col),
+		        	});
+                }
    			}
 		});
 
@@ -119,6 +125,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 //  										var $th = $(td).closest('table').find('th').eq($(td).index());
 // 								      	if ( cellData < 1 ) {
 // 											$(td).attr('tabindex', tabindex++);
+               				 			if(data.properties[col].DATA_METHOD==1&&data.properties[col].DATA_METHOD=='1'){
 								        	$(td).editable({
 								        	    type : 'number',
 								        	    step: 'any',
@@ -137,7 +144,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 								        	$(td).on("shown", function(e, editable) {
 								        		  editable.input.$input.get(0).select();
 								        	});
-
+               				 			}
 								        	/* var enterHander = function(eInner) {
 										        if (eInner.keyCode == 13) //if its a enter key
 										        {
@@ -151,7 +158,16 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 // 								      	}
 								    }
 			  		};
+
+		var phase = {"targets": 0,
+					"render": function ( data, type, rowData ) {
+								var html = data+"<div class='phase "+rowData['PHASE_CODE']+"'>"+
+			        						rowData['PHASE_NAME']+"</div>" ;
+								return html;
+							}
+		  			};
 		uoms.push(cell);
+		uoms.push(phase);
 
 		var  marginLeft = 0;
 		var  tblWdth = 0;
@@ -173,7 +189,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 	          "columnDefs": uoms,
  	          "scrollX": true,
  	         "autoWidth": false,
-	       	"scrollY":        "300px",
+	       	"scrollY":        "270px",
 // 	                "scrollCollapse": true,
 			"paging":         false
 // 	           paging: false,

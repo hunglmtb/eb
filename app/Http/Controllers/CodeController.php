@@ -74,28 +74,33 @@ class CodeController extends EBController {
      		$where['phase_id']= $phase_type;
      	}
      	
-     	
+     	\DB::enableQueryLog();
      	$dataSet = Flow::join($codeFlowPhase,'PHASE_ID', '=', "$codeFlowPhase.ID")
      					->where($where)
-     					->where('EFFECTIVE_DATE', '<=', $occur_date)
-     					->where('OCCUR_DATE', '=', $occur_date)
-     					->leftJoin($dcTable, "$flow.ID", '=', "$dcTable.flow_id")
+      					->whereDate('EFFECTIVE_DATE', '<=', $occur_date)
+//      					->where('OCCUR_DATE', '=', $occur_date)
+     					->leftJoin($dcTable, function($join) use ($flow,$dcTable,$occur_date){
+                             $join->on("$flow.ID", '=', "$dcTable.flow_id");
+                             $join->where('OCCUR_DATE','=',$occur_date);
+                         })
  				     	->select("$flow.name as FL_NAME",
 								"$flow.ID as DT_RowId",
  				     			"$flow.ID as X_FL_ID",
  				     			"$flow.phase_id as FL_FLOW_PHASE",
  				     			"$codeFlowPhase.name as PHASE_NAME",
+ 				     			"$codeFlowPhase.CODE as PHASE_CODE",
 //  				     			"$dcTable.ID as DT_RowId",
  				     			"$dcTable.*"
  				     			)
  				     	->orderBy('FL_NAME')
  						->orderBy('FL_FLOW_PHASE')
  						->get();
+ 		\Log::info(\DB::getQueryLog());
     	
     	$properties = CfgFieldProps::where('TABLE_NAME', '=', $dcTable)
             ->where('USE_FDC', '=', 1)
             ->orderBy('FIELD_ORDER')
-            ->get(['COLUMN_NAME as data','COLUMN_NAME as name', 'FDC_WIDTH as width','LABEL as title']);
+            ->get(['COLUMN_NAME as data','COLUMN_NAME as name', 'FDC_WIDTH as width','LABEL as title',"DATA_METHOD"]);
     	
         $properties->prepend(['data'=>'FL_NAME','title'=>'Object name','width'=>230]);
         

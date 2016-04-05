@@ -374,9 +374,11 @@ class FormulaHelpers {
     							}
     						}
     						$sql .= " limit 100";
-     						\DB::enableQueryLog();
-    						$getDataResult = DB::table($table)->where($where)->select($field)->skip(0)->take(100)->get();
-     						\Log::info(\DB::getQueryLog());
+//      						\DB::enableQueryLog();
+     						
+    						$getDataResult = DB::table($table)->where( \DB::raw($pp))->select($field)->skip(0)->take(100)->get();
+//      						$getDataResult = DB::table($table)->where($where)->select($field)->skip(0)->take(100)->get();
+//      						\Log::info(\DB::getQueryLog());
     						unset($table);
     						unset($where);
     						unset($params);
@@ -501,7 +503,7 @@ class FormulaHelpers {
     	$s='$vf = '.$f.";";
     	if(!(self::php_syntax_error($s)))
     	{
-//     		set_error_handler("evalErrorHandler");
+      		set_error_handler("evalErrorHandler");
 	    	try {
     			eval($s);
 	    	} catch( Exception $e ){
@@ -509,7 +511,7 @@ class FormulaHelpers {
 	    		\Log::info($e->getTraceAsString());
 	    	}
 	    		
-// 	    	restore_error_handler();
+  	    	restore_error_handler();
     	}
     	else
     	{
