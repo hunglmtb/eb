@@ -551,13 +551,13 @@ menu["greenhouse"]=[
 // }
 ?>
 menu["admin"]=[
-		{menutext:"VALIDATE DATA",desc:"",url:"../admin/validatedata.php"},
-		{menutext:"APPROVE DATA",desc:"",url:"../admin/approvedata.php"},
-		{menutext:"LOCK DATA",desc:"",url:"../admin/datalocking.php"},
-		{menutext:"ROLES",desc:"",url:"../admin/roles.php"},
-		{menutext:"USERS",desc:"",url:"../admin/users.php"},
-		{menutext:"Audit Trail",desc:"",url:"../admin/audittrail.php"},
-		{menutext:"USERS LOG",desc:"",url:"../admin/userlog.php"},
+		{menutext:"VALIDATE DATA",desc:"",url:"am/validatedata"},
+		{menutext:"APPROVE DATA",desc:"",url:"am/approvedata"},
+		{menutext:"LOCK DATA",desc:"",url:"am/lockdata"},
+		{menutext:"ROLES",desc:"",url:"am/roles"},
+		{menutext:"USERS",desc:"",url:"am/users"},
+		{menutext:"Audit Trail",desc:"",url:"am/audittrail"},
+		{menutext:"USERS LOG",desc:"",url:"am/userlog"},
 		{menutext:"HELP EDITOR",desc:"",url:"../help/"}
 	];
 menu["config"]=[
