@@ -2,7 +2,6 @@
 if (!isset($currentSubmenu)) $currentSubmenu ='';
 ?>
 @extends('core.bstemplate',['subMenus' => array('pairs' => $subMenus, 'currentSubMenu' => $currentSubmenu)])
-
 @section('main')
 <div style="padding-left:10px">
 	<div style="padding:10px 10px 10px 0px;font-size:16pt;">@yield('funtionName')</div>
@@ -11,6 +10,7 @@ if (!isset($currentSubmenu)) $currentSubmenu ='';
 	@yield('content')
 </div>
 @yield('adaptData')
+@stop
 
 @section('script')
 	<link href="/jqueryui-editable/css/jqueryui-editable.css" rel="stylesheet"/>
