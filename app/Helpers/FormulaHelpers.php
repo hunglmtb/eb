@@ -2,6 +2,10 @@
 use App\Models\CfgFieldProps;
 use App\Models\Formula;
 use App\Models\Fovar;
+
+function evalErrorHandler($errno, $errstr, $errfile, $errline){
+	throw new Exception('Ach!');
+}
 class FormulaHelpers {
 	
 	public static function doFormula($tName,$keyfield,$keyvalues,$echo_only=false){
@@ -137,13 +141,12 @@ class FormulaHelpers {
 	    		$updateRecords = $mdl::where('OCCUR_DATE',$occur_date)
 							    		->where('flow_id',$object_id)
 							    		->update($values);
-	    		if ($returnAffectedIds) {
+	    		if ($updateRecords>0&&$returnAffectedIds) {
 	    			$result[] = $mdl::where('OCCUR_DATE',$occur_date)
 								    		->where('flow_id',$object_id)
 								    		->select('ID')
 								    		->first()->ID;
-	    		}
-	    		else $result =$updateRecords;
+	    		};
 	    	}
     	}
     	return $result;
@@ -229,12 +232,12 @@ class FormulaHelpers {
     	$i=0;
     	$vars=array();
     	$vvv=array();
-    	if($occur_date)
+    	/* if($occur_date)
     	{
     		$sdate=explode("/",$occur_date);
     		if(sizeof($sdate)>=3)
     			$occur_date=$sdate[2]."-".$sdate[0]."-".$sdate[1];
-    	}
+    	} */
     	 
     	foreach($foVars as $row ){
     		 
@@ -363,7 +366,7 @@ class FormulaHelpers {
     									}
 	    							}
 	    							$sql.=" and $pp";
-	    							if($whereItem[0]=="OCCUR_DATE"){
+	    							if($whereItem[0]=="OCCUR_DATE"||$whereItem[0]=="EFFECTIVE_DATE"){
 	    								$whereItem[2] = $occur_date;
 	    							}
 	    							$where[]=$whereItem;
@@ -371,9 +374,9 @@ class FormulaHelpers {
     							}
     						}
     						$sql .= " limit 100";
-//     						\DB::enableQueryLog();
+     						\DB::enableQueryLog();
     						$getDataResult = DB::table($table)->where($where)->select($field)->skip(0)->take(100)->get();
-//     						\Log::info(\DB::getQueryLog());
+     						\Log::info(\DB::getQueryLog());
     						unset($table);
     						unset($where);
     						unset($params);
@@ -498,7 +501,15 @@ class FormulaHelpers {
     	$s='$vf = '.$f.";";
     	if(!(self::php_syntax_error($s)))
     	{
-    		eval($s);
+//     		set_error_handler("evalErrorHandler");
+	    	try {
+    			eval($s);
+	    	} catch( Exception $e ){
+	    		$vf=null;
+	    		\Log::info($e->getTraceAsString());
+	    	}
+	    		
+// 	    	restore_error_handler();
     	}
     	else
     	{
@@ -598,328 +609,4 @@ class FormulaHelpers {
     	@ini_set('log_errors', $inString);
     	return $code;
     }
-    
-    
-    public static function evalFormula_bak($formulaRow,$occur_date, $show_echo = false){
-    	if(!$formulaRow)
-    	{
-    		if($show_echo) echo "<span style='color:red'><i>Formula is out of date range</i></span>";
-    		return false;
-    	}
-    	
-    	$fid = $formulaRow->ID;
-    	$flow_phase = $formulaRow->FLOW_PHASE;
-    	$object_id = $formulaRow->OBJECT_ID;
-    	$formula = $formulaRow->FORMULA;
-    	$foVars = $formulaRow->FoVar()->get();
-    	 
-    	/* if(!$object_id)
-    	{
-    		$object_id=getOneValue("select a.OBJECT_ID from FORMULA a where a.ID=$fid");
-    		$object_id=explode(',',$object_id);
-    		$object_id=$object_id[0];
-    	} */
-    	
-    	$CURRENT_DATE=date("Y-m-d");
-//     	$formula=getOneValue("select FORMULA from `FORMULA` where id='$fid'");
-    
-    	/* $sSQL="select a.*, case when (a.STATIC_VALUE like '%-%-%' or a.STATIC_VALUE = '@OCCUR_DATE') then 1 else 0 end IS_DATE from fo_var a where a.formula_id='$fid' order by a.`ORDER`";
-    	$result=mysql_query($sSQL) or die (mysql_error()); */
-    	$s="";
-    	$i=0;
-    	$vars=array();
-    	$vvv=array();
-    	if($occur_date)
-    	{
-    		$sdate=explode("/",$occur_date);
-    		if(sizeof($sdate)>=3)
-    			$occur_date=$sdate[2]."-".$sdate[0]."-".$sdate[1];
-    	}
-    	
-    	foreach($foVars as $row ){
-    	
-    		if($show_echo) echo "Processing $row->NAME=$row->STATIC_VALUE ...<br>";
-    		array_push($vvv,$row->NAME);
-    		$row->STATIC_VALUE=str_replace("@OCCUR_DATE","'$occur_date'",$row->STATIC_VALUE);
-    		$row->STATIC_VALUE=str_replace("@OBJECT_ID",$object_id,$row->STATIC_VALUE);
-    		$row->STATIC_VALUE=str_replace("@FLOW_PHASE",$flow_phase,$row->STATIC_VALUE);
-    		$row->STATIC_VALUE=str_replace("@VAR_OBJECT_ID",$row->OBJECT_ID,$row->STATIC_VALUE);
-    		$row->STATIC_VALUE=str_replace("#OIL#","1",$row->STATIC_VALUE);
-    		$row->STATIC_VALUE=str_replace("#GAS#","2",$row->STATIC_VALUE);
-    		$row->STATIC_VALUE=str_replace("#WATER#","3",$row->STATIC_VALUE);
-    		if(strpos($row->STATIC_VALUE,"#CODE_")!==false)
-    			$row->STATIC_VALUE=processFormulaCodeConstant($row->STATIC_VALUE);
-    
-    			if($row->IS_DATE>0)
-    			{
-    				if($show_echo) echo "<span style='color:blue'><i>";
-    				$s='$'.$row->NAME."='$row->STATIC_VALUE';\$vs=\$$row->NAME;";
-    				eval($s);
-    				if($show_echo) echo "$row->NAME = $vs";
-    				if($show_echo) echo "</i></span>";
-    				if($show_echo) echo "<br>";
-    				$vars[$row->NAME]=$vs;
-    			}
-    			else if(is_numeric($row->STATIC_VALUE))
-    			{
-    				if($show_echo) echo "<span style='color:blue'><i>";
-    				$s='$'.$row->NAME."=$row->STATIC_VALUE;\$vs=\$$row->NAME;";
-    				eval($s);
-    				if($show_echo) echo "$row->NAME = $vs";
-    				if($show_echo) echo "</i></span>";
-    				if($show_echo) echo "<br>";
-    				$vars[$row->NAME]=$vs;
-    			}
-    			else if(strpos($row->STATIC_VALUE,"[")>0)
-    			{
-    				$i=strpos($row->STATIC_VALUE,"[");
-    				$j=strpos($row->STATIC_VALUE,"]",$i);
-    				if($j>$i)
-    				{
-    					if($show_echo) echo "<span style='color:blue'><i>";
-    					$ms=substr($row->STATIC_VALUE,0,$i);
-    					$key=substr($row->STATIC_VALUE,$i+1,$j-$i-1);
-    					$vs=explode("\r",$vars[$ms]);
-    					$vl="";
-    					foreach($vs as $v)
-    					{
-    						$vx=explode("=",$v);
-    						if(trim($vx[0])==$key)
-    						{
-    							$vl=$vx[1];
-    							break;
-    						}
-    					}
-    					if($vl)
-    					{
-    						$s='$'.$row->NAME."=$vl;\$vs=\$$row->NAME;";
-    						eval($s);
-    						if($show_echo) echo "$row->NAME = $vs";
-    						$vars[$row->NAME]=$vs;
-    					}
-    					if($show_echo) echo "</i></span>";
-    					if($show_echo) echo "<br>";
-    				}
-    			}
-    			else if(substr($row->STATIC_VALUE,0,6)=="matlab")
-    			{
-    				$i=strpos($row->STATIC_VALUE,"(");
-    				$j=strpos($row->STATIC_VALUE,")",$i);
-    				if($j>$i)
-    				{
-    					$ms=explode(",",substr($row->STATIC_VALUE,$i+1,$j-$i-1));
-    					$args="";
-    					$matlab_code=$ms[0];
-    					for($i=1;$i<sizeof($ms);$i++)
-    					{
-    						$args.=($args==""?"":"%20").$vars[$ms[$i]];
-    					}
-    					$s="\$vs = file_get_contents('http://energybuilder.co/eb/matlab/$matlab_code/$matlab_code.php?act=get&a=".$args."', true);";
-    					//echo "xxxxx".$s;
-    					eval($s);
-    					if($show_echo) echo "<span style='color:blue'><i>";
-    					//				if($show_echo) echo $s."<br>";
-    					if($show_echo) echo $vs;
-    					if($show_echo) echo "</i></span>";
-    					if($show_echo) echo "<br>";
-    					$vars[$row->NAME]=$vs;
-    				}
-    				//$s="$m = file_get_contents('http://energybuilder.co/eb/matlab/test.php?act=get&a=1%204%202', true);
-    			}
-    			else if(substr($row->STATIC_VALUE,0,7)=="getData")
-    			{
-    				if($row->TABLE_NAME && $row->VALUE_COLUMN)
-    				{
-    					if($show_echo) echo "<span style='color:blue'><i>";
-    					$j=strpos($row->STATIC_VALUE,"(");
-    					$k=self::findClosedSign(")",$row->STATIC_VALUE,$j);
-    
-    					if($k>$j && $j>0)
-    					{
-    						$table=$row->TABLE_NAME;
-    						$field=$row->VALUE_COLUMN;
-    						$sql="select $field from `$table` where 1";
-    						//echo "field: $field<br>";
-    						$params=explode(",",substr($row->STATIC_VALUE,$j+1,$k-$j-1));
-    						foreach ($params as $param)
-    						{
-    							$deli="";
-    							if (strpos($param,'>=') !== false) {
-    								$deli=">=";
-    							}
-    							else if (strpos($param,'<=') !== false) {
-    								$deli="<=";
-    							}
-    							else if (strpos($param,'>') !== false) {
-    								$deli=">";
-    							}
-    							else if (strpos($param,'<') !== false) {
-    								$deli="<";
-    							}
-    							else if (strpos($param,'=') !== false) {
-    								$deli="=";
-    							}
-    							if($deli!=="")
-    							{
-    								$ps=explode($deli,$param);
-    								if($ps[1]=="@DATE")
-    									$pp = "$ps[0] $deli $CURRENT_DATE";
-    									else if (is_numeric($vars[$ps[1]]))
-    										$pp = "$ps[0] $deli ".$vars[$ps[1]]."";
-    										else{
-    											if(isset($vars[$ps[1]]))
-    												$pp = "$ps[0] $deli '".$vars[$ps[1]]."'";
-    												else
-    													$pp = "$ps[0] $deli $ps[1]";
-    										}
-    										$sql.=" and $pp";
-    										//echo "param: $pp<br>";
-    							}
-    						}
-    						$sql .= " limit 100";
-    						if($show_echo) echo "sql=$sql<br>";
-    
-    						$rrr=mysql_query($sql) or die("fail: ".$sql."-> error:".mysql_error());
-    						$num_rows = mysql_num_rows($rrr);
-    
-    						//$sqlvalue=getOneRow($sql);
-    						if($num_rows==0)
-    						{
-    							$s='$'.$row->NAME."='null';\$vs=\$$row->NAME;";
-    							eval($s);
-    							if($show_echo) echo "$row->NAME = $vs";
-    						}
-    						else if($num_rows==1)
-    						{
-    							$sqlvalue=mysql_fetch_array($rrr);
-    							if(count($sqlvalue)<=2)
-    							{
-    								$s='$'.$row->NAME."='$sqlvalue[0]';\$vs=\$$row->NAME;";
-    								eval($s);
-    								if($show_echo) echo "$row->NAME = $vs";
-    							}
-    							else
-    							{
-    								$sqlarray=array();
-    								foreach ($sqlvalue as $key => $value)
-    								{
-    									if(is_numeric($key))
-    										$sqlarray[$key]=$value;
-    										if($show_echo) echo "$row->NAME[$key]=".$sqlvalue[$key]."<br>";
-    								}
-    								//for($i=0;$i<count($sqlvalue)/2;$i++)
-    								//{
-    								//	$sqlarray[]=$sqlvalue[$i];
-    								//}
-    								$s='$'.$row->NAME.'=$sqlarray;'."\$vs=\$$row->NAME;";
-    								eval($s);
-    							}
-    						}
-    						else
-    						{
-    							$sqlvalue=array();
-    							while($rox=mysql_fetch_array($rrr))
-    							{
-    								$sqlvalue[]=$rox;
-    							}
-    							$sqlarray=array();
-    							for($k=0;$k<$num_rows;$k++)
-    							{
-    								foreach ($sqlvalue[$k] as $key => $value)
-    								{
-    									if(is_numeric($key))
-    										$sqlarray[$k][$key]=$value;
-    								}
-    								//for($i=0;$i<count($sqlvalue[$k])/2;$i++)
-    								//{
-    								//	$sqlarray[$k][]=$sqlvalue[$k][$i];
-    								//}
-    							}
-    							if($show_echo) echo "$row->NAME is an array with $num_rows rows";
-    							$s='$'.$row->NAME.'=$sqlarray;'."\$vs=\$$row->NAME;";
-    							eval($s);
-    						}
-    
-    						if($show_echo) echo "</i></span>";
-    						if($show_echo) echo "<br>";
-    						$vars[$row->NAME]=$vs;
-    					}
-    					if($show_echo) echo "</i></span>";
-    				}
-    			}
-    			else
-    			{
-    				$v=$row->STATIC_VALUE;
-    				$i=strpos($v,".");
-    				if($i>0)
-    				{
-    					if($show_echo) echo "<span style='color:blue'><i>";
-    					$table=substr($v,0,$i);
-    					//echo "table: $table<br>";
-    					$j=strpos($v,"(",$i);
-    					$k=strpos($v,")",$i);
-    					if($j>$i && $k>$j)
-    					{
-    						$field=substr($v,$i+1,$j-$i-1);
-    						$sql="select `$field` from `$table` where 1";
-    						//echo "field: $field<br>";
-    						$params=explode(",",substr($v,$j+1,$k-$j-1));
-    						foreach ($params as $param)
-    						{
-    							$ps=explode("=",$param);
-    							if ($vars[$ps[1]])
-    								$pp = "$ps[0] = '".$vars[$ps[1]]."'";
-    								else
-    									$pp = "$ps[0] = '$ps[1]'";
-    									$sql.=" and $pp";
-    									//echo "param: $pp<br>";
-    						}
-    						if($show_echo) echo "sql=$sql<br>";
-    						$sqlvalue=getOneValue($sql);
-    						$s='$'.$row->NAME."='$sqlvalue';\$vs=\$$row->NAME;";
-    						eval($s);
-    						if($show_echo) echo "$row->NAME = $vs";
-    						if($show_echo) echo "</i></span>";
-    						if($show_echo) echo "<br>";
-    						$vars[$row->NAME]=$vs;
-    					}
-    					if($show_echo) echo "</i></span>";
-    				}
-    			}
-    	}
-    
-    	/* while($row=mysql_fetch_array($result))
-    	{} */
-    	if($show_echo) echo "Processing final expression ...<br>";
-    	$f=$formula;
-    	foreach($vvv as $v)
-    	{
-    		//$f=str_replace($v,$vars[$v],$f);
-    		if(!$vars[$v])
-    			$f=str_replace($v,"0",$f);
-    			else
-    				$f=str_replace($v,"$".$v,$f);
-    				//if($show_echo) echo "$f<br>";
-    	}
-    	$f=str_replace("@DATE",$CURRENT_DATE,$f);
-    
-    	if($show_echo) echo "<span style='color:blue'><i>";
-    	$s='$vf = '.$f.";";
-    	if($show_echo) eval("echo \"".$f."\".'<br>';");
-    	if(!php_syntax_error($s))
-    	{
-    		eval($s);
-    		if($show_echo) echo "<b>Final result: $vf<b></i></span>";
-    		if($show_echo) echo "<br>";
-    	}
-    	else
-    	{
-    		if($show_echo) echo "<span style='color:red'>Syntax error in final expression $s </span></i></span>";
-    		$vf=null;
-    	}
-    
-    	return $vf;
-    }
-    
-    
 }

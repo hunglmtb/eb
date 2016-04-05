@@ -68,7 +68,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 	        		result[0][columnName] = newValue;
 	        	}
 	        	rowData[columnName] = newValue;
-				table.row( '#'+rowData['DT_RowId'] ).data(rowData).draw();
+ 				table.row( '#'+rowData['DT_RowId'] ).data(rowData);
 	        	$(td).css('color', 'red');
 	        	 /* var tabindex = $(this).attr('tabindex');
 	            $('[tabindex=' + (tabindex +1)+ ']').focus(); */
@@ -223,9 +223,9 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 				row = table.row( '#'+value['FLOW_ID'] );
 				var tdata = row.data();
 				if( typeof(tdata) !== "undefined" && tdata !== null ){
-					for (var key in value) {
-						if(tdata.hasOwnProperty(key)){
-							tdata[key] = value[key];
+					for (var pkey in value) {
+						if(tdata.hasOwnProperty(pkey)){
+							tdata[pkey] = value[pkey];
 						}
 					}
 					row.data(tdata).draw();

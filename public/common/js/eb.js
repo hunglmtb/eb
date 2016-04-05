@@ -115,6 +115,7 @@ var actions = {
 		if (this.loadUrl) {
 			console.log ( "doLoad url: "+this.loadUrl );
 			actions.readyToLoad = true;
+			showWaiting();
 			$.ajax({
 				url: this.loadUrl,
 				type: "post",
@@ -129,8 +130,10 @@ var actions = {
 					else{
 						alert("load success");
 					}
+					hideWaiting();
 				},
 				error: function(data) {
+					hideWaiting();
 					alert(JSON.stringify(data.responseText));
 					if (typeof(actions.loadError) == "function") {
 						actions.loadError(data);
@@ -166,6 +169,7 @@ var actions = {
 		if (this.saveUrl) {
 			console.log ( "doLoad url: "+this.saveUrl );
 //			actions.readyToLoad = true;
+			showWaiting();
 			$.ajax({
 				url: this.saveUrl,
 				type: "post",
@@ -177,12 +181,14 @@ var actions = {
 					else{
 						alert("save success");
 					}
+					hideWaiting();
 				},
 				error: function(data) {
 					alert(JSON.stringify(data.responseText));
 					if (typeof(actions.loadError) == "function") {
 						actions.loadError(data);
 					}
+					hideWaiting();
 				}
 			});
 			return true;

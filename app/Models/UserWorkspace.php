@@ -6,6 +6,9 @@ use App\Models\DynamicModel;
 class UserWorkspace extends DynamicModel
 {
 	protected $table = 'USER_WORKSPACE';
+	protected $primaryKey = 'ID';
+	
+	protected $fillable  = ['USER_ID', 'USER_NAME', 'W_DATE_BEGIN', 'W_FACILITY_ID', 'W_DATE_END', 'W_FLOW_PHASE'];
 	
 	/**
 	 * One to Many relation

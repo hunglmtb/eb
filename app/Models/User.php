@@ -1,7 +1,7 @@
 <?php namespace App\Models;
 
 use App\Models\DynamicModel;
-
+use App\Models\UserWorkspace;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -60,6 +60,25 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 	
 		return $wp;
 	}
+	
+	public function saveWorkspace($date_begin,$facility_id,$date_end=false)
+	{
+		// 		\DB::enableQueryLog();
+		$columns = ['USER_ID'=>$this->ID];
+		$newData = [];
+		if ($date_begin) {
+			$date_begin = Carbon::parse($date_begin);
+			$newData['W_DATE_BEGIN']=$date_begin;
+		}
+		if ($facility_id) $newData['W_FACILITY_ID']=$facility_id;
+		if ($date_end) {
+			$date_end = Carbon::parse($date_end);
+			$newData['W_DATE_END']=$date_end;
+		}
+		return  UserWorkspace::updateOrCreate($columns, $newData);
+	}
+	
+	
 	
 
 	/**

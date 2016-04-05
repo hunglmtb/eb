@@ -15,6 +15,12 @@ use Illuminate\Http\Response;
 
 class CodeController extends EBController {
 	 
+	
+	/* public function __construct()
+	{
+		parent::__construct();
+		$this->middleware('saveWorkspace');
+	} */
 	/**
 	 * Display the home page.
 	 *
@@ -47,6 +53,7 @@ class CodeController extends EBController {
     
     public function load(Request $request)
     {
+//     	sleep(2);
     	$postData = $request->all();
     	$mdl = "App\Models\\".($postData[config("constants.tabTable")]);
      	$dcTable = $mdl::getTableName();//"FLOW_DATA_VALUE";
@@ -73,7 +80,14 @@ class CodeController extends EBController {
      					->where('EFFECTIVE_DATE', '<=', $occur_date)
      					->where('OCCUR_DATE', '=', $occur_date)
      					->leftJoin($dcTable, "$flow.ID", '=', "$dcTable.flow_id")
- 				     	->select("$flow.ID as DT_RowId", "$flow.name as FL_NAME", "$flow.ID as X_FL_ID","$flow.phase_id as FL_FLOW_PHASE", "$codeFlowPhase.name as PHASE_NAME","$dcTable.*")
+ 				     	->select("$flow.name as FL_NAME",
+								"$flow.ID as DT_RowId",
+ 				     			"$flow.ID as X_FL_ID",
+ 				     			"$flow.phase_id as FL_FLOW_PHASE",
+ 				     			"$codeFlowPhase.name as PHASE_NAME",
+//  				     			"$dcTable.ID as DT_RowId",
+ 				     			"$dcTable.*"
+ 				     			)
  				     	->orderBy('FL_NAME')
  						->orderBy('FL_FLOW_PHASE')
  						->get();
@@ -100,6 +114,7 @@ class CodeController extends EBController {
     
     public function save(Request $request)
     {
+//     	sleep(2);
     	$postData = $request->all();
     	$editedData = $postData['editedData'];
      	$record_freq = $postData['CodeReadingFrequency'];
@@ -115,14 +130,14 @@ class CodeController extends EBController {
 //      	\DB::enableQueryLog();
      	foreach($editedData as $mdlName => $mdlData ){
      		$mdl = "App\Models\\".$mdlName;
-     		$updatedData[$mdlName] = [];
+//      		$updatedData[$mdlName] = [];
      		$ids[$mdlName] = [];
      		foreach($mdlData as $key => $newData ){
      			$columns = ['FLOW_ID'=>$newData['FLOW_ID'],'OCCUR_DATE'=>$occur_date];
       			$newData['OCCUR_DATE']=$occur_date;
      			$returnRecord = $mdl::updateOrCreate($columns, $newData);
      			$ids[$mdlName][] = $returnRecord['ID'];
-     			$updatedData[$mdlName][] = $returnRecord;
+//      			$updatedData[$mdlName][] = $returnRecord;
 //      			$objectIds[]=$newData['FLOW_ID'];
      		}
      	}
@@ -131,7 +146,7 @@ class CodeController extends EBController {
      	//doFormula in config table
      	$affectColumns = [];
      	foreach($editedData as $mdlName => $mdlData ){
-     		$cls  = \FormulaHelpers::doFormula($mdlName,'id',$ids[$mdlName]);
+     		$cls  = \FormulaHelpers::doFormula($mdlName,'ID',$ids[$mdlName]);
      		if (is_array($cls)&&count($cls)>0) {
 	     		$affectColumns[$mdlName] = $cls;
      		}
@@ -142,7 +157,9 @@ class CodeController extends EBController {
      	foreach($editedData as $mdlName => $mdlData ){
      		foreach($mdlData as $key => $newData ){
      			$columns = array_keys($newData);
-     			$columns = array_merge($columns,$affectColumns[$mdlName]);
+     			if (array_key_exists($mdlName, $affectColumns)) {
+	     			$columns = array_merge($columns,$affectColumns[$mdlName]);
+     			}
 				$columns = array_diff($columns, ['FLOW_ID']);
      			
 	     		$aIds = \FormulaHelpers::getAffects($mdlName,$columns,$newData['FLOW_ID'],'FLOW');
@@ -162,7 +179,8 @@ class CodeController extends EBController {
      	//get updated data after apply formulas
      	foreach($ids as $mdlName => $updatedIds ){
 //      		$updatedData[$mdlName] = $mdl::findMany($objectIds);
-      		$updatedData[$mdlName] = $mdl::findMany($updatedIds);
+     		$mdl = "App\Models\\".$mdlName;
+     		$updatedData[$mdlName] = $mdl::findMany($updatedIds);
      	}
 //      	\Log::info(\DB::getQueryLog());
     
