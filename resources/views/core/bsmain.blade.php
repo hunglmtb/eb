@@ -12,5 +12,12 @@ if (!isset($currentSubmenu)) $currentSubmenu ='';
 </div>
 @yield('adaptData')
 
+@section('script')
+	<link href="/jqueryui-editable/css/jqueryui-editable.css" rel="stylesheet"/>
+	<link href="/common/css/fixedHeader.dataTables.min.css" rel="stylesheet"/>
+	
+	<script src="/common/js/jquery-ui-timepicker-addon.js"></script>
+	<script src="/jqueryui-editable/js/jqueryui-editable.js"></script>
+	<script src="/common/js/tableHeadFixer.js"></script>
 @stop
 

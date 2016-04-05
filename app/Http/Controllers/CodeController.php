@@ -1,14 +1,16 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Http\Request;
 use App\Http\ViewComposers\ProductionGroupComposer;
-use Illuminate\Http\Response;
 use App\Models\CfgFieldProps;
-use App\Models\FlowDataFdcValue;
-use App\Models\Flow;
 use App\Models\CodeFlowPhase;
+use App\Models\CodePressUom;
+use App\Models\Facility;
+use App\Models\Flow;
+use App\Models\StandardUom;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 
 class CodeController extends EBController {
@@ -28,7 +30,10 @@ class CodeController extends EBController {
 		$results = [];
 		
 		foreach($options['dependences'] as $model ){
-			$eCollection = $unit->$model(['ID', 'NAME'])->getResults();
+			if ($unit!=null) {
+				$eCollection = $unit->$model(['ID', 'NAME'])->getResults();
+			}
+			else  break;
 			if (count ( $eCollection ) > 0) {
 				$unit = ProductionGroupComposer::getCurrentSelect ( $eCollection );
 				$results [] = ProductionGroupComposer::getFilterArray ( $model, $eCollection, $unit );
@@ -38,31 +43,6 @@ class CodeController extends EBController {
 		
 		return response($results, 200) // 200 Status Code: Standard response for successful HTTP request
 			->header('Content-Type', 'application/json');
-    }
-    
-    function getEUQuery($dcTable)
-    {
-    	global $facility_id,$record_freq,$phase_type,$event_type,$occur_date;
-    	$sSQL="select a.FL_NAME,a.PHASE_NAME,a.X_FL_ID, a.FL_FLOW_PHASE,x.*
-				from
-				(
-					select a.name FL_NAME, a.ID X_FL_ID, a.phase_id FL_FLOW_PHASE, c.name PHASE_NAME
-					from
-					FLOW a,
-					CODE_FLOW_PHASE c
-					where
-					a.phase_id=c.id
-					".($record_freq>0?" and a.RECORD_FREQUENCY=$record_freq":"")."
-					".($phase_type>0?" and a.phase_id=$phase_type":"")."
-				    and a.FDC_DISPLAY='1'
-				    and a.EFFECTIVE_DATE<=STR_TO_DATE('$occur_date', '%m/%d/%Y')
-				    and a.facility_id='$facility_id'
-			    ) a
-			    left join $dcTable x on
-			    x.flow_id=a.X_FL_ID
-			    and x.OCCUR_DATE=STR_TO_DATE('$occur_date', '%m/%d/%Y')
-			    order by FL_NAME, FL_FLOW_PHASE";
-				    	return $sSQL;
     }
     
     public function load(Request $request)
@@ -93,7 +73,7 @@ class CodeController extends EBController {
      					->where('EFFECTIVE_DATE', '<=', $occur_date)
      					->where('OCCUR_DATE', '=', $occur_date)
      					->leftJoin($dcTable, "$flow.ID", '=', "$dcTable.flow_id")
- 				     	->select("$flow.name as FL_NAME", "$flow.ID as X_FL_ID","$flow.phase_id as FL_FLOW_PHASE", "$codeFlowPhase.name as PHASE_NAME","$dcTable.*")
+ 				     	->select("$flow.ID as DT_RowId", "$flow.name as FL_NAME", "$flow.ID as X_FL_ID","$flow.phase_id as FL_FLOW_PHASE", "$codeFlowPhase.name as PHASE_NAME","$dcTable.*")
  				     	->orderBy('FL_NAME')
  						->orderBy('FL_FLOW_PHASE')
  						->get();
@@ -101,11 +81,162 @@ class CodeController extends EBController {
     	$properties = CfgFieldProps::where('TABLE_NAME', '=', $dcTable)
             ->where('USE_FDC', '=', 1)
             ->orderBy('FIELD_ORDER')
-            ->get(['COLUMN_NAME as data', 'FDC_WIDTH','LABEL as title']);
+            ->get(['COLUMN_NAME as data','COLUMN_NAME as name', 'FDC_WIDTH as width','LABEL as title']);
     	
-        $properties->prepend(['data'=>'FL_NAME','title'=>'Object name']);
-            
-    	return response()->json(['properties' => $properties,'dataSet'=>$dataSet,'postData'=>$postData]);
+        $properties->prepend(['data'=>'FL_NAME','title'=>'Object name','width'=>230]);
+        
+        $uoms = $this->getUoms($properties,$facility_id);
+		
+        $dswk = $dataSet->keyBy('DT_RowId');
+        $objectIds = $dswk->keys();
+        
+    	return response()->json(['properties' => $properties,
+    							'dataSet'=>$dataSet,
+    							'uoms'=>$uoms,
+     							'objectIds'=>$objectIds,
+    							'postData'=>$postData]);
     }
     
+    
+    public function save(Request $request)
+    {
+    	$postData = $request->all();
+    	$editedData = $postData['editedData'];
+     	$record_freq = $postData['CodeReadingFrequency'];
+     	$phase_type = $postData['CodeFlowPhase'];
+     	$facility_id = $postData['Facility'];
+     	$occur_date = $postData['date_begin'];
+     	$occur_date = Carbon::parse($occur_date);
+     	$objectIds = $postData['objectIds'];
+     	
+     	$flow = Flow::getTableName();
+     	$updatedData = [];
+     	$ids = [];
+//      	\DB::enableQueryLog();
+     	foreach($editedData as $mdlName => $mdlData ){
+     		$mdl = "App\Models\\".$mdlName;
+     		$updatedData[$mdlName] = [];
+     		$ids[$mdlName] = [];
+     		foreach($mdlData as $key => $newData ){
+     			$columns = ['FLOW_ID'=>$newData['FLOW_ID'],'OCCUR_DATE'=>$occur_date];
+      			$newData['OCCUR_DATE']=$occur_date;
+     			$returnRecord = $mdl::updateOrCreate($columns, $newData);
+     			$ids[$mdlName][] = $returnRecord['ID'];
+     			$updatedData[$mdlName][] = $returnRecord;
+//      			$objectIds[]=$newData['FLOW_ID'];
+     		}
+     	}
+     	
+     	$objectIds = array_unique($objectIds);
+     	//doFormula in config table
+     	$affectColumns = [];
+     	foreach($editedData as $mdlName => $mdlData ){
+     		$cls  = \FormulaHelpers::doFormula($mdlName,'id',$ids[$mdlName]);
+     		if (is_array($cls)&&count($cls)>0) {
+	     		$affectColumns[$mdlName] = $cls;
+     		}
+     	}
+     	
+     	//get affected ids
+     	$affectedIds = [];
+     	foreach($editedData as $mdlName => $mdlData ){
+     		foreach($mdlData as $key => $newData ){
+     			$columns = array_keys($newData);
+     			$columns = array_merge($columns,$affectColumns[$mdlName]);
+				$columns = array_diff($columns, ['FLOW_ID']);
+     			
+	     		$aIds = \FormulaHelpers::getAffects($mdlName,$columns,$newData['FLOW_ID'],'FLOW');
+	     		$affectedIds = array_merge($affectedIds,$aIds);
+     		}	     
+     	}
+     	$affectedIds = array_unique($affectedIds);
+     	
+     	//apply Formula in formula table
+     	foreach($editedData as $mdlName => $mdlData ){
+     		$upids = \FormulaHelpers::applyFormula($mdlName,$affectedIds,$occur_date,'FLOW',true);
+     		$ids[$mdlName] = array_merge($ids[$mdlName], $upids);
+//      		$ids[$mdlName] = array_intersect($ids[$mdlName], $objectIds);
+     		$ids[$mdlName]  = array_unique($ids[$mdlName]);
+     	}
+     	
+     	//get updated data after apply formulas
+     	foreach($ids as $mdlName => $updatedIds ){
+//      		$updatedData[$mdlName] = $mdl::findMany($objectIds);
+      		$updatedData[$mdlName] = $mdl::findMany($updatedIds);
+     	}
+//      	\Log::info(\DB::getQueryLog());
+    
+    	return response()->json([
+    			/* 'properties' => $properties,
+    			'uoms'=>$uoms, */
+    			'updatedData'=>$updatedData,
+    			'postData'=>$postData]);
+    }
+    
+    public function getUoms($properties = null,$facility_id)
+    {
+    	$uoms = [];
+    	$model = null;
+    	$withs = [];
+    	$i = 0;
+    	
+    	foreach($properties as $property ){
+    		switch ($property['data']){
+    			case 'PRESS_UOM' :
+    				$withs[] = 'CodePressUom';
+    				$uoms[] = ['id'=>'CodePressUom','targets'=>$i,'COLUMN_NAME'=>'PRESS_UOM'];
+    				break;
+    			case 'TEMP_UOM' :
+    				$withs[] = 'CodeTempUom';
+    				$uoms[] = ['id'=>'CodeTempUom','targets'=>$i,'COLUMN_NAME'=>'TEMP_UOM'];
+    				break;
+    			case 'FL_POWR_UOM' :
+    				$withs[] = 'CodePowerUom';
+    				$uoms[] = ['id'=>'CodePowerUom','targets'=>$i,'COLUMN_NAME'=>'FL_POWR_UOM'];
+    				break;
+    			case 'FL_ENGY_UOM' :
+	    			$withs[] = 'CodeEnergyUom';
+	    			$uoms[] = ['id'=>'CodeEnergyUom','targets'=>$i,'COLUMN_NAME'=>'FL_ENGY_UOM'];
+	    			break;
+	    		case 'FL_MASS_UOM' :
+		    		$withs[] = 'CodeMassUom';
+		    		$uoms[] = ['id'=>'CodeMassUom','targets'=>$i,'COLUMN_NAME'=>'FL_MASS_UOM'];
+		    		break;
+		    	case 'FL_VOL_UOM' :
+	    			$withs[] = 'CodeVolUom';
+	    			$uoms[] = ['id'=>'CodeVolUom','targets'=>$i,'COLUMN_NAME'=>'FL_VOL_UOM'];
+	    			break;
+    		}
+    		$i++;
+    	}
+    	
+    	if (count($withs)>0) {
+    		$model = StandardUom::with($withs)->where('ID', $facility_id)->first();
+	    	if ($model==null) {
+		    	$model = Facility::with($withs)->where('ID', $facility_id)->first();
+	    	}
+    	}
+//     	\DB::enableQueryLog();
+    	if ($model!=null) {
+	    	foreach($uoms as $key => $uom ){
+	    		$uom['data'] = $model->$uom['id'];
+	    		$uoms[$key] = $uom;
+	    	}
+	    	return $uoms;
+    	}
+    	return [];
+    	 
+//     	\Log::info(\DB::getQueryLog());
+    }
+    
+    public function getUomType($uom_type = null,$facility_id)
+    {
+    	if ($uom_type==null) {
+    		$uom_type = StandardUom::where('facility_id', $facility_id)->select('UOM_TYPE')->first();
+    		if ($uom_type==null) {
+	    		$uom_type = Facility::where('facility_id', $facility_id)->select('UOM_TYPE')->first();
+    		}
+    	}
+    	return $uom_type;
+    }
 }

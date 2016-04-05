@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Models;
-use App\Models\DynamicModel;
+use App\Models\UomModel;
 
-class Facility extends DynamicModel
+class Facility extends UomModel
 {
 	protected $table = 'FACILITY';
 	/**
@@ -31,5 +31,4 @@ class Facility extends DynamicModel
 		}
 		return $this->hasMany('App\Models\EnergyUnitGroup', 'FACILITY_ID', 'ID');
 	}
-	
 }

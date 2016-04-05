@@ -14,17 +14,17 @@
 <meta name="description" content="">
 <meta name="_token" content="{{ app('Illuminate\Encryption\Encrypter')->encrypt(csrf_token()) }}" />
 <!-- <link rel="stylesheet" href="common/css/jquery-ui.css" /> -->
-<link rel="stylesheet" href="/common/css/style.css" />
 <link rel="stylesheet" href="/css/css3menu0/style.css?4" />
 <link rel="stylesheet" href="/common/css/jquery-ui.css" />
-<script src="/common/js/jquery-1.10.2.js"></script>
+<script src="/common/js/jquery-2.1.3.js"></script>
 <script type="text/javascript" src="/common/js/jquery.dataTables.js"></script> 
-<script type="text/javascript" src="/common/js/dataTables.fixedColumns.js"></script>
+<script type="text/javascript" src="/common/js/dataTables.fixedColumns.min.js"></script>
 <link rel="stylesheet" href="/common/css/jquery.dataTables.css">
 <script type="text/javascript" src="/common/js/utils.js"></script>
- 	<link rel="stylesheet" href="/common/css/jquery-ui.css" />
-	<script src="/common/js/jquery-ui.js"></script>
+<link rel="stylesheet" href="/common/css/jquery-ui.css" />
+<script src="/common/js/jquery-ui.js"></script>
 @yield('script')
+	<link rel="stylesheet" href="/common/css/style.css" />
 </head>
 
 <body style="margin:0; overeu-x:hidden">
