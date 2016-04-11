@@ -74,7 +74,7 @@ class CodeController extends EBController {
      		$where['phase_id']= $phase_type;
      	}
      	
-     	\DB::enableQueryLog();
+//      	\DB::enableQueryLog();
      	$dataSet = Flow::join($codeFlowPhase,'PHASE_ID', '=', "$codeFlowPhase.ID")
      					->where($where)
       					->whereDate('EFFECTIVE_DATE', '<=', $occur_date)
@@ -95,7 +95,7 @@ class CodeController extends EBController {
  				     	->orderBy('FL_NAME')
  						->orderBy('FL_FLOW_PHASE')
  						->get();
- 		\Log::info(\DB::getQueryLog());
+//  		\Log::info(\DB::getQueryLog());
     	
     	$properties = CfgFieldProps::where('TABLE_NAME', '=', $dcTable)
             ->where('USE_FDC', '=', 1)
@@ -132,7 +132,15 @@ class CodeController extends EBController {
      	$flow = Flow::getTableName();
      	$updatedData = [];
      	$ids = [];
-//      	\DB::enableQueryLog();
+     	$affectedIds = [];
+     	//      	\DB::enableQueryLog();
+     	if (!array_key_exists("FlowDataValue", $editedData)&&array_key_exists("FlowDataFdcValue", $editedData)) {
+     		$editedData["FlowDataValue"] = [];
+     		foreach ($editedData["FlowDataFdcValue"] as $element) {
+     			$editedData["FlowDataValue"][] = ['FLOW_ID'=>$element['FLOW_ID']];
+     			$affectedIds[]=$element['FLOW_ID'];
+     		}
+     	}
      	foreach($editedData as $mdlName => $mdlData ){
      		$mdl = "App\Models\\".$mdlName;
 //      		$updatedData[$mdlName] = [];
@@ -140,7 +148,13 @@ class CodeController extends EBController {
      		foreach($mdlData as $key => $newData ){
      			$columns = ['FLOW_ID'=>$newData['FLOW_ID'],'OCCUR_DATE'=>$occur_date];
       			$newData['OCCUR_DATE']=$occur_date;
-     			$returnRecord = $mdl::updateOrCreate($columns, $newData);
+      			if ($mdlName=='FlowDataValue') {
+      				$options = [config("constants.flowPhase")=>$phase_type];
+      			}
+      			else{
+	     			$options = null;
+      			}
+     			$returnRecord = $mdl::updateOrCreateWithCalculating($columns, $newData,$options);
      			$ids[$mdlName][] = $returnRecord['ID'];
 //      			$updatedData[$mdlName][] = $returnRecord;
 //      			$objectIds[]=$newData['FLOW_ID'];
@@ -158,7 +172,6 @@ class CodeController extends EBController {
      	}
      	
      	//get affected ids
-     	$affectedIds = [];
      	foreach($editedData as $mdlName => $mdlData ){
      		foreach($mdlData as $key => $newData ){
      			$columns = array_keys($newData);

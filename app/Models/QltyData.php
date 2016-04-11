@@ -26,4 +26,8 @@ class QltyData extends DynamicModel
 							'ENGY_RATE'];
 	
 	
+	public function CodeQltySrcType()
+	{
+		return $this->belongsTo('App\Models\CodeQltySrcType', 'SRC_TYPE', 'ID');
+	}
 }

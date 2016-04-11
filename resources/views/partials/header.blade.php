@@ -1,7 +1,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%"
-	id="table3" style="background-color: #666666;">
+	id="table3">
 	<tr>
-		<td style="border-bottom: 1px solid #000000" height="100">
+		<td style="border-bottom: 1px solid #000000;background-color: #666666;" height="100">
 			<div
 				style="position: absolute; height: 32px; z-index: 1; left: 350px; top: 43px"
 				id="submenu">
