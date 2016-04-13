@@ -2,6 +2,8 @@
 
 use App\Models\DynamicModel;
 use App\Models\UserWorkspace;
+use App\Models\UserRole;
+
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -98,18 +100,63 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 	 */
 	public function role()
 	{
+		/* $userRole = $this->UserRole();
+		$roles = $userRole->pluck('CODE'); */
 		
+		$rs = [];
+		$row= UserUserRole::with(['UserRoleRight' => function ($query) {
+															$query->with('UserRight');
+													}]
+							)->where('USER_ID',$this->ID);
+		
+							
+		$roles = $row->get();
+		
+		foreach ($roles as $role){
+			$rs[] = $role->UserRoleRight->UserRight->CODE;
+		}
 // 		\DB::enableQueryLog();
 		//\Log::info(var_dump($this));
-		// $user_user_role = \DB::table('user_user_role')->where('role_id', $this->id)->first();
-		$uk = $this->user_user_role();
-		$uur = $uk->first();
-		$ur = $uur->user_role()->first();
-		$role = $ur->CODE;
+		// $UserUserRole = \DB::table('UserUserRole')->where('role_id', $this->id)->first();
+		/* $uk = $this->with('UserUserRole.UserRole')->get();
+		$uk = $this->UserUserRole()->get(); */
+		/* $uur = $uk->first();
+		$ur = $uur->UserRole()->get(['CODE']); */
+// 		$ur = $uur->UserRole()->first();
+// 		$role = $ur->CODE;
 // 		\Log::error('hehe------------ROLE----------'.$role .' HEHE' );
 //         \Log::info(\DB::getQueryLog());  
-		return $role ;
+		
+		return $rs;
 	}
+	
+	
+	public function UserRole()
+	{
+		return $this->belongsToMany ('App\Models\UserRole',UserUserRole::getTableName(),$this->user_id_col,'ROLE_ID');
+	}
+	
+	
+	public function right()
+	{
+	
+		$uk = $this->UserUserRole();
+		$uur = $uk->first();
+		$ur = $uur->UserRole()->get(['CODE']);
+		return $ur ;
+	}
+	
+	
+	
+	/* public function hasRight($rights){
+		$result = true;
+		if ($rights&&is_array($rights)&&count($rights)>0) {
+			$available = $this->has('UserUserRole.UserRole.CODE','in',$rights);
+			$result = $available!=null;
+		}
+		return $result ;
+	}
+	 */
 	
 	
 	/**
@@ -117,11 +164,15 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 	 *
 	 * @return Illuminate\Database\Eloquent\Relations\hasMany
 	 */
-	public function user_user_role()
+	public function UserUserRole()
 	{
 		return $this->hasMany('App\Models\UserUserRole',$this->user_id_col, $this->primaryKey);
 	}
 
+	public function UserRoleRight()
+	{
+		return $this->hasMany('App\Models\UserRoleRight',$this->user_id_col, $this->primaryKey);
+	}
 	/**
 	 * One to Many relation
 	 *

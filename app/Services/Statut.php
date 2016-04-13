@@ -17,6 +17,7 @@ class Statut  {
 		$role = $ur->CODE;
 		session()->put('statut', $role); */
 		session()->put('statut', $login->user->role());
+// 		session()->put('rights', $login->user->right());
 		
 // 		session()->put('statut', $login->user->role->slug);
 	}

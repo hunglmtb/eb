@@ -19,7 +19,7 @@ class UserUserRole extends DynamicModel  {
 	 *
 	 * @return Illuminate\Database\Eloquent\Relations\hasMany
 	 */
-	public function user_role() 
+	public function UserRole() 
 	{
 		return $this->belongsTo('App\Models\UserRole', $this->role_id_col, $this->primaryKey);
 	}
@@ -34,4 +34,8 @@ class UserUserRole extends DynamicModel  {
 		return $this->belongsTo('App\Models\User',  $this->user_id_col, $this->primaryKey);
 	}
 	
+	public function UserRoleRight()
+	{
+		return $this->belongsTo ('App\Models\UserRoleRight','ROLE_ID','ROLE_ID');
+	}
 }

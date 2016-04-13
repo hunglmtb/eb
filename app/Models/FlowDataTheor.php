@@ -2,6 +2,7 @@
 
 namespace App\Models;
 use App\Models\DynamicModel;
+use App\Models\CfgFieldProps;
 
 class FlowDataTheor extends DynamicModel
 {
@@ -26,4 +27,39 @@ class FlowDataTheor extends DynamicModel
 							 'STATUS_BY',
 							 'STATUS_DATE',
 							 'RECORD_STATUS'];
+	
+	public static function calculateBeforeUpdateOrCreate(array $attributes, array $values = [],$options=null){
+	
+		if($options
+				&&array_key_exists("FLOW_ID",$attributes)
+				&&array_key_exists("OCCUR_DATE",$attributes)){
+			
+			$object_id = $attributes["FLOW_ID"];
+			$occur_date = $attributes["OCCUR_DATE"];
+			$fields = CfgFieldProps::where('TABLE_NAME', '=', FlowDataFdcValue::getTableName())
+									->where('USE_FDC', '=', 1)
+									->where('COLUMN_NAME', '!=','CTV')
+									->orderBy('FIELD_ORDER')
+									->select('COLUMN_NAME')
+									->get();
+			$theoFields = CfgFieldProps::where('TABLE_NAME', '=', FlowDataTheor::getTableName())
+									->where('USE_FDC', '=', 1)
+									->orderBy('FIELD_ORDER')
+									->select('COLUMN_NAME')
+									->get();
+			
+			$fieldArray =array_column($fields->toArray(), 'COLUMN_NAME');
+			$theoFieldArray =array_column($theoFields->toArray(), 'COLUMN_NAME');
+			$fdcValues = FlowDataFdcValue::where(array(['FLOW_ID',$object_id],['OCCUR_DATE',$occur_date]))
+											->select($fieldArray)
+											->first();
+			
+			foreach ($theoFieldArray as $field){
+				if (!array_key_exists($field, $values)) {
+					$values[$field]= $fdcValues->$field;
+				}
+			}
+		}
+		return $values;
+	}
 }

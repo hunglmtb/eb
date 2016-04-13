@@ -26,7 +26,7 @@ class UserRoleRight extends DynamicModel  {
 	 *
 	 * @return Illuminate\Database\Eloquent\Relations\hasMany
 	 */
-	public function user_right()
+	public function UserRight()
 	{
 		return $this->belongsTo('App\Models\UserRight','RIGHT_ID', 'ID');
 	}

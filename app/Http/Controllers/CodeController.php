@@ -55,7 +55,8 @@ class CodeController extends EBController {
     {
 //     	sleep(2);
     	$postData = $request->all();
-    	$mdl = "App\Models\\".($postData[config("constants.tabTable")]);
+    	$mdlName = $postData[config("constants.tabTable")];
+    	$mdl = "App\Models\\$mdlName";
      	$dcTable = $mdl::getTableName();//"FLOW_DATA_VALUE";
      	$record_freq = $postData['CodeReadingFrequency'];
      	$phase_type = $postData['CodeFlowPhase'];
@@ -98,22 +99,26 @@ class CodeController extends EBController {
 //  		\Log::info(\DB::getQueryLog());
     	
     	$properties = CfgFieldProps::where('TABLE_NAME', '=', $dcTable)
-            ->where('USE_FDC', '=', 1)
-            ->orderBy('FIELD_ORDER')
-            ->get(['COLUMN_NAME as data','COLUMN_NAME as name', 'FDC_WIDTH as width','LABEL as title',"DATA_METHOD"]);
+						            ->where('USE_FDC', '=', 1)
+						            ->orderBy('FIELD_ORDER')
+						            ->get(['COLUMN_NAME as data','COLUMN_NAME as name', 'FDC_WIDTH as width','LABEL as title',"DATA_METHOD"]);
     	
         $properties->prepend(['data'=>'FL_NAME','title'=>'Object name','width'=>230]);
         
         $uoms = $this->getUoms($properties,$facility_id);
-		
+        
+     	$locked = \Helper::checkLockedTable($mdlName,$occur_date,$facility_id);
+        
         $dswk = $dataSet->keyBy('DT_RowId');
         $objectIds = $dswk->keys();
         
-    	return response()->json(['properties' => $properties,
-    							'dataSet'=>$dataSet,
-    							'uoms'=>$uoms,
-     							'objectIds'=>$objectIds,
-    							'postData'=>$postData]);
+    	return response()->json(['properties'	=> $properties,
+	    							'dataSet'	=>$dataSet,
+	    							'uoms'		=>$uoms,
+	     							'objectIds'	=>$objectIds,
+	    							'postData'	=>$postData,
+    								'locked'	=>$locked,
+	    							'rights'	=> session('statut')]);
     }
     
     
@@ -130,83 +135,118 @@ class CodeController extends EBController {
      	$objectIds = $postData['objectIds'];
      	
      	$flow = Flow::getTableName();
-     	$updatedData = [];
-     	$ids = [];
      	$affectedIds = [];
      	//      	\DB::enableQueryLog();
-     	if (!array_key_exists("FlowDataValue", $editedData)&&array_key_exists("FlowDataFdcValue", $editedData)) {
-     		$editedData["FlowDataValue"] = [];
+     	if (array_key_exists("FlowDataFdcValue", $editedData)) {
+     		if (!array_key_exists("FlowDataValue", $editedData)){
+     			$editedData["FlowDataValue"] = [];
+     		}
+     		if (!array_key_exists("FlowDataTheor", $editedData)){
+     			$editedData["FlowDataTheor"] = [];
+     		}
      		foreach ($editedData["FlowDataFdcValue"] as $element) {
-     			$editedData["FlowDataValue"][] = ['FLOW_ID'=>$element['FLOW_ID']];
+     			$key = array_search($element['FLOW_ID'], array_column($editedData["FlowDataValue"], 'FLOW_ID'));
+     			if ($key===FALSE) {
+	     			$editedData["FlowDataValue"][] = ['FLOW_ID'=>$element['FLOW_ID']];
+     			}
+     			$key = array_search($element['FLOW_ID'], array_column($editedData["FlowDataTheor"], 'FLOW_ID'));
+     			if ($key===FALSE) {
+     				$editedData["FlowDataTheor"][] = ['FLOW_ID'=>$element['FLOW_ID']];
+     			}
      			$affectedIds[]=$element['FLOW_ID'];
      		}
      	}
-     	foreach($editedData as $mdlName => $mdlData ){
-     		$mdl = "App\Models\\".$mdlName;
-//      		$updatedData[$mdlName] = [];
-     		$ids[$mdlName] = [];
-     		foreach($mdlData as $key => $newData ){
-     			$columns = ['FLOW_ID'=>$newData['FLOW_ID'],'OCCUR_DATE'=>$occur_date];
-      			$newData['OCCUR_DATE']=$occur_date;
-      			if ($mdlName=='FlowDataValue') {
-      				$options = [config("constants.flowPhase")=>$phase_type];
-      			}
-      			else{
-	     			$options = null;
-      			}
-     			$returnRecord = $mdl::updateOrCreateWithCalculating($columns, $newData,$options);
-     			$ids[$mdlName][] = $returnRecord['ID'];
-//      			$updatedData[$mdlName][] = $returnRecord;
-//      			$objectIds[]=$newData['FLOW_ID'];
-     		}
-     	}
      	
-     	$objectIds = array_unique($objectIds);
-     	//doFormula in config table
-     	$affectColumns = [];
-     	foreach($editedData as $mdlName => $mdlData ){
-     		$cls  = \FormulaHelpers::doFormula($mdlName,'ID',$ids[$mdlName]);
-     		if (is_array($cls)&&count($cls)>0) {
-	     		$affectColumns[$mdlName] = $cls;
-     		}
+     	try
+     	{
+     		$resultTransaction = \DB::transaction(function () use ($editedData,$objectIds,$affectedIds,$occur_date,$phase_type,$facility_id){
+     			$lockeds= [];
+     			$ids = [];
+     			foreach($editedData as $mdlName => $mdlData ){
+		     		$mdl = "App\Models\\".$mdlName;
+		     		$locked = \Helper::checkLockedTable($mdlName,$occur_date,$facility_id);
+		     		if ($locked) {
+		     			$lockeds[$mdlName] = "Data of $mdlName with facility $facility_id was locked on $occur_date ";
+		     			unset($editedData[$mdlName]);
+		     			break;
+		     		}
+		     		$ids[$mdlName] = [];
+		     		foreach($mdlData as $key => $newData ){
+		     			$columns = ['FLOW_ID'=>$newData['FLOW_ID'],'OCCUR_DATE'=>$occur_date];
+		      			$newData['OCCUR_DATE']=$occur_date;
+		      			if ($mdlName=='FlowDataValue') {
+		      				$options = [config("constants.flowPhase")=>$phase_type];
+		      			}
+		      			elseif ($mdlName=='FlowDataTheor'){
+		      				$options = true;
+		      			}
+		      			else{
+			     			$options = null;
+		      			}
+		     			$returnRecord = $mdl::updateOrCreateWithCalculating($columns, $newData,$options);
+		     			$ids[$mdlName][] = $returnRecord['ID'];
+		     		}
+		     	}
+		     	
+		     	$objectIds = array_unique($objectIds);
+		     	//doFormula in config table
+		     	$affectColumns = [];
+		     	foreach($editedData as $mdlName => $mdlData ){
+		     		$cls  = \FormulaHelpers::doFormula($mdlName,'ID',$ids[$mdlName]);
+		     		if (is_array($cls)&&count($cls)>0) {
+			     		$affectColumns[$mdlName] = $cls;
+		     		}
+		     	}
+		     	
+		     	//get affected ids
+		     	foreach($editedData as $mdlName => $mdlData ){
+		     		foreach($mdlData as $key => $newData ){
+		     			$columns = array_keys($newData);
+		     			if (array_key_exists($mdlName, $affectColumns)) {
+			     			$columns = array_merge($columns,$affectColumns[$mdlName]);
+		     			}
+						$columns = array_diff($columns, ['FLOW_ID']);
+		     			
+			     		$aIds = \FormulaHelpers::getAffects($mdlName,$columns,$newData['FLOW_ID'],'FLOW');
+			     		$affectedIds = array_merge($affectedIds,$aIds);
+		     		}	     
+		     	}
+		     	$affectedIds = array_unique($affectedIds);
+		     	
+		     	//apply Formula in formula table
+		     	foreach($editedData as $mdlName => $mdlData ){
+		     		$upids = \FormulaHelpers::applyFormula($mdlName,$affectedIds,$occur_date,'FLOW',true);
+		     		$ids[$mdlName] = array_merge($ids[$mdlName], $upids);
+		     		$ids[$mdlName]  = array_unique($ids[$mdlName]);
+		     	}
+		     	$resultTr = [];
+		     	if (count($lockeds)>0) {
+			     	$resultTr['lockeds'] = $lockeds;
+		     	}
+		     	$resultTr['ids']=$ids;
+		     	return $resultTr;
+	     		
+	     	});
      	}
-     	
-     	//get affected ids
-     	foreach($editedData as $mdlName => $mdlData ){
-     		foreach($mdlData as $key => $newData ){
-     			$columns = array_keys($newData);
-     			if (array_key_exists($mdlName, $affectColumns)) {
-	     			$columns = array_merge($columns,$affectColumns[$mdlName]);
-     			}
-				$columns = array_diff($columns, ['FLOW_ID']);
-     			
-	     		$aIds = \FormulaHelpers::getAffects($mdlName,$columns,$newData['FLOW_ID'],'FLOW');
-	     		$affectedIds = array_merge($affectedIds,$aIds);
-     		}	     
-     	}
-     	$affectedIds = array_unique($affectedIds);
-     	
-     	//apply Formula in formula table
-     	foreach($editedData as $mdlName => $mdlData ){
-     		$upids = \FormulaHelpers::applyFormula($mdlName,$affectedIds,$occur_date,'FLOW',true);
-     		$ids[$mdlName] = array_merge($ids[$mdlName], $upids);
-//      		$ids[$mdlName] = array_intersect($ids[$mdlName], $objectIds);
-     		$ids[$mdlName]  = array_unique($ids[$mdlName]);
+     	catch (\Exception $e)
+     	{
+     		throw $e;
      	}
      	
      	//get updated data after apply formulas
-     	foreach($ids as $mdlName => $updatedIds ){
+     	$updatedData = [];
+     	foreach($resultTransaction['ids'] as $mdlName => $updatedIds ){
 //      		$updatedData[$mdlName] = $mdl::findMany($objectIds);
      		$mdl = "App\Models\\".$mdlName;
      		$updatedData[$mdlName] = $mdl::findMany($updatedIds);
      	}
 //      	\Log::info(\DB::getQueryLog());
     
-    	return response()->json([
-    			/* 'properties' => $properties,
-    			'uoms'=>$uoms, */
-    			'updatedData'=>$updatedData,
-    			'postData'=>$postData]);
+     	$results = ['updatedData'=>$updatedData,'postData'=>$postData];
+     	if (array_key_exists('lockeds', $resultTransaction)) {
+	     	$results['lockeds'] = $resultTransaction['lockeds'];
+     	}
+    	return response()->json($results);
     }
     
     public function getUoms($properties = null,$facility_id)

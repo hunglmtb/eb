@@ -85,6 +85,7 @@ class FormulaHelpers {
     										foreach($x_where_fields as $x_where_field)
     										{
     											$x_where_field_parts=explode('=',trim($x_where_field));
+    											$is_raw_value = false;
     											if(count($x_where_field_parts)>1)
     											{
     												$v_val=$x_where_field_parts[1];

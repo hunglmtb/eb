@@ -1,4 +1,5 @@
 <?php
+use App\Models\LockTable;
 class Helper {
 	public static function filter($option=null) {
 		if ($option==null) return;
@@ -76,5 +77,15 @@ class Helper {
 		
 	
 		echo $htmlFilter;
+	}
+	
+	
+	public static function checkLockedTable($mdlName,$occur_date,$facility_id) {
+		$mdl = "App\Models\\".$mdlName;
+		$tableName = $mdl::getTableName();
+		$lockTable = LockTable::where(['TABLE_NAME'=>$tableName,'FACILITY_ID'=>$facility_id])
+		      					->whereDate('LOCK_DATE', '>=', $occur_date)
+								->first();
+		return $lockTable!=null&&$lockTable!=false;
 	}
 }

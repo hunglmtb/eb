@@ -125,7 +125,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 //  										var $th = $(td).closest('table').find('th').eq($(td).index());
 // 								      	if ( cellData < 1 ) {
 // 											$(td).attr('tabindex', tabindex++);
-               				 			if(data.properties[col].DATA_METHOD==1&&data.properties[col].DATA_METHOD=='1'){
+               				 			if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
 								        	$(td).editable({
 								        	    type : 'number',
 								        	    step: 'any',
@@ -234,26 +234,31 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 	actions.saveSuccess =  function(data){
 		var postData = data.postData;
 		for (var key in data.updatedData) {
-			table = $('#table_'+key).DataTable();
-			$.each(data.updatedData[key], function( index, value) {
-				row = table.row( '#'+value['FLOW_ID'] );
-				var tdata = row.data();
-				if( typeof(tdata) !== "undefined" && tdata !== null ){
-					for (var pkey in value) {
-						if(tdata.hasOwnProperty(pkey)){
-							tdata[pkey] = value[pkey];
+			if($('#table_'+key).children().length>0){
+				table = $('#table_'+key).DataTable();
+				$.each(data.updatedData[key], function( index, value) {
+					row = table.row( '#'+value['FLOW_ID'] );
+					var tdata = row.data();
+					if( typeof(tdata) !== "undefined" && tdata !== null ){
+						for (var pkey in value) {
+							if(tdata.hasOwnProperty(pkey)){
+								tdata[pkey] = value[pkey];
+							}
 						}
+						row.data(tdata).draw();
+						$.each($(row.node()).find('td'), function( index, td) {
+				        	$(td).css('color', '');
+				        });
 					}
-					row.data(tdata).draw();
-					$.each($(row.node()).find('td'), function( index, td) {
-			        	$(td).css('color', '');
-			        });
-				}
-	        });
+		        });
+			}
 		}
 
 		actions.editedData = {};
 		alert(JSON.stringify(postData));
+		if(data.hasOwnProperty('lockeds')){
+			alert(JSON.stringify(data.lockeds));
+		}
  	};
 </script>
 @stop
