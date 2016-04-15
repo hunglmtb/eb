@@ -55,12 +55,13 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 		    	}
 		    	var eData = actions.editedData[tab];
 	        	var result = $.grep(eData, function(e){ 
-								               	 return e['FLOW_ID'] == rowData['FLOW_ID'];
+								               	 return e[actions.type.idName] == rowData[actions.type.idName];
 								                });
 	        	var table = $('#table_'+tab).DataTable();
 	        	var columnName = table.settings()[0].aoColumns[col].data;
 	        	if (result.length == 0) {
-		        	var editedData = {"FLOW_ID":rowData['X_FL_ID']};
+		        	var editedData = {};
+		        	editedData[actions.type.idName] = rowData[actions.type.xIdName];
 		        	editedData[columnName] = newValue;
 	        		eData.push(editedData);
 	        	}
@@ -162,7 +163,10 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 		var phase = {"targets": 0,
 					"render": function ( data, type, rowData ) {
 								var html = data+"<div class='phase "+rowData['PHASE_CODE']+"'>"+
-			        						rowData['PHASE_NAME']+"</div>" ;
+			        						rowData['PHASE_NAME']+"</div>";
+								if(rowData.hasOwnProperty('STATUS_NAME')){
+									html +="<span class='eustatus'>"+rowData['STATUS_NAME']+"</span>";
+								}
 								return html;
 							}
 		  			};
@@ -221,7 +225,9 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 		var dataNotMatching = false;
 		if (!noData&&actions.loadPostParams) {
 			for (var key in actions.loadPostParams) {
-				dataNotMatching = actions.loadPostParams[key]!=postData[key];
+				if($('.'+key).css('display') != 'none'){
+					dataNotMatching = actions.loadPostParams[key]!=postData[key];
+				} 
 				if(dataNotMatching) break;
 			}
 		}
@@ -237,7 +243,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 			if($('#table_'+key).children().length>0){
 				table = $('#table_'+key).DataTable();
 				$.each(data.updatedData[key], function( index, value) {
-					row = table.row( '#'+value['FLOW_ID'] );
+					row = table.row( '#'+value[actions.type.idName] );
 					var tdata = row.data();
 					if( typeof(tdata) !== "undefined" && tdata !== null ){
 						for (var pkey in value) {

@@ -3,11 +3,10 @@
 namespace App\Models;
 use App\Models\DynamicModel;
 
-class Flow extends DynamicModel
+class EuPhaseConfig extends DynamicModel
 {
-	protected $table = 'FLOW';
+	protected $table = 'EU_PHASE_CONFIG';
 	protected $primaryKey = 'ID';
-	
 	
 	public function CodeFlowPhase()
 	{

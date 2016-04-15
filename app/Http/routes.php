@@ -87,9 +87,10 @@ Route::post('password/reset', 'Auth\PasswordController@postReset');
 Route::get('dc/flow', 'ProductManagementController@flow');
 Route::get('dc/eu', 'ProductManagementController@eu');
 Route::get('dc/storage', 'ProductManagementController@storage');
-Route::post('code/load',['uses' =>'CodeController@load','middleware' => 'saveWorkspace']);
+Route::post('code/load',['uses' =>'FlowController@load','middleware' => 'saveWorkspace']);
 Route::post('code/list', 'CodeController@getCodes');
 Route::post('code/save', 'CodeController@save');
+Route::post('code/loadeu',['uses' =>'EuController@load','middleware' => 'saveWorkspace']);
 
 //---------
 Route::post('fo/loadSafety', 'FOController@loadSafety');

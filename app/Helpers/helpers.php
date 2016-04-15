@@ -18,7 +18,7 @@ class Helper {
 		$id=array_key_exists('id', $option)?$option['id']:false;
 		$name=array_key_exists('name', $option)?$option['name']:false;
 	
-		$htmlFilter = 	"<div class=\"filter\"><div><b>$filterName</b>".
+		$htmlFilter = 	"<div class=\"filter $name\"><div><b>$filterName</b>".
 				'</div>
 				<select id="'.$id.'" size="1" name="'.$name.'">';
 		if ($default) {
@@ -80,10 +80,10 @@ class Helper {
 	}
 	
 	
-	public static function checkLockedTable($mdlName,$occur_date,$facility_id) {
-		$mdl = "App\Models\\".$mdlName;
-		$tableName = $mdl::getTableName();
-		$lockTable = LockTable::where(['TABLE_NAME'=>$tableName,'FACILITY_ID'=>$facility_id])
+	public static function checkLockedTable($dcTable,$occur_date,$facility_id) {
+// 		$mdl = "App\Models\\".$mdlName;
+// 		$tableName = $mdl::getTableName();
+		$lockTable = LockTable::where(['TABLE_NAME'=>$dcTable,'FACILITY_ID'=>$facility_id])
 		      					->whereDate('LOCK_DATE', '>=', $occur_date)
 								->first();
 		return $lockTable!=null&&$lockTable!=false;

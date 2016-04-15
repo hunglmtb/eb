@@ -83,7 +83,9 @@ var actions = {
 				filterGroup = javascriptFilterGroups[key];
 				for (var jkey in filterGroup) {
 					entry = filterGroup[jkey];
-					params[entry.id] = $('#'+entry.id).val();
+					if($('.'+entry.id).css('display') != 'none'){ 
+						   params[entry.id] = $('#'+entry.id).val();
+					}
 				}
 			}
 			actions.loadPostParams = params;
@@ -156,8 +158,10 @@ var actions = {
 				filterGroup = javascriptFilterGroups[key];
 				for (var jkey in filterGroup) {
 					entry = filterGroup[jkey];
-					if ($('#'+entry.id).val()!=postData[entry.id]) {
-						$('#'+entry.id).val(postData[entry.id]).trigger('change');
+					if($('.'+entry.id).css('display') != 'none'){
+						if ($('#'+entry.id).val()!=postData[entry.id]) {
+							$('#'+entry.id).val(postData[entry.id]).trigger('change');
+						}
 					}
 				}
 			}

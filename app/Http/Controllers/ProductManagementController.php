@@ -20,7 +20,8 @@ class ProductManagementController extends EBController {
 	
 	public function eu() {
 		$filterGroups = array('productionFilterGroup'=>['EnergyUnitGroup'],
-							 'frequenceFilterGroup'=> ['CodeReadingFrequency','CodeFlowPhase']
+							  'dateFilterGroup'=> array(['id'=>'date_begin','name'=>'Date']),
+							'frequenceFilterGroup'=> ['CodeReadingFrequency','CodeFlowPhase','CodeEventType','CodeAllocType']
 						);
 		return view ( 'front.eu',['filters'=>$filterGroups]);
 	}
