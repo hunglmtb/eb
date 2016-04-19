@@ -5,7 +5,8 @@ use App\Models\CodeFlowPhase;
 use App\Models\EnergyUnit;
 use App\Models\CodeStatus;
 use App\Models\EuPhaseConfig;
-
+use App\Models\EnergyUnitDataAlloc;
+use App\Models\EnergyUnitCompDataAlloc;
 
 class EuController extends CodeController {
     
@@ -39,27 +40,28 @@ class EuController extends CodeController {
     					->where($euWheres)
 				    	->whereDate('EFFECTIVE_DATE', '<=', $occur_date)
 				    	->leftJoin($dcTable, function($join) use ($eu,$dcTable,$occur_date,$alloc_type,$euPhaseConfig){
-										    	//TODO add table name 
-									    		$join->on("$eu.ID", '=', "$dcTable.EU_ID")
- 					 				    			->on("$dcTable.FLOW_PHASE",'=',"$euPhaseConfig.FLOW_PHASE")
- 									    			->where("$dcTable.OCCUR_DATE",'=',$occur_date);
+											    	//TODO add table name 
+										    		$join->on("$eu.ID", '=', "$dcTable.EU_ID")
+	 					 				    			->on("$dcTable.FLOW_PHASE",'=',"$euPhaseConfig.FLOW_PHASE")
+	 									    			->where("$dcTable.OCCUR_DATE",'=',$occur_date);
 									    		
-										    	if (($alloc_type > 0 && 
-										    			($dcTable == "ENERGY_UNIT_DATA_ALLOC" ||
-										    					$dcTable == "ENERGY_UNIT_COMP_DATA_ALLOC"))) 
-								    				$join->where("$dcTable.ALLOC_TYPE",'=',$alloc_type);
+ 									    			$energyUnitDataAlloc = EnergyUnitDataAlloc::getTableName();
+ 									    			$energyUnitCompDataAlloc = EnergyUnitCompDataAlloc::getTableName();
+											    	if (($alloc_type > 0 && 
+											    			($dcTable == $energyUnitDataAlloc ||
+											    					$dcTable == $energyUnitCompDataAlloc))) 
+									    				$join->where("$dcTable.ALLOC_TYPE",'=',$alloc_type);
 				    	})
 // 				    	->with($withs)
 				    	->select(
 				    			"$eu.name as $dcTable",
-				    			"$eu.ID as DT_RowId",
+				    			"$euPhaseConfig.ID as DT_RowId",
  				    			"$codeFlowPhase.name as PHASE_NAME",
 				    			"$eu.ID as X_EU_ID",
    				    			"$euPhaseConfig.FLOW_PHASE as EU_FLOW_PHASE",
   				    			"$codeStatus.NAME as STATUS_NAME",
 				    			"$codeFlowPhase.CODE as PHASE_CODE",
-				    			"$dcTable.*"
-				    			) 
+				    			"$dcTable.*") 
  		    			->orderBy($dcTable)
   		    			->orderBy('EU_FLOW_PHASE')
   		    			->get();

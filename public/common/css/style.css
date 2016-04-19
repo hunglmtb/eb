@@ -73,7 +73,7 @@ input[type="button"]:focus, button:focus{
 }
 
 .filter,.date_input {
-	width: 140px;
+	width: 130px;
 	float: left;
     padding: 3px;
 }

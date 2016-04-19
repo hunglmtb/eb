@@ -25,7 +25,7 @@ ENERGY UNIT DATA CAPTURE
 	var aLoadNeighbor = actions.loadNeighbor;
 	actions.loadNeighbor = function() {
 		var activeTabID = getActiveTabID();
-		if(activeTabID=='EnergyUnitDataAlloc'){
+		if(activeTabID=='EnergyUnitDataAlloc'||activeTabID=='EnergyUnitCompDataAlloc'){
 			$('.CodeAllocType').css('display','block');
 		}
 		else{

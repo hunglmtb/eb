@@ -7,6 +7,11 @@ use App\Models\Flow;
 
 class FlowController extends CodeController {
     
+	protected $type = ['idField'=>'FLOW_ID',
+			'name'=>'FLOW',
+			'dateField'=>'OCCUR_DATE'
+	];
+	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date){
     	$record_freq = $postData['CodeReadingFrequency'];
     	$phase_type = $postData['CodeFlowPhase'];
@@ -48,5 +53,28 @@ class FlowController extends CodeController {
     	$objectIds = $dswk->keys();
     	
     	return ['dataSet'=>$dataSet,'objectIds'=>$objectIds];
+    }
+    
+    public function preSave($editedData, $affectedIds,$postData) {
+    	$flow = Flow::getTableName();
+    	if (array_key_exists("FlowDataFdcValue", $editedData)) {
+    		if (!array_key_exists("FlowDataValue", $editedData)){
+    			$editedData["FlowDataValue"] = [];
+    		}
+    		if (!array_key_exists("FlowDataTheor", $editedData)){
+    			$editedData["FlowDataTheor"] = [];
+    		}
+    		foreach ($editedData["FlowDataFdcValue"] as $element) {
+    			$key = array_search($element['FLOW_ID'], array_column($editedData["FlowDataValue"], 'FLOW_ID'));
+    			if ($key===FALSE) {
+    				$editedData["FlowDataValue"][] = ['FLOW_ID'=>$element['FLOW_ID']];
+    			}
+    			$key = array_search($element['FLOW_ID'], array_column($editedData["FlowDataTheor"], 'FLOW_ID'));
+    			if ($key===FALSE) {
+    				$editedData["FlowDataTheor"][] = ['FLOW_ID'=>$element['FLOW_ID']];
+    			}
+    			$affectedIds[]=$element['FLOW_ID'];
+    		}
+    	}
     }
 }

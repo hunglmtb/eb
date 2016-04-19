@@ -35,4 +35,9 @@ class UomModel extends DynamicModel
 	{
 		return $this->hasMany('App\Models\CodeMassUom', 'UOM_TYPE', 'UOM_TYPE');
 	}
+	public function CodeAllocType()
+	{
+		return $this->hasMany('App\Models\CodeAllocType', 'UOM_TYPE', 'UOM_TYPE');
+	}
+	
 }

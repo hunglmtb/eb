@@ -8,12 +8,15 @@ use App\Models\CodePressUom;
 use App\Models\Facility;
 use App\Models\Flow;
 use App\Models\StandardUom;
+use App\Models\CodeAllocType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 
 class CodeController extends EBController {
 	 
+	protected $type = null;
+	
 	public function getCodes(Request $request)
     {
 		$options = $request->only('type','value', 'dependences');
@@ -91,35 +94,19 @@ class CodeController extends EBController {
      	$occur_date = $postData['date_begin'];
      	$occur_date = Carbon::parse($occur_date);
      	$objectIds = $postData['objectIds'];
-     	
-     	$flow = Flow::getTableName();
      	$affectedIds = [];
-     	//      	\DB::enableQueryLog();
-     	if (array_key_exists("FlowDataFdcValue", $editedData)) {
-     		if (!array_key_exists("FlowDataValue", $editedData)){
-     			$editedData["FlowDataValue"] = [];
-     		}
-     		if (!array_key_exists("FlowDataTheor", $editedData)){
-     			$editedData["FlowDataTheor"] = [];
-     		}
-     		foreach ($editedData["FlowDataFdcValue"] as $element) {
-     			$key = array_search($element['FLOW_ID'], array_column($editedData["FlowDataValue"], 'FLOW_ID'));
-     			if ($key===FALSE) {
-	     			$editedData["FlowDataValue"][] = ['FLOW_ID'=>$element['FLOW_ID']];
-     			}
-     			$key = array_search($element['FLOW_ID'], array_column($editedData["FlowDataTheor"], 'FLOW_ID'));
-     			if ($key===FALSE) {
-     				$editedData["FlowDataTheor"][] = ['FLOW_ID'=>$element['FLOW_ID']];
-     			}
-     			$affectedIds[]=$element['FLOW_ID'];
-     		}
-     	}
+     	
+     	$this->preSave(&$editedData,&$affectedIds,$postData);
      	
      	try
      	{
      		$resultTransaction = \DB::transaction(function () use ($editedData,$objectIds,$affectedIds,$occur_date,$phase_type,$facility_id){
      			$lockeds= [];
      			$ids = [];
+     			$type = $this->type;
+     			$idField = $type['idField'];
+     			$typeName = $type['name'];
+     			$dateField = $type['dateField'];
      			foreach($editedData as $mdlName => $mdlData ){
 		     		$ids[$mdlName] = [];
 		     		$mdl = "App\Models\\".$mdlName;
@@ -130,8 +117,8 @@ class CodeController extends EBController {
 		     			continue;
 		     		}
 		     		foreach($mdlData as $key => $newData ){
-		     			$columns = ['FLOW_ID'=>$newData['FLOW_ID'],'OCCUR_DATE'=>$occur_date];
-		      			$newData['OCCUR_DATE']=$occur_date;
+		     			$columns = [$idField => $newData[$idField],$dateField=>$occur_date];
+		      			$newData[$dateField]=$occur_date;
 		      			if ($mdlName=='FlowDataValue') {
 		      				$options = [config("constants.flowPhase")=>$phase_type];
 		      			}
@@ -163,9 +150,9 @@ class CodeController extends EBController {
 		     			if (array_key_exists($mdlName, $affectColumns)) {
 			     			$columns = array_merge($columns,$affectColumns[$mdlName]);
 		     			}
-						$columns = array_diff($columns, ['FLOW_ID']);
+						$columns = array_diff($columns, [$idField]);
 		     			
-			     		$aIds = \FormulaHelpers::getAffects($mdlName,$columns,$newData['FLOW_ID'],'FLOW');
+			     		$aIds = \FormulaHelpers::getAffects($mdlName,$columns,$newData[$idField],$typeName);
 			     		$affectedIds = array_merge($affectedIds,$aIds);
 		     		}	     
 		     	}
@@ -173,7 +160,7 @@ class CodeController extends EBController {
 		     	
 		     	//apply Formula in formula table
 		     	foreach($editedData as $mdlName => $mdlData ){
-		     		$upids = \FormulaHelpers::applyFormula($mdlName,$affectedIds,$occur_date,'FLOW',true);
+		     		$upids = \FormulaHelpers::applyFormula($mdlName,$affectedIds,$occur_date,$typeName,true);
 		     		$ids[$mdlName] = array_merge($ids[$mdlName], $upids);
 		     		$ids[$mdlName]  = array_unique($ids[$mdlName]);
 		     	}
@@ -207,13 +194,17 @@ class CodeController extends EBController {
     	return response()->json($results);
     }
     
+    public function preSave($editedData, $affectedIds,$postData) {
+    }
+    
     public function getUoms($properties = null,$facility_id)
     {
     	$uoms = [];
     	$model = null;
     	$withs = [];
     	$i = 0;
-
+    	$allocTypes = false;
+    	
     	foreach($properties as $property ){
     		switch ($property['data']){
     			case 'PRESS_UOM' :
@@ -244,6 +235,11 @@ class CodeController extends EBController {
 	    			$withs[] = 'CodeVolUom';
 	    			$uoms[] = ['id'=>'CodeVolUom','targets'=>$i,'COLUMN_NAME'=>'FL_VOL_UOM'];
 	    			break;
+    			case 'ALLOC_TYPE' :
+// 	    				$withs[] = 'CodeAllocType';
+	    				$allocTypes = ['id'=>'CodeAllocType','targets'=>$i,'COLUMN_NAME'=>'ALLOC_TYPE'];
+	    				$allocTypes['data'] = CodeAllocType::all();
+	    				break;
     		}
     		$i++;
     	}
@@ -255,15 +251,18 @@ class CodeController extends EBController {
 	    	}
     	}
 //     	\DB::enableQueryLog();
+    	$rs = [];
     	if ($model!=null) {
 	    	foreach($uoms as $key => $uom ){
 	    		$uom['data'] = $model->$uom['id'];
 	    		$uoms[$key] = $uom;
 	    	}
-	    	return $uoms;
+	    	$rs = $uoms;
     	}
-    	return [];
-    	 
+    	if ($allocTypes) {
+    		$rs[] = $allocTypes;
+    	}
+    	return $rs;
 //     	\Log::info(\DB::getQueryLog());
     }
     
@@ -276,75 +275,5 @@ class CodeController extends EBController {
     		}
     	}
     	return $uom_type;
-    }
-    
-    /*-----------------------------------------------EU----------------------------------------------------------*/
-    public function loadEu(Request $request){
-    	//     	sleep(2);
-    	$postData = $request->all();
-    	$mdlName = $postData[config("constants.tabTable")];
-    	$mdl = "App\Models\\$mdlName";
-    	$dcTable = $mdl::getTableName();//"FLOW_DATA_VALUE";
-    	$record_freq = $postData['CodeReadingFrequency'];
-    	$phase_type = $postData['CodeFlowPhase'];
-    	$facility_id = $postData['Facility'];
-    	$occur_date = $postData['date_begin'];
-    	$occur_date = Carbon::parse($occur_date);
-    
-    	$flow = Flow::getTableName();
-    	$codeFlowPhase = CodeFlowPhase::getTableName();
-    
-    	$where = ['facility_id' => $facility_id, 'FDC_DISPLAY' => 1];
-    	if ($record_freq>0) {
-    		$where["$flow.record_frequency"]= $record_freq;
-    	}
-    	if ($phase_type>0) {
-    		$where['phase_id']= $phase_type;
-    	}
-    
-    	//      	\DB::enableQueryLog();
-    	$dataSet = Flow::join($codeFlowPhase,'PHASE_ID', '=', "$codeFlowPhase.ID")
-				    	->where($where)
-				    	->whereDate('EFFECTIVE_DATE', '<=', $occur_date)
-				    	//      					->where('OCCUR_DATE', '=', $occur_date)
-				    	->leftJoin($dcTable, function($join) use ($flow,$dcTable,$occur_date){
-				    		$join->on("$flow.ID", '=', "$dcTable.flow_id");
-				    		$join->where('OCCUR_DATE','=',$occur_date);
-				    	})
-				    	->select("$flow.name as FL_NAME",
-				    			"$flow.ID as DT_RowId",
-				    			"$flow.ID as X_FL_ID",
-				    			"$flow.phase_id as FL_FLOW_PHASE",
-				    			"$codeFlowPhase.name as PHASE_NAME",
-				    			"$codeFlowPhase.CODE as PHASE_CODE",
-				    			//  				     			"$dcTable.ID as DT_RowId",
-				    			"$dcTable.*"
-				    			)
-		    			->orderBy('FL_NAME')
-		    			->orderBy('FL_FLOW_PHASE')
-		    			->get();
-    			//  		\Log::info(\DB::getQueryLog());
-    	 
-    	$properties = CfgFieldProps::where('TABLE_NAME', '=', $dcTable)
-							    	->where('USE_FDC', '=', 1)
-							    	->orderBy('FIELD_ORDER')
-							    	->get(['COLUMN_NAME as data','COLUMN_NAME as name', 'FDC_WIDTH as width','LABEL as title',"DATA_METHOD"]);
-    	 
-    	$properties->prepend(['data'=>'FL_NAME','title'=>'Object name','width'=>230]);
-    
-    	$uoms = $this->getUoms($properties,$facility_id);
-    
-    	$locked = \Helper::checkLockedTable($mdlName,$occur_date,$facility_id);
-    
-    	$dswk = $dataSet->keyBy('DT_RowId');
-    	$objectIds = $dswk->keys();
-    
-    	return response()->json(['properties'	=> $properties,
-    					'dataSet'	=>$dataSet,
-    					'uoms'		=>$uoms,
-    					'objectIds'	=>$objectIds,
-    					'postData'	=>$postData,
-    					'locked'	=>$locked,
-    					'rights'	=> session('statut')]);
     }
 }

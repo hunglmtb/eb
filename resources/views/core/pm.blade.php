@@ -49,6 +49,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
  				 $(td).trigger(e); // trigger it on document
 			});
 			 */
+	        var table = $('#table_'+tab).DataTable();
 			return function(response, newValue) {
 		    	if (!(tab in actions.editedData)) {
 		    		actions.editedData[tab] = [];
@@ -57,7 +58,6 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 	        	var result = $.grep(eData, function(e){ 
 								               	 return e[actions.type.idName] == rowData[actions.type.idName];
 								                });
-	        	var table = $('#table_'+tab).DataTable();
 	        	var columnName = table.settings()[0].aoColumns[col].data;
 	        	if (result.length == 0) {
 		        	var editedData = {};
@@ -69,7 +69,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 	        		result[0][columnName] = newValue;
 	        	}
 	        	rowData[columnName] = newValue;
- 				table.row( '#'+rowData['DT_RowId'] ).data(rowData);
+  				table.row( '#'+rowData['DT_RowId'] ).data(rowData);
 	        	$(td).css('color', 'red');
 	        	 /* var tabindex = $(this).attr('tabindex');
 	            $('[tabindex=' + (tabindex +1)+ ']').focus(); */
@@ -85,14 +85,14 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 								                return e['ID'] == data;
 								                });
 											if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined" &&result[0].hasOwnProperty('CODE')){
-		                						return result[0]['CODE'];
+		                						return value['COLUMN_NAME']=="ALLOC_TYPE"?result[0]['NAME']:result[0]['CODE'];
 											}
 											return data;
 								                
                 					};
             $.each(collection, function( i, vl ) {
             	vl['value']=vl['ID'];
-            	vl['text']=vl['CODE'];
+            	vl['text']=value['COLUMN_NAME']=="ALLOC_TYPE"?vl['NAME']:vl['CODE'];
             });
             uoms[index]["createdCell"] = function (td, cellData, rowData, row, col) {
                 if(data.properties[col].DATA_METHOD==1&&data.properties[col].DATA_METHOD=='1'){
