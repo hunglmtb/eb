@@ -103,11 +103,17 @@ class AdminController extends Controller {
 					}
 				} else {
 					if($ID != "USER"){
-						$listColumn = ['ID','NAME'];						
+						$listColumn = ['ID','NAME'];
+						
+						if($ID == 'IntObjectType'){
+							$tmps = $model::where(['ACTIVE'=>1])->orderBy('ORDER','ASC')->get ($listColumn);
+						}else{
+							$tmps = $model::all ($listColumn);
+						}
 					}else{
 						$listColumn = ['ID','USERNAME'];
-					}
-					$tmps = $model::all ($listColumn);
+						$tmps = $model::all ($listColumn);
+					}					
 				}
 				
 				foreach ( $tmps as $v ) {
@@ -411,22 +417,26 @@ class AdminController extends Controller {
 	
 				$user = new User;
 				$user->USERNAME = $data['username'];
-				
-				if($data['pass'] != ""){
-					$now = Carbon::now('Europe/London');
-					$user->PASSWORD_CHANGED = date('m/d/Y H:i:s', strtotime($now));
-				}
-				
-				$user->PASSWORD = $obj->myencrypt($data['pass']);
 				$user->LAST_NAME = $data['lastname'];
 				$user->MIDDLE_NAME = $data['middlename'];
 				$user->FIRST_NAME = $data['firstname'];
 				$user->EMAIL = $data['email'];
 				$user->EXPIRE_DATE = date('Y/m/d', strtotime($data['expireDate']));
 				$user->ACTIVE = $data['active'];
-				\DB::enableQueryLog();
+				
 				User::where(['ID'=>$data['ID']])->update(json_decode(json_encode($user), true));
-				\Log::info(\DB::getQueryLog());
+				
+				if($data['pass'] != ""){
+					$pUser = new User;
+					$now = Carbon::now('Europe/London');
+					$pUser->PASSWORD_CHANGED = date('Y-m-d H:i:s', strtotime($now));
+					$pUser->PASSWORD = $obj->myencrypt($data['pass']);
+					\DB::enableQueryLog();
+					User::where(['ID'=>$data['ID']])->update(json_decode(json_encode($pUser), true));
+					\Log::info(\DB::getQueryLog());
+				}
+				
+				
 				UserDataScope::where(['USER_ID'=>$data['ID']])->delete();
 				
 				UserUserRole::where(['USER_ID'=>$data['ID']])->delete();
@@ -632,7 +642,7 @@ class AdminController extends Controller {
 		$auditValidateTable = AuditValidateTable::getTableName();
 		
 		if($group_id != 0){
-			$datatablegroup = DataTableGroup::where(['ID'=>$group_id])->select('TABLES')->first();	;
+			$datatablegroup = DataTableGroup::where(['ID'=>$group_id])->select('TABLES')->first();
 			$group = $datatablegroup->TABLES;
 			$group=str_replace("\r","",$group);
 			$group=str_replace(" ","",$group);

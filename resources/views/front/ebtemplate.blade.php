@@ -510,7 +510,7 @@ menu["operation"]=[
 		{menutext:"Personnel",desc:"",url:"../dc2/personnel.php"}
 	];
 menu["visual"]=[
-		{menutext:"Network Model",desc:"",url:"../diagram"},
+		{menutext:"Network Model",desc:"",url:"diagram"},
 		{menutext:"Data View",desc:"",url:"../view"},
 		{menutext:"Report",desc:"",url:"../report"},
 		{menutext:"Advanced Graph",desc:"",url:"../graph/advgraph.php"},

@@ -95,8 +95,8 @@ $(function(){
 		obj.updateUser();
 	});
 
-	$('#close').click(function(){
-		$('#boxEditUser')
+	$('#btnClose').click(function(){
+		parent.$('#boxWorkflow234').dialog('close');
 	});	
 
 }); 
@@ -327,6 +327,8 @@ var obj= {
 		<button type="button" id="updateUser" class="class_button">
 			<span>Save</span>
 		</button>
-		
+		<button type="button" id="btnClose" class="class_button">
+			<span>Close</span>
+		</button>
 	</div>
 </div>

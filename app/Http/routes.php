@@ -137,3 +137,14 @@ Route::get('am/editGroup', 'AdminController@_indexEditGroup');
 Route::post('am/loadGroup', 'AdminController@loadGroup');
 Route::post('am/saveGroup', 'AdminController@saveGroup');
 Route::post('am/deleteGroup', 'AdminController@deleteGroup');
+
+//========== DATA VISUALIZATION
+Route::get('diagram', 'DVController@_indexDiagram');
+Route::post('getdiagram', 'DVController@getdiagram');
+Route::get('loaddiagram/{id}', 'DVController@loaddiagram');
+Route::post('savediagram', 'DVController@savediagram');
+Route::post('deletediagram', 'DVController@deletediagram');
+
+Route::post('onChangeObj', 'DVController@onChangeObj');
+Route::post('getSurveillanceSetting', 'DVController@getSurveillanceSetting');
+Route::post('getValueSurveillance', 'DVController@getValueSurveillance');

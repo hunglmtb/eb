@@ -80,14 +80,9 @@ var _group = {
 			param = {
 				'GROUP_ID' : $('#cboGroup').val(),
 			}
-				
-		  	$.ajax({
-		    	url: '/am/loadGroup',
-		    	type: "post",
-		    	data: param,
-		    	success: function(_data){	    	    	
-		    		_group.loadTables(_data);
-				}
+
+			sendAjax('/am/loadGroup', param, function(data){
+				_group.loadTables(data);
 			});
 		},
 
@@ -108,15 +103,9 @@ var _group = {
 		},
 
 		saveGroup : function(param){
-							
-		  	$.ajax({
-		    	url: '/am/saveGroup',
-		    	type: "post",
-		    	data: param,
-		    	success: function(_data){			    	    	
-		    		_group.loadCbo(_data);
-		    		_group.loadTables(_data);
-				}
+			sendAjax('/am/saveGroup', param, function(data){
+				_group.loadCbo(data);
+	    		_group.loadTables(data);
 			});
 		},
 
@@ -124,15 +113,10 @@ var _group = {
 			param = {
 				'GROUP_ID' : $('#cboGroup').val(),
 			}
-						
-		  	$.ajax({
-		    	url: '/am/deleteGroup',
-		    	type: "post",
-		    	data: param,
-		    	success: function(_data){			    	    	
-		    		_group.loadCbo(_data);
-		    		_group.loadTables(_data);
-				}
+
+			sendAjax('/am/deleteGroup', param, function(data){
+				_group.loadCbo(data);
+	    		_group.loadTables(data);
 			});
 		}
 }

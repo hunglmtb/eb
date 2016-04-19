@@ -73,9 +73,7 @@ var _users = {
 			});
 
 			$("#iframeWorkflow234").attr("src","data:text/html;charset=utf-8," + escape(''));
-			$("#iframeWorkflow234").attr("src", "/am/editUser/"+id);
-
-			
+			$("#iframeWorkflow234").attr("src", "/am/editUser/"+id);			
 		},
 
 		onclickLinkAddNew : function(){
@@ -138,17 +136,6 @@ var _users = {
 			}
 
 			$('#bodyUsersList').html(str);
-
-			
-
-			$('#bodyUsersList tr').click(function () {
-		        if(this.style.background == "" || this.style.background =="white") {
-		            $(this).css('background', 'red');
-		        }
-		        else {
-		            $(this).css('background', 'white');
-		        }
-		    });
 		}
 }
 </script>
