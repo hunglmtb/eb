@@ -3,12 +3,12 @@
 namespace App\Models;
 use App\Models\DynamicModel;
 
-class FlowDataFdcValue extends DynamicModel
+class EnergyUnitDataFdcValue extends DynamicModel
 {
-	protected $table = 'FLOW_DATA_FDC_VALUE';
+	protected $table = 'ENERGY_UNIT_DATA_FDC_VALUE';
 	protected $primaryKey = 'ID';
 	
-	protected $fillable  = ['FLOW_ID',
+	protected $fillable  = ['EU_ID',
 							'OCCUR_DATE',
 							'ACTIVE_HRS',
 							'LAST_DATA_READ',

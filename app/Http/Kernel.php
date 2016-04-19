@@ -33,6 +33,8 @@ class Kernel extends HttpKernel {
 		'redac' => \App\Http\Middleware\IsRedactor::class,
 		'ajax' => \App\Http\Middleware\IsAjax::class,
         'saveWorkspace' => \App\Http\Middleware\SaveWorkspace::class,
+        'locked' => \App\Http\Middleware\CheckTableLocked::class,
+			
 	];
 
 }

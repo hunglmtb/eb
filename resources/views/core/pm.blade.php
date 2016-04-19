@@ -49,18 +49,19 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
  				 $(td).trigger(e); // trigger it on document
 			});
 			 */
+	        var table = $('#table_'+tab).DataTable();
 			return function(response, newValue) {
 		    	if (!(tab in actions.editedData)) {
 		    		actions.editedData[tab] = [];
 		    	}
 		    	var eData = actions.editedData[tab];
 	        	var result = $.grep(eData, function(e){ 
-								               	 return e['FLOW_ID'] == rowData['FLOW_ID'];
+								               	 return e[actions.type.idName] == rowData[actions.type.idName];
 								                });
-	        	var table = $('#table_'+tab).DataTable();
 	        	var columnName = table.settings()[0].aoColumns[col].data;
 	        	if (result.length == 0) {
-		        	var editedData = {"FLOW_ID":rowData['X_FL_ID']};
+		        	var editedData = {};
+		        	editedData[actions.type.idName] = rowData[actions.type.xIdName];
 		        	editedData[columnName] = newValue;
 	        		eData.push(editedData);
 	        	}
@@ -68,7 +69,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 	        		result[0][columnName] = newValue;
 	        	}
 	        	rowData[columnName] = newValue;
- 				table.row( '#'+rowData['DT_RowId'] ).data(rowData);
+  				table.row( '#'+rowData['DT_RowId'] ).data(rowData);
 	        	$(td).css('color', 'red');
 	        	 /* var tabindex = $(this).attr('tabindex');
 	            $('[tabindex=' + (tabindex +1)+ ']').focus(); */
@@ -84,14 +85,14 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 								                return e['ID'] == data;
 								                });
 											if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined" &&result[0].hasOwnProperty('CODE')){
-		                						return result[0]['CODE'];
+		                						return value['COLUMN_NAME']=="ALLOC_TYPE"?result[0]['NAME']:result[0]['CODE'];
 											}
 											return data;
 								                
                 					};
             $.each(collection, function( i, vl ) {
             	vl['value']=vl['ID'];
-            	vl['text']=vl['CODE'];
+            	vl['text']=value['COLUMN_NAME']=="ALLOC_TYPE"?vl['NAME']:vl['CODE'];
             });
             uoms[index]["createdCell"] = function (td, cellData, rowData, row, col) {
                 if(data.properties[col].DATA_METHOD==1&&data.properties[col].DATA_METHOD=='1'){
@@ -125,7 +126,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 //  										var $th = $(td).closest('table').find('th').eq($(td).index());
 // 								      	if ( cellData < 1 ) {
 // 											$(td).attr('tabindex', tabindex++);
-               				 			if(data.properties[col].DATA_METHOD==1&&data.properties[col].DATA_METHOD=='1'){
+               				 			if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
 								        	$(td).editable({
 								        	    type : 'number',
 								        	    step: 'any',
@@ -162,7 +163,10 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 		var phase = {"targets": 0,
 					"render": function ( data, type, rowData ) {
 								var html = data+"<div class='phase "+rowData['PHASE_CODE']+"'>"+
-			        						rowData['PHASE_NAME']+"</div>" ;
+			        						rowData['PHASE_NAME']+"</div>";
+								if(rowData.hasOwnProperty('STATUS_NAME')){
+									html +="<span class='eustatus'>"+rowData['STATUS_NAME']+"</span>";
+								}
 								return html;
 							}
 		  			};
@@ -221,7 +225,9 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 		var dataNotMatching = false;
 		if (!noData&&actions.loadPostParams) {
 			for (var key in actions.loadPostParams) {
-				dataNotMatching = actions.loadPostParams[key]!=postData[key];
+				if($('.'+key).css('display') != 'none'){
+					dataNotMatching = actions.loadPostParams[key]!=postData[key];
+				} 
 				if(dataNotMatching) break;
 			}
 		}
@@ -234,26 +240,31 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 	actions.saveSuccess =  function(data){
 		var postData = data.postData;
 		for (var key in data.updatedData) {
-			table = $('#table_'+key).DataTable();
-			$.each(data.updatedData[key], function( index, value) {
-				row = table.row( '#'+value['FLOW_ID'] );
-				var tdata = row.data();
-				if( typeof(tdata) !== "undefined" && tdata !== null ){
-					for (var pkey in value) {
-						if(tdata.hasOwnProperty(pkey)){
-							tdata[pkey] = value[pkey];
+			if($('#table_'+key).children().length>0){
+				table = $('#table_'+key).DataTable();
+				$.each(data.updatedData[key], function( index, value) {
+					row = table.row( '#'+value[actions.type.idName] );
+					var tdata = row.data();
+					if( typeof(tdata) !== "undefined" && tdata !== null ){
+						for (var pkey in value) {
+							if(tdata.hasOwnProperty(pkey)){
+								tdata[pkey] = value[pkey];
+							}
 						}
+						row.data(tdata).draw();
+						$.each($(row.node()).find('td'), function( index, td) {
+				        	$(td).css('color', '');
+				        });
 					}
-					row.data(tdata).draw();
-					$.each($(row.node()).find('td'), function( index, td) {
-			        	$(td).css('color', '');
-			        });
-				}
-	        });
+		        });
+			}
 		}
 
 		actions.editedData = {};
 		alert(JSON.stringify(postData));
+		if(data.hasOwnProperty('lockeds')){
+			alert(JSON.stringify(data.lockeds));
+		}
  	};
 </script>
 @stop

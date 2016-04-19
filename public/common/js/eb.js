@@ -83,7 +83,9 @@ var actions = {
 				filterGroup = javascriptFilterGroups[key];
 				for (var jkey in filterGroup) {
 					entry = filterGroup[jkey];
-					params[entry.id] = $('#'+entry.id).val();
+					if($('.'+entry.id).css('display') != 'none'){ 
+						   params[entry.id] = $('#'+entry.id).val();
+					}
 				}
 			}
 			actions.loadPostParams = params;
@@ -125,6 +127,7 @@ var actions = {
 					if(data!=null&&data.hasOwnProperty('objectIds')){
 						actions.objectIds = data.objectIds;
 					}
+					actions.editedData = {};
 					if (typeof(actions.loadSuccess) == "function") {
 						actions.loadSuccess(data);
 					}
@@ -155,8 +158,10 @@ var actions = {
 				filterGroup = javascriptFilterGroups[key];
 				for (var jkey in filterGroup) {
 					entry = filterGroup[jkey];
-					if ($('#'+entry.id).val()!=postData[entry.id]) {
-						$('#'+entry.id).val(postData[entry.id]).trigger('change');
+					if($('.'+entry.id).css('display') != 'none'){
+						if ($('#'+entry.id).val()!=postData[entry.id]) {
+							$('#'+entry.id).val(postData[entry.id]).trigger('change');
+						}
 					}
 				}
 			}
@@ -198,6 +203,19 @@ var actions = {
 			alert("save url not initial");
 			return false;
 		}
+	},
+	isEditable : function (row,rowData,rights){
+		var rs = row.DATA_METHOD==1||row.DATA_METHOD=='1';
+		if (rs) {
+			if(rowData.RECORD_STATUS=="A"){
+				rs =$.inArray("ADMIN_APPROVE", rights);
+			}
+			else if(rowData.RECORD_STATUS=="V"){
+				rs =$.inArray("ADMIN_APPROVE", rights)&&$.inArray("ADMIN_VALIDATE", rights);
+			}
+		}
+		return rs;
+		
 	}
 }
 

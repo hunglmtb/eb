@@ -1,6 +1,7 @@
 <?php
 
 return [
-        'tabTable' => 'tabTable'
-        // etc
+        'tabTable' => 'tabTable',
+		'flowPhase' => 'flowPhase',
+// etc
 ];

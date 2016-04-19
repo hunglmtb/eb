@@ -21,5 +21,6 @@ FLOW DATA CAPTURE
 <script>
 	actions.loadUrl = "/code/load";
 	actions.saveUrl = "/code/save";
+	actions.type = {idName:'FLOW_ID',xIdName:'X_FL_ID'};
 </script>
 @stop
