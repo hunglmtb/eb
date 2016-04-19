@@ -89,8 +89,9 @@ Route::get('dc/eu', 'ProductManagementController@eu');
 Route::get('dc/storage', 'ProductManagementController@storage');
 Route::post('code/load',['uses' =>'FlowController@load','middleware' => 'saveWorkspace']);
 Route::post('code/list', 'CodeController@getCodes');
-Route::post('code/save', 'CodeController@save');
+Route::post('code/save', 'FlowController@save');
 Route::post('code/loadeu',['uses' =>'EuController@load','middleware' => 'saveWorkspace']);
+Route::post('code/saveeu', 'EuController@save');
 
 //---------
 Route::post('fo/loadSafety', 'FOController@loadSafety');
