@@ -55,7 +55,7 @@ class FlowController extends CodeController {
     	return ['dataSet'=>$dataSet,'objectIds'=>$objectIds];
     }
     
-    public function preSave($editedData, $affectedIds,$postData) {
+    public function preSave(&$editedData,&$affectedIds,$postData) {
     	$flow = Flow::getTableName();
     	if (array_key_exists("FlowDataFdcValue", $editedData)) {
     		if (!array_key_exists("FlowDataValue", $editedData)){

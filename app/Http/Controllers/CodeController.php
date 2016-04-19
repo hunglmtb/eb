@@ -96,7 +96,7 @@ class CodeController extends EBController {
      	$objectIds = $postData['objectIds'];
      	$affectedIds = [];
      	
-     	$this->preSave(&$editedData,&$affectedIds,$postData);
+     	$this->preSave($editedData,$affectedIds,$postData);
      	
      	try
      	{
@@ -194,7 +194,7 @@ class CodeController extends EBController {
     	return response()->json($results);
     }
     
-    public function preSave($editedData, $affectedIds,$postData) {
+    public function preSave(&$editedData,&$affectedIds,$postData) {
     }
     
     public function getUoms($properties = null,$facility_id)
