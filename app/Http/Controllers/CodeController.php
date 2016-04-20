@@ -33,7 +33,12 @@ class CodeController extends EBController {
 			else  break;
 			if (count ( $eCollection ) > 0) {
 				$unit = ProductionGroupComposer::getCurrentSelect ( $eCollection );
-				$results [] = ProductionGroupComposer::getFilterArray ( $model, $eCollection, $unit );
+				$filterArray = ProductionGroupComposer::getFilterArray ( $model, $eCollection, $unit );
+				if (array_key_exists($model,  config("constants.subProductFilterMapping"))&&
+						array_key_exists('default',  config("constants.subProductFilterMapping")[$model])) {
+					$eCollection[] = config("constants.subProductFilterMapping")[$model]['default'];
+				}
+				$results [] = $filterArray;
 			}
 			else break;
 		}
