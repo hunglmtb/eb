@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Models;
-use App\Models\DynamicModel;
+use App\Models\FeatureFlowModel;
 
-class FlowDataAlloc extends DynamicModel
+class FlowDataAlloc extends FeatureFlowModel
 {
 	protected $table = 'FLOW_DATA_ALLOC';
 	

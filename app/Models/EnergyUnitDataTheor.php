@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Models;
-use App\Models\DynamicModel;
+use App\Models\FeatureEuModel;
 use App\Models\CfgFieldProps;
 
-class EnergyUnitDataTheor extends DynamicModel
+class EnergyUnitDataTheor extends FeatureEuModel
 {
 	protected $table = 'ENERGY_UNIT_DATA_THEOR';
 	

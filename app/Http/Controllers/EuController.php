@@ -27,12 +27,13 @@ class EuController extends CodeController {
      	if ($eu_group_id>0) $euWheres["$eu.EU_GROUP_ID"]= $eu_group_id;
     	else $euWheres["$eu.EU_GROUP_ID"]= null;
     	
-    	\DB::enableQueryLog();
+//     	\DB::enableQueryLog();
     	$dataSet = EnergyUnit::join($codeStatus,'STATUS', '=', "$codeStatus.ID")
 				    	->join($euPhaseConfig,function ($query) use ($eu,$euPhaseConfig,$phase_type,$event_type) {
 						    					$query->on("$euPhaseConfig.EU_ID",'=',"$eu.ID");
 										    	if ($phase_type>0) $query->where("$euPhaseConfig.FLOW_PHASE",'=',$phase_type) ;
 										    	if ($event_type>0) $query->where("$euPhaseConfig.EVENT_TYPE",'=',$event_type) ;
+										    	//TODO note chu y active co the se dung
 		// 							    		$query->with('CodeFlowPhase');
 		// 							    		$query->select('FLOW_PHASE as EU_FLOW_PHASE');
 						}) 
@@ -57,7 +58,7 @@ class EuController extends CodeController {
 				    			"$eu.name as $dcTable",
 				    			"$euPhaseConfig.ID as DT_RowId",
  				    			"$codeFlowPhase.name as PHASE_NAME",
-				    			"$eu.ID as X_EU_ID",
+				    			"$eu.ID as ".config("constants.euId"),
    				    			"$euPhaseConfig.FLOW_PHASE as EU_FLOW_PHASE",
   				    			"$codeStatus.NAME as STATUS_NAME",
 				    			"$codeFlowPhase.CODE as PHASE_CODE",
@@ -73,37 +74,10 @@ class EuController extends CodeController {
  				    			"$codeStatus.NAME as STATUS_NAME",
  				    			"$dcTable.*"]); */
 				    	
-// 		    			global $facility_id, $record_freq, $phase_type, $event_type, $alloc_type, $occur_date, $eu_group_id;
-		    			$sSQL = "select a.EU_NAME,a.PHASE_NAME,a.X_EU_ID, a.EU_FLOW_PHASE,a.STATUS_NAME,x.*
-						from
-						(
-						select a.name EU_NAME, a.ID X_EU_ID, b.FLOW_PHASE EU_FLOW_PHASE, c.name PHASE_NAME, s.NAME STATUS_NAME
-						from
-						ENERGY_UNIT a,
-						EU_PHASE_CONFIG b,
-						CODE_FLOW_PHASE c,
-						CODE_STATUS s
-						where
-						a.id=b.eu_id
-						and b.flow_phase=c.id
-						and a.STATUS=s.ID
-						" . ($record_freq > 0 ? " and a.DATA_FREQ=$record_freq" : "") . "
-						" . ($event_type > 0 ? " and b.EVENT_TYPE=$event_type" : "") . "
-						" . ($phase_type > 0 ? " and b.FLOW_PHASE=$phase_type" : "") . "
-						" . ($eu_group_id > 0 ? " and a.EU_GROUP_ID=$eu_group_id" : " and a.EU_GROUP_ID is null") . "
-		    			and a.FDC_DISPLAY='1'
-		    			and a.EFFECTIVE_DATE<=STR_TO_DATE('$occur_date', '%m/%d/%Y')
-		    			and a.facility_id='$facility_id'
-		    			) a
-		    			left join $dcTable x on x.eu_id=a.X_EU_ID
-		    			and x.flow_phase=a.EU_FLOW_PHASE
-		    			" . (($alloc_type > 0 && ($dcTable == "ENERGY_UNIT_DATA_ALLOC" || $dcTable == "ENERGY_UNIT_COMP_DATA_ALLOC")) ? " and x.ALLOC_TYPE=$alloc_type" : "") . "
-		    			and x.OCCUR_DATE=STR_TO_DATE('$occur_date', '%m/%d/%Y')
-		    			order by EU_NAME, EU_FLOW_PHASE";
     	//  		\Log::info(\DB::getQueryLog());
     	/* $dswk = $dataSet->keyBy('DT_RowId');
     	$objectIds = $dswk->keys(); */
- 		\Log::info(\DB::getQueryLog());
+//  		\Log::info(\DB::getQueryLog());
  		    			
     	return ['dataSet'=>$dataSet,
 //     			'objectIds'=>$objectIds

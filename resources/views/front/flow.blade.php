@@ -21,6 +21,11 @@ FLOW DATA CAPTURE
 <script>
 	actions.loadUrl = "/code/load";
 	actions.saveUrl = "/code/save";
-	actions.type = {idName:'FLOW_ID',xIdName:'X_FL_ID'};
+	actions.type = {
+					idName:['{{config("constants.flowId")}}','{{config("constants.flFlowPhase")}}'],
+					keyField:'{{config("constants.flowId")}}',
+					saveKeyField:'{{config("constants.flowId")}}'
+// 				,xIdName:'X_FL_ID'
+					};
 </script>
 @stop

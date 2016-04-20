@@ -87,26 +87,30 @@ class CodeController extends EBController {
     public function save(Request $request){
 //     	sleep(2);
     	$postData = $request->all();
+    	if (!array_key_exists('editedData', $postData)) {
+    		return response()->json('no data 2 update!');
+    	}
     	$editedData = $postData['editedData'];
      	$record_freq = $postData['CodeReadingFrequency'];
      	$phase_type = $postData['CodeFlowPhase'];
      	$facility_id = $postData['Facility'];
      	$occur_date = $postData['date_begin'];
      	$occur_date = Carbon::parse($occur_date);
-     	$objectIds = $postData['objectIds'];
+     	$objectIds = array_key_exists('objectIds', $postData)?$postData['objectIds']:[];
+     	
      	$affectedIds = [];
-     	
      	$this->preSave($editedData,$affectedIds,$postData);
-     	
      	try
      	{
-     		$resultTransaction = \DB::transaction(function () use ($editedData,$objectIds,$affectedIds,$occur_date,$phase_type,$facility_id){
+     		$resultTransaction = \DB::transaction(function () use ($postData,$editedData,$objectIds,$affectedIds,
+     																$occur_date,$phase_type,$facility_id){
      			$lockeds= [];
      			$ids = [];
      			$type = $this->type;
-     			$idField = $type['idField'];
-     			$typeName = $type['name'];
-     			$dateField = $type['dateField'];
+//      			$idField = $type['idField'];
+//      			$typeName = $type['name'];
+//      			$dateField = $type['dateField'];
+     			\DB::enableQueryLog();
      			foreach($editedData as $mdlName => $mdlData ){
 		     		$ids[$mdlName] = [];
 		     		$mdl = "App\Models\\".$mdlName;
@@ -117,9 +121,10 @@ class CodeController extends EBController {
 		     			continue;
 		     		}
 		     		foreach($mdlData as $key => $newData ){
-		     			$columns = [$idField => $newData[$idField],$dateField=>$occur_date];
-		      			$newData[$dateField]=$occur_date;
-		      			if ($mdlName=='FlowDataValue') {
+// 		     			$columns = [$idField => $newData[$idField],$dateField=>$occur_date];
+		     			$columns = $mdl::getKeyColumns($newData,$occur_date,$postData);
+		     			$newData[$mdl::$dateField]=$occur_date;
+		      			/* if ($mdlName=='FlowDataValue') {
 		      				$options = [config("constants.flowPhase")=>$phase_type];
 		      			}
 		      			elseif ($mdlName=='FlowDataTheor'){
@@ -127,11 +132,12 @@ class CodeController extends EBController {
 		      			}
 		      			else{
 			     			$options = null;
-		      			}
-		     			$returnRecord = $mdl::updateOrCreateWithCalculating($columns, $newData,$options);
+		      			} */
+		     			$returnRecord = $mdl::updateOrCreateWithCalculating($columns, $newData);
 		     			$ids[$mdlName][] = $returnRecord['ID'];
 		     		}
 		     	}
+		     	\Log::info(\DB::getQueryLog());
 		     	
 		     	$objectIds = array_unique($objectIds);
 		     	//doFormula in config table
@@ -145,6 +151,9 @@ class CodeController extends EBController {
 		     	
 		     	//get affected ids
 		     	foreach($editedData as $mdlName => $mdlData ){
+		     		$mdl = "App\Models\\".$mdlName;
+		     		$idField = $mdl::$idField;
+		     		$typeName = $mdl::$typeName;
 		     		foreach($mdlData as $key => $newData ){
 		     			$columns = array_keys($newData);
 		     			if (array_key_exists($mdlName, $affectColumns)) {
@@ -183,7 +192,7 @@ class CodeController extends EBController {
      	foreach($resultTransaction['ids'] as $mdlName => $updatedIds ){
 //      		$updatedData[$mdlName] = $mdl::findMany($objectIds);
      		$mdl = "App\Models\\".$mdlName;
-     		$updatedData[$mdlName] = $mdl::findMany($updatedIds);
+     		$updatedData[$mdlName] = $mdl::findManyWithConfig($updatedIds);
      	}
 //      	\Log::info(\DB::getQueryLog());
     

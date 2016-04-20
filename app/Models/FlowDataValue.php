@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Models;
-use App\Models\DynamicModel;
+use App\Models\FeatureFlowModel;
 use App\Models\FlowDataFdcValue;
 
-class FlowDataValue extends DynamicModel
+class FlowDataValue extends FeatureFlowModel
 {
 	protected $table = 'FLOW_DATA_VALUE';
 	protected $primaryKey = 'ID';
@@ -43,10 +43,9 @@ class FlowDataValue extends DynamicModel
 		return $rv;
 	} */
 	
-	public static function calculateBeforeUpdateOrCreate(array $attributes, array $values = [],$options=null){
+	public static function calculateBeforeUpdateOrCreate(array $attributes, array $values = []){
 
-		if($options&&count($options)>0
-				&&array_key_exists(config("constants.flowPhase"), $options)
+		if(array_key_exists(config("constants.flFlowPhase"), $values)
 				&&array_key_exists("FLOW_ID",$attributes)
 				&&array_key_exists("OCCUR_DATE",$attributes))//OIL or GAS
 		{
@@ -57,7 +56,7 @@ class FlowDataValue extends DynamicModel
 					&&$values["FL_DATA_NET_VOL"]!=null
 					&&$values["FL_DATA_NET_VOL"]!='') return;
 					
-			$flow_phase = $options[config("constants.flowPhase")];
+			$flow_phase = $values[config("constants.flFlowPhase")];
 			//OIL or GAS
 			if(($flow_phase==1 || $flow_phase==2 || $flow_phase==21)){
 				$object_id = $attributes["FLOW_ID"];

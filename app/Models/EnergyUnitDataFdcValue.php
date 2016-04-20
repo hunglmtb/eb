@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Models;
-use App\Models\DynamicModel;
+use App\Models\FeatureEuModel;
 
-class EnergyUnitDataFdcValue extends DynamicModel
+class EnergyUnitDataFdcValue extends FeatureEuModel
 {
 	protected $table = 'ENERGY_UNIT_DATA_FDC_VALUE';
 	protected $primaryKey = 'ID';

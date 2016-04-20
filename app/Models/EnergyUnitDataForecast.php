@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Models;
-use App\Models\DynamicModel;
+use App\Models\FeatureEuModel;
 
-class EnergyUnitDataForecast extends DynamicModel
+class EnergyUnitDataForecast extends FeatureEuModel
 {
 	protected $table = 'ENERGY_UNIT_DATA_FORECAST';
 	

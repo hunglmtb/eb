@@ -56,12 +56,14 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 		    	}
 		    	var eData = actions.editedData[tab];
 	        	var result = $.grep(eData, function(e){ 
-								               	 return e[actions.type.idName] == rowData[actions.type.idName];
+								               	 return e[actions.type.keyField] == rowData[actions.type.keyField];
 								                });
 	        	var columnName = table.settings()[0].aoColumns[col].data;
 	        	if (result.length == 0) {
 		        	var editedData = {};
-		        	editedData[actions.type.idName] = rowData[actions.type.xIdName];
+		        	 $.each(actions.type.idName, function( i, vl ) {
+			        	editedData[vl] = rowData[vl];
+		             });
 		        	editedData[columnName] = newValue;
 	        		eData.push(editedData);
 	        	}
@@ -243,7 +245,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 			if($('#table_'+key).children().length>0){
 				table = $('#table_'+key).DataTable();
 				$.each(data.updatedData[key], function( index, value) {
-					row = table.row( '#'+value[actions.type.idName] );
+					row = table.row( '#'+value[actions.type.saveKeyField] );
 					var tdata = row.data();
 					if( typeof(tdata) !== "undefined" && tdata !== null ){
 						for (var pkey in value) {

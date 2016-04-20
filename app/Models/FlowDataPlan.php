@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Models;
-use App\Models\DynamicModel;
+use App\Models\FeatureFlowModel;
 
-class FlowDataPlan extends DynamicModel
+class FlowDataPlan extends FeatureFlowModel
 {
 	protected $table = 'FLOW_DATA_PLAN';
 	

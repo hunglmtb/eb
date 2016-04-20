@@ -50,15 +50,12 @@ class DynamicModel extends Model {
 		return with(new static)->getTable();
 	}
 	
-	public static function updateOrCreateWithCalculating(array $attributes, array $values = [],$options=null){
-	
-		if($options&&count($options)>0){
-			$values = self::calculateBeforeUpdateOrCreate($attributes,$values,$options);
-		}
+	public static function updateOrCreateWithCalculating(array $attributes, array $values = []){
+		$values = static::calculateBeforeUpdateOrCreate($attributes,$values);
 		return parent::updateOrCreate($attributes,$values);
 	}
 	
-	/* public static function calculateBeforeUpdateOrCreate(array $attributes, array $values = [],$options=null){
-		return false;
-	} */
+	public static function calculateBeforeUpdateOrCreate(array $attributes, array $values = []){
+		return $values;
+	}
 }

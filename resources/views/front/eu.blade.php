@@ -21,7 +21,12 @@ ENERGY UNIT DATA CAPTURE
 <script>
 	actions.loadUrl = "/code/loadeu";
 	actions.saveUrl = "/code/saveeu";
-	actions.type = {idName:'EU_ID',xIdName:'X_EU_ID'};
+	actions.type = {
+					idName:['{{config("constants.euId")}}','{{config("constants.euFlowPhase")}}'],
+					keyField:'ID',
+					saveKeyField:'{{config("constants.euPhaseConfigId")}}',
+// 					xIdName:'X_EU_ID'
+					};
 	var aLoadNeighbor = actions.loadNeighbor;
 	actions.loadNeighbor = function() {
 		var activeTabID = getActiveTabID();

@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Models;
-use App\Models\DynamicModel;
+use App\Models\FeatureFlowModel;
 use App\Models\CfgFieldProps;
 
-class FlowDataTheor extends DynamicModel
+class FlowDataTheor extends FeatureFlowModel
 {
 	protected $table = 'FLOW_DATA_THEOR';
 	
@@ -28,10 +28,9 @@ class FlowDataTheor extends DynamicModel
 							 'STATUS_DATE',
 							 'RECORD_STATUS'];
 	
-	public static function calculateBeforeUpdateOrCreate(array $attributes, array $values = [],$options=null){
+	public static function calculateBeforeUpdateOrCreate(array $attributes, array $values = []){
 	
-		if($options
-				&&array_key_exists("FLOW_ID",$attributes)
+		if(array_key_exists("FLOW_ID",$attributes)
 				&&array_key_exists("OCCUR_DATE",$attributes)){
 			
 			$object_id = $attributes["FLOW_ID"];

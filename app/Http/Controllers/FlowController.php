@@ -7,10 +7,10 @@ use App\Models\Flow;
 
 class FlowController extends CodeController {
     
-	protected $type = ['idField'=>'FLOW_ID',
+	/* protected $type = ['idField'=>'FLOW_ID',
 			'name'=>'FLOW',
 			'dateField'=>'OCCUR_DATE'
-	];
+	]; */
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date){
     	$record_freq = $postData['CodeReadingFrequency'];
@@ -38,7 +38,7 @@ class FlowController extends CodeController {
 				    	})
 				    	->select("$flow.name as $dcTable",
 				    			"$flow.ID as DT_RowId",
-				    			"$flow.ID as X_FL_ID",
+				    			"$flow.ID as ".config("constants.flowId"),
 				    			"$flow.phase_id as FL_FLOW_PHASE",
 				    			"$codeFlowPhase.name as PHASE_NAME",
 				    			"$codeFlowPhase.CODE as PHASE_CODE",
@@ -65,13 +65,21 @@ class FlowController extends CodeController {
     			$editedData["FlowDataTheor"] = [];
     		}
     		foreach ($editedData["FlowDataFdcValue"] as $element) {
-    			$key = array_search($element['FLOW_ID'], array_column($editedData["FlowDataValue"], 'FLOW_ID'));
+    			$key = array_search($element[config("constants.flowId")], 
+    								array_column($editedData["FlowDataValue"],
+    										config("constants.flowId")));
     			if ($key===FALSE) {
-    				$editedData["FlowDataValue"][] = ['FLOW_ID'=>$element['FLOW_ID']];
+    				$editedData["FlowDataValue"][] =  array_intersect_key($element,
+    																		array_flip(array(config("constants.flowId"),
+    																				config("constants.flFlowPhase"))));
     			}
-    			$key = array_search($element['FLOW_ID'], array_column($editedData["FlowDataTheor"], 'FLOW_ID'));
+    			$key = array_search($element[config("constants.flowId")],
+    								array_column($editedData["FlowDataTheor"],
+    										config("constants.flowId")));
     			if ($key===FALSE) {
-    				$editedData["FlowDataTheor"][] = ['FLOW_ID'=>$element['FLOW_ID']];
+    				$editedData["FlowDataTheor"][] =  array_intersect_key($element,
+    						array_flip(array(config("constants.flowId"),
+    								config("constants.flFlowPhase"))));
     			}
     			$affectedIds[]=$element['FLOW_ID'];
     		}

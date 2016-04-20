@@ -1,31 +1,30 @@
 <?php
 
 namespace App\Models;
-use App\Models\DynamicModel;
+use App\Models\FeatureEuModel;
 use App\Models\FlowDataFdcValue;
 
-class EnergyUnitDataValue extends DynamicModel
+class EnergyUnitDataValue extends FeatureEuModel
 {
 	protected $table = 'ENERGY_UNIT_DATA_VALUE';
 	protected $primaryKey = 'ID';
-	protected $fillable  = ['EU_ID',
-							'OCCUR_DATE',
+	protected $fillable  = [
+							'EU_ID',
+							'FLOW_PHASE',
+							'EVENT_TYPE',
 							'ACTIVE_HRS',
-							'RECORD_FREQUENCY',
-							'DISP',
-							'FL_DATA_GRS_VOL',
-							'FL_DATA_NET_VOL',
-							'FL_DATA_SW_PCT',
-							'FL_DATA_GRS_WTR_VOL',
-							'FL_DATA_GRS_MASS',
-							'FL_DATA_NET_MASS',
-							'FL_DATA_GRS_WTR_MASS',
-							'FL_DATA_GRS_ENGY',
-							'FL_DATA_GRS_PWR',
-							'FL_DATA_DENS',
+							'EU_DATA_GRS_VOL',
+							'EU_DATA_NET_VOL',
+							'EU_DATA_GRS_MASS',
+							'EU_DATA_GRS_ENGY',
+							'EU_DATA_GRS_PWR',
+							'GOR',
+							'SW',
 							'STATUS_BY',
 							'STATUS_DATE',
-							'RECORD_STATUS' ];
+							'RECORD_STATUS'];
+	
+	
 	
 	/* public function getDataMethodAttribute($value){
 		$rv = $value;
