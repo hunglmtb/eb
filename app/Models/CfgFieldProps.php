@@ -11,4 +11,12 @@ class CfgFieldProps extends DynamicModel
     public function LockTable(){
     	return $this->hasMany('App\Models\LockTable', 'TABLE_NAME', 'TABLE_NAME');
     }
+    
+    
+    public static function getConfigFields($tableName){
+    	return static ::where('TABLE_NAME', '=', $tableName)
+									->where('USE_FDC', '=', 1)
+									->orderBy('FIELD_ORDER')
+									->select('COLUMN_NAME');
+    }
 }

@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Models;
-use App\Models\DynamicModel;
+use App\Models\EbBussinessModel;
 
-class FeatureFlowModel extends DynamicModel
+class FeatureFlowModel extends EbBussinessModel
 {
 	public  static  $idField = 'FLOW_ID';
 	public  static  $typeName = 'FLOW';
@@ -13,11 +13,6 @@ class FeatureFlowModel extends DynamicModel
 	{
 		return [self::$idField => $newData[self::$idField],
 				self::$dateField=>$occur_date];
-	}
-	
-	public static function findManyWithConfig($updatedIds)
-	{
-		return parent::findMany($updatedIds);
 	}
 	
 }

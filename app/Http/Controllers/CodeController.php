@@ -16,6 +16,11 @@ use Illuminate\Http\Request;
 class CodeController extends EBController {
 	 
 	protected $type = null;
+	protected $fdcModel;
+	protected $idColumn;
+	protected $phaseColumn;
+	protected $valueModel ;
+	protected $theorModel ;
 	
 	public function getCodes(Request $request)
     {
@@ -128,20 +133,14 @@ class CodeController extends EBController {
 		     		foreach($mdlData as $key => $newData ){
 // 		     			$columns = [$idField => $newData[$idField],$dateField=>$occur_date];
 		     			$columns = $mdl::getKeyColumns($newData,$occur_date,$postData);
-		     			$newData[$mdl::$dateField]=$occur_date;
-		      			/* if ($mdlName=='FlowDataValue') {
-		      				$options = [config("constants.flowPhase")=>$phase_type];
-		      			}
-		      			elseif ($mdlName=='FlowDataTheor'){
-		      				$options = true;
-		      			}
-		      			else{
-			     			$options = null;
-		      			} */
+ 		     			$newData[$mdl::$dateField]=$occur_date;
+			     		$newData = array_merge($newData,$columns);
+ 		     			$mdlData[$key] = $newData;
 		     			$returnRecord = $mdl::updateOrCreateWithCalculating($columns, $newData);
 		     			$ids[$mdlName][] = $returnRecord['ID'];
 		     		}
-		     	}
+		     		$editedData[$mdlName] = $mdlData;
+     			}
 		     	\Log::info(\DB::getQueryLog());
 		     	
 		     	$objectIds = array_unique($objectIds);
@@ -189,6 +188,7 @@ class CodeController extends EBController {
      	}
      	catch (\Exception $e)
      	{
+      	\Log::info("\n------------------------------------------------------------------------------------------------\nException wher run transation\n ");
      		throw $e;
      	}
      	
@@ -208,8 +208,13 @@ class CodeController extends EBController {
     	return response()->json($results);
     }
     
-    public function preSave(&$editedData,&$affectedIds,$postData) {
-    }
+    
+	public function preSave(&$editedData, &$affectedIds, $postData) {
+		if (array_key_exists ($this->fdcModel, $editedData )) {
+			$this->preSaveModel ( $editedData, $affectedIds, $this->valueModel);
+			$this->preSaveModel ( $editedData, $affectedIds, $this->theorModel);
+		}
+	}
     
     public function getUoms($properties = null,$facility_id)
     {
@@ -289,5 +294,25 @@ class CodeController extends EBController {
     		}
     	}
     	return $uom_type;
+    }
+    
+    
+    public function preSaveModel(&$editedData,&$affectedIds,$model) {
+    	$fdcModel = $this->fdcModel;
+    	if (array_key_exists($fdcModel, $editedData)) {
+    		$idColumn = $this->idColumn;
+    		$phaseColumn = $this->phaseColumn;
+    
+    		if (!array_key_exists($model, $editedData)){
+    			$editedData[$model] = [];
+    		}
+    		foreach ($editedData[$fdcModel] as $element) {
+    			$key = array_search($element[$idColumn],array_column($editedData[$model],$idColumn));
+    			if ($key===FALSE) {
+    				$editedData[$model][] =  array_intersect_key($element, array_flip(array($idColumn,$phaseColumn)));
+    			}
+    			$affectedIds[]=$element[$idColumn];
+    		}
+    	}
     }
 }

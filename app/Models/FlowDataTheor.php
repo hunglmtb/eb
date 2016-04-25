@@ -35,17 +35,10 @@ class FlowDataTheor extends FeatureFlowModel
 			
 			$object_id = $attributes["FLOW_ID"];
 			$occur_date = $attributes["OCCUR_DATE"];
-			$fields = CfgFieldProps::where('TABLE_NAME', '=', FlowDataFdcValue::getTableName())
-									->where('USE_FDC', '=', 1)
+			$fields = CfgFieldProps::getConfigFields(FlowDataFdcValue::getTableName())
 									->where('COLUMN_NAME', '!=','CTV')
-									->orderBy('FIELD_ORDER')
-									->select('COLUMN_NAME')
 									->get();
-			$theoFields = CfgFieldProps::where('TABLE_NAME', '=', FlowDataTheor::getTableName())
-									->where('USE_FDC', '=', 1)
-									->orderBy('FIELD_ORDER')
-									->select('COLUMN_NAME')
-									->get();
+			$theoFields = CfgFieldProps::getConfigFields( FlowDataTheor::getTableName())->get();
 			
 			$fieldArray =array_column($fields->toArray(), 'COLUMN_NAME');
 			$theoFieldArray =array_column($theoFields->toArray(), 'COLUMN_NAME');

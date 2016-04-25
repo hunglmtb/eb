@@ -10,6 +10,16 @@ use App\Models\EnergyUnitCompDataAlloc;
 
 class EuController extends CodeController {
     
+	public function __construct() {
+		parent::__construct();
+		$this->fdcModel = "EnergyUnitDataFdcValue";
+		$this->idColumn = config("constants.euId");
+		$this->phaseColumn = config("constants.euFlowPhase");
+		
+		$this->valueModel = "EnergyUnitDataValue";
+		$this->theorModel = "EnergyUnitDataTheor";
+	}
+	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date){
     	$eu_group_id = $postData['EnergyUnitGroup'];
     	$record_freq = $postData['CodeReadingFrequency'];

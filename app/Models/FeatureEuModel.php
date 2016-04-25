@@ -1,20 +1,23 @@
 <?php
 
 namespace App\Models;
-use App\Models\DynamicModel;
+use App\Models\EbBussinessModel;
 use App\Models\EuPhaseConfig;
 
-class FeatureEuModel extends DynamicModel
+class FeatureEuModel extends EbBussinessModel
 {
 	public  static  $idField = 'EU_ID';
 	public  static  $typeName = 'ENERGY_UNIT';
 	public  static  $dateField = 'OCCUR_DATE';
 	
-	public static function getKeyColumns($newData,$occur_date,$postData)
-	{
-		return [self::$idField => $newData[self::$idField],
-				'FLOW_PHASE' => $newData[config("constants.euFlowPhase")],
-				self::$dateField=>$occur_date];
+	public static function getKeyColumns(&$newData,$occur_date,$postData){
+		if (array_key_exists(config("constants.euId"), $newData)) {
+			$newData[static::$idField] = $newData[config("constants.euId")];
+			unset($newData[config("constants.euId")]);
+		}
+		return [static::$idField => $newData[static::$idField],
+				config("constants.flowPhase") => $newData[config("constants.euFlowPhase")],
+				static::$dateField=>$occur_date];
 	}
 	
 	public static function findManyWithConfig($updatedIds)

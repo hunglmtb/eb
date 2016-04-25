@@ -12,6 +12,17 @@ class FlowController extends CodeController {
 			'dateField'=>'OCCUR_DATE'
 	]; */
 	
+	
+	public function __construct() {
+		parent::__construct();
+		$this->fdcModel = "FlowDataFdcValue";
+		$this->idColumn = config("constants.flowId");
+		$this->phaseColumn = config("constants.flFlowPhase");
+	
+		$this->valueModel = "FlowDataValue";
+		$this->theorModel = "FlowDataTheor";
+	}
+	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date){
     	$record_freq = $postData['CodeReadingFrequency'];
     	$phase_type = $postData['CodeFlowPhase'];
@@ -53,36 +64,5 @@ class FlowController extends CodeController {
     	$objectIds = $dswk->keys();
     	
     	return ['dataSet'=>$dataSet,'objectIds'=>$objectIds];
-    }
-    
-    public function preSave(&$editedData,&$affectedIds,$postData) {
-    	$flow = Flow::getTableName();
-    	if (array_key_exists("FlowDataFdcValue", $editedData)) {
-    		if (!array_key_exists("FlowDataValue", $editedData)){
-    			$editedData["FlowDataValue"] = [];
-    		}
-    		if (!array_key_exists("FlowDataTheor", $editedData)){
-    			$editedData["FlowDataTheor"] = [];
-    		}
-    		foreach ($editedData["FlowDataFdcValue"] as $element) {
-    			$key = array_search($element[config("constants.flowId")], 
-    								array_column($editedData["FlowDataValue"],
-    										config("constants.flowId")));
-    			if ($key===FALSE) {
-    				$editedData["FlowDataValue"][] =  array_intersect_key($element,
-    																		array_flip(array(config("constants.flowId"),
-    																				config("constants.flFlowPhase"))));
-    			}
-    			$key = array_search($element[config("constants.flowId")],
-    								array_column($editedData["FlowDataTheor"],
-    										config("constants.flowId")));
-    			if ($key===FALSE) {
-    				$editedData["FlowDataTheor"][] =  array_intersect_key($element,
-    						array_flip(array(config("constants.flowId"),
-    								config("constants.flFlowPhase"))));
-    			}
-    			$affectedIds[]=$element['FLOW_ID'];
-    		}
-    	}
     }
 }
