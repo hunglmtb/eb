@@ -35,4 +35,12 @@ class FeatureEuModel extends EbBussinessModel
 						->get();
 		return $result;
 	}
+	
+	public static function updateWithFormularedValues($values,$object_id,$occur_date,$flow_phase) {
+	
+		$newData = [static::$idField=>$object_id,config("constants.euFlowPhase")=>$flow_phase];
+		$attributes = static::getKeyColumns($newData,$occur_date,null);
+	
+		return parent::updateOrCreate($attributes,$values);;
+	}
 }

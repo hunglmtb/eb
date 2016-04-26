@@ -94,4 +94,34 @@ class EuController extends CodeController {
     			
     	];
     }
+    
+    
+    protected function afterSave($ids) {
+    	/* foreach($ids as $mdlName => $modelIds ){
+		    $mdl = "App\Models\\".$mdlName;
+    		$mdl::where('ID', 1)->update(['votes' => 1]);
+    		$upids = \FormulaHelpers::applyFormula($mdlName,$affectedIds,$occur_date,$typeName,true);
+    		$ids[$mdlName] = array_merge($ids[$mdlName], $upids);
+    		$ids[$mdlName]  = array_unique($ids[$mdlName]);
+    	}
+    	
+    	
+    	foreach($ids as $mdlName => $mdlIds ){
+    		$mdl = "App\Models\\".$mdlName;
+    		foreach($mdlIds as $key => $id ){
+//     			$mdl::updateWith;
+    		}
+    		$editedData[$mdlName] = $mdlIds;
+    	} */
+    	
+    }
+    
+    protected function getAffectedObjects($mdlName, $columns, $newData) {
+    	$mdl = "App\Models\\".$mdlName;
+    	$idField = $mdl::$idField;
+    	$objectId = $newData [$idField];
+    	$flowPhase = $newData [config ( "constants.euFlowPhase" )];
+    	$aFormulas = \FormulaHelpers::getAffects ( $mdlName, $columns, $objectId,$flowPhase);
+    	return $aFormulas;
+    }
 }

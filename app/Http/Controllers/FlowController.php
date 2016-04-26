@@ -21,6 +21,7 @@ class FlowController extends CodeController {
 	
 		$this->valueModel = "FlowDataValue";
 		$this->theorModel = "FlowDataTheor";
+		$this->isApplyFormulaAfterSaving = true;
 	}
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date){
@@ -65,4 +66,14 @@ class FlowController extends CodeController {
     	
     	return ['dataSet'=>$dataSet,'objectIds'=>$objectIds];
     }
+    
+	protected function getAffectedObjects($mdlName, $columns, $newData) {
+		$mdl = "App\Models\\".$mdlName;
+		$idField = $mdl::$idField;
+		$objectId = $newData [$idField];
+// 		$flowPhase = $newData [config ( "constants.flFlowPhase" )];
+		$aFormulas = \FormulaHelpers::getAffects ( $mdlName, $columns, $objectId);
+		return $aFormulas;
+	}
+    
 }

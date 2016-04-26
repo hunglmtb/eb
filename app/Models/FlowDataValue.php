@@ -46,7 +46,7 @@ class FlowDataValue extends FeatureFlowModel
 	public static function calculateBeforeUpdateOrCreate(array $attributes, array $values = []){
 
 		if(array_key_exists(config("constants.flFlowPhase"), $values)
-				&&array_key_exists(config("constants.flowId"),$attributes)
+				&&array_key_exists(config("constants.euIdColumn"),$attributes)
 				&&array_key_exists("OCCUR_DATE",$attributes))//OIL or GAS
 		{
 			$fields = ["FL_DATA_GRS_VOL","FL_DATA_NET_VOL",

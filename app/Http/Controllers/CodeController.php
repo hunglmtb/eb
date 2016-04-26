@@ -3,24 +3,24 @@
 namespace App\Http\Controllers;
 use App\Http\ViewComposers\ProductionGroupComposer;
 use App\Models\CfgFieldProps;
+use App\Models\CodeAllocType;
 use App\Models\CodeFlowPhase;
 use App\Models\CodePressUom;
 use App\Models\Facility;
-use App\Models\Flow;
 use App\Models\StandardUom;
-use App\Models\CodeAllocType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 
 class CodeController extends EBController {
 	 
-	protected $type = null;
 	protected $fdcModel;
 	protected $idColumn;
 	protected $phaseColumn;
 	protected $valueModel ;
 	protected $theorModel ;
+	protected $isApplyFormulaAfterSaving = true;
+	
 	
 	public function getCodes(Request $request)
     {
@@ -80,10 +80,10 @@ class CodeController extends EBController {
     	
     	$uoms = $this->getUoms($properties,$facility_id);
     	$locked = \Helper::checkLockedTable($dcTable,$occur_date,$facility_id);
-    	$results = ['properties'	=> $properties,
-	    			'uoms'		=>$uoms,
-	    			'locked'	=>$locked,
-	    			'rights'	=> session('statut')];
+    	$results = ['properties'	=>$properties,
+	    			'uoms'			=>$uoms,
+	    			'locked'		=>$locked,
+	    			'rights'		=>session('statut')];
     	return $results;
     }
     
@@ -113,13 +113,9 @@ class CodeController extends EBController {
      	try
      	{
      		$resultTransaction = \DB::transaction(function () use ($postData,$editedData,$objectIds,$affectedIds,
-     																$occur_date,$phase_type,$facility_id){
+													     		 $occur_date,$phase_type,$facility_id){
      			$lockeds= [];
      			$ids = [];
-     			$type = $this->type;
-//      			$idField = $type['idField'];
-//      			$typeName = $type['name'];
-//      			$dateField = $type['dateField'];
      			\DB::enableQueryLog();
      			foreach($editedData as $mdlName => $mdlData ){
 		     		$ids[$mdlName] = [];
@@ -137,6 +133,7 @@ class CodeController extends EBController {
 			     		$newData = array_merge($newData,$columns);
  		     			$mdlData[$key] = $newData;
 		     			$returnRecord = $mdl::updateOrCreateWithCalculating($columns, $newData);
+// 						$f_value="'".doFormulaObject($tablename, $field, 'ENERGY_UNIT', $object_id, $occur_date,$flow_phase)."'";
 		     			$ids[$mdlName][] = $returnRecord['ID'];
 		     		}
 		     		$editedData[$mdlName] = $mdlData;
@@ -153,42 +150,52 @@ class CodeController extends EBController {
 		     		}
 		     	}
 		     	
-		     	//get affected ids
-		     	foreach($editedData as $mdlName => $mdlData ){
-		     		$mdl = "App\Models\\".$mdlName;
-		     		$idField = $mdl::$idField;
-		     		$typeName = $mdl::$typeName;
-		     		foreach($mdlData as $key => $newData ){
-		     			$columns = array_keys($newData);
-		     			if (array_key_exists($mdlName, $affectColumns)) {
-			     			$columns = array_merge($columns,$affectColumns[$mdlName]);
-		     			}
-						$columns = array_diff($columns, [$idField]);
-		     			
-			     		$aIds = \FormulaHelpers::getAffects($mdlName,$columns,$newData[$idField],$typeName);
-			     		$affectedIds = array_merge($affectedIds,$aIds);
-		     		}	     
+		     	if ($this->isApplyFormulaAfterSaving) {
+			     	//get affected object with id
+		     		$objectWithformulas = [];
+			     	foreach($editedData as $mdlName => $mdlData ){
+			     		$mdl = "App\Models\\".$mdlName;
+			     		foreach($mdlData as $key => $newData ){
+			     			$columns = array_keys($newData);
+			     			if (array_key_exists($mdlName, $affectColumns)) {
+				     			$columns = array_merge($columns,$affectColumns[$mdlName]);
+			     			}
+		     				$uColumns = $mdl::getKeyColumns($newData,$occur_date,$postData);
+			     			$columns = array_diff($columns, $uColumns);
+			     			$aFormulas = $this->getAffectedObjects($mdlName,$columns,$newData);
+			     			$objectWithformulas = array_merge($objectWithformulas,$aFormulas);
+			     		}	     
+			     	}
+			     	$objectWithformulas = array_unique($objectWithformulas);
+			     	
+			     	//apply Formula in formula table
+		     		$applieds = \FormulaHelpers::applyAffectedFormula($objectWithformulas,$occur_date);
+		     		if ($applieds&&count($applieds)) {
+				     	foreach($applieds as $apply ){
+				     		$mdlName = $apply->modelName;
+				     		if (!array_key_exists($mdlName, $ids)) {
+				     			$ids[$mdlName] = [];
+				     		}
+				     		$ids[$mdlName][] = $apply->ID;
+				     		$ids[$mdlName]  = array_unique($ids[$mdlName]);
+				     	}
+		     		}
 		     	}
-		     	$affectedIds = array_unique($affectedIds);
 		     	
-		     	//apply Formula in formula table
-		     	foreach($editedData as $mdlName => $mdlData ){
-		     		$upids = \FormulaHelpers::applyFormula($mdlName,$affectedIds,$occur_date,$typeName,true);
-		     		$ids[$mdlName] = array_merge($ids[$mdlName], $upids);
-		     		$ids[$mdlName]  = array_unique($ids[$mdlName]);
-		     	}
-		     	$resultTr = [];
+		     	$this->afterSave($ids);
+		     	
+		     	$resultTransaction = [];
 		     	if (count($lockeds)>0) {
-			     	$resultTr['lockeds'] = $lockeds;
+			     	$resultTransaction['lockeds'] = $lockeds;
 		     	}
-		     	$resultTr['ids']=$ids;
-		     	return $resultTr;
+		     	$resultTransaction['ids']=$ids;
+ 		     	return $resultTransaction;
 	     		
-	     	});
+	      	});
      	}
      	catch (\Exception $e)
      	{
-      	\Log::info("\n------------------------------------------------------------------------------------------------\nException wher run transation\n ");
+      		\Log::info("\n------------------------------------------------------------------------------------------------\nException wher run transation\n ");
      		throw $e;
      	}
      	
@@ -209,12 +216,19 @@ class CodeController extends EBController {
     }
     
     
-	public function preSave(&$editedData, &$affectedIds, $postData) {
+	protected function preSave(&$editedData, &$affectedIds, $postData) {
 		if (array_key_exists ($this->fdcModel, $editedData )) {
 			$this->preSaveModel ( $editedData, $affectedIds, $this->valueModel);
 			$this->preSaveModel ( $editedData, $affectedIds, $this->theorModel);
 		}
 	}
+	
+	protected function afterSave($ids) {
+	}
+	
+	protected function getAffectedObjects($mdlName,$columns,$objectId){
+	}
+	
     
     public function getUoms($properties = null,$facility_id)
     {

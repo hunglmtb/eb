@@ -15,18 +15,19 @@ class EbBussinessModel extends DynamicModel {
 	public static function updateValues(array $attributes, array &$values = [], $type, $fields) {
 		$unnecessary = true;
 		foreach ( $fields as $field ) {
-			$unnecessary = $unnecessary&&array_key_exists($field,$values)&&$values[$field]!=null&&$values[$field]!='';
+			$unnecessary = $unnecessary && array_key_exists ( $field, $values ) && $values [$field] != null && $values [$field] != '';
 		}
 		
-		if ($unnecessary) return;
-					
-		$flow_phase = $values[config("constants.flFlowPhase")];
-		//OIL or GAS
-		if(($flow_phase==1 || $flow_phase==2 || $flow_phase==21)){
-			$object_id = $attributes[$fields[config("constants.keyField")]];
-			$occur_date = $attributes["OCCUR_DATE"];
+		if ($unnecessary)
+			return;
+		
+		$flow_phase = $values [config ( "constants.flFlowPhase" )];
+		// OIL or GAS
+		if (($flow_phase == 1 || $flow_phase == 2 || $flow_phase == 21)) {
+			$object_id = $attributes [$fields [config ( "constants.keyField" )]];
+			$occur_date = $attributes ["OCCUR_DATE"];
 			
-			$fdcValues = static :: getFdcValues($attributes);
+			$fdcValues = static::getFdcValues ( $attributes );
 			$T_obs = $fdcValues ["OBS_TEMP"];
 			$P_obs = $fdcValues ["OBS_PRESS"];
 			$API_obs = $fdcValues ["OBS_API"];
@@ -34,7 +35,7 @@ class EbBussinessModel extends DynamicModel {
 			$_Bg = \FormulaHelpers::calculateBg ( $flow_phase, $T_obs, $P_obs, $API_obs, $occur_date, $object_id, $type );
 			
 			foreach ( $fields as $field ) {
-				if (config("constants.keyField")==$field) {
+				if (config ( "constants.keyField" ) == $field) {
 					continue;
 				}
 				// if($ctv==1){
@@ -42,8 +43,8 @@ class EbBussinessModel extends DynamicModel {
 					break;
 				}
 				$_vFDC = $fdcValues->$field;
-				if (static ::$enableCheckCondition && $_Bg==null && $_vFDC != '') {
-					throw new Exception ( "Can not calculate conversion for ENERGY UNIT ID: $object_id (check API, Temprature, Pressure value)");
+				if (static::$enableCheckCondition && $_Bg == null && $_vFDC != '') {
+					throw new Exception ( "Can not calculate conversion for ENERGY UNIT ID: $object_id (check API, Temprature, Pressure value)" );
 					return;
 				}
 				$values [$field] = $_vFDC;
@@ -72,6 +73,11 @@ class EbBussinessModel extends DynamicModel {
 						break;
 				}
 			}
+		}
 	}
+	
+	
+	public static function updateWithFormularedValues($values,$object_id,$occur_date,$flow_phase) {
+		return false;
 	}
 }

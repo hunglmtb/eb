@@ -135,11 +135,12 @@ class FormulaHelpers {
     	return true;
     }
     
-    public static function applyFormula($mdlName,$objectIds,$occur_date,$object_type,$returnAffectedIds=false){
+    public static function applyFormula($mdlName,$objectIds,$occur_date,$returnAffectedIds=false){
     	
 //     	global $object_id,$flow_phase,$occur_date,$facility_id;
     	$mdl = "App\Models\\$mdlName";
-    	
+    	$objectType = $mdl::$typeName;
+    	 
     	$result = [];
     	foreach($objectIds as $object_id){
 	    	$formulas = self::getFormulatedFields($mdl::getTableName(),$object_id,$object_type,$occur_date);
@@ -151,14 +152,20 @@ class FormulaHelpers {
 	    	}
 	    	
 	    	if (count($values)>0) {
-	    		$updateRecords = $mdl::where('OCCUR_DATE',$occur_date)
-							    		->where('flow_id',$object_id)
-							    		->update($values);
-	    		if ($updateRecords>0&&$returnAffectedIds) {
+	    		/* $updateRecords = $mdl::where('OCCUR_DATE',$occur_date)
+	    		->where(config("constants.idColumn.$object_type"),$object_id)
+	    		->update($values); */
+	    		
+	    		$updateRecords = $mdl::updateWithFormularedValues($values,$occur_date,$formulas);
+	    		/* if ($updateRecords>0&&$returnAffectedIds) {
 	    			$result[] = $mdl::where('OCCUR_DATE',$occur_date)
-								    		->where('flow_id',$object_id)
+								    		->where(config("constants.idColumn.$object_type"),$object_id)
 								    		->select('ID')
 								    		->first()->ID;
+	    		}; */
+	    		
+	    		if ($updateRecords>0&&$returnAffectedIds) {
+	    			$result[] = $updateRecords;
 	    		};
 	    	}
     	}
@@ -191,12 +198,15 @@ class FormulaHelpers {
     	return $fields;
     }
     
-    public static function getAffects($mdlName,$columns,$objectId,$objectType){
+    public static function getAffects($mdlName,$columns,$objectId,$flow_phase=false){
     	
     	$mdl = "App\Models\\$mdlName";
+		$objectType = $mdl::$typeName;
     	$where = ['OBJECT_TYPE'		=>	$objectType,
     			'OBJECT_ID'			=>	$objectId,
     			'TABLE_NAME'		=>	$mdl::getTableName()];
+    	
+    	if ($flow_phase) $where['FLOW_PHASE']=$flow_phase;
     	 
     	//     	\DB::enableQueryLog();
     	$foVars = FoVar::with('Formula')
@@ -205,17 +215,51 @@ class FormulaHelpers {
 //     						->select('AFFFECT_ID')
     						->get();
     	//     	\Log::info(\DB::getQueryLog());
-    	$affectIds = [];
+    	$affectedFormulas = [];
 	    foreach($foVars as $foVar ){
 	    	$fml = $foVar->Formula;
 	    	if ($fml) {
-		    	$affectIds[] = $fml->OBJECT_ID;
+		    	$affectedFormulas[] = $fml;
+//  		    	$affectedFormulas[] = $fml->OBJECT_ID;
 	    	}
 	    }
-	    $affectIds = array_unique($affectIds);
+ 	    $affectedFormulas = array_unique($affectedFormulas);
 	     
-    	return $affectIds;
+    	return $affectedFormulas;
     }
+    
+    public static function applyAffectedFormula($objectWithformulas,$occur_date){
+    	
+    	if (!$objectWithformulas) return false;
+    	$result = [];
+    	foreach($objectWithformulas as $objectWithformula){
+	    	$tableName = strtolower ( $objectWithformula->TABLE_NAME);
+	    	$mdlName = \Helper::camelize($tableName,'_');
+	    	$mdl = "App\Models\\$mdlName";
+	    	$object_type = $mdl::$typeName;
+	    	$object_id = $objectWithformula->OBJECT_ID;
+	    	$flow_phase= $objectWithformula->FLOW_PHASE;
+	    	$formulas = self::getFormulatedFields($tableName,$object_id,$object_type,$occur_date,$flow_phase);
+	    	$values = [];
+	    	foreach($formulas as $formula){
+// 	    		$temp_value="'".doFormulaObject($tablename, $field, $object_type, $object_id, $occur_date)."'";
+				$v=self::evalFormula($formula,$occur_date);
+	    		if ($v!==null) $values[$formula->VALUE_COLUMN]=$v;
+	    	}
+	    	
+	    	if (count($values)>0) {
+	    		$updateRecord = $mdl::updateWithFormularedValues($values,$object_id,$occur_date,$flow_phase);
+	    		if ($updateRecord) {
+	    			$updateRecord->{"modelName"} = $mdlName;
+	    			$result[] = $updateRecord;
+	    		};
+	    	}
+    	}
+    	return $result;
+    }
+    
+    
+    
     
     public static function evalFormula($formulaRow,$occur_date,  $show_echo = false){
     	if(!$formulaRow)
@@ -339,6 +383,7 @@ class FormulaHelpers {
     						//echo "field: $field<br>";
     						$params=explode(",",substr($row->STATIC_VALUE,$j+1,$k-$j-1));
     						$where = [];
+    						$swhere = "1";
     						foreach ($params as $param)
     						{
     							$deli="";
@@ -379,6 +424,7 @@ class FormulaHelpers {
     									}
 	    							}
 	    							$sql.=" and $pp";
+    								$swhere.=" and $pp";
 	    							if($whereItem[0]=="OCCUR_DATE"||$whereItem[0]=="EFFECTIVE_DATE"){
 	    								$whereItem[2] = $occur_date;
 	    							}
@@ -388,9 +434,8 @@ class FormulaHelpers {
     						}
     						$sql .= " limit 100";
 //      						\DB::enableQueryLog();
-     						
-    						$getDataResult = DB::table($table)->where( \DB::raw($pp))->select($field)->skip(0)->take(100)->get();
-//      						$getDataResult = DB::table($table)->where($where)->select($field)->skip(0)->take(100)->get();
+//      						$getDataResult = DB::table($table)->where( \DB::raw($swhere))->select($field)->skip(0)->take(100)->get();
+       						$getDataResult = DB::table($table)->where($where)->select($field)->skip(0)->take(100)->get();
 //      						\Log::info(\DB::getQueryLog());
     						unset($table);
     						unset($where);
@@ -439,7 +484,8 @@ class FormulaHelpers {
     								$sqlvalue[]=$rox;
     							} */
     							
-    							$sqlvalue= $getDataResult->toArray();
+     							$sqlvalue= $getDataResult->toArray();
+//     							$sqlvalue= $getDataResult;
     							$sqlarray=array();
     							for($k=0;$k<$num_rows;$k++)
     							{

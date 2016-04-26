@@ -35,7 +35,7 @@ class EnergyUnitDataValue extends FeatureEuModel
 		{
 			$fields = ["EU_DATA_GRS_VOL","EU_DATA_NET_VOL",
 						config("constants.keyField") 	=>	'EU_ID'];
-			static::updateValues($attributes,$values,'WELL',$fields);
+			static::updateValues($attributes,$values,'ENERGY_UNIT',$fields);
 		}
 		return $values; 
 	}

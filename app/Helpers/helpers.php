@@ -88,4 +88,10 @@ class Helper {
 								->first();
 		return $lockTable!=null&&$lockTable!=false;
 	}
+	
+	
+	public static function camelize($input, $separator = '_')
+	{
+		return str_replace($separator, '', ucwords($input, $separator));
+	}
 }
