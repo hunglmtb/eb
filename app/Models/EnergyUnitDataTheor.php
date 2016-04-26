@@ -3,9 +3,12 @@
 namespace App\Models;
 use App\Models\EuTestDataValue;
 use App\Models\FeatureEuModel;
+use App\Trail\QltyDataConstrain;
 
-class EnergyUnitDataTheor extends FeatureEuModel
-{
+class EnergyUnitDataTheor extends FeatureEuModel{
+	
+	use QltyDataConstrain;
+	
 	protected $table = 'ENERGY_UNIT_DATA_THEOR';
 	
 	protected $primaryKey = 'ID';

@@ -116,9 +116,11 @@ class CodeController extends EBController {
 													     		 $occur_date,$phase_type,$facility_id){
      			$lockeds= [];
      			$ids = [];
-     			\DB::enableQueryLog();
+     			$resultRecords = [];
+     			//      			\DB::enableQueryLog();
      			foreach($editedData as $mdlName => $mdlData ){
 		     		$ids[$mdlName] = [];
+		     		$resultRecords[$mdlName] = [];
 		     		$mdl = "App\Models\\".$mdlName;
 		     		$locked = \Helper::checkLockedTable($mdlName,$occur_date,$facility_id);
 		     		if ($locked) {
@@ -133,12 +135,12 @@ class CodeController extends EBController {
 			     		$newData = array_merge($newData,$columns);
  		     			$mdlData[$key] = $newData;
 		     			$returnRecord = $mdl::updateOrCreateWithCalculating($columns, $newData);
-// 						$f_value="'".doFormulaObject($tablename, $field, 'ENERGY_UNIT', $object_id, $occur_date,$flow_phase)."'";
 		     			$ids[$mdlName][] = $returnRecord['ID'];
+		     			$resultRecords[$mdlName][] = $returnRecord;
 		     		}
 		     		$editedData[$mdlName] = $mdlData;
      			}
-		     	\Log::info(\DB::getQueryLog());
+// 		     	\Log::info(\DB::getQueryLog());
 		     	
 		     	$objectIds = array_unique($objectIds);
 		     	//doFormula in config table
@@ -178,11 +180,13 @@ class CodeController extends EBController {
 				     		}
 				     		$ids[$mdlName][] = $apply->ID;
 				     		$ids[$mdlName]  = array_unique($ids[$mdlName]);
+		     				$resultRecords[$mdlName][] = $apply;
+				     		$resultRecords[$mdlName]  = array_unique($resultRecords[$mdlName]);
 				     	}
 		     		}
 		     	}
 		     	
-		     	$this->afterSave($ids);
+		     	$this->afterSave($resultRecords,$occur_date);
 		     	
 		     	$resultTransaction = [];
 		     	if (count($lockeds)>0) {
@@ -223,7 +227,7 @@ class CodeController extends EBController {
 		}
 	}
 	
-	protected function afterSave($ids) {
+    protected function afterSave($resultRecords,$occur_date) {
 	}
 	
 	protected function getAffectedObjects($mdlName,$columns,$objectId){

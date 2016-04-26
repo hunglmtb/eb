@@ -80,4 +80,9 @@ class EbBussinessModel extends DynamicModel {
 	public static function updateWithFormularedValues($values,$object_id,$occur_date,$flow_phase) {
 		return false;
 	}
+	
+	public static function updateWithQuality($record,$occur_date) {
+		return false;
+	}
+	
 }

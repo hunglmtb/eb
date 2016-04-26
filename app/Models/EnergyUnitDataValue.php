@@ -1,11 +1,13 @@
 <?php
 
 namespace App\Models;
-use App\Models\FeatureEuModel;
 use App\Models\EnergyUnitDataFdcValue;
+use App\Models\FeatureEuModel;
+use App\Trail\QltyDataConstrain;
 
 class EnergyUnitDataValue extends FeatureEuModel
 {
+	use QltyDataConstrain;
 	protected $table = 'ENERGY_UNIT_DATA_VALUE';
 	protected $primaryKey = 'ID';
 	protected $fillable  = ['OCCUR_DATE',

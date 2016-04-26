@@ -76,44 +76,23 @@ class EuController extends CodeController {
  		    			->orderBy($dcTable)
   		    			->orderBy('EU_FLOW_PHASE')
   		    			->get();
-  		    			/* ->skip(0)->take(5)->get(["$eu.name as $dcTable",
-				    			"$eu.ID as DT_RowId",
-// 				    			"$codeFlowPhase.name as PHASE_NAME",
-				    			"$eu.ID as X_EU_ID",
-  				    			"$euPhaseConfig.FLOW_PHASE as EU_FLOW_PHASE",
- 				    			"$codeStatus.NAME as STATUS_NAME",
- 				    			"$dcTable.*"]); */
-				    	
-    	//  		\Log::info(\DB::getQueryLog());
-    	/* $dswk = $dataSet->keyBy('DT_RowId');
-    	$objectIds = $dswk->keys(); */
 //  		\Log::info(\DB::getQueryLog());
  		    			
     	return ['dataSet'=>$dataSet,
 //     			'objectIds'=>$objectIds
-    			
     	];
     }
     
     
-    protected function afterSave($ids) {
-    	/* foreach($ids as $mdlName => $modelIds ){
-		    $mdl = "App\Models\\".$mdlName;
-    		$mdl::where('ID', 1)->update(['votes' => 1]);
-    		$upids = \FormulaHelpers::applyFormula($mdlName,$affectedIds,$occur_date,$typeName,true);
-    		$ids[$mdlName] = array_merge($ids[$mdlName], $upids);
-    		$ids[$mdlName]  = array_unique($ids[$mdlName]);
-    	}
-    	
-    	
-    	foreach($ids as $mdlName => $mdlIds ){
+    protected function afterSave($resultRecords,$occur_date) {
+    	\DB::enableQueryLog();
+    	foreach($resultRecords as $mdlName => $records ){
     		$mdl = "App\Models\\".$mdlName;
-    		foreach($mdlIds as $key => $id ){
-//     			$mdl::updateWith;
+    		foreach($records as $record ){
+     			$mdl::updateWithQuality($record,$occur_date);
     		}
-    		$editedData[$mdlName] = $mdlIds;
-    	} */
-    	
+    	}
+  		\Log::info(\DB::getQueryLog());
     }
     
     protected function getAffectedObjects($mdlName, $columns, $newData) {

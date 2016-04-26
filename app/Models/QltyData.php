@@ -30,4 +30,17 @@ class QltyData extends DynamicModel
 	{
 		return $this->belongsTo('App\Models\CodeQltySrcType', 'SRC_TYPE', 'ID');
 	}
+	
+	public static function getQualityRow($object_id,$object_type_code,$occur_date){
+// 		$sSQL="select a.* from qlty_data a, code_qlty_src_type b where a.SRC_ID='$object_id' and a.SRC_TYPE=b.ID and b.CODE='$object_type_code' and a.EFFECTIVE_DATE<=STR_TO_DATE('$occur_date', '%m/%d/%Y') order by a.EFFECTIVE_DATE desc limit 1";
+		
+		return static :: whereHas('CodeQltySrcType',function ($query) use ($object_type_code) {
+													$query->where("CODE",$object_type_code );
+											})
+					->where('SRC_ID',$object_id)
+					->whereDate('EFFECTIVE_DATE','<=',$occur_date)
+					->orderBy('EFFECTIVE_DATE','desc')
+					->first();
+	}
+	
 }
