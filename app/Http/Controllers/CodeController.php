@@ -129,14 +129,14 @@ class CodeController extends EBController {
 		     			continue;
 		     		}
 		     		foreach($mdlData as $key => $newData ){
-// 		     			$columns = [$idField => $newData[$idField],$dateField=>$occur_date];
 		     			$columns = $mdl::getKeyColumns($newData,$occur_date,$postData);
- 		     			$newData[$mdl::$dateField]=$occur_date;
-			     		$newData = array_merge($newData,$columns);
  		     			$mdlData[$key] = $newData;
 		     			$returnRecord = $mdl::updateOrCreateWithCalculating($columns, $newData);
-		     			$ids[$mdlName][] = $returnRecord['ID'];
-		     			$resultRecords[$mdlName][] = $returnRecord;
+		     			if ($returnRecord) {
+		     				$returnRecord->updateAudit($columns,$newData,$postData);
+			     			$ids[$mdlName][] = $returnRecord['ID'];
+			     			$resultRecords[$mdlName][] = $returnRecord;
+		     			}
 		     		}
 		     		$editedData[$mdlName] = $mdlData;
      			}

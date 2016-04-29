@@ -43,20 +43,29 @@ class FlowDataValue extends FeatureFlowModel
 		return $rv;
 	} */
 	
-	public static function calculateBeforeUpdateOrCreate(array $attributes, array $values = []){
+	public static function getKeyColumns(&$newData,$occur_date,$postData)
+	{
+		$cls = parent::getKeyColumns($newData,$occur_date,$postData);
+		$cls[config("constants.flowPhase")] = $newData[config("constants.flFlowPhase")];
+		return $cls;
+	}
+	
+	public static function calculateBeforeUpdateOrCreate(array &$attributes, array $values = []){
 
-		if(array_key_exists(config("constants.flFlowPhase"), $values)
-				&&array_key_exists(config("constants.euIdColumn"),$attributes)
+		if(array_key_exists(config("constants.flowPhase"), $attributes)
+				&&array_key_exists(config("constants.flowIdColumn"),$attributes)
 				&&array_key_exists("OCCUR_DATE",$attributes))//OIL or GAS
 		{
 			$fields = ["FL_DATA_GRS_VOL","FL_DATA_NET_VOL",
 						config("constants.keyField") 	=>	'FLOW_ID'];
 			static::updateValues($attributes,$values,'FLOW',$fields);
 		}
+		if(array_key_exists(config("constants.flowPhase"), $attributes)) unset($attributes[config("constants.flowPhase")]);
 		return $values; 
 	}
 	
 	public static function  getFdcValues($attributes){
+		if(array_key_exists(config("constants.flowPhase"), $attributes)) unset($attributes[config("constants.flowPhase")]);
 		$fdcValues = FlowDataFdcValue::where($attributes)->first();
 		return $fdcValues;
 	}

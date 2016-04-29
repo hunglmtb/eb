@@ -28,7 +28,7 @@ class FlowDataTheor extends FeatureFlowModel
 							 'STATUS_DATE',
 							 'RECORD_STATUS'];
 	
-	public static function calculateBeforeUpdateOrCreate(array $attributes, array $values = []){
+	public static function calculateBeforeUpdateOrCreate(array &$attributes, array $values = []){
 	
 		if(array_key_exists("FLOW_ID",$attributes)
 				&&array_key_exists("OCCUR_DATE",$attributes)){
@@ -46,9 +46,11 @@ class FlowDataTheor extends FeatureFlowModel
 											->select($fieldArray)
 											->first();
 			
-			foreach ($theoFieldArray as $field){
-				if (!array_key_exists($field, $values)) {
-					$values[$field]= $fdcValues->$field;
+			if ($fdcValues) {
+				foreach ($theoFieldArray as $field){
+					if (!array_key_exists($field, $values)) {
+						$values[$field]= $fdcValues->$field;
+					}
 				}
 			}
 		}

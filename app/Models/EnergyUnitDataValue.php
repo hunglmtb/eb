@@ -29,9 +29,9 @@ class EnergyUnitDataValue extends FeatureEuModel
 	protected static $enableCheckCondition = true;
 	
 	
-	public static function calculateBeforeUpdateOrCreate(array $attributes, array $values = []){
+	public static function calculateBeforeUpdateOrCreate(array &$attributes, array $values = []){
 
-		if(array_key_exists(config("constants.flFlowPhase"), $values)
+		if(array_key_exists(config("constants.flowPhase"), $attributes)
 				&&array_key_exists(config("constants.euIdColumn"),$attributes)
 				&&array_key_exists("OCCUR_DATE",$attributes))//OIL or GAS
 		{

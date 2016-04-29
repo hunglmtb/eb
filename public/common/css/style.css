@@ -104,6 +104,9 @@ input[type="button"]:focus, button:focus{
     width: 125px;
 }
 
+.editInline{
+}
+
 .dataTables_wrapper table{
   margin: 0 auto;
   width: 100%;

@@ -49,13 +49,4 @@ class DynamicModel extends Model {
 	{
 		return with(new static)->getTable();
 	}
-	
-	public static function updateOrCreateWithCalculating(array $attributes, array $values = []){
-		$values = static::calculateBeforeUpdateOrCreate($attributes,$values);
-		return parent::updateOrCreate($attributes,$values);
-	}
-	
-	public static function calculateBeforeUpdateOrCreate(array $attributes, array $values = []){
-		return $values;
-	}
 }

@@ -9,12 +9,14 @@ class FeatureEuModel extends EbBussinessModel
 	public  static  $idField = 'EU_ID';
 	public  static  $typeName = 'ENERGY_UNIT';
 	public  static  $dateField = 'OCCUR_DATE';
+	protected $objectModel = 'EnergyUnit';
 	
 	public static function getKeyColumns(&$newData,$occur_date,$postData){
 		if (array_key_exists(config("constants.euId"), $newData)) {
 			$newData[static::$idField] = $newData[config("constants.euId")];
 			unset($newData[config("constants.euId")]);
 		}
+		$newData[static::$dateField] = $occur_date;
 		return [static::$idField => $newData[static::$idField],
 				config("constants.flowPhase") => $newData[config("constants.euFlowPhase")],
 				static::$dateField=>$occur_date];

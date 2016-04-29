@@ -3,14 +3,18 @@
 namespace App\Models;
 
 use App\Models\DynamicModel;
+use Carbon\Carbon;
+use App\Models\AuditTrail;
 
 class EbBussinessModel extends DynamicModel {
+	
+	protected $objectModel = null;
+	protected static $enableCheckCondition = false;
+	protected $excludeColumns = [];
 	
 	public static function findManyWithConfig($updatedIds) {
 		return parent::findMany ( $updatedIds );
 	}
-	
-	protected static $enableCheckCondition = false;
 	
 	public static function updateValues(array $attributes, array &$values = [], $type, $fields) {
 		$unnecessary = true;
@@ -21,13 +25,15 @@ class EbBussinessModel extends DynamicModel {
 		if ($unnecessary)
 			return;
 		
-		$flow_phase = $values [config ( "constants.flFlowPhase" )];
+		$flow_phase = $attributes [config ( "constants.flowPhase" )];
 		// OIL or GAS
 		if (($flow_phase == 1 || $flow_phase == 2 || $flow_phase == 21)) {
 			$object_id = $attributes [$fields [config ( "constants.keyField" )]];
 			$occur_date = $attributes ["OCCUR_DATE"];
 			
 			$fdcValues = static::getFdcValues ( $attributes );
+			if (!$fdcValues) return ;
+			
 			$T_obs = $fdcValues ["OBS_TEMP"];
 			$P_obs = $fdcValues ["OBS_PRESS"];
 			$API_obs = $fdcValues ["OBS_API"];
@@ -76,6 +82,40 @@ class EbBussinessModel extends DynamicModel {
 		}
 	}
 	
+	public static function updateOrCreateWithCalculating(array $attributes, array $values = []) {
+		$values = static::calculateBeforeUpdateOrCreate ( $attributes, $values );
+		
+		/* $instance = static::firstOrNew($attributes);
+		$oldValues = [];
+		foreach ( $values as $column => $value ) {
+			if ($instance->contains($column)) {
+				$oldValues[$column]= $instance->$column;
+			}
+		}
+		
+		$instance->{'oldValues'} = $oldValues;
+		$instance->fill($values)->save();
+		
+		return $instance; */
+		$instancef = static::where($attributes)->first();
+		
+		$instance = parent::updateOrCreate ( $attributes, $values );
+		
+		if ($instancef) {
+			$oldValues = [];
+			foreach ( $values as $column => $value ) {
+	// 			if ($instancef->contains($column)) {
+					$oldValues[$column]= $instancef->$column;
+	// 			}
+			}
+			$instance->{'oldValues'} = $oldValues;
+		}
+		return $instance;
+	}
+	
+	public static function calculateBeforeUpdateOrCreate(array &$attributes, array $values = []){
+		return $values;
+	}
 	
 	public static function updateWithFormularedValues($values,$object_id,$occur_date,$flow_phase) {
 		return false;
@@ -83,6 +123,67 @@ class EbBussinessModel extends DynamicModel {
 	
 	public static function updateWithQuality($record,$occur_date) {
 		return false;
+	}
+	
+	public function getObjectDesc($rowID) {
+		$mdl = 'App\Models\\'.$this->objectModel;
+		return $mdl::find($rowID);
+	}
+	
+	public function updateAudit($attributes,$values,$postData) {
+		$current = Carbon::now();
+		$current_username =auth()->user()->username;
+		$rowID = $attributes[static::$idField];
+		$facility_id = $postData['Facility'];
+		$objectDesc = $this->getObjectDesc($rowID);
+		$oldValue = null;
+		$newValue = null;
+		$records = array();
+		$shouldInsertAudit = true;
+		
+		if ($this->wasRecentlyCreated) {
+			$action = "New record";
+			$columns = ['New'];
+		}
+		else{
+			$action = "Update value";
+			$columns = $values;
+		}
+		
+		
+		foreach ( $columns as $column => $columnValue ) {
+			if (!$this->wasRecentlyCreated) {
+				$shouldInsertAudit = false;
+				if (!in_array($column, $this->excludeColumns)) {
+					if(isset($this->oldValues)) {
+						$original = $this->oldValues;
+						if (array_key_exists($column, $original)){
+							$oldValue = $original[$column];
+							$newValue = $this->$column;
+							$shouldInsertAudit = $oldValue!=$newValue;
+						}
+					}
+				}
+			}
+					
+			if ($shouldInsertAudit) {
+				$records[] = array('ACTION'=>$action,
+								'FACILITY_ID'=>$facility_id,
+								'WHO'=>$current_username,
+								'WHEN'=>$current, 
+								'TABLE_NAME'=>$this->table,
+								'COLUMN_NAME'=>$column,
+								'RECORD_ID'=>$rowID,
+								'OBJECT_DESC'=>$objectDesc->NAME,
+								'REASON'=>1,
+								'OLD_VALUE'=>$oldValue,
+								'NEW_VALUE'=>$newValue);
+			}
+		}
+		
+		if (count($records)>0) {
+			AuditTrail::insert($records);
+		}
 	}
 	
 }

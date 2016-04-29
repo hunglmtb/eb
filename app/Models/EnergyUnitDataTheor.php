@@ -25,9 +25,9 @@ class EnergyUnitDataTheor extends FeatureEuModel{
 							'STATUS_DATE',
 							'RECORD_STATUS'];
 	
-	public static function calculateBeforeUpdateOrCreate(array $attributes, array $values = []){
+	public static function calculateBeforeUpdateOrCreate(array &$attributes, array $values = []){
 	
-		if(array_key_exists(config("constants.flowPhase"), $values)
+		if(array_key_exists(config("constants.flowPhase"), $attributes)
 				&&array_key_exists(config("constants.euIdColumn"),$attributes)
 				&&array_key_exists("OCCUR_DATE",$attributes))//OIL or GAS
 		{
@@ -40,13 +40,9 @@ class EnergyUnitDataTheor extends FeatureEuModel{
  			$rowTest=EuTestDataValue::where([['EU_ID',$object_id],
  												['TEST_USAGE',1]])
 				    				->whereDate('EFFECTIVE_DATE', '<=', $occur_date)
-				    				->orderBy('EFFECTIVE_DATE')
+				    				->orderBy('EFFECTIVE_DATE','desc')
  									->first();
 				
-			$fields = ["EU_DATA_GRS_VOL","EU_DATA_NET_VOL",
-						config("constants.keyField") 	=>	'EU_ID'];
-			
-			$_v="";
 			$theoFields = CfgFieldProps::getConfigFields( static::getTableName())->get();
 			$theoFieldArray =array_column($theoFields->toArray(), 'COLUMN_NAME');
 			
@@ -55,6 +51,7 @@ class EnergyUnitDataTheor extends FeatureEuModel{
 			{
 				$rat=$active_hrs/24;
 				foreach($theoFieldArray as $field ){
+					$_v= null;
 					if($flow_phase==1) //oil
 					{
 						if($field=='EU_DATA_GRS_VOL') $_v=$rat*$rowTest->EU_TEST_LIQ_HC_VOL;

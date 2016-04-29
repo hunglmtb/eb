@@ -98,6 +98,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
             });
             uoms[index]["createdCell"] = function (td, cellData, rowData, row, col) {
                 if(data.properties[col].DATA_METHOD==1&&data.properties[col].DATA_METHOD=='1'){
+	 				$(td).addClass( "editInline" );
 		        	$(td).editable({
 		        	    type: 'select',
 		        	    title: 'edit',
@@ -129,6 +130,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 // 								      	if ( cellData < 1 ) {
 // 											$(td).attr('tabindex', tabindex++);
                				 			if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
+               				 				$(td).addClass( "editInline" );
 								        	$(td).editable({
 								        	    type : 'number',
 								        	    step: 'any',
