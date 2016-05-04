@@ -267,6 +267,7 @@ class CodeController extends EBController {
 		    		$withs[] = 'CodeMassUom';
 		    		$uoms[] = ['id'=>'CodeMassUom','targets'=>$i,'COLUMN_NAME'=>'FL_MASS_UOM'];
 		    		break;
+		    	case 'VOL_UOM' :
 		    	case 'FL_VOL_UOM' :
 		    	case 'EU_VOL_UOM' :
 	    			$withs[] = 'CodeVolUom';

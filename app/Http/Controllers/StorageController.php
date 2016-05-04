@@ -6,7 +6,7 @@ use App\Models\Tank;
 
 class StorageController extends CodeController {
     
-	public function __construct() {
+	/* public function __construct() {
 		parent::__construct();
 		$this->fdcModel = "EnergyUnitDataFdcValue";
 		$this->idColumn = config("constants.euId");
@@ -14,66 +14,63 @@ class StorageController extends CodeController {
 		
 		$this->valueModel = "EnergyUnitDataValue";
 		$this->theorModel = "EnergyUnitDataTheor";
-	}
+	} */
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date){
-//     	$eu_group_id = $postData['EnergyUnitGroup'];
-//     	$record_freq = $postData['CodeReadingFrequency'];
-//     	$phase_type = $postData['CodeFlowPhase'];
     	$product_type = $postData['CodeProductType'];
+    	switch ($dcTable) {
+    		case 'storage_data_value'     :
+    		case 'storage_data_plan'      :
+    		case 'storage_data_forecast'  :
+			case 'STORAGE_DATA_VALUE'     :
+    		case 'STORAGE_DATA_PLAN'      :
+    		case 'STORAGE_DATA_FORECAST'  :
+    			$mdlName = "Storage";
+    			$joindField = "STORAGE_ID";
+    			$extraColumn = false;
+    			break;
+    		default:
+    			$mdlName = "Tank";
+    			$joindField = "TANK_ID";
+    			$extraColumn = "STORAGE_ID";
+    			break;
+    	}
     	
-    	$tank = Tank::getTableName();
+    	$mdl = "App\Models\\$mdlName";
+    	$mainTableName = $mdl::getTableName();
     	$codeProductType = CodeProductType::getTableName();
     	
     	$euWheres = ['FACILITY_ID' => $facility_id, 'FDC_DISPLAY' => 1];
     	
 //     	\DB::enableQueryLog();
-    	$dataSet = Tank::join($codeProductType,function ($query) use ($tank,$codeProductType,$product_type) {
-						    					$query->on("$codeProductType.ID",'=',"$tank.PRODUCT");
-										    	if ($product_type>0) $query->where("$tank.PRODUCT",'=',$product_type);
+
+    	$columns = ["$mainTableName.name as $dcTable",
+			    	"$mainTableName.ID as DT_RowId",
+			    	"$codeProductType.name as PHASE_NAME",
+			    	"$mainTableName.ID as ".config("constants.euId"),
+			    	"$mainTableName.product as OBJ_FLOW_PHASE",
+			    	"$dcTable.*"];
+    	
+    	if ($extraColumn) $columns[] = "$mainTableName.$extraColumn";
+    	
+    	$dataSet = $mdl::join($codeProductType,function ($query) use ($mainTableName,$codeProductType,$product_type) {
+						    					$query->on("$codeProductType.ID",'=',"$mainTableName.PRODUCT");
+										    	if ($product_type>0) $query->where("$mainTableName.PRODUCT",'=',$product_type);
 						}) 
     					->where($euWheres)
 				    	->whereDate('START_DATE', '<=', $occur_date)
-				    	->leftJoin($dcTable, function($join) use ($tank,$dcTable,$occur_date){
-										    		$join->on("$tank.ID", '=', "$dcTable.TANK_ID")
+				    	->leftJoin($dcTable, function($join) use ($mainTableName,$dcTable,$occur_date,$joindField){
+										    		$join->on("$mainTableName.ID", '=', "$dcTable.$joindField")
 	 									    				->where("$dcTable.OCCUR_DATE",'=',$occur_date);
 				    	})
-				    	->select(
-				    			"$tank.name as $dcTable",
-				    			"$tank.ID as DT_RowId",
- 				   				"$codeProductType.name as PHASE_NAME",
-				    			"$tank.ID as ".config("constants.euId"),
-				 				"$tank.STORAGE_ID",
-				 				"$tank.product as OBJ_FLOW_PHASE",
-				    			"$dcTable.*") 
+				    	->select($columns) 
  		    			->orderBy($dcTable)
-  		    			->orderBy("$tank.PRODUCT")
+  		    			->orderBy("$mainTableName.PRODUCT")
   		    			->get();
 //  		\Log::info(\DB::getQueryLog());
  		    			
     	return ['dataSet'=>$dataSet,
 //     			'objectIds'=>$objectIds
     	];
-    }
-    
-    
-    protected function afterSave($resultRecords,$occur_date) {
-    	\DB::enableQueryLog();
-    	foreach($resultRecords as $mdlName => $records ){
-    		$mdl = "App\Models\\".$mdlName;
-    		foreach($records as $record ){
-     			$mdl::updateWithQuality($record,$occur_date);
-    		}
-    	}
-  		\Log::info(\DB::getQueryLog());
-    }
-    
-    protected function getAffectedObjects($mdlName, $columns, $newData) {
-    	$mdl = "App\Models\\".$mdlName;
-    	$idField = $mdl::$idField;
-    	$objectId = $newData [$idField];
-    	$flowPhase = $newData [config ( "constants.euFlowPhase" )];
-    	$aFormulas = \FormulaHelpers::getAffects ( $mdlName, $columns, $objectId,$flowPhase);
-    	return $aFormulas;
     }
 }
