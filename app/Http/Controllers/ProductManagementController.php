@@ -29,9 +29,9 @@ class ProductManagementController extends EBController {
 	public function storage() {
 		$filterGroups = array('productionFilterGroup'=> [],
 				'dateFilterGroup'=> array(['id'=>'date_begin','name'=>'Date']),
-				'frequenceFilterGroup'=> ['CodeReadingFrequency']
+				'frequenceFilterGroup'=> ['CodeProductType']
 		);
-		return view ( 'front.flow',['filters'=>$filterGroups]);
+		return view ( 'front.storage',['filters'=>$filterGroups]);
 	}
 	
 	public function quality() {

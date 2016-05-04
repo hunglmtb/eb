@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\CodeFlowPhase;
+use App\Models\CodeEventType;
 use App\Models\EnergyUnit;
 use App\Models\CodeStatus;
 use App\Models\EuPhaseConfig;
@@ -31,7 +32,8 @@ class EuController extends CodeController {
     	$codeFlowPhase = CodeFlowPhase::getTableName();
     	$codeStatus = CodeStatus::getTableName();
     	$euPhaseConfig = EuPhaseConfig::getTableName();
-    	
+    	$codeEventType = CodeEventType::getTableName();
+    	 
     	$euWheres = ['FACILITY_ID' => $facility_id, 'FDC_DISPLAY' => 1];
     	if ($record_freq>0) $euWheres["$eu.DATA_FREQ"]= $record_freq;
      	if ($eu_group_id>0) $euWheres["$eu.EU_GROUP_ID"]= $eu_group_id;
@@ -48,7 +50,8 @@ class EuController extends CodeController {
 		// 							    		$query->select('FLOW_PHASE as EU_FLOW_PHASE');
 						}) 
 						->join($codeFlowPhase,"$euPhaseConfig.FLOW_PHASE", '=', "$codeFlowPhase.ID")
-    					->where($euWheres)
+						->join($codeEventType,"$euPhaseConfig.EVENT_TYPE", '=', "$codeEventType.ID")
+						->where($euWheres)
 				    	->whereDate('EFFECTIVE_DATE', '<=', $occur_date)
 				    	->leftJoin($dcTable, function($join) use ($eu,$dcTable,$occur_date,$alloc_type,$euPhaseConfig){
 											    	//TODO add table name 
@@ -68,10 +71,12 @@ class EuController extends CodeController {
 				    			"$eu.name as $dcTable",
 				    			"$euPhaseConfig.ID as DT_RowId",
  				    			"$codeFlowPhase.name as PHASE_NAME",
+ 				    			"$codeEventType.name as TYPE_NAME",
 				    			"$eu.ID as ".config("constants.euId"),
    				    			"$euPhaseConfig.FLOW_PHASE as EU_FLOW_PHASE",
   				    			"$codeStatus.NAME as STATUS_NAME",
 				    			"$codeFlowPhase.CODE as PHASE_CODE",
+				    			"$codeEventType.CODE as TYPE_CODE",
 				    			"$dcTable.*") 
  		    			->orderBy($dcTable)
   		    			->orderBy('EU_FLOW_PHASE')

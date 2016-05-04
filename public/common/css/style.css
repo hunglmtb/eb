@@ -130,7 +130,7 @@ table.dataTable {
 }
 
 .phase {
-	margin-right: 25px;
+	margin-right: 5px;
 	width: 60px;
 	height: 13px;
 	overflow: hidden;
@@ -140,15 +140,15 @@ table.dataTable {
 	background: #bbb
 }
 
-.OIL {
+.OIL,.Oil {
 	background: #FBD070;
 }
 
-.GAS {
+.GAS ,.Gas {
 	background: #FF9696;
 }
 
-.WTR {
+.WTR,.W,.Water {
 	background: #62CEFB;
 }
 
@@ -159,7 +159,7 @@ table.dataTable {
 	width: 115px;
 }
 
-.eustatus {
+.eustatus, .eventType {
     color: #888888;
     border: 1px solid #888888;
     padding: 1px;

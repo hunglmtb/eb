@@ -92,6 +92,7 @@ Route::post('code/list', 'CodeController@getCodes');
 Route::post('code/save', 'FlowController@save');
 Route::post('code/loadeu',['uses' =>'EuController@load','middleware' => 'saveWorkspace']);
 Route::post('code/saveeu', 'EuController@save');
+Route::post('code/load-storage',['uses' =>'StorageController@load','middleware' => 'saveWorkspace']);
 
 //---------
 Route::post('fo/loadSafety', 'FOController@loadSafety');

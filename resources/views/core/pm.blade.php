@@ -166,10 +166,20 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 
 		var phase = {"targets": 0,
 					"render": function ( data, type, rowData ) {
-								var html = data+"<div class='phase "+rowData['PHASE_CODE']+"'>"+
-			        						rowData['PHASE_NAME']+"</div>";
+								var html = data;
+								if(rowData.hasOwnProperty('PHASE_CODE')){
+									html += "<div class='phase "+rowData['PHASE_CODE']+"'>"+
+	        								rowData['PHASE_NAME']+"</div>";
+								}
+								else {
+									html += "<div class='phase "+rowData['PHASE_NAME']+"'>"+
+    								rowData['PHASE_NAME']+"</div>";
+								}
 								if(rowData.hasOwnProperty('STATUS_NAME')){
 									html +="<span class='eustatus'>"+rowData['STATUS_NAME']+"</span>";
+								}
+								if(rowData.hasOwnProperty('TYPE_CODE')){
+									html +="<span class='eventType'>"+rowData['TYPE_CODE']+"</span>";
 								}
 								return html;
 							}

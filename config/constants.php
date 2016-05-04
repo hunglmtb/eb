@@ -34,6 +34,11 @@ return [
 										'CodeAllocType'			=>	array('filterName'	=>'Alloc Type',
 																		'name'			=>'CodeAllocType',
 																		'id'			=>'CodeAllocType'),
+										'CodeProductType'		=>	array('filterName'	=>'Product',
+																		'name'			=>'CodeProductType',
+																		'id'			=>'CodeProductType',
+																		'default'		=>['ID'=>0,'NAME'=>'All']),
+				
 										],
 		// etc
 ];
