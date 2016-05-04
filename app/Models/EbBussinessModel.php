@@ -85,32 +85,16 @@ class EbBussinessModel extends DynamicModel {
 	public static function updateOrCreateWithCalculating(array $attributes, array $values = []) {
 		$values = static::calculateBeforeUpdateOrCreate ( $attributes, $values );
 		
-		/* $instance = static::firstOrNew($attributes);
+		$instance = static::firstOrNew($attributes);
 		$oldValues = [];
 		foreach ( $values as $column => $value ) {
-			if ($instance->contains($column)) {
-				$oldValues[$column]= $instance->$column;
-			}
+			$oldValues[$column]= $instance->$column;
 		}
 		
-		$instance->{'oldValues'} = $oldValues;
 		$instance->fill($values)->save();
+		$instance->{'oldValues'} = $oldValues;
 		
-		return $instance; */
-		$instancef = static::where($attributes)->first();
-		
-		$instance = parent::updateOrCreate ( $attributes, $values );
-		
-		if ($instancef) {
-			$oldValues = [];
-			foreach ( $values as $column => $value ) {
-	// 			if ($instancef->contains($column)) {
-					$oldValues[$column]= $instancef->$column;
-	// 			}
-			}
-			$instance->{'oldValues'} = $oldValues;
-		}
-		return $instance;
+		return $instance; 
 	}
 	
 	public static function calculateBeforeUpdateOrCreate(array &$attributes, array $values = []){
