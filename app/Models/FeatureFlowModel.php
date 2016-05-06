@@ -21,22 +21,4 @@ class FeatureFlowModel extends EbBussinessModel
 		return [static::$idField => $newData[static::$idField],
 				static::$dateField=>$occur_date];
 	}
-	
-	public static function updateWithFormularedValues($values,$object_id,$occur_date,$flow_phase) {
-		
-		$newData = [static::$idField=>$object_id];
-		$attributes = static::getKeyColumns($newData,$occur_date,null);
-		/* $updateRecords = static ::where('OCCUR_DATE',$occur_date)
-								 ->where(static ::$idField,$formulas->OBJECT_ID)
-								 ->update($values);
-		 
-		if ($updateRecords>0) {
-			 return static::where('OCCUR_DATE',$occur_date)
-						 	->where(static ::$idField,$formulas->OBJECT_ID)
-							->select('ID')
-							->first()->ID;
-		 }; */
-		$values = array_merge($values,$newData);
-		return parent::updateOrCreate($attributes,$values);;
-	}
 }

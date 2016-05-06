@@ -230,7 +230,18 @@ class CodeController extends EBController {
     protected function afterSave($resultRecords,$occur_date) {
 	}
 	
-	protected function getAffectedObjects($mdlName,$columns,$objectId){
+	protected function getAffectedObjects($mdlName,$columns,$newData){
+		$mdl = "App\Models\\".$mdlName;
+		$idField = $mdl::$idField;
+		$objectId = $newData [$idField];
+// 		$flowPhase = $newData [config ( "constants.euFlowPhase" )];
+		$flowPhase = $this->getFlowPhase($newData);
+		$aFormulas = \FormulaHelpers::getAffects ( $mdlName, $columns, $objectId,$flowPhase);
+		return $aFormulas;
+	}
+	
+	protected function getFlowPhase($newData) {
+		return false;
 	}
 	
     

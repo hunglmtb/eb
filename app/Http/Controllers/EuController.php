@@ -100,12 +100,7 @@ class EuController extends CodeController {
   		\Log::info(\DB::getQueryLog());
     }
     
-    protected function getAffectedObjects($mdlName, $columns, $newData) {
-    	$mdl = "App\Models\\".$mdlName;
-    	$idField = $mdl::$idField;
-    	$objectId = $newData [$idField];
-    	$flowPhase = $newData [config ( "constants.euFlowPhase" )];
-    	$aFormulas = \FormulaHelpers::getAffects ( $mdlName, $columns, $objectId,$flowPhase);
-    	return $aFormulas;
+    protected function getFlowPhase($newData) {
+    	return $newData [config ( "constants.euFlowPhase" )];
     }
 }

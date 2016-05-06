@@ -102,7 +102,10 @@ class EbBussinessModel extends DynamicModel {
 	}
 	
 	public static function updateWithFormularedValues($values,$object_id,$occur_date,$flow_phase) {
-		return false;
+		$newData = [static::$idField=>$object_id];
+		$attributes = static::getKeyColumns($newData,$occur_date,null);
+		$values = array_merge($values,$newData);
+		return parent::updateOrCreate($attributes,$values);;
 	}
 	
 	public static function updateWithQuality($record,$occur_date) {
