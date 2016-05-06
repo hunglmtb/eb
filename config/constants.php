@@ -2,17 +2,18 @@
 
 return [
         'tabTable'					=> 'tabTable',
-// 		'flowPhase' 				=> 'flowPhase',
+		'keyField'					=> 'keyField',
 		'flowId' 					=> 'X_FLOW_ID',
 		'flowIdColumn' 				=> 'FLOW_ID',
  		'flowPhase' 				=> 'FLOW_PHASE',
-		'euIdColumn' 				=> 'EU_ID',
 		'flFlowPhase' 				=> 'FL_FLOW_PHASE',
+		'euIdColumn' 				=> 'EU_ID',
 		'euId' 						=> 'X_EU_ID',
-		'keyField'					=> 'keyField',
 		'euFlowPhase' 				=> 'EU_FLOW_PHASE',
 		'euPhaseConfigId' 			=> 'EU_PHASE_CONFIG_ID',
-		'idColumn'					=>	['FLOW'=>'FLOW_ID','ENERGY_UNIT'=>'EU_ID'],
+		'tankId' 					=> 'X_TANK_ID',
+		'tankIdColumn' 				=> 'TANK_ID',
+		'idColumn'					=>	['FLOW'=>'FLOW_ID','ENERGY_UNIT'=>'EU_ID','TANK'=>'TANK_ID'],
 		'subProductFilterMapping' 	=> [
 										'Tank'					=>	array('filterName'	=>'Tank',
 																		'name'			=>'tank'),

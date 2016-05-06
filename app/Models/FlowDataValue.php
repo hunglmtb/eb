@@ -46,7 +46,9 @@ class FlowDataValue extends FeatureFlowModel
 	public static function getKeyColumns(&$newData,$occur_date,$postData)
 	{
 		$cls = parent::getKeyColumns($newData,$occur_date,$postData);
-		$cls[config("constants.flowPhase")] = $newData[config("constants.flFlowPhase")];
+		if (array_key_exists(config("constants.flFlowPhase"), $newData)) {
+			$cls[config("constants.flowPhase")] = $newData[config("constants.flFlowPhase")];
+		}
 		return $cls;
 	}
 	

@@ -24,7 +24,8 @@ class FeatureFlowModel extends EbBussinessModel
 	
 	public static function updateWithFormularedValues($values,$object_id,$occur_date,$flow_phase) {
 		
-		$attributes = static::getKeyColumns([static::$idField=>$object_id],$occur_date,null);
+		$newData = [static::$idField=>$object_id];
+		$attributes = static::getKeyColumns($newData,$occur_date,null);
 		/* $updateRecords = static ::where('OCCUR_DATE',$occur_date)
 								 ->where(static ::$idField,$formulas->OBJECT_ID)
 								 ->update($values);

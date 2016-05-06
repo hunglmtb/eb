@@ -6,15 +6,15 @@ use App\Models\Tank;
 
 class StorageController extends CodeController {
     
-	/* public function __construct() {
+	public function __construct() {
 		parent::__construct();
-		$this->fdcModel = "EnergyUnitDataFdcValue";
-		$this->idColumn = config("constants.euId");
-		$this->phaseColumn = config("constants.euFlowPhase");
+		$this->fdcModel = "TankDataFdcValue";
+		$this->idColumn = config("constants.tankId");
+// 		$this->phaseColumn = config("constants.tankFlowPhase");
 		
-		$this->valueModel = "EnergyUnitDataValue";
-		$this->theorModel = "EnergyUnitDataTheor";
-	} */
+// 		$this->valueModel = "TankDataValue";
+// 		$this->theorModel = "TankDataTheor";
+	}
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date){
     	$product_type = $postData['CodeProductType'];
@@ -47,7 +47,7 @@ class StorageController extends CodeController {
     	$columns = ["$mainTableName.name as $dcTable",
 			    	"$mainTableName.ID as DT_RowId",
 			    	"$codeProductType.name as PHASE_NAME",
-			    	"$mainTableName.ID as ".config("constants.euId"),
+			    	"$mainTableName.ID as ".config("constants.tankId"),
 			    	"$mainTableName.product as OBJ_FLOW_PHASE",
 			    	"$dcTable.*"];
     	

@@ -91,10 +91,10 @@ Route::get('dc/storage',['uses' =>'ProductManagementController@storage','middlew
 Route::post('code/load',['uses' =>'FlowController@load','middleware' => 'saveWorkspace']);
 Route::post('code/list', 'CodeController@getCodes');
 Route::post('code/save', 'FlowController@save');
-Route::post('code/loadeu',['uses' =>'EuController@load','middleware' => 'saveWorkspace']);
-Route::post('code/saveeu', 'EuController@save');
-Route::post('code/load-storage',['uses' =>'StorageController@load','middleware' => 'saveWorkspace']);
-Route::post('code/saveeu-storage', 'StorageController@save');
+Route::post('eu/load',['uses' =>'EuController@load','middleware' => 'saveWorkspace']);
+Route::post('eu/save', 'EuController@save');
+Route::post('storage/load',['uses' =>'StorageController@load','middleware' => 'saveWorkspace']);
+Route::post('storage/save', 'StorageController@save');
 
 //---------
 Route::post('fo/loadSafety', 'FOController@loadSafety');

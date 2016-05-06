@@ -19,12 +19,12 @@ TANK & STORAGE DATA CAPTURE
 @section('adaptData')
 @parent
 <script>
-	actions.loadUrl = "/code/load-storage";
-	actions.saveUrl = "/code/save-storage";
+	actions.loadUrl = "/storage/load";
+	actions.saveUrl = "/storage/save";
 	actions.type = {
-					idName:['{{config("constants.flowId")}}','{{config("constants.flFlowPhase")}}'],
-					keyField:'{{config("constants.flowId")}}',
-					saveKeyField:'{{config("constants.flowIdColumn")}}'
+					idName:['{{config("constants.tankId")}}'],
+					keyField:'{{config("constants.tankId")}}',
+					saveKeyField:'{{config("constants.tankIdColumn")}}'
 // 				,xIdName:'X_FL_ID'
 					};
 </script>

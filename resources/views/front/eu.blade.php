@@ -19,8 +19,8 @@ ENERGY UNIT DATA CAPTURE
 @section('adaptData')
 @parent
 <script>
-	actions.loadUrl = "/code/loadeu";
-	actions.saveUrl = "/code/saveeu";
+	actions.loadUrl = "/eu/load";
+	actions.saveUrl = "/eu/save";
 	actions.type = {
 					idName:['{{config("constants.euId")}}','{{config("constants.euFlowPhase")}}'],
 					keyField:'ID',

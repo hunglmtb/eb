@@ -101,8 +101,8 @@ class CodeController extends EBController {
     		return response()->json('no data 2 update!');
     	}
     	$editedData = $postData['editedData'];
-     	$record_freq = $postData['CodeReadingFrequency'];
-     	$phase_type = $postData['CodeFlowPhase'];
+//      	$record_freq = $postData['CodeReadingFrequency'];
+//      	$phase_type = $postData['CodeFlowPhase'];
      	$facility_id = $postData['Facility'];
      	$occur_date = $postData['date_begin'];
      	$occur_date = Carbon::parse($occur_date);
@@ -113,7 +113,7 @@ class CodeController extends EBController {
      	try
      	{
      		$resultTransaction = \DB::transaction(function () use ($postData,$editedData,$objectIds,$affectedIds,
-													     		 $occur_date,$phase_type,$facility_id){
+													     		 $occur_date,$facility_id){
      			$lockeds= [];
      			$ids = [];
      			$resultRecords = [];

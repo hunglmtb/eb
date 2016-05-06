@@ -496,7 +496,7 @@ var menu={};
 menu["production"]=[
 		{menutext:"Flow Stream",desc:"",url:"dc/flow"},
 		{menutext:"Energy Unit",desc:"",url:"../dc/eu"},
-		{menutext:"Tank & Storage",desc:"",url:"../dc/storage.php"},
+		{menutext:"Tank & Storage",desc:"",url:"../dc/storage"},
 		{menutext:"Ticket",desc:"",url:"../dc/ticket.php"},
 		{menutext:"Well Test",desc:"",url:"../dc/eutest.php"},
 		{menutext:"Deferment",desc:"",url:"../dc/deferment.php"},
