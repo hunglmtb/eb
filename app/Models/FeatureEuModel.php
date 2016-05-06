@@ -43,7 +43,7 @@ class FeatureEuModel extends EbBussinessModel
 	
 		$newData = [static::$idField=>$object_id,config("constants.euFlowPhase")=>$flow_phase];
 		$attributes = static::getKeyColumns($newData,$occur_date,null);
-	
+		$values = array_merge($values,$newData);
 		return parent::updateOrCreate($attributes,$values);;
 	}
 }

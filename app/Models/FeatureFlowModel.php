@@ -36,7 +36,7 @@ class FeatureFlowModel extends EbBussinessModel
 							->select('ID')
 							->first()->ID;
 		 }; */
-		
+		$values = array_merge($values,$newData);
 		return parent::updateOrCreate($attributes,$values);;
 	}
 }

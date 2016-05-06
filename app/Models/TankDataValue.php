@@ -7,7 +7,9 @@ use App\Models\FeatureTankModel;
 	protected $table = 'TANK_DATA_VALUE';
 	
 	protected $primaryKey = 'ID';
-	protected $fillable  = ['TANK_LOCATION',
+	protected $fillable  = ['TANK_ID',
+							'OCCUR_DATE',
+							'TANK_LOCATION',
 							'BEGIN_LEVEL',
 							'END_LEVEL',
 							'BEGIN_VOL',
