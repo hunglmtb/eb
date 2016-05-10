@@ -22,7 +22,7 @@ TANK & STORAGE DATA CAPTURE
 	actions.loadUrl = "/storage/load";
 	actions.saveUrl = "/storage/save";
 	actions.type = {
-					idName:['{{config("constants.tankId")}}'],
+					idName:['{{config("constants.tankId")}}','{{config("constants.tankFlowPhase")}}'],
 					keyField:'{{config("constants.tankId")}}',
 					saveKeyField:'{{config("constants.tankIdColumn")}}'
 // 				,xIdName:'X_FL_ID'

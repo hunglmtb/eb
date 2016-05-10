@@ -13,7 +13,10 @@ return [
 		'euPhaseConfigId' 			=> 'EU_PHASE_CONFIG_ID',
 		'tankId' 					=> 'X_TANK_ID',
 		'tankIdColumn' 				=> 'TANK_ID',
+		'tankFlowPhase' 			=> 'OBJ_FLOW_PHASE',
 		'idColumn'					=>	['FLOW'=>'FLOW_ID','ENERGY_UNIT'=>'EU_ID','TANK'=>'TANK_ID'],
+		'extraFields' 				=> 'extraFields',
+		'mainFields' 				=> 'mainFields',
 		'subProductFilterMapping' 	=> [
 										'Tank'					=>	array('filterName'	=>'Tank',
 																		'name'			=>'tank'),

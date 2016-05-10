@@ -7,6 +7,7 @@ class FlowDataFdcValue extends FeatureFlowModel
 {
 	protected $table = 'FLOW_DATA_FDC_VALUE';
 	protected $primaryKey = 'ID';
+	protected $dates = ['LAST_DATA_READ'];
 	
 	protected $fillable  = ['FLOW_ID',
 							'OCCUR_DATE',

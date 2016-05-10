@@ -10,9 +10,9 @@ class StorageController extends CodeController {
 		parent::__construct();
 		$this->fdcModel = "TankDataFdcValue";
 		$this->idColumn = config("constants.tankId");
-// 		$this->phaseColumn = config("constants.tankFlowPhase");
+ 		$this->phaseColumn = config("constants.tankFlowPhase");
 		
-// 		$this->valueModel = "TankDataValue";
+ 		$this->valueModel = "TankDataValue";
 // 		$this->theorModel = "TankDataTheor";
 	}
 	

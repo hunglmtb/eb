@@ -63,7 +63,9 @@ var actions = {
 	editedData : {},
 	objectIds : [],
 	loadSuccess : function(data){alert("success");},
-	loadError : function(data){alert("error");},
+	loadError : function(data){
+					alert(JSON.stringify(data.responseText));
+				},
 	shouldLoad : function(data){return false;},
 	loadNeighbor: function (){
 		if (actions.shouldLoad()) {
@@ -138,7 +140,6 @@ var actions = {
 				},
 				error: function(data) {
 					hideWaiting();
-					alert(JSON.stringify(data.responseText));
 					if (typeof(actions.loadError) == "function") {
 						actions.loadError(data);
 					}
@@ -190,7 +191,6 @@ var actions = {
 					hideWaiting();
 				},
 				error: function(data) {
-					alert(JSON.stringify(data.responseText));
 					if (typeof(actions.loadError) == "function") {
 						actions.loadError(data);
 					}

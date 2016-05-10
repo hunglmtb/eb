@@ -199,8 +199,10 @@ class CodeController extends EBController {
      	}
      	catch (\Exception $e)
      	{
-      		\Log::info("\n------------------------------------------------------------------------------------------------\nException wher run transation\n ");
-     		throw $e;
+      		\Log::info("\n----------------------hehe--------------------------------------------------------------------------\nException wher run transation\n ");
+//        		\Log::info($e->getTraceAsString());
+// 			return response($e->getMessage(), 400);
+			throw $e;
      	}
      	
      	//get updated data after apply formulas
@@ -328,21 +330,23 @@ class CodeController extends EBController {
     
     
     public function preSaveModel(&$editedData,&$affectedIds,$model) {
-    	$fdcModel = $this->fdcModel;
-    	if (array_key_exists($fdcModel, $editedData)) {
-    		$idColumn = $this->idColumn;
-    		$phaseColumn = $this->phaseColumn;
-    
-    		if (!array_key_exists($model, $editedData)){
-    			$editedData[$model] = [];
-    		}
-    		foreach ($editedData[$fdcModel] as $element) {
-    			$key = array_search($element[$idColumn],array_column($editedData[$model],$idColumn));
-    			if ($key===FALSE) {
-    				$editedData[$model][] =  array_intersect_key($element, array_flip(array($idColumn,$phaseColumn)));
-    			}
-    			$affectedIds[]=$element[$idColumn];
-    		}
+    	if ($model) {
+	    	$fdcModel = $this->fdcModel;
+	    	if (array_key_exists($fdcModel, $editedData)) {
+	    		$idColumn = $this->idColumn;
+	    		$phaseColumn = $this->phaseColumn;
+	    
+	    		if (!array_key_exists($model, $editedData)){
+	    			$editedData[$model] = [];
+	    		}
+	    		foreach ($editedData[$fdcModel] as $element) {
+	    			$key = array_search($element[$idColumn],array_column($editedData[$model],$idColumn));
+	    			if ($key===FALSE) {
+	    				$editedData[$model][] =  array_intersect_key($element, array_flip(array($idColumn,$phaseColumn)));
+	    			}
+	    			$affectedIds[]=$element[$idColumn];
+	    		}
+	    	}
     	}
     }
 }

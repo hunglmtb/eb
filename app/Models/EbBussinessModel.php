@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\DynamicModel;
 use Carbon\Carbon;
 use App\Models\AuditTrail;
+use App\Exceptions\DataInputException;
 
 class EbBussinessModel extends DynamicModel {
 	
@@ -50,7 +51,7 @@ class EbBussinessModel extends DynamicModel {
 				}
 				$_vFDC = $fdcValues->$field;
 				if (static::$enableCheckCondition && $_Bg == null && $_vFDC != '') {
-					throw new Exception ( "Can not calculate conversion for ENERGY UNIT ID: $object_id (check API, Temprature, Pressure value)" );
+					throw new DataInputException ( "Can not calculate conversion for $type ID: $object_id (check API, Temprature, Pressure value)" );
 					return;
 				}
 				$values [$field] = $_vFDC;
@@ -68,7 +69,7 @@ class EbBussinessModel extends DynamicModel {
 						} else {
 							if ($_Bg == 0) {
 								if ((($values [$field] != null && $values [$field] != ''))) {
-									throw new Exception ( "Wrong gas conversion number (zero) for $type ID: $object_id" );
+									throw new DataInputException ( "Wrong gas conversion number (zero) for $type ID: $object_id" );
 								}
 							} else {
 								$values [$field] = $values [$field] / $_Bg;
@@ -84,8 +85,9 @@ class EbBussinessModel extends DynamicModel {
 	
 	public static function updateOrCreateWithCalculating(array $attributes, array $values = []) {
 		$values = static::calculateBeforeUpdateOrCreate ( $attributes, $values );
-		
+// 		\DB::enableQueryLog();
 		$instance = static::firstOrNew($attributes);
+// 		\Log::info(\DB::getQueryLog());
 		$oldValues = [];
 		foreach ( $values as $column => $value ) {
 			$oldValues[$column]= $instance->$column;

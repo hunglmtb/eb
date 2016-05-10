@@ -5,4 +5,5 @@ use App\Models\DynamicModel;
  class StorageDataAlloc extends DynamicModel 
 { 
 	protected $table = 'storage_data_alloc'; 
-} 
+	protected $dates = ['LAST_DATA_READ'];
+ } 
