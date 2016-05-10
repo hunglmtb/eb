@@ -51,6 +51,21 @@ var getActiveTabID = function() {
 }
 
 
+var typetoclass = function (data){
+	switch(data){
+		case 2:
+			return "number";
+		case 3:
+			return "datepicker";
+		case 4:
+			return "datetimepicker";
+		case 6:
+			return "_timepicker";
+	}
+	return "";
+};
+
+
 var actions = {
 		
 	loadUrl : false,

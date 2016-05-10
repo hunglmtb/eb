@@ -4,5 +4,10 @@ use App\Models\DynamicModel;
 
  class StrappingTableData extends DynamicModel 
 { 
-	protected $table = 'strapping_table_data'; 
+	protected $table = 'STRAPPING_TABLE_DATA'; 
+	
+	public function Tank()
+	{
+		return $this->belongsTo('App\Models\Tank', 'STRAPPING_TABLE_ID', 'STRAPPING_TABLE_ID');
+	}
 } 

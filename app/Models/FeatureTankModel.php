@@ -49,8 +49,9 @@ class FeatureTankModel extends EbBussinessModel
 	
 	
 	public static function updateValues(array $attributes, array &$values = [], $type, $fields) {
+		$object_id = $attributes [$fields [config ( "constants.keyField" )]];
+		$values  = static :: updateDependenceFields($object_id,$values);
 		if (array_key_exists(config("constants.extraFields"), $fields)) {
-			$object_id = $attributes [$fields [config ( "constants.keyField" )]];
 			$occur_date = $attributes ["OCCUR_DATE"];
 			
 			$extraFields = $fields[config("constants.extraFields")];
@@ -72,6 +73,10 @@ class FeatureTankModel extends EbBussinessModel
 			$mainFields[config ( "constants.keyField" )] = $fields [config ( "constants.keyField" )]; 
 			parent::updateValues($attributes, $values, $type,$mainFields);
 		}
+	}
+	
+	public static function updateDependenceFields($object_id,$values){
+		return $values;
 	}
 	
 	/* public static function updateWithFormularedValues($values,$object_id,$occur_date,$flow_phase) {

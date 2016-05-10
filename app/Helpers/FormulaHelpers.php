@@ -6,6 +6,7 @@ use App\Models\CodeQltySrcType;
 use App\Models\QltyDataDetail;
 use App\Models\QltyData;
 use App\Models\QltyProductElementType;
+use App\Models\StrappingTableData;
 
 function evalErrorHandler($errno, $errstr, $errfile, $errline){
     \Log::info("$errstr at errno $errno file $errfile line $errline");
@@ -1202,5 +1203,52 @@ public static function calculateCrudeOil($T_obs, $P_obs, $API_obs) {
 	}
     
     //***************************************************************
+    
+	
+	public static function calculateTankVolume($tank_id,$tank_level){
+		$tank2 = StrappingTableData:: whereHas('Tank',function ($query) use ($tank_id) {
+													$query->where("ID",$tank_id );
+											})
+					->where("STRAPPING_READING",'>=',$tank_level )
+					->orderBy('STRAPPING_READING')
+					->first();
+		if($tank2){
+			if($tank2->STRAPPING_READING==$tank_level) return $tank2->STRAPPING_READING;
+			
+			$tank1 = StrappingTableData:: whereHas('Tank',function ($query) use ($tank_id) {
+								$query->where("ID",$tank_id );
+							})
+							->where("STRAPPING_READING",'<',$tank_level )
+							->orderBy('STRAPPING_READING','desc')
+							->first();
+			if($tank1){
+				return $tank1->STRAPPING_VALUE+
+						(($tank2->STRAPPING_VALUE-$tank1->STRAPPING_VALUE)*($tank_level-$tank1->STRAPPING_READING)/
+							($tank2->STRAPPING_READING-$tank1->STRAPPING_READING));
+			}
+		}
+							
+		/* $sSQL=
+		"SELECT b.`STRAPPING_READING`,b.`STRAPPING_VALUE` FROM tank a,strapping_table_data b
+		WHERE a.STRAPPING_TABLE_ID=b.STRAPPING_TABLE_ID and a.id='$tank_id'
+		and STRAPPING_READING>=$tank_level
+		order by STRAPPING_READING limit 1";
+		$r2=getOneRow($sSQL);
+		if($r2){
+			if($r2["STRAPPING_READING"]==$tank_level) return $r2["STRAPPING_VALUE"];
+			$sSQL=
+			"SELECT b.`STRAPPING_READING`,b.`STRAPPING_VALUE` FROM tank a,strapping_table_data b
+			WHERE a.STRAPPING_TABLE_ID=b.STRAPPING_TABLE_ID and a.id='$tank_id'
+			and STRAPPING_READING<$tank_level
+			order by STRAPPING_READING desc limit 1";
+			
+			$r1=getOneRow($sSQL);
+			if($r1){
+				//echo "$r1[STRAPPING_VALUE]+(($r2[STRAPPING_VALUE]-$r1[STRAPPING_VALUE])*($tank_level-$r1[STRAPPING_READING])/($r2[STRAPPING_READING]-$r1[STRAPPING_READING]))<br>";
+				return $r1["STRAPPING_VALUE"]+(($r2["STRAPPING_VALUE"]-$r1["STRAPPING_VALUE"])*($tank_level-$r1["STRAPPING_READING"])/($r2["STRAPPING_READING"]-$r1["STRAPPING_READING"]));
+			}
+		} */
+		return -1;
+	}
     
 }

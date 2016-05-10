@@ -2,7 +2,7 @@
 namespace App\Models; 
 use App\Models\FeatureTankModel; 
 
- class TankDataFdcValue extends FeatureTankModel 
+class TankDataFdcValue extends FeatureTankModel 
 { 
 	protected $table = 'TANK_DATA_FDC_VALUE'; 
 	protected $dates = ['LAST_DATA_READ'];
@@ -43,6 +43,19 @@ use App\Models\FeatureTankModel;
 		return  [
 				config("constants.extraFields") 	=>	["END_VOL"=>"BEGIN_VOL","END_LEVEL"=>"BEGIN_LEVEL"],
 				config("constants.keyField") 		=>	'TANK_ID'
-		];;
+		];
+	}
+	
+	public static function updateDependenceFields($object_id,$values){
+		if (array_key_exists("BEGIN_LEVEL", $values)) {
+			$tank_level=$values["BEGIN_LEVEL"];
+			if($tank_level!="") $values["BEGIN_VOL"] = \FormulaHelpers::calculateTankVolume($object_id,$tank_level);
+		}
+		
+		if (array_key_exists("END_LEVEL", $values)) {
+			$tank_level=$values["END_LEVEL"];
+			if($tank_level!="") $values["END_VOL"] = \FormulaHelpers::calculateTankVolume($object_id,$tank_level);
+		}
+		return $values;
 	}
 } 

@@ -131,8 +131,9 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 // 											$(td).attr('tabindex', tabindex++);
                				 			if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
                				 				$(td).addClass( "editInline" );
+               				 				var type = typetoclass(data.properties[col].INPUT_TYPE);
 								        	$(td).editable({
-								        	    type : 'number',
+								        	    type : type,
 								        	    step: 'any',
 								        	    title: 'edit',
 								        	    onblur: 'cancel',

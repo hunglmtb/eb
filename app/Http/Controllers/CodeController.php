@@ -75,7 +75,15 @@ class CodeController extends EBController {
     	$properties = CfgFieldProps::where('TABLE_NAME', '=', $dcTable)
 									    	->where('USE_FDC', '=', 1)
 									    	->orderBy('FIELD_ORDER')
-									    	->get(['COLUMN_NAME as data','COLUMN_NAME as name', 'FDC_WIDTH as width','LABEL as title',"DATA_METHOD"]);
+									    	->get(['COLUMN_NAME as data',
+									    			'COLUMN_NAME as name',
+									    			'FDC_WIDTH as width',
+									    			'LABEL as title',
+									    			"DATA_METHOD",
+									    			'INPUT_TYPE',
+									    			'VALUE_MIN',
+									    			'VALUE_FORMAT',
+									    			'VALUE_MAX']);
     	$properties->prepend(['data'=>$dcTable,'title'=>'Object name','width'=>230]);
     	
     	$uoms = $this->getUoms($properties,$facility_id);
