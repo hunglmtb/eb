@@ -55,14 +55,14 @@ var typetoclass = function (data){
 	switch(data){
 		case 2:
 			return "number";
-		case 3:
+		/*case 3:
 			return "datepicker";
 		case 4:
 			return "datetimepicker";
 		case 6:
-			return "_timepicker";
+			return "_timepicker";*/
 	}
-	return "";
+	return "number";
 };
 
 
