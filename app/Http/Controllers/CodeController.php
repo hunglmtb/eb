@@ -127,9 +127,13 @@ class CodeController extends EBController {
      			$resultRecords = [];
      			//      			\DB::enableQueryLog();
      			foreach($editedData as $mdlName => $mdlData ){
+		     		$mdl = "App\Models\\".$mdlName;
+		     		if ($mdl::$ignorePostData) {
+		     			unset($editedData[$mdlName]);
+		     			continue;
+		     		}
 		     		$ids[$mdlName] = [];
 		     		$resultRecords[$mdlName] = [];
-		     		$mdl = "App\Models\\".$mdlName;
 		     		$locked = \Helper::checkLockedTable($mdlName,$occur_date,$facility_id);
 		     		if ($locked) {
 		     			$lockeds[$mdlName] = "Data of $mdlName with facility $facility_id was locked on $occur_date ";

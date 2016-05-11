@@ -1,9 +1,12 @@
 <?php 
 namespace App\Models; 
 use App\Models\FeatureTankModel; 
+use App\Trail\LinkingTankModel;
 
 class TankDataFdcValue extends FeatureTankModel 
 { 
+	use LinkingTankModel;
+	
 	protected $table = 'TANK_DATA_FDC_VALUE'; 
 	protected $dates = ['LAST_DATA_READ'];
 	protected $primaryKey = 'ID';

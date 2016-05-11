@@ -53,6 +53,8 @@ var getActiveTabID = function() {
 
 var typetoclass = function (data){
 	switch(data){
+		case 1:
+		return "text";
 		case 2:
 			return "number";
 		/*case 3:
@@ -62,7 +64,7 @@ var typetoclass = function (data){
 		case 6:
 			return "_timepicker";*/
 	}
-	return "number";
+	return "text";
 };
 
 

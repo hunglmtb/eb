@@ -90,14 +90,14 @@ class EuController extends CodeController {
     
     
     protected function afterSave($resultRecords,$occur_date) {
-    	\DB::enableQueryLog();
+//     	\DB::enableQueryLog();
     	foreach($resultRecords as $mdlName => $records ){
     		$mdl = "App\Models\\".$mdlName;
     		foreach($records as $record ){
      			$mdl::updateWithQuality($record,$occur_date);
     		}
     	}
-  		\Log::info(\DB::getQueryLog());
+//   		\Log::info(\DB::getQueryLog());
     }
     
     protected function getFlowPhase($newData) {

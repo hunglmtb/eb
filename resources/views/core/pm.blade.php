@@ -276,7 +276,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 		}
 
 		actions.editedData = {};
-		alert(JSON.stringify(postData));
+		alert(JSON.stringify(data.updatedData));
 		if(data.hasOwnProperty('lockeds')){
 			alert(JSON.stringify(data.lockeds));
 		}

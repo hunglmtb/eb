@@ -12,6 +12,7 @@ class EbBussinessModel extends DynamicModel {
 	protected $objectModel = null;
 	protected static $enableCheckCondition = false;
 	protected $excludeColumns = [];
+	public  static $ignorePostData = false;
 	
 	public static function findManyWithConfig($updatedIds) {
 		return parent::findMany ( $updatedIds );
@@ -95,6 +96,7 @@ class EbBussinessModel extends DynamicModel {
 		
 		$instance->fill($values)->save();
 		$instance->{'oldValues'} = $oldValues;
+// 		$instance->{config ( "constants.idColumn" )[static :: $typeName]} = $attributes[static::$idField];
 		
 		return $instance; 
 	}
@@ -107,7 +109,7 @@ class EbBussinessModel extends DynamicModel {
 		$newData = [static::$idField=>$object_id];
 		$attributes = static::getKeyColumns($newData,$occur_date,null);
 		$values = array_merge($values,$newData);
-		return parent::updateOrCreate($attributes,$values);;
+		return parent::updateOrCreate($attributes,$values);
 	}
 	
 	public static function updateWithQuality($record,$occur_date) {

@@ -13,6 +13,15 @@ class FeatureTankModel extends EbBussinessModel
 	protected $objectModel = 'Tank';
 	protected $excludeColumns = ['TANK_ID','OCCUR_DATE'];
 	
+	public function getStorageId(){
+		return null;
+	}
+	
+	public function Tank()
+	{
+		return $this->belongsTo('App\Models\Tank', 'TANK_ID', 'ID');
+	}
+	
 	public static function getKeyColumns(&$newData,$occur_date,$postData){
 		if (array_key_exists(config("constants.tankId"), $newData)) {
 			$newData[static::$idField] = $newData[config("constants.tankId")];
@@ -64,7 +73,7 @@ class FeatureTankModel extends EbBussinessModel
 // 			\Log::info(\DB::getQueryLog());
 			if ($yesterdayRecord!=null) {
 				foreach ( $extraFields as $sourceField => $targetField ) {
-					$values[$targetField] = $yesterdayRecord->$sourceField;
+					if($yesterdayRecord->$sourceField>0 || $yesterdayRecord->$sourceField===0) $values[$targetField] = $yesterdayRecord->$sourceField;
 				}
 			}
 		}

@@ -4,6 +4,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class DynamicModel extends Model {
 	
+	protected $primaryKey = 'ID';
 	protected $isOracleModel = false;
 	protected $isReservedName = false;
 	public $timestamps = false;

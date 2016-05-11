@@ -2,9 +2,12 @@
 namespace App\Models; 
 use App\Models\FeatureTankModel; 
 use App\Models\TankDataFdcValue;
+use App\Trail\LinkingTankModel;
 
  class TankDataValue extends FeatureTankModel 
 { 
+	use LinkingTankModel;
+	
 	protected $table = 'TANK_DATA_VALUE';
 	
 	protected $primaryKey = 'ID';

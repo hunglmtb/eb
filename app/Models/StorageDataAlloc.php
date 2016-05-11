@@ -6,4 +6,5 @@ use App\Models\DynamicModel;
 { 
 	protected $table = 'storage_data_alloc'; 
 	protected $dates = ['LAST_DATA_READ'];
+	public  static $ignorePostData = true;
  } 
