@@ -13,6 +13,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 @parent
 <script>
 	actions.loadSuccess =  function(data){
+		$('#buttonLoadData').attr('value', 'Refresh');
 		postData = data.postData;
 		var tab = postData['{{config("constants.tabTable")}}'];
 		actions.loadedData[tab] = postData;
