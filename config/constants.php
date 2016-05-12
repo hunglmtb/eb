@@ -21,6 +21,8 @@ return [
 		'subProductFilterMapping' 	=> [
 										'Tank'					=>	array('filterName'	=>'Tank',
 																		'name'			=>'tank'),
+										'EnergyUnit'			=>	array('filterName'	=>'Energy Unit',
+																		'name'			=>'EnergyUnit'),
 										'EnergyUnitGroup'		=>	array('filterName'	=>'Energy Unit Group',
 																		'name'			=>'energyUnitGroup',
 																		'default'		=>['ID'=>'0','NAME'=>'No Group']),

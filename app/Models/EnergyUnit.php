@@ -19,4 +19,9 @@ class EnergyUnit extends DynamicModel
 	{
 		return $this->belongsTo('App\Models\CodeStatus', 'STATUS', $this->primaryKey);
 	}
+	
+	public function Facility()
+	{
+		return $this->belongsTo('App\Models\Facility', 'FACILITY_ID', 'ID');
+	}
 }

@@ -86,8 +86,8 @@ Route::post('password/reset', 'Auth\PasswordController@postReset');
 //-----EB
 Route::get('dc/flow', 'ProductManagementController@flow');
 Route::get('dc/eu', 'ProductManagementController@eu');
-Route::get('dc/storage', 'ProductManagementController@storage');
 Route::get('dc/storage',['uses' =>'ProductManagementController@storage','middleware' => 'checkRight:FDC_STORAGE']);
+Route::get('dc/eutest', 'ProductManagementController@eutest');
 Route::post('code/load',['uses' =>'FlowController@load','middleware' => 'saveWorkspace']);
 Route::post('code/list', 'CodeController@getCodes');
 Route::post('code/save', 'FlowController@save');
@@ -95,6 +95,9 @@ Route::post('eu/load',['uses' =>'EuController@load','middleware' => 'saveWorkspa
 Route::post('eu/save', 'EuController@save');
 Route::post('storage/load',['uses' =>'StorageController@load','middleware' => 'saveWorkspace']);
 Route::post('storage/save', 'StorageController@save');
+Route::post('eutest/load',['uses' =>'EuTestController@load','middleware' => 'saveWorkspace']);
+Route::post('eutest/save', 'EuTestController@save');
+
 
 //---------
 Route::post('fo/loadSafety', 'FOController@loadSafety');
