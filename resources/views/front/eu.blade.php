@@ -24,7 +24,9 @@ ENERGY UNIT DATA CAPTURE
 	actions.type = {
 					idName:['{{config("constants.euId")}}','{{config("constants.euFlowPhase")}}'],
 					keyField:'ID',
-					saveKeyField:'{{config("constants.euPhaseConfigId")}}',
+					saveKeyField : function (model){
+						return '{{config("constants.euPhaseConfigId")}}';
+					},
 // 					xIdName:'X_EU_ID'
 					};
 	var aLoadNeighbor = actions.loadNeighbor;

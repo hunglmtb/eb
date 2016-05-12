@@ -259,7 +259,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 			if($('#table_'+key).children().length>0){
 				table = $('#table_'+key).DataTable();
 				$.each(data.updatedData[key], function( index, value) {
-					row = table.row( '#'+value[actions.type.saveKeyField] );
+					row = table.row( '#'+value[actions.type.saveKeyField(key)] );
 					var tdata = row.data();
 					if( typeof(tdata) !== "undefined" && tdata !== null ){
 						for (var pkey in value) {

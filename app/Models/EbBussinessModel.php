@@ -14,6 +14,7 @@ class EbBussinessModel extends DynamicModel {
 	protected $excludeColumns = [];
 	public  static $ignorePostData = false;
 	
+	
 	public static function findManyWithConfig($updatedIds) {
 		return parent::findMany ( $updatedIds );
 	}
@@ -86,12 +87,16 @@ class EbBussinessModel extends DynamicModel {
 	
 	public static function updateOrCreateWithCalculating(array $attributes, array $values = []) {
 		$values = static::calculateBeforeUpdateOrCreate ( $attributes, $values );
+		
 // 		\DB::enableQueryLog();
 		$instance = static::firstOrNew($attributes);
 // 		\Log::info(\DB::getQueryLog());
 		$oldValues = [];
 		foreach ( $values as $column => $value ) {
 			$oldValues[$column]= $instance->$column;
+			if (!$instance->isFillable($column)) {
+				unset($values[$column]);
+			}
 		}
 		
 		$instance->fill($values)->save();

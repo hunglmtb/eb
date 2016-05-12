@@ -24,7 +24,9 @@ FLOW DATA CAPTURE
 	actions.type = {
 					idName:['{{config("constants.flowId")}}','{{config("constants.flFlowPhase")}}'],
 					keyField:'{{config("constants.flowId")}}',
-					saveKeyField:'{{config("constants.flowIdColumn")}}'
+					saveKeyField : function (model){
+						return '{{config("constants.flowIdColumn")}}';
+					},
 // 				,xIdName:'X_FL_ID'
 					};
 </script>

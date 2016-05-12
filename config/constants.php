@@ -14,6 +14,7 @@ return [
 		'tankId' 					=> 'X_TANK_ID',
 		'tankIdColumn' 				=> 'TANK_ID',
 		'tankFlowPhase' 			=> 'OBJ_FLOW_PHASE',
+		'storageIdColumn' 			=> 'STORAGE_ID',
 		'idColumn'					=>	['FLOW'=>'FLOW_ID','ENERGY_UNIT'=>'EU_ID','TANK'=>'TANK_ID'],
 		'extraFields' 				=> 'extraFields',
 		'mainFields' 				=> 'mainFields',
