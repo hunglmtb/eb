@@ -1,4 +1,24 @@
 <?php
+
+function sum(){
+	$args = func_get_args();
+	$s=0;
+	foreach ($args as $arg)
+	{
+		if(is_array($arg))
+		{
+			foreach($arg as $value)
+			{
+				if(is_array($value))
+					$s += sum($value);
+					else $s += $value;
+			}
+		}
+		else $s += $arg;
+	}
+	return $s;
+}
+
 use App\Models\CfgFieldProps;
 use App\Models\Formula;
 use App\Models\Fovar;
@@ -236,6 +256,7 @@ class FormulaHelpers {
     	foreach($objectWithformulas as $objectWithformula){
 	    	$tableName = strtolower ( $objectWithformula->TABLE_NAME);
 	    	$mdlName = \Helper::camelize($tableName,'_');
+	    	if (!$mdlName)  continue;
 	    	$mdl = "App\Models\\$mdlName";
 	    	$object_type = $mdl::$typeName;
 	    	$object_id = $objectWithformula->OBJECT_ID;
@@ -384,7 +405,7 @@ class FormulaHelpers {
     						//echo "field: $field<br>";
     						$params=explode(",",substr($row->STATIC_VALUE,$j+1,$k-$j-1));
     						$where = [];
-    						$swhere = "1";
+    						$swhere = false;
     						foreach ($params as $param)
     						{
     							$deli="";
@@ -425,18 +446,28 @@ class FormulaHelpers {
     									}
 	    							}
 	    							$sql.=" and $pp";
-    								$swhere.=" and $pp";
+//     								$swhere.=" and $pp";
 	    							if($whereItem[0]=="OCCUR_DATE"||$whereItem[0]=="EFFECTIVE_DATE"){
 	    								$whereItem[2] = $occur_date;
+		    							$where[]=$whereItem;
 	    							}
-	    							$where[]=$whereItem;
+	    							else if (strpos($whereItem[0], 'month') !== false || strpos($whereItem[0], 'year') !== false) {
+    									$swhere = $swhere?"$swhere and $pp":$pp;
+	    							}
+	    							else {
+		    							$where[]=$whereItem;
+	    							}
 	    							//echo "param: $pp<br>";
     							}
     						}
     						$sql .= " limit 100";
 //      						\DB::enableQueryLog();
 //      						$getDataResult = DB::table($table)->where( \DB::raw($swhere))->select($field)->skip(0)->take(100)->get();
-       						$getDataResult = DB::table($table)->where($where)->select($field)->skip(0)->take(100)->get();
+       						$queryField = DB::table($table)->where($where);
+       						if ($swhere) {
+       							$queryField->where( \DB::raw($swhere));
+       						}
+    						$getDataResult = $queryField->select($field)->skip(0)->take(100)->get();
 //      						\Log::info(\DB::getQueryLog());
     						unset($table);
     						unset($where);
@@ -485,14 +516,14 @@ class FormulaHelpers {
     								$sqlvalue[]=$rox;
     							} */
     							
-     							$sqlvalue= $getDataResult->toArray();
+     							$sqlvalue= is_array ( $getDataResult )?$getDataResult:$getDataResult->toArray();
 //     							$sqlvalue= $getDataResult;
     							$sqlarray=array();
     							for($k=0;$k<$num_rows;$k++)
     							{
     								foreach ($sqlvalue[$k] as $key => $value)
     								{
-    									if(is_numeric($key))
+//     									if(is_numeric($key))
     										$sqlarray[$k][$key]=$value;
     								}
     								//for($i=0;$i<count($sqlvalue[$k])/2;$i++)
@@ -549,13 +580,18 @@ class FormulaHelpers {
     	/* while($row=mysql_fetch_array($result))
     	 {} */
     	$f=$formula;
-    	foreach($vvv as $v)
+    	$varsKey = [];
+    	foreach($vvv as $key => $v)
     	{
     		//$f=str_replace($v,$vars[$v],$f);
-    		if(!$vars[$v])
-    			$f=str_replace($v,"0",$f);
-    			else
-    				$f=str_replace($v,$vars[$v],$f);
+    		if(!$vars[$v]) $f=str_replace($v,"0",$f);
+    		
+    		else if(is_array($vars[$v])) {
+    			$varsKey[$v] = $vars[$v];
+    			$f=str_replace($v,"\$varsKey['$v']",$f);
+    		}
+    		
+    		else $f=str_replace($v,$vars[$v],$f);
     				//if() echo "$f<br>";
     	}
     	$f=str_replace("@DATE",$CURRENT_DATE,$f);
@@ -567,6 +603,7 @@ class FormulaHelpers {
 	    	try {
     			eval($s);
 	    	} catch( Exception $e ){
+    			\Log::info("Exception with eval $s ".$e->getMessage());
 	    		$vf=null;
 	    	}
 	    		
