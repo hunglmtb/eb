@@ -20,7 +20,7 @@ class Helper {
 	
 		$htmlFilter = 	"<div class=\"filter $name\"><div><b>$filterName</b>".
 				'</div>
-				<select id="'.$id.'" size="1" name="'.$name.'">';
+				<select id="'.$id.'" name="'.$name.'">';
 		if ($default) {
 			$htmlFilter .= '<option value="'.$default['ID'].'" selected >'.$default['NAME'].'</option>';
 		}
@@ -56,7 +56,7 @@ class Helper {
     			case 'date_begin':
     			case 'date_end':
 					
-					$htmlFilter.= "<div class='date_input'><div><b>$name</b></div><input readonly style='width:85%' type='text' id = '$id' name='$sName' size='15' value='$value'></div>";
+					$htmlFilter.= "<div class='date_input'><div><b>$name</b></div><input style='width:85%' type='text' id = '$id' name='$sName' size='15' value='$value'></div>";
 					$htmlFilter.= '<script>
 											$( "#'.$id.'" ).datepicker({
 												changeMonth:true,
@@ -67,7 +67,7 @@ class Helper {
     				break;
     				case 'cboFilterBy':
     					$htmlFilter = 	"<div class=\"filter\"><div><b>$name</b>".
-			    							'</div><select id="'.$id.'" size="1" name="'.$name.'">';
+			    							'</div><select id="'.$id.'" name="'.$name.'">';
     					$htmlFilter .= "<option value = 'SAMPLE_DATE'>Sample Date</option><option value = 'TEST_DATE'>Test Date</option><option value = 'EFFECTIVE_DATE'>Effective Date</option>";
 						$htmlFilter .= '</select></div>';
     					break;

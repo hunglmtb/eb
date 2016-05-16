@@ -30,6 +30,7 @@ if (!isset($currentSubmenu)) $currentSubmenu ='';
 	<script src="/common/js/bootstrap.js"></script>
 	<script src="/common/js/bootstrap-datetimepicker.js"></script>
 	<script src="/common/js/bootstrap-editable.js"></script>
+	<!-- <script src="/common/js/datetime.js"></script> -->
 	
 <!-- 	<script src="/common/js/dataTables.select.min.js"></script>
  -->	

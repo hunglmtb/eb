@@ -255,42 +255,41 @@ var actions = {
 		return html;
 	},
 	applyEditable : function (tab,type,td, cellData, rowData, row, col){
+		var  editable = {
+	    	    title: 'edit',
+	    	    emptytext: '',
+	    	    showbuttons:false,
+	    	    success: actions.getEditSuccessfn(tab,td, cellData, rowData, row, col),
+	    	};
+		
 		switch(type){
 		case "text":
 		case "number":
 		case "date":
-			$(td).editable({
-	    	    type : type,
-	    	    step: 'any',
-	    	    title: 'edit',
-	    	    onblur: 'cancel',
-	    	    emptytext: '',
-	    	    showbuttons:false,
-	    	    validate: function(value) {
-	    	        if($.trim(value) == '') {
-	    	            return 'This field is required';
-	    	        }
-	    	    },
-	    	    success: actions.getEditSuccessfn(tab,td, cellData, rowData, row, col),
-	    	});
+			editable['type'] = type;
+			editable['step'] = 'any';
+			editable['validate'] = function(value) {
+						    	        if($.trim(value) == '') {
+						    	            return 'This field is required';
+						    	        }
+						    	    };
+    	    editable['onblur'] = 'cancel';
+			if (type=='date') {
+				editable['onblur'] = 'submit';
+			}
 	    	break;
 		case "datetimepicker":
-			$(td).editable({
-	    	    type : 'datetime',
-				title: 'datepicker',
-	    	    onblur: 'submit',
-	    	    showbuttons:false,
-	    	    emptytext: '',
-	    	    format : 'yyyy-dd-mm hh:ii',
-	    	    viewformat : 'yyyy-dd-mm hh:ii',   
-	            datetimepicker: {
-	                    weekStart: 1,
-	                    minuteStep :10
-	            },
-		        success: actions.getEditSuccessfn(tab,td, cellData, rowData, row, col),
-	    	});
+			editable['onblur'] = 'submit';
+			editable['type'] = 'datetime';
+			editable['format'] = 'yyyy-mm-dd hh:ii';
+			editable['viewformat'] = 'yyyy-mm-dd hh:ii';
+			editable['datetimepicker'] 	= 	{
+								          		weekStart: 1,
+								          		minuteStep :10
+								            };
 	    	break;
 		}
+		$(td).editable(editable);
     	$(td).on("shown", function(e, editable) {
     		  editable.input.$input.get(0).select();
     	});
@@ -379,8 +378,20 @@ var actions = {
 							};
 	    	break;
 		case "date":
+			cell["render"] = function ( data2, type2, row ) {
+								if (data2.constructor.name == "Date") { 
+									return moment(data2).format("YYYY-MM-DD");
+								}
+								return moment(data2,"YYYY-MM-DD").format("YYYY-MM-DD");
+							};
 	    	break;
-		case "datetime":
+		case "datetimepicker":
+			cell["render"] = function ( data2, type2, row ) {
+								if (data2.constructor.name == "Date") { 
+									return moment(data2).format("YYYY-MM-DD HH:mm");
+								}
+								return moment(data2,"YYYY-MM-DD HH:mm").format("YYYY-MM-DD HH:mm");
+							};
 	    	break;
 		case "checkbox":
 //			cell["className"] = 'select-checkbox';
