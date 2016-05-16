@@ -20,7 +20,8 @@ if (!isset($currentSubmenu)) $currentSubmenu ='';
 	
 	<link href="/jqueryui-editable/css/jqueryui-editable.css" rel="stylesheet"/>
 	<link href="/common/css/fixedHeader.dataTables.min.css" rel="stylesheet"/>
-	
+<!-- 	<link href="/common/css/select.dataTables.min.css" rel="stylesheet"/>
+ -->	
 	<script src="/common/js/jquery-ui-timepicker-addon.js"></script>
 	<!-- <script src="/jqueryui-editable/js/jqueryui-editable.js"></script> -->
 	<script src="/common/js/tableHeadFixer.js"></script>
@@ -29,5 +30,8 @@ if (!isset($currentSubmenu)) $currentSubmenu ='';
 	<script src="/common/js/bootstrap.js"></script>
 	<script src="/common/js/bootstrap-datetimepicker.js"></script>
 	<script src="/common/js/bootstrap-editable.js"></script>
+	
+<!-- 	<script src="/common/js/dataTables.select.min.js"></script>
+ -->	
 @stop
 

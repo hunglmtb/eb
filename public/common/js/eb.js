@@ -61,6 +61,8 @@ var typetoclass = function (data){
 			return "date";
 		case 4:
 			return "datetimepicker";
+		case 5:
+			return "checkbox";
 		/*case 6:
 			return "_timepicker";*/
 	}
@@ -352,61 +354,42 @@ var actions = {
 	},
 	getCellProperty : function(data,tab,type,cindex){
 		var cell = {"targets"	: cindex,
-				"render"	: function ( data2, type2, row ) {
-									return actions.renderCellProperty(type, data2, type, row);
-								},
 	    		"createdCell": function (td, cellData, rowData, row, col) {
-//		    						var tdf = $(td).attr("id","newId");
-//									var hd = $(td).column();
-//									var $th = $(td).closest('table').find('th').eq($(td).index());
-//							      	if ( cellData < 1 ) {
-//										$(td).attr('tabindex', tabindex++);
        				 			if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
        				 				$(td).addClass( "editInline" );
        				 	        	var table = $('#table_'+tab).DataTable();
        				 				actions.applyEditable(tab,type,td, cellData, rowData, row, col);
        				 			}
-						        	/* var enterHander = function(eInner) {
-								        if (eInner.keyCode == 13) //if its a enter key
-								        {
-								        	var tabindex = $(this).attr('tabindex');
-								            $('[tabindex=' + tabindex + ']').trigger( "click" );
-								            return false;
-								        }
-								    };
-								    
-										$(td).bind('keypress', enterHander); */
-//							      	}
 						    }
 	  		};
+		actions.putAdditonalProperties(cell,data,tab,type);
 		return cell;
 	},
-	
-	renderCellProperty : function(type, data, type, row){
-		var rendered = data;
+	putAdditonalProperties : function(cell,data,tab,type){
 		switch(type){
 		case "text":
 	    	break;
 		case "number":
-			if(data!=null){
-				rendered = parseFloat(data).toFixed(2);
-	    	}
+			cell["render"] = function ( data2, type2, row ) {
+								var rendered = data2;
+								if(data2!=null){
+									rendered = parseFloat(data2).toFixed(2);
+								}
+								return rendered;
+							};
 	    	break;
 		case "date":
-//			return $.fn.dataTable.render.moment( 'Do MMM YYYYY' );
-//			var rendered = rendered.split(" ");
-//			rendered = rendered[0];
-//			rendered = 'keke';
 	    	break;
 		case "datetime":
-//			return $.fn.dataTable.render.moment( 'Do MMM YYYYY' );
-//			var rendered = rendered.split(" ");
-//			rendered = rendered[0];
-//			rendered = 'keke';
-//			rendered = moment(rendered).format('YYYY-DD-MM HH:mm');
+	    	break;
+		case "checkbox":
+//			cell["className"] = 'select-checkbox';
+			cell["render"] = function ( data2, type2, row ) {
+								return '<input style="width:20px; " type="checkbox" value="'+data2+'" class="CTV204 " size="15">';
+							};
 	    	break;
 		}
-		return rendered;
+		return cell;
 	}
 }
 
