@@ -352,19 +352,16 @@ var actions = {
 	    };
 	},
 	getCellProperty : function(data,tab,type,cindex){
-		var cell = {"targets"	: cindex,
-	    		"createdCell": function (td, cellData, rowData, row, col) {
-       				 			if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
-       				 				$(td).addClass( "editInline" );
-       				 	        	var table = $('#table_'+tab).DataTable();
-       				 				actions.applyEditable(tab,type,td, cellData, rowData, row, col);
-       				 			}
-						    }
-	  		};
-		actions.putAdditonalProperties(cell,data,tab,type);
-		return cell;
-	},
-	putAdditonalProperties : function(cell,data,tab,type){
+		var cell = {"targets"	: cindex};
+		if (type!='checkbox') {
+			cell["createdCell"] = function (td, cellData, rowData, row, col) {
+		 			if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
+			 				$(td).addClass( "editInline" );
+			 	        	var table = $('#table_'+tab).DataTable();
+			 				actions.applyEditable(tab,type,td, cellData, rowData, row, col);
+			 			}
+			    };
+		}
 		switch(type){
 		case "text":
 	    	break;
@@ -401,7 +398,7 @@ var actions = {
 	    	break;
 		}
 		return cell;
-	}
+	},
 }
 
 

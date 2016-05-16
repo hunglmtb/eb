@@ -99,6 +99,7 @@ input[type="button"]:focus, button:focus{
 .ui-widget input {
     /* width: 97px; */
     /* height: 29px; */
+    width: 75%;
 }
 
 .editable-input {
@@ -106,6 +107,10 @@ input[type="button"]:focus, button:focus{
 }
 
 .editInline{
+}
+
+.input-medium{
+	width: 85%;
 }
 
 .dataTables_wrapper table{

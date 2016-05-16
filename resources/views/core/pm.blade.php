@@ -27,15 +27,15 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 							                var result = $.grep(collection, function(e){ 
 								                return e['ID'] == data;
 								                });
-											if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined" &&result[0].hasOwnProperty('CODE')){
-		                						return value['COLUMN_NAME']=="ALLOC_TYPE"?result[0]['NAME']:result[0]['CODE'];
+											if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined" &&result[0].hasOwnProperty('NAME')){
+		                						return value['COLUMN_NAME']=="ALLOC_TYPE"?result[0]['NAME']:result[0]['NAME'];
 											}
 											return data;
 								                
                 					};
             $.each(collection, function( i, vl ) {
             	vl['value']=vl['ID'];
-            	vl['text']=value['COLUMN_NAME']=="ALLOC_TYPE"?vl['NAME']:vl['CODE'];
+            	vl['text']=vl['NAME'];
             });
             uoms[index]["createdCell"] = function (td, cellData, rowData, row, col) {
                 if(data.properties[col].DATA_METHOD==1&&data.properties[col].DATA_METHOD=='1'){

@@ -10,6 +10,8 @@ use App\Models\Facility;
 use App\Models\StandardUom;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Models\CodeTestingMethod;
+use App\Models\CodeTestingUsage;
 
 
 class CodeController extends EBController {
@@ -269,10 +271,12 @@ class CodeController extends EBController {
     	$model = null;
     	$withs = [];
     	$i = 0;
-    	$allocTypes = false;
-    	
+    	$selectData = false;
+    	$rs = [];
+    	 
     	foreach($properties as $property ){
-    		switch ($property['data']){
+    		$columnName = $property['data'];
+    		switch ($columnName){
     			case 'PRESS_UOM' :
     				$withs[] = 'CodePressUom';
     				$uoms[] = ['id'=>'CodePressUom','targets'=>$i,'COLUMN_NAME'=>'PRESS_UOM'];
@@ -302,11 +306,23 @@ class CodeController extends EBController {
 	    			$withs[] = 'CodeVolUom';
 	    			$uoms[] = ['id'=>'CodeVolUom','targets'=>$i,'COLUMN_NAME'=>'FL_VOL_UOM'];
 	    			break;
+	    			
     			case 'ALLOC_TYPE' :
 // 	    				$withs[] = 'CodeAllocType';
-	    				$allocTypes = ['id'=>'CodeAllocType','targets'=>$i,'COLUMN_NAME'=>'ALLOC_TYPE'];
-	    				$allocTypes['data'] = CodeAllocType::all();
+	    				$selectData = ['id'=>'CodeAllocType','targets'=>$i,'COLUMN_NAME'=>'ALLOC_TYPE'];
+	    				$selectData['data'] = CodeAllocType::all();
+	    				$rs[] = $selectData;
 	    				break;
+    			case 'TEST_METHOD' :
+    					$selectData = ['id'=>'CodeTestingMethod','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    					$selectData['data'] = CodeTestingMethod::all();
+    					$rs[] = $selectData;
+    					break;
+    			case 'TEST_USAGE' :
+    					$selectData = ['id'=>'CodeTestingUsage','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    					$selectData['data'] = CodeTestingUsage::all();
+    					$rs[] = $selectData;
+    					break;
     		}
     		$i++;
     	}
@@ -318,16 +334,12 @@ class CodeController extends EBController {
 	    	}
     	}
 //     	\DB::enableQueryLog();
-    	$rs = [];
     	if ($model!=null) {
 	    	foreach($uoms as $key => $uom ){
 	    		$uom['data'] = $model->$uom['id'];
 	    		$uoms[$key] = $uom;
+	    		$rs[] = $uom;
 	    	}
-	    	$rs = $uoms;
-    	}
-    	if ($allocTypes) {
-    		$rs[] = $allocTypes;
     	}
     	return $rs;
 //     	\Log::info(\DB::getQueryLog());
