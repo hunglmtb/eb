@@ -16,6 +16,11 @@ class EuTestController extends CodeController {
 		$this->theorModel = "EnergyUnitDataTheor";
 	}
 	
+    public function getFirstProperty($dcTable){
+		return  ['data'=>$dcTable,'title'=>'','width'=>50];
+	}
+	
+	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date){
     	$mdlName = $postData[config("constants.tabTable")];
     	$mdl = "App\Models\\$mdlName";
@@ -38,7 +43,8 @@ class EuTestController extends CodeController {
     	$dataSet = $mdl::where($euWheres)
 				    	->whereBetween('EFFECTIVE_DATE', [$occur_date,$date_end])
 				    	->select(
-				    			"ID as T_ID",
+// 				    			"ID as T_ID",
+				    			"ID as DT_RowId",
 				    			"EU_ID as OBJ_ID",
 				    			"EFFECTIVE_DATE as T_EFFECTIVE_DATE",
 				    			"$dcTable.*") 

@@ -50,6 +50,11 @@ WELL TEST DATA CAPTURE
 		}
 		return pr;
 	}
+
+	actions.renderFirsColumn = function ( data, type, rowData ) {
+		var html = "Delete";
+		return html;
+	}
 	
 </script>
 @stop

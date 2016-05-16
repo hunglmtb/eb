@@ -84,7 +84,8 @@ class CodeController extends EBController {
 									    			'VALUE_MIN',
 									    			'VALUE_FORMAT',
 									    			'VALUE_MAX']);
-    	$properties->prepend(['data'=>$dcTable,'title'=>'Object name','width'=>230]);
+    	$firstProperty = $this->getFirstProperty($dcTable);
+    	$properties->prepend($firstProperty);
     	
     	$uoms = $this->getUoms($properties,$facility_id);
     	$locked = \Helper::checkLockedTable($dcTable,$occur_date,$facility_id);
@@ -95,6 +96,9 @@ class CodeController extends EBController {
     	return $results;
     }
     
+    public function getFirstProperty($dcTable){
+    	return  ['data'=>$dcTable,'title'=>'Object name','width'=>230];
+    }
     
 	public function getDataSet($postData, $dcTable, $facility_id, $occur_date) {
 		return [];

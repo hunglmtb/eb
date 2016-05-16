@@ -57,11 +57,11 @@ var typetoclass = function (data){
 		return "text";
 		case 2:
 			return "number";
-		/*case 3:
-			return "datepicker";
+		case 3:
+			return "date";
 		case 4:
 			return "datetimepicker";
-		case 6:
+		/*case 6:
 			return "_timepicker";*/
 	}
 	return "text";
@@ -233,6 +233,180 @@ var actions = {
 		}
 		return rs;
 		
+	},
+	renderFirsColumn : function ( data, type, rowData ) {
+		var html = data;
+		if(rowData.hasOwnProperty('PHASE_CODE')){
+			html += "<div class='phase "+rowData['PHASE_CODE']+"'>"+
+					rowData['PHASE_NAME']+"</div>";
+		}
+		else if(rowData.hasOwnProperty('PHASE_NAME')){
+			html += "<div class='phase "+rowData['PHASE_NAME']+"'>"+
+			rowData['PHASE_NAME']+"</div>";
+		}
+		if(rowData.hasOwnProperty('STATUS_NAME')){
+			html +="<span class='eustatus'>"+rowData['STATUS_NAME']+"</span>";
+		}
+		if(rowData.hasOwnProperty('TYPE_CODE')){
+			html +="<span class='eventType'>"+rowData['TYPE_CODE']+"</span>";
+		}
+		return html;
+	},
+	applyEditable : function (tab,type,td, cellData, rowData, row, col){
+		switch(type){
+		case "text":
+		case "number":
+		case "date":
+			$(td).editable({
+	    	    type : type,
+	    	    step: 'any',
+	    	    title: 'edit',
+	    	    onblur: 'cancel',
+	    	    emptytext: '',
+	    	    showbuttons:false,
+	    	    validate: function(value) {
+	    	        if($.trim(value) == '') {
+	    	            return 'This field is required';
+	    	        }
+	    	    },
+	    	    success: actions.getEditSuccessfn(tab,td, cellData, rowData, row, col),
+	    	});
+	    	break;
+		case "datetimepicker":
+			$(td).editable({
+	    	    type : 'datetime',
+				title: 'datepicker',
+	    	    onblur: 'submit',
+	    	    showbuttons:false,
+	    	    emptytext: '',
+	    	    format : 'yyyy-dd-mm hh:ii',
+	    	    viewformat : 'yyyy-dd-mm hh:ii',   
+	            datetimepicker: {
+	                    weekStart: 1,
+	                    minuteStep :10
+	            },
+		        success: actions.getEditSuccessfn(tab,td, cellData, rowData, row, col),
+	    	});
+	    	break;
+		}
+    	$(td).on("shown", function(e, editable) {
+    		  editable.input.$input.get(0).select();
+    	});
+	},
+	getEditSuccessfn  : function(tab, td, cellData, rowData, row, col) {
+		/* 
+		var enterHander = function(eInner) {
+	        if (eInner.keyCode == 13) //if its a enter key
+	        {
+	        	var tabindex = $(this).attr('tabindex');
+	            $('[tabindex=' + tabindex + ']').trigger( "click" );
+	            
+	            /* var e = jQuery.Event("keyup"); // or keypress/keydown
+			    e.keyCode = 27; // for Esc
+			    $(td).trigger(e); // trigger it on document
+	            var tabindex = $(this).attr('tabindex');
+	            tabindex++; //increment tabindex
+	            $('[tabindex=' + tabindex + ']').focus(); *//*
+//		            $('#Msg').text($(this).attr('id') + " tabindex: " + tabindex + " next element: " + $('*').attr('tabindex').id);
+
+
+	            // to cancel out Onenter page postback in asp.net
+	            return false;
+	        }
+	    };
+	    
+		$(td).bind('keypress', enterHander);
+
+		$( td ).blur(function() {
+				 e.keyCode = 27; // for Esc
+				 $(td).trigger(e); // trigger it on document
+		});
+		 */
+        var table = $('#table_'+tab).DataTable();
+		return function(response, newValue) {
+	    	if (!(tab in actions.editedData)) {
+	    		actions.editedData[tab] = [];
+	    	}
+	    	var eData = actions.editedData[tab];
+        	var result = $.grep(eData, function(e){ 
+							               	 return e[actions.type.keyField] == rowData[actions.type.keyField];
+							                });
+        	var columnName = table.settings()[0].aoColumns[col].data;
+        	if (result.length == 0) {
+	        	var editedData = {};
+	        	 $.each(actions.type.idName, function( i, vl ) {
+		        	editedData[vl] = rowData[vl];
+	             });
+	        	editedData[columnName] = newValue;
+        		eData.push(editedData);
+        	}
+        	else{
+        		result[0][columnName] = newValue;
+        	}
+        	rowData[columnName] = newValue;
+			table.row( '#'+rowData['DT_RowId'] ).data(rowData);
+        	$(td).css('color', 'red');
+        	 /* var tabindex = $(this).attr('tabindex');
+            $('[tabindex=' + (tabindex +1)+ ']').focus(); */
+	    };
+	},
+	getCellProperty : function(data,tab,type,cindex){
+		var cell = {"targets"	: cindex,
+				"render"	: function ( data2, type2, row ) {
+									return actions.renderCellProperty(type, data2, type, row);
+								},
+	    		"createdCell": function (td, cellData, rowData, row, col) {
+//		    						var tdf = $(td).attr("id","newId");
+//									var hd = $(td).column();
+//									var $th = $(td).closest('table').find('th').eq($(td).index());
+//							      	if ( cellData < 1 ) {
+//										$(td).attr('tabindex', tabindex++);
+       				 			if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
+       				 				$(td).addClass( "editInline" );
+       				 	        	var table = $('#table_'+tab).DataTable();
+       				 				actions.applyEditable(tab,type,td, cellData, rowData, row, col);
+       				 			}
+						        	/* var enterHander = function(eInner) {
+								        if (eInner.keyCode == 13) //if its a enter key
+								        {
+								        	var tabindex = $(this).attr('tabindex');
+								            $('[tabindex=' + tabindex + ']').trigger( "click" );
+								            return false;
+								        }
+								    };
+								    
+										$(td).bind('keypress', enterHander); */
+//							      	}
+						    }
+	  		};
+		return cell;
+	},
+	
+	renderCellProperty : function(type, data, type, row){
+		var rendered = data;
+		switch(type){
+		case "text":
+	    	break;
+		case "number":
+			if(data!=null){
+				rendered = parseFloat(data).toFixed(2);
+	    	}
+	    	break;
+		case "date":
+//			return $.fn.dataTable.render.moment( 'Do MMM YYYYY' );
+//			var rendered = rendered.split(" ");
+//			rendered = rendered[0];
+//			rendered = 'keke';
+	    	break;
+		case "datetime":
+//			return $.fn.dataTable.render.moment( 'Do MMM YYYYY' );
+//			var rendered = rendered.split(" ");
+//			rendered = rendered[0];
+//			rendered = 'keke';
+//			rendered = moment(rendered).format('YYYY-DD-MM HH:mm');
+	    	break;
+		}
+		return rendered;
 	}
 }
 

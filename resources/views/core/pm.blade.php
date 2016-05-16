@@ -20,66 +20,6 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 		var exclude = [0];
 		var uoms = data.uoms;
 
-// 		var tabindex = 0;
-		var getEditSuccessfn  = function(td, cellData, rowData, row, col) {
-			/* 
-			var enterHander = function(eInner) {
-		        if (eInner.keyCode == 13) //if its a enter key
-		        {
-		        	var tabindex = $(this).attr('tabindex');
-		            $('[tabindex=' + tabindex + ']').trigger( "click" );
-		            
-		            /* var e = jQuery.Event("keyup"); // or keypress/keydown
-				    e.keyCode = 27; // for Esc
-				    $(td).trigger(e); // trigger it on document
-		            var tabindex = $(this).attr('tabindex');
-		            tabindex++; //increment tabindex
-		            $('[tabindex=' + tabindex + ']').focus(); *//*
-// 		            $('#Msg').text($(this).attr('id') + " tabindex: " + tabindex + " next element: " + $('*').attr('tabindex').id);
-
-
-		            // to cancel out Onenter page postback in asp.net
-		            return false;
-		        }
-		    };
-		    
-			$(td).bind('keypress', enterHander);
-
-			$( td ).blur(function() {
- 				 e.keyCode = 27; // for Esc
- 				 $(td).trigger(e); // trigger it on document
-			});
-			 */
-	        var table = $('#table_'+tab).DataTable();
-			return function(response, newValue) {
-		    	if (!(tab in actions.editedData)) {
-		    		actions.editedData[tab] = [];
-		    	}
-		    	var eData = actions.editedData[tab];
-	        	var result = $.grep(eData, function(e){ 
-								               	 return e[actions.type.keyField] == rowData[actions.type.keyField];
-								                });
-	        	var columnName = table.settings()[0].aoColumns[col].data;
-	        	if (result.length == 0) {
-		        	var editedData = {};
-		        	 $.each(actions.type.idName, function( i, vl ) {
-			        	editedData[vl] = rowData[vl];
-		             });
-		        	editedData[columnName] = newValue;
-	        		eData.push(editedData);
-	        	}
-	        	else{
-	        		result[0][columnName] = newValue;
-	        	}
-	        	rowData[columnName] = newValue;
-  				table.row( '#'+rowData['DT_RowId'] ).data(rowData);
-	        	$(td).css('color', 'red');
-	        	 /* var tabindex = $(this).attr('tabindex');
-	            $('[tabindex=' + (tabindex +1)+ ']').focus(); */
-		    };
-		}
-
-	    
 		$.each(uoms, function( index, value ) {
 			var collection = value['data'];
 			exclude.push(uoms[index]["targets"]);
@@ -107,7 +47,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 		        	    value:cellData,
 		        	    showbuttons:false,
 		        	    source: collection,
-		        	    success: getEditSuccessfn(td, cellData, rowData, row, col),
+		        	    success: actions.getEditSuccessfn(tab,td, cellData, rowData, row, col),
 		        	});
                 }
    			}
@@ -116,77 +56,15 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 		var original = Array.apply(null, Array(data.properties.length)).map(function (_, i) {return i;});
 		var finalArray = $(original).not(exclude).get();
 
-		var cell = {"targets": finalArray,
-					"render": function ( data, type, row ) {
-									var number = data;
-									if(data!=null){
-						        		number = parseFloat(data).toFixed(2);
-						        	}
-									return number;
-								},
-			    	"createdCell": function (td, cellData, rowData, row, col) {
-// 			    						var tdf = $(td).attr("id","newId");
-//  										var hd = $(td).column();
-//  										var $th = $(td).closest('table').find('th').eq($(td).index());
-// 								      	if ( cellData < 1 ) {
-// 											$(td).attr('tabindex', tabindex++);
-               				 			if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
-               				 				$(td).addClass( "editInline" );
-               				 				var type = typetoclass(data.properties[col].INPUT_TYPE);
-								        	$(td).editable({
-								        	    type : type,
-								        	    step: 'any',
-								        	    title: 'edit',
-								        	    onblur: 'cancel',
-								        	    emptytext: '',
-								        	    showbuttons:false,
-								        	    validate: function(value) {
-								        	        if($.trim(value) == '') {
-								        	            return 'This field is required';
-								        	        }
-								        	    },
-								        	    success: getEditSuccessfn(td, cellData, rowData, row, col),
-								        	});
-
-								        	$(td).on("shown", function(e, editable) {
-								        		  editable.input.$input.get(0).select();
-								        	});
-               				 			}
-								        	/* var enterHander = function(eInner) {
-										        if (eInner.keyCode == 13) //if its a enter key
-										        {
-										        	var tabindex = $(this).attr('tabindex');
-										            $('[tabindex=' + tabindex + ']').trigger( "click" );
-										            return false;
-										        }
-										    };
-										    
- 											$(td).bind('keypress', enterHander); */
-// 								      	}
-								    }
-			  		};
-
+		$.each(finalArray, function( i, cindex ) {
+			var type = typetoclass(data.properties[cindex].INPUT_TYPE);
+			var cell = actions.getCellProperty(data,tab,type,cindex);
+    		uoms.push(cell);
+        });
+		
 		var phase = {"targets": 0,
-					"render": function ( data, type, rowData ) {
-								var html = data;
-								if(rowData.hasOwnProperty('PHASE_CODE')){
-									html += "<div class='phase "+rowData['PHASE_CODE']+"'>"+
-	        								rowData['PHASE_NAME']+"</div>";
-								}
-								else {
-									html += "<div class='phase "+rowData['PHASE_NAME']+"'>"+
-    								rowData['PHASE_NAME']+"</div>";
-								}
-								if(rowData.hasOwnProperty('STATUS_NAME')){
-									html +="<span class='eustatus'>"+rowData['STATUS_NAME']+"</span>";
-								}
-								if(rowData.hasOwnProperty('TYPE_CODE')){
-									html +="<span class='eventType'>"+rowData['TYPE_CODE']+"</span>";
-								}
-								return html;
-							}
+					"render": actions.renderFirsColumn
 		  			};
-		uoms.push(cell);
 		uoms.push(phase);
 
 		var  marginLeft = 0;

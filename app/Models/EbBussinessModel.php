@@ -88,9 +88,9 @@ class EbBussinessModel extends DynamicModel {
 	public static function updateOrCreateWithCalculating(array $attributes, array $values = []) {
 		$values = static::calculateBeforeUpdateOrCreate ( $attributes, $values );
 		
-// 		\DB::enableQueryLog();
+//  		\DB::enableQueryLog();
 		$instance = static::firstOrNew($attributes);
-// 		\Log::info(\DB::getQueryLog());
+//  		\Log::info(\DB::getQueryLog());
 		$oldValues = [];
 		foreach ( $values as $column => $value ) {
 			$oldValues[$column]= $instance->$column;

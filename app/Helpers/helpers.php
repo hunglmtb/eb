@@ -56,7 +56,7 @@ class Helper {
     			case 'date_begin':
     			case 'date_end':
 					
-					$htmlFilter.= "<div class='date_input'><div><b>$name</b></div><input readonly style='width:100%' type='text' id = '$id' name='$sName' size='15' value='$value'></div>";
+					$htmlFilter.= "<div class='date_input'><div><b>$name</b></div><input readonly style='width:85%' type='text' id = '$id' name='$sName' size='15' value='$value'></div>";
 					$htmlFilter.= '<script>
 											$( "#'.$id.'" ).datepicker({
 												changeMonth:true,

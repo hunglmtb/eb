@@ -78,7 +78,7 @@ class StorageController extends CodeController {
     
     
     protected function afterSave($resultRecords,$occur_date) {
-    	\DB::enableQueryLog();
+//     	\DB::enableQueryLog();
     	$tankDataValue = TankDataValue::getTableName();
     	$tank = Tank::getTableName();
     	$columns = [ \DB::raw("sum(BEGIN_VOL) 	as	BEGIN_VOL"),
@@ -121,6 +121,6 @@ class StorageController extends CodeController {
 				    	
   		    			
     	
-    	\Log::info(\DB::getQueryLog());
+//     	\Log::info(\DB::getQueryLog());
     }
 }

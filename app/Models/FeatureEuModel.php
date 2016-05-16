@@ -18,6 +18,7 @@ class FeatureEuModel extends EbBussinessModel
 			unset($newData[config("constants.euId")]);
 		}
 		$newData[static::$dateField] = $occur_date;
+		$newData[config("constants.flowPhase")] = $newData[config("constants.euFlowPhase")];
 		return [static::$idField => $newData[static::$idField],
 				config("constants.flowPhase") => $newData[config("constants.euFlowPhase")],
 				static::$dateField=>$occur_date];
