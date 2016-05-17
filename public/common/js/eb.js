@@ -333,6 +333,9 @@ var actions = {
 							               	 return e[actions.type.keyField] == rowData[actions.type.keyField];
 							                });
         	var columnName = table.settings()[0].aoColumns[col].data;
+        	if (newValue.constructor.name == "Date") { 
+        		newValue = moment(newValue).format("YYYY-MM-DD HH:mm:ss");
+			}
         	if (result.length == 0) {
 	        	var editedData = {};
 	        	 $.each(actions.type.idName, function( i, vl ) {

@@ -89,7 +89,8 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
  	         "autoWidth": false,
 	       	"scrollY":        "270px",
 // 	                "scrollCollapse": true,
-			"paging":         false
+			"paging":         false,
+// 			 "dom": '<"top"i>rt<"bottom"flp><"clear">'
 // 	           paging: false,
 // 	          searching: false 
 	    } );

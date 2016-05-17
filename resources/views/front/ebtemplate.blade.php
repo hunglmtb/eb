@@ -455,10 +455,10 @@ menu["production"]=[
 		{menutext:"Flow Stream",desc:"",url:"dc/flow"},
 		{menutext:"Energy Unit",desc:"",url:"../dc/eu"},
 		{menutext:"Tank & Storage",desc:"",url:"../dc/storage"},
-		{menutext:"Ticket",desc:"",url:"../dc/ticket.php"},
-		{menutext:"Well Test",desc:"",url:"../dc/eutest.php"},
-		{menutext:"Deferment",desc:"",url:"../dc/deferment.php"},
-		{menutext:"Quality",desc:"",url:"../dc/quality.php"}
+		{menutext:"Ticket",desc:"",url:"../dc/ticket"},
+		{menutext:"Well Test",desc:"",url:"../dc/eutest"},
+		{menutext:"Deferment",desc:"",url:"../dc/deferment"},
+		{menutext:"Quality",desc:"",url:"../dc/quality"}
 	];
 menu["operation"]=[
 		{menutext:"Safety",desc:"",url:"fo/safety"},

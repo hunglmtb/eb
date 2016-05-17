@@ -1,8 +1,8 @@
 <?php 
 namespace App\Models; 
-use App\Models\DynamicModel; 
+use App\Models\FeatureEuTestModel; 
 
- class EuTestDataValue extends DynamicModel 
+ class EuTestDataValue extends FeatureEuTestModel 
 { 
-	protected $table = 'eu_test_data_value'; 
+	protected $table = 'EU_TEST_DATA_VALUE'; 
 } 

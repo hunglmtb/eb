@@ -18,41 +18,14 @@ WELL TEST DATA CAPTURE
 	actions.loadUrl = "/eutest/load";
 	actions.saveUrl = "/eutest/save";
 	actions.type = {
-					idName:['{{config("constants.euId")}}','{{config("constants.euFlowPhase")}}'],
+					idName:['ID'],
 					keyField:'ID',
 					saveKeyField : function (model){
-						return '{{config("constants.euPhaseConfigId")}}';
-					},
-// 					xIdName:'X_EU_ID'
+										return 'ID';
+									},
 					};
-	var aLoadNeighbor = actions.loadNeighbor;
-	actions.loadNeighbor = function() {
-		var activeTabID = getActiveTabID();
-		if(activeTabID=='EnergyUnitDataAlloc'||activeTabID=='EnergyUnitCompDataAlloc'){
-			$('.CodeAllocType').css('display','block');
-		}
-		else{
-			$('.CodeAllocType').css('display','none');
-		}
-		aLoadNeighbor();
-	}
-
-
-	var aLoadParams = actions.loadParams;
-	actions.loadParams = function(reLoadParams) {
-		var pr = aLoadParams(reLoadParams);
-		var activeTabID = getActiveTabID();
-		if(activeTabID=='EnergyUnitDataAlloc'){
-			pr['CodeAllocType']= $('#CodeAllocType').val();
-		}
-		else{
-			pr['CodeAllocType']= 0;
-		}
-		return pr;
-	}
-
 	actions.renderFirsColumn = function ( data, type, rowData ) {
-		var html = "Delete";
+		var html = '<a style="color:gray" href="javascript:deleteEUTest(2119,\"")">Delete</a>';
 		return html;
 	}
 	

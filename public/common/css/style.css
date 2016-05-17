@@ -99,7 +99,7 @@ input[type="button"]:focus, button:focus{
 .ui-widget input {
     /* width: 97px; */
     /* height: 29px; */
-    width: 75%;
+    width: 83%;
 }
 
 .editable-input {
@@ -109,6 +109,9 @@ input[type="button"]:focus, button:focus{
 .editInline{
 }
 
+.editable-clear-x {
+    right: 0%;
+}
 .input-medium{
 	width: 85%;
 }

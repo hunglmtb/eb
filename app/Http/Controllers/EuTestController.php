@@ -31,19 +31,11 @@ class EuTestController extends CodeController {
     	 
     	$euWheres = ['EU_ID' => $object_id];
     	
-    	/* $sSQL="SELECT a.ID T_ID, a.EU_ID OBJ_ID,a.EFFECTIVE_DATE T_EFFECTIVE_DATE"
-    			.($fields?", a.".str_replace(",",",a.",$fields):"").
-    	" FROM `$table` a 
-    	where a.EFFECTIVE_DATE between STR_TO_DATE('$date_begin', '%m/%d/%Y') 
-    	and STR_TO_DATE('$date_end', '%m/%d/%Y') 
-    	and a.eu_id='$object_id' 
-    	order by a.EFFECTIVE_DATE"; */
-    	 
 //     	\DB::enableQueryLog();
     	$dataSet = $mdl::where($euWheres)
 				    	->whereBetween('EFFECTIVE_DATE', [$occur_date,$date_end])
 				    	->select(
-// 				    			"ID as T_ID",
+ 				    			"ID",
 				    			"ID as DT_RowId",
 				    			"EU_ID as OBJ_ID",
 				    			"EFFECTIVE_DATE as T_EFFECTIVE_DATE",
@@ -57,7 +49,7 @@ class EuTestController extends CodeController {
     	];
     }
     
-    
+  /*   
     protected function afterSave($resultRecords,$occur_date) {
 //     	\DB::enableQueryLog();
     	foreach($resultRecords as $mdlName => $records ){
@@ -67,9 +59,6 @@ class EuTestController extends CodeController {
     		}
     	}
 //   		\Log::info(\DB::getQueryLog());
-    }
+    } */
     
-    protected function getFlowPhase($newData) {
-    	return $newData [config ( "constants.euFlowPhase" )];
-    }
 }

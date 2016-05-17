@@ -308,8 +308,7 @@ class CodeController extends EBController {
 	    			break;
 	    			
     			case 'ALLOC_TYPE' :
-// 	    				$withs[] = 'CodeAllocType';
-	    				$selectData = ['id'=>'CodeAllocType','targets'=>$i,'COLUMN_NAME'=>'ALLOC_TYPE'];
+	    				$selectData = ['id'=>'CodeAllocType','targets'=>$i,'COLUMN_NAME'=>$columnName];
 	    				$selectData['data'] = CodeAllocType::all();
 	    				$rs[] = $selectData;
 	    				break;
@@ -323,6 +322,11 @@ class CodeController extends EBController {
     					$selectData['data'] = CodeTestingUsage::all();
     					$rs[] = $selectData;
     					break;
+	    		case 'EVENT_TYPE' :
+		    			$selectData = ['id'=>'CodeEventType','targets'=>$i,'COLUMN_NAME'=>$columnName];
+		    			$selectData['data'] = CodeEventType::all();
+		    			$rs[] = $selectData;
+		    			break;
     		}
     		$i++;
     	}

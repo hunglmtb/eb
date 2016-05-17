@@ -11,6 +11,8 @@ class EbBussinessModel extends DynamicModel {
 	
 	protected $objectModel = null;
 	protected static $enableCheckCondition = false;
+	protected $disableUpdateAudit = true;
+	
 	protected $excludeColumns = [];
 	public  static $ignorePostData = false;
 	
@@ -127,6 +129,7 @@ class EbBussinessModel extends DynamicModel {
 	}
 	
 	public function updateAudit($attributes,$values,$postData) {
+		if ($this->disableUpdateAudit)  return;
 		$current = Carbon::now();
 		$current_username =auth()->user()->username;
 		$rowID = $attributes[static::$idField];
