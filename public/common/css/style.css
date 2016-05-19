@@ -107,6 +107,7 @@ input[type="button"]:focus, button:focus{
 }
 
 .editInline{
+	/* background: chocolate; */
 }
 
 .editable-clear-x {

@@ -35,7 +35,8 @@ class EuTestController extends CodeController {
     	$dataSet = $mdl::where($euWheres)
 				    	->whereBetween('EFFECTIVE_DATE', [$occur_date,$date_end])
 				    	->select(
- 				    			"ID",
+								"ID as $dcTable",
+				    			"ID",
 				    			"ID as DT_RowId",
 				    			"EU_ID as OBJ_ID",
 				    			"EFFECTIVE_DATE as T_EFFECTIVE_DATE",

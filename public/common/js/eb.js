@@ -80,12 +80,15 @@ var actions = {
 	initData : false,
 	initSaveData :false,
 	editedData : {},
+	deleteData : {},
+	insertingData : {},
 	objectIds : [],
 	loadSuccess : function(data){alert("success");},
 	loadError : function(data){
 					alert(JSON.stringify(data.responseText));
 				},
 	shouldLoad : function(data){return false;},
+	afterGotSavedData : function(data,table,key){},
 	loadNeighbor: function (){
 		if (actions.shouldLoad()) {
 			actions.doLoad(false);
@@ -126,7 +129,12 @@ var actions = {
 	loadSaveParams : function (reLoadParams){
 		var params = actions.loadParams(reLoadParams);
 		if (reLoadParams) {
-			params['editedData'] = actions.editedData;
+			if(!jQuery.isEmptyObject(actions.editedData)){
+				params['editedData'] = actions.editedData;
+			}
+			if(!jQuery.isEmptyObject(actions.deleteData)){
+				params['deleteData'] = actions.deleteData;
+			}
 			params['objectIds'] = actions.objectIds;
 		} else {
 //			params = actions.loadPostParams;
@@ -236,6 +244,12 @@ var actions = {
 		return rs;
 		
 	},
+	preDataTable : function (dataset){
+		return dataset;
+	},
+	afterDataTable : function (table,tab){
+		$("#toolbar_"+tab).html('');
+	},
 	renderFirsColumn : function ( data, type, rowData ) {
 		var html = data;
 		if(rowData.hasOwnProperty('PHASE_CODE')){
@@ -323,17 +337,23 @@ var actions = {
 				 $(td).trigger(e); // trigger it on document
 		});
 		 */
-        var table = $('#table_'+tab).DataTable();
 		return function(response, newValue) {
-	    	if (!(tab in actions.editedData)) {
-	    		actions.editedData[tab] = [];
+			/*var id = rowData['ID'];
+			var isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
+			var recordData = isAdding?actions.insertingData:actions.editedData;*/
+			var table = $('#table_'+tab).DataTable();
+			var id = rowData['DT_RowId'];
+			var isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
+			var recordData = actions.editedData;
+	    	if (!(tab in recordData)) {
+	    		recordData[tab] = [];
 	    	}
-	    	var eData = actions.editedData[tab];
+	    	var eData = recordData[tab];
         	var result = $.grep(eData, function(e){ 
 							               	 return e[actions.type.keyField] == rowData[actions.type.keyField];
 							                });
         	var columnName = table.settings()[0].aoColumns[col].data;
-        	if (newValue.constructor.name == "Date") { 
+        	if (newValue!=null&&newValue.constructor.name == "Date") { 
         		newValue = moment(newValue).format("YYYY-MM-DD HH:mm:ss");
 			}
         	if (result.length == 0) {
@@ -342,6 +362,10 @@ var actions = {
 		        	editedData[vl] = rowData[vl];
 	             });
 	        	editedData[columnName] = newValue;
+	        	if(isAdding) {
+	        		editedData['isAdding'] = true;
+	        	}
+	        	editedData['DT_RowId'] = rowData['DT_RowId'];
         		eData.push(editedData);
         	}
         	else{
@@ -379,7 +403,7 @@ var actions = {
 	    	break;
 		case "date":
 			cell["render"] = function ( data2, type2, row ) {
-								if (data2.constructor.name == "Date") { 
+								if (data2!=null&&data2.constructor.name == "Date") { 
 									return moment(data2).format("YYYY-MM-DD");
 								}
 								return moment(data2,"YYYY-MM-DD").format("YYYY-MM-DD");
@@ -387,7 +411,7 @@ var actions = {
 	    	break;
 		case "datetimepicker":
 			cell["render"] = function ( data2, type2, row ) {
-								if (data2.constructor.name == "Date") { 
+								if (data2!=null&&data2.constructor.name == "Date") { 
 									return moment(data2).format("YYYY-MM-DD HH:mm");
 								}
 								return moment(data2,"YYYY-MM-DD HH:mm").format("YYYY-MM-DD HH:mm");
@@ -402,6 +426,41 @@ var actions = {
 		}
 		return cell;
 	},
+	createdFirstCellColumn : function (td, cellData, rowData, row, col) {
+			var table =$(this).dataTable();
+	    	$(td).click(function(){
+		    	var r = table.fnGetPosition(this)[0];
+	    		var rowData = table.api().data()[ r];
+	    		var tableId = table.attr('id');
+	    		var splits = tableId.split("_");
+					var id = rowData['DT_RowId'];
+					var isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
+		   			var recordData = actions.deleteData;
+		   			var tab = splits[1];
+			   		if (!(tab in recordData)) {
+			    		recordData[tab] = [];
+			    	}
+			    	//remove in postdata
+		        	var eData = recordData[tab];
+		        	if(isAdding) {
+			    	var editedData = actions.editedData[tab];
+			    	if(editedData!=null){
+			        		var result = $.grep(editedData, function(e){ 
+   			               	 return e[actions.type.keyField] == rowData[actions.type.keyField];
+   			                });
+					    if (result.length > 0) {
+//						    	result[0]['deleted'] = true;
+					    	editedData.splice( $.inArray(result[0], editedData), 1 );
+					    }
+			    	}
+				   	}
+		        	else{
+				    	eData.push({'ID':id});
+		        	}
+		        	//remove on table
+	    		table.api().rows( r).remove().draw( false );
+			});
+	    }
 }
 
 

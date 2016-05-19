@@ -110,11 +110,18 @@ class CodeController extends EBController {
     
     public function save(Request $request){
 //     	sleep(2);
+//     	return response()->json('[]');
+// 		throw new Exception("not Save");
     	$postData = $request->all();
-    	if (!array_key_exists('editedData', $postData)) {
+    	if (!array_key_exists('editedData', $postData)&&!array_key_exists('deleteData', $postData)) {
     		return response()->json('no data 2 update!');
     	}
-    	$editedData = $postData['editedData'];
+    	if (!array_key_exists('editedData', $postData)) {
+    		$editedData = false;
+    	}
+    	else{
+	    	$editedData = $postData['editedData'];
+    	}
 //      	$record_freq = $postData['CodeReadingFrequency'];
 //      	$phase_type = $postData['CodeFlowPhase'];
      	$facility_id = $postData['Facility'];
@@ -128,9 +135,14 @@ class CodeController extends EBController {
      	{
      		$resultTransaction = \DB::transaction(function () use ($postData,$editedData,$objectIds,$affectedIds,
 													     		 $occur_date,$facility_id){
+     			$this->deleteData($postData);
+     			
+     			if(!$editedData) return [];
+     			
      			$lockeds= [];
      			$ids = [];
      			$resultRecords = [];
+     			
      			//      			\DB::enableQueryLog();
      			foreach($editedData as $mdlName => $mdlData ){
 		     		$mdl = "App\Models\\".$mdlName;
@@ -225,10 +237,12 @@ class CodeController extends EBController {
      	
      	//get updated data after apply formulas
      	$updatedData = [];
-     	foreach($resultTransaction['ids'] as $mdlName => $updatedIds ){
-//      		$updatedData[$mdlName] = $mdl::findMany($objectIds);
-     		$mdl = "App\Models\\".$mdlName;
-     		$updatedData[$mdlName] = $mdl::findManyWithConfig($updatedIds);
+     	if (array_key_exists('ids', $resultTransaction)) {
+	     	foreach($resultTransaction['ids'] as $mdlName => $updatedIds ){
+	//      		$updatedData[$mdlName] = $mdl::findMany($objectIds);
+	     		$mdl = "App\Models\\".$mdlName;
+	     		$updatedData[$mdlName] = $mdl::findManyWithConfig($updatedIds);
+	     	}
      	}
 //      	\Log::info(\DB::getQueryLog());
     
@@ -239,9 +253,18 @@ class CodeController extends EBController {
     	return response()->json($results);
     }
     
+    protected function deleteData($postData) {
+    	if (array_key_exists ('deleteData', $postData )) {
+    		$deleteData = $postData['deleteData'];
+    		foreach($deleteData as $mdlName => $mdlData ){
+    			$mdl = "App\Models\\".$mdlName;
+    			$mdl::whereIn('ID', array_values($mdlData))->delete();
+    		}
+    	}
+    }
     
 	protected function preSave(&$editedData, &$affectedIds, $postData) {
-		if (array_key_exists ($this->fdcModel, $editedData )) {
+		if ($editedData&&array_key_exists ($this->fdcModel, $editedData )) {
 			$this->preSaveModel ( $editedData, $affectedIds, $this->valueModel);
 			$this->preSaveModel ( $editedData, $affectedIds, $this->theorModel);
 		}

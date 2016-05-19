@@ -17,6 +17,11 @@ class EbBussinessModel extends DynamicModel {
 	public  static $ignorePostData = false;
 	
 	
+	public static function getKeyColumns(&$newData,$occur_date,$postData)
+	{
+		return [static::$idField => $newData[static::$idField]];
+	}
+	
 	public static function findManyWithConfig($updatedIds) {
 		return parent::findMany ( $updatedIds );
 	}
@@ -88,6 +93,18 @@ class EbBussinessModel extends DynamicModel {
 	}
 	
 	public static function updateOrCreateWithCalculating(array $attributes, array $values = []) {
+		if (array_key_exists("isAdding", $values)&&$values["isAdding"]) {
+			$instance = new static((array) $values);
+	        $instance->exists = false;
+	        foreach ( $values as $column => $value ) {
+	        	if (!$instance->isFillable($column)) {
+	        		unset($values[$column]);
+	        	}
+	        }
+			$instance->fill($values)->save();
+	        return $instance;
+		}
+		
 		$values = static::calculateBeforeUpdateOrCreate ( $attributes, $values );
 		
 //  		\DB::enableQueryLog();

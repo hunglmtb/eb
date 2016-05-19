@@ -12,6 +12,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 @section('adaptData')
 @parent
 <script>
+
 	actions.loadSuccess =  function(data){
 		$('#buttonLoadData').attr('value', 'Refresh');
 		postData = data.postData;
@@ -63,7 +64,8 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
         });
 		
 		var phase = {"targets": 0,
-					"render": actions.renderFirsColumn
+					"render": actions.renderFirsColumn,
+					"createdCell": actions.createdFirstCellColumn
 		  			};
 		uoms.push(phase);
 
@@ -80,6 +82,20 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
         });
 		$('#table_'+tab).css('width',(tblWdth)+'px');
 
+		data.dataSet = actions.preDataTable(data.dataSet);
+
+		/*  $('#table_'+tab).append(
+			    $('<tfoot/>').append( $("#table_"+tab+" thead tr").clone() )
+			); */
+
+		/* var footer = $("<tfoot></tfoot>").appendTo('#table_'+tab);
+		var footertr = $("<tr></tr>").appendTo(footer);
+		 
+		//Add footer cells
+		$.each( data.properties, function( i, vl ) {
+			 $("<td></td>").appendTo(footertr);
+		}); */
+			
 		var tbl = $('#table_'+tab).DataTable( {
  	          data: data.dataSet,
 	          columns: data.properties,
@@ -90,10 +106,31 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 	       	"scrollY":        "270px",
 // 	                "scrollCollapse": true,
 			"paging":         false,
+			"dom": '<"#toolbar_'+tab+'">frtip',
+			/* initComplete: function () {
+				var cls = this.api().columns();
+	            cls.every( function () {
+	                var column = this;
+	                var ft = $(column.footer());
+	                ft.html("keke");
+	                var select = $('<select><option value=""></option></select>')
+	                    .appendTo( $(column.footer()).empty() );
+	            } );
+	        }, */
+	        /* "footerCallback": function ( row, data, start, end, display ) {
+	            var cls = this.api().columns();
+	            cls.every( function () {
+	                var column = this;
+	                var ft = $(column.footer());
+ 	                ft.html("keke");
+	            } );
+	        }, */
 // 			 "dom": '<"top"i>rt<"bottom"flp><"clear">'
 // 	           paging: false,
 // 	          searching: false 
 	    } );
+		tbl['tabName'] = tab;
+		actions.afterDataTable(tbl,tab);
 		actions.updateView(postData);
 
 		if($( window ).width()>$('#table_'+tab).width()){
@@ -151,7 +188,12 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 				        	$(td).css('color', '');
 				        });
 					}
+					else{
+						value['DT_RowId'] = value[actions.type.saveKeyField(key)];
+						table.row.add(value).draw( false );
+					}
 		        });
+				actions.afterGotSavedData(data,table,key);
 			}
 		}
 

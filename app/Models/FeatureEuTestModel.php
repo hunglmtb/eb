@@ -13,6 +13,10 @@ class FeatureEuTestModel extends EbBussinessModel
 	
 	public static function getKeyColumns(&$newData,$occur_date,$postData)
 	{
-		return [static::$idField => $newData[static::$idField]];
+		$attributes = parent:: getKeyColumns($newData,$occur_date,$postData);
+		if ( array_key_exists ( 'isAdding', $newData ) && array_key_exists ( 'EnergyUnit', $postData )) {
+			$newData['EU_ID'] = $postData['EnergyUnit'];
+		}
+		return $attributes;
 	}
 }
