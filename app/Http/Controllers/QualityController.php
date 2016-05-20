@@ -24,6 +24,10 @@ class QualityController extends CodeController {
 		$this->isApplyFormulaAfterSaving = true;
 	}
 	
+	public function getFirstProperty($dcTable){
+		return  ['data'=>$dcTable,'title'=>'','width'=>50];
+	}
+	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	$mdlName = $postData[config("constants.tabTable")];
     	$mdl = "App\Models\\$mdlName";
@@ -51,7 +55,8 @@ class QualityController extends CodeController {
 						    	->where($where)
 						    	->whereDate($filterBy, '>=', $occur_date)
 						    	->whereDate($filterBy, '<=', $date_end)
-						    	->select("$dcTable.ID as $dcTable",
+						    	->select(
+						    			"$dcTable.ID as $dcTable",
 						    			"$dcTable.ID as DT_RowId",
 						    			"$dcTable.ID",
 						    			"$dcTable.*"
