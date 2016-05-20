@@ -290,13 +290,15 @@ var actions = {
     	    editable['onblur'] = 'cancel';
 			if (type=='date') {
 				editable['onblur'] = 'submit';
+				editable['format'] = 'mm/dd/yyyy';
+				editable['viewformat'] = 'mm/dd/yyyy';
 			}
 	    	break;
 		case "datetimepicker":
 			editable['onblur'] = 'submit';
 			editable['type'] = 'datetime';
-			editable['format'] = 'yyyy-mm-dd hh:ii';
-			editable['viewformat'] = 'yyyy-mm-dd hh:ii';
+			editable['format'] = 'mm/dd/yyyy hh:ii';
+			editable['viewformat'] = 'mm/dd/yyyy hh:ii';
 			editable['datetimepicker'] 	= 	{
 								          		weekStart: 1,
 								          		minuteStep :10
@@ -404,17 +406,17 @@ var actions = {
 		case "date":
 			cell["render"] = function ( data2, type2, row ) {
 								if (data2!=null&&data2.constructor.name == "Date") { 
-									return moment(data2).format("YYYY-MM-DD");
+									return moment(data2).format("MM/DD/YYYY");
 								}
-								return moment(data2,"YYYY-MM-DD").format("YYYY-MM-DD");
+								return moment(data2,"YYYY-MM-DD").format("MM/DD/YYYY");
 							};
 	    	break;
 		case "datetimepicker":
 			cell["render"] = function ( data2, type2, row ) {
 								if (data2!=null&&data2.constructor.name == "Date") { 
-									return moment(data2).format("YYYY-MM-DD HH:mm");
+									return moment(data2).format("MM/DD/YYYY HH:mm");
 								}
-								return moment(data2,"YYYY-MM-DD HH:mm").format("YYYY-MM-DD HH:mm");
+								return moment(data2,"YYYY-MM-DD HH:mm").format("MM/DD/YYYY HH:mm");
 							};
 	    	break;
 		case "checkbox":
@@ -433,30 +435,30 @@ var actions = {
 	    		var rowData = table.api().data()[ r];
 	    		var tableId = table.attr('id');
 	    		var splits = tableId.split("_");
-					var id = rowData['DT_RowId'];
-					var isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
-		   			var recordData = actions.deleteData;
-		   			var tab = splits[1];
-			   		if (!(tab in recordData)) {
-			    		recordData[tab] = [];
-			    	}
-			    	//remove in postdata
-		        	var eData = recordData[tab];
-		        	if(isAdding) {
-			    	var editedData = actions.editedData[tab];
-			    	if(editedData!=null){
-			        		var result = $.grep(editedData, function(e){ 
-   			               	 return e[actions.type.keyField] == rowData[actions.type.keyField];
-   			                });
-					    if (result.length > 0) {
+				var id = rowData['DT_RowId'];
+				var isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
+	   			var recordData = actions.deleteData;
+	   			var tab = splits[1];
+		   		if (!(tab in recordData)) {
+		    		recordData[tab] = [];
+		    	}
+		    	//remove in postdata
+	        	var eData = recordData[tab];
+	        	if(isAdding) {
+		    	var editedData = actions.editedData[tab];
+		    	if(editedData!=null){
+		        		var result = $.grep(editedData, function(e){ 
+		               	 return e[actions.type.keyField] == rowData[actions.type.keyField];
+		                });
+				    if (result.length > 0) {
 //						    	result[0]['deleted'] = true;
-					    	editedData.splice( $.inArray(result[0], editedData), 1 );
-					    }
-			    	}
-				   	}
-		        	else{
-				    	eData.push({'ID':id});
-		        	}
+				    	editedData.splice( $.inArray(result[0], editedData), 1 );
+				    }
+		    	}
+			   	}
+	        	else{
+			    	eData.push({'ID':id});
+	        	}
 		        	//remove on table
 	    		table.api().rows( r).remove().draw( false );
 			});
@@ -464,3 +466,4 @@ var actions = {
 }
 
 
+	

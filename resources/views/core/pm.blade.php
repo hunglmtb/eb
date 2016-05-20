@@ -129,7 +129,6 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 // 	           paging: false,
 // 	          searching: false 
 	    } );
-		tbl['tabName'] = tab;
 		actions.afterDataTable(tbl,tab);
 		actions.updateView(postData);
 

@@ -18,6 +18,19 @@ $mapping = array_merge($mapping,$subMapping);
 var javascriptFilterGroups = <?php echo json_encode($filterGroups); ?>
 </script>
 <script src="/common/js/eb.js"></script>
+<script>
+$( document ).ready(function() {
+    console.log( "ready!" );
+    var onChangeFunction = function() {
+    	if ($('#buttonLoadData').attr('value')=='Refresh') {
+	    	actions.doLoad(true);
+		}
+    };
+    
+    $( "#date_begin" ).change(onChangeFunction);
+    $( "#date_end" ).change(onChangeFunction);
+});
+</script>
 @foreach( $filterGroups as $key => $filters )
 		@if($key=='productionFilterGroup')
 		<div class = "product_filter">
