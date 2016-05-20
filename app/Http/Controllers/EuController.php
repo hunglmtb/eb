@@ -21,7 +21,7 @@ class EuController extends CodeController {
 		$this->theorModel = "EnergyUnitDataTheor";
 	}
 	
-    public function getDataSet($postData,$dcTable,$facility_id,$occur_date){
+    public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	$eu_group_id = $postData['EnergyUnitGroup'];
     	$record_freq = $postData['CodeReadingFrequency'];
     	$phase_type = $postData['CodeFlowPhase'];

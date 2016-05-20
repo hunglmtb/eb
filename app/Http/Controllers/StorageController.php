@@ -18,7 +18,7 @@ class StorageController extends CodeController {
 // 		$this->theorModel = "TankDataTheor";
 	}
 	
-    public function getDataSet($postData,$dcTable,$facility_id,$occur_date){
+    public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	$product_type = $postData['CodeProductType'];
     	switch ($dcTable) {
     		case 'storage_data_value'     :

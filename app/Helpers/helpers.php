@@ -50,12 +50,11 @@ class Helper {
 		$id=array_key_exists('id', $option)?$option['id']:'';
 		$sName=array_key_exists('sName', $option)?$option['sName']:'';
 	
-		$value=$value->format('m/d/Y');
 		$htmlFilter = '';
 		switch ($id) {
     			case 'date_begin':
     			case 'date_end':
-					
+					$value=$value->format('m/d/Y');
 					$htmlFilter.= "<div class='date_input'><div><b>$name</b></div><input style='width:85%' type='text' id = '$id' name='$sName' size='15' value='$value'></div>";
 					$htmlFilter.= '<script>
 											$( "#'.$id.'" ).datepicker({

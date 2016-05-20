@@ -24,7 +24,7 @@ class FlowController extends CodeController {
 		$this->isApplyFormulaAfterSaving = true;
 	}
 	
-    public function getDataSet($postData,$dcTable,$facility_id,$occur_date){
+    public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	$record_freq = $postData['CodeReadingFrequency'];
     	$phase_type = $postData['CodeFlowPhase'];
     	

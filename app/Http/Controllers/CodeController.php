@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\CodeTestingMethod;
 use App\Models\CodeTestingUsage;
+use App\Models\CodeQltySrcType;
 
 
 class CodeController extends EBController {
@@ -65,8 +66,8 @@ class CodeController extends EBController {
      	$occur_date = $postData['date_begin'];
      	$occur_date = Carbon::parse($occur_date);
      	
-      	$data = $this->getDataSet($postData,$dcTable,$facility_id,$occur_date);
  		$results = $this->getProperties($dcTable,$facility_id,$occur_date);
+      	$data = $this->getDataSet($postData,$dcTable,$facility_id,$occur_date,$results);
         $results['postData'] = $postData;
         $results = array_merge($results, $data);
     	return response()->json($results);
@@ -102,7 +103,7 @@ class CodeController extends EBController {
     	return  ['data'=>$dcTable,'title'=>'Object name','width'=>230];
     }
     
-	public function getDataSet($postData, $dcTable, $facility_id, $occur_date) {
+	public function getDataSet($postData, $dcTable, $facility_id, $occur_date,$properties) {
 		return [];
 	}
     
@@ -350,6 +351,11 @@ class CodeController extends EBController {
 		    			$selectData['data'] = CodeEventType::all();
 		    			$rs[] = $selectData;
 		    			break;
+    			case 'SRC_TYPE' :
+	    				$selectData = ['id'=>'CodeQltySrcType','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    				$selectData['data'] = CodeQltySrcType::all();
+	    				$rs[] = $selectData;
+	    				break;
     		}
     		$i++;
     	}

@@ -45,7 +45,10 @@ return [
 																		'name'			=>'CodeProductType',
 																		'id'			=>'CodeProductType',
 																		'default'		=>['ID'=>0,'NAME'=>'All']),
-				
+										'CodeQltySrcType'		=>	array('filterName'	=>'Source Type',
+																		'name'			=>'CodeQltySrcType',
+																		'id'			=>'CodeQltySrcType',
+																		'default'		=>['ID'=>0,'NAME'=>'All']),
 										],
 		// etc
 ];
