@@ -28,6 +28,7 @@ WELL TEST DATA CAPTURE
 
 	actions.afterDataTable = function (table,tab){
 		$("#toolbar_"+tab).html('<button>Add</button>');
+		$("#toolbar_"+tab).addClass('toolbarAction');
 		$("#toolbar_"+tab+ " button").on( 'click', function () {
 				var columns = table.settings()[0].aoColumns;
 				var addingRow = {};
@@ -38,6 +39,9 @@ WELL TEST DATA CAPTURE
 				addingRow['ID'] = addingRow['DT_RowId'];
 // 				addingRow['notAttachedToList'] = true;
 				table.row.add(addingRow).draw( false );
+
+				var tbbody = $('#table_'+tab);
+		 		tbbody.tableHeadFixer({"left" : 1,head: false,});
             });
 	};
 	
@@ -53,6 +57,8 @@ WELL TEST DATA CAPTURE
     		 	var id = rowData['DT_RowId'];
     		 	if ((typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1)) {
     		 		table.row($('#'+id)).remove().draw(false);
+    		 		var tbbody = $('#table_'+tab);
+    		 		tbbody.tableHeadFixer({"left" : 1,head: false,});
 // 					$('#'+id).remove();
 			    }
           });

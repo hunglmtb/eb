@@ -405,7 +405,10 @@ var actions = {
 	    	break;
 		case "date":
 			cell["render"] = function ( data2, type2, row ) {
-								if (data2!=null&&data2.constructor.name == "Date") { 
+								if (data2==null) { 
+									return "";
+								}
+								if (data2.constructor.name == "Date") { 
 									return moment(data2).format("MM/DD/YYYY");
 								}
 								return moment(data2,"YYYY-MM-DD").format("MM/DD/YYYY");
@@ -413,7 +416,10 @@ var actions = {
 	    	break;
 		case "datetimepicker":
 			cell["render"] = function ( data2, type2, row ) {
-								if (data2!=null&&data2.constructor.name == "Date") { 
+								if (data2==null) { 
+									return "";
+								}
+								if (data2.constructor.name == "Date") { 
 									return moment(data2).format("MM/DD/YYYY HH:mm");
 								}
 								return moment(data2,"YYYY-MM-DD HH:mm").format("MM/DD/YYYY HH:mm");
