@@ -31,4 +31,12 @@ class Facility extends UomModel
 		}
 		return $this->hasMany('App\Models\EnergyUnitGroup', 'FACILITY_ID', 'ID');
 	}
+	
+	public function EnergyUnit($fields=null)
+	{
+		if ($fields!=null&&is_array($fields)) {
+			return $this->hasMany('App\Models\EnergyUnit', 'FACILITY_ID', 'ID')->select($fields);
+		}
+		return $this->hasMany('App\Models\EnergyUnit', 'FACILITY_ID', 'ID');
+	}
 }

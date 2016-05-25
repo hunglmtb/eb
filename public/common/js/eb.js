@@ -51,6 +51,25 @@ var getActiveTabID = function() {
 }
 
 
+var typetoclass = function (data){
+	switch(data){
+		case 1:
+		return "text";
+		case 2:
+			return "number";
+		case 3:
+			return "date";
+		case 4:
+			return "datetimepicker";
+		case 5:
+			return "checkbox";
+		/*case 6:
+			return "_timepicker";*/
+	}
+	return "text";
+};
+
+
 var actions = {
 		
 	loadUrl : false,
@@ -61,10 +80,15 @@ var actions = {
 	initData : false,
 	initSaveData :false,
 	editedData : {},
+	deleteData : {},
+	insertingData : {},
 	objectIds : [],
 	loadSuccess : function(data){alert("success");},
-	loadError : function(data){alert("error");},
+	loadError : function(data){
+					alert(JSON.stringify(data.responseText));
+				},
 	shouldLoad : function(data){return false;},
+	afterGotSavedData : function(data,table,key){},
 	loadNeighbor: function (){
 		if (actions.shouldLoad()) {
 			actions.doLoad(false);
@@ -105,7 +129,12 @@ var actions = {
 	loadSaveParams : function (reLoadParams){
 		var params = actions.loadParams(reLoadParams);
 		if (reLoadParams) {
-			params['editedData'] = actions.editedData;
+			if(!jQuery.isEmptyObject(actions.editedData)){
+				params['editedData'] = actions.editedData;
+			}
+			if(!jQuery.isEmptyObject(actions.deleteData)){
+				params['deleteData'] = actions.deleteData;
+			}
 			params['objectIds'] = actions.objectIds;
 		} else {
 //			params = actions.loadPostParams;
@@ -138,7 +167,6 @@ var actions = {
 				},
 				error: function(data) {
 					hideWaiting();
-					alert(JSON.stringify(data.responseText));
 					if (typeof(actions.loadError) == "function") {
 						actions.loadError(data);
 					}
@@ -190,7 +218,6 @@ var actions = {
 					hideWaiting();
 				},
 				error: function(data) {
-					alert(JSON.stringify(data.responseText));
 					if (typeof(actions.loadError) == "function") {
 						actions.loadError(data);
 					}
@@ -216,7 +243,199 @@ var actions = {
 		}
 		return rs;
 		
-	}
+	},
+	preDataTable : function (dataset){
+		return dataset;
+	},
+	afterDataTable : function (table,tab){
+		$("#toolbar_"+tab).html('');
+	},
+	renderFirsColumn : function ( data, type, rowData ) {
+		var html = data;
+		if(rowData.hasOwnProperty('PHASE_CODE')){
+			html += "<div class='phase "+rowData['PHASE_CODE']+"'>"+
+					rowData['PHASE_NAME']+"</div>";
+		}
+		else if(rowData.hasOwnProperty('PHASE_NAME')){
+			html += "<div class='phase "+rowData['PHASE_NAME']+"'>"+
+			rowData['PHASE_NAME']+"</div>";
+		}
+		if(rowData.hasOwnProperty('STATUS_NAME')){
+			html +="<span class='eustatus'>"+rowData['STATUS_NAME']+"</span>";
+		}
+		if(rowData.hasOwnProperty('TYPE_CODE')){
+			html +="<span class='eventType'>"+rowData['TYPE_CODE']+"</span>";
+		}
+		return html;
+	},
+	applyEditable : function (tab,type,td, cellData, rowData, row, col){
+		var  editable = {
+	    	    title: 'edit',
+	    	    emptytext: '',
+	    	    showbuttons:false,
+	    	    success: actions.getEditSuccessfn(tab,td, cellData, rowData, row, col),
+	    	};
+		
+		switch(type){
+		case "text":
+		case "number":
+		case "date":
+			editable['type'] = type;
+			editable['step'] = 'any';
+			editable['validate'] = function(value) {
+						    	        if($.trim(value) == '') {
+						    	            return 'This field is required';
+						    	        }
+						    	    };
+    	    editable['onblur'] = 'cancel';
+			if (type=='date') {
+				editable['onblur'] = 'submit';
+				editable['format'] = 'mm/dd/yyyy';
+				editable['viewformat'] = 'mm/dd/yyyy';
+			}
+	    	break;
+		case "datetimepicker":
+			editable['onblur'] = 'submit';
+			editable['type'] = 'datetime';
+			editable['format'] = 'mm/dd/yyyy hh:ii';
+			editable['viewformat'] = 'mm/dd/yyyy hh:ii';
+			editable['datetimepicker'] 	= 	{
+								          		weekStart: 1,
+								          		minuteStep :10
+								            };
+	    	break;
+		}
+		$(td).editable(editable);
+    	$(td).on("shown", function(e, editable) {
+    		  editable.input.$input.get(0).select();
+    	});
+	},
+	getEditSuccessfn  : function(tab, td, cellData, rowData, row, col) {
+		/* 
+		var enterHander = function(eInner) {
+	        if (eInner.keyCode == 13) //if its a enter key
+	        {
+	        	var tabindex = $(this).attr('tabindex');
+	            $('[tabindex=' + tabindex + ']').trigger( "click" );
+	            
+	            /* var e = jQuery.Event("keyup"); // or keypress/keydown
+			    e.keyCode = 27; // for Esc
+			    $(td).trigger(e); // trigger it on document
+	            var tabindex = $(this).attr('tabindex');
+	            tabindex++; //increment tabindex
+	            $('[tabindex=' + tabindex + ']').focus(); *//*
+//		            $('#Msg').text($(this).attr('id') + " tabindex: " + tabindex + " next element: " + $('*').attr('tabindex').id);
+
+
+	            // to cancel out Onenter page postback in asp.net
+	            return false;
+	        }
+	    };
+	    
+		$(td).bind('keypress', enterHander);
+
+		$( td ).blur(function() {
+				 e.keyCode = 27; // for Esc
+				 $(td).trigger(e); // trigger it on document
+		});
+		 */
+		return function(response, newValue) {
+			/*var id = rowData['ID'];
+			var isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
+			var recordData = isAdding?actions.insertingData:actions.editedData;*/
+			var table = $('#table_'+tab).DataTable();
+			var id = rowData['DT_RowId'];
+			var isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
+			var recordData = actions.editedData;
+	    	if (!(tab in recordData)) {
+	    		recordData[tab] = [];
+	    	}
+	    	var eData = recordData[tab];
+        	var result = $.grep(eData, function(e){ 
+							               	 return e[actions.type.keyField] == rowData[actions.type.keyField];
+							                });
+        	var columnName = table.settings()[0].aoColumns[col].data;
+        	if (newValue!=null&&newValue.constructor.name == "Date") { 
+        		newValue = moment(newValue).format("YYYY-MM-DD HH:mm:ss");
+			}
+        	if (result.length == 0) {
+	        	var editedData = {};
+	        	 $.each(actions.type.idName, function( i, vl ) {
+		        	editedData[vl] = rowData[vl];
+	             });
+	        	editedData[columnName] = newValue;
+	        	if(isAdding) {
+	        		editedData['isAdding'] = true;
+	        	}
+	        	editedData['DT_RowId'] = rowData['DT_RowId'];
+        		eData.push(editedData);
+        	}
+        	else{
+        		result[0][columnName] = newValue;
+        	}
+        	rowData[columnName] = newValue;
+			table.row( '#'+rowData['DT_RowId'] ).data(rowData);
+        	$(td).css('color', 'red');
+        	 /* var tabindex = $(this).attr('tabindex');
+            $('[tabindex=' + (tabindex +1)+ ']').focus(); */
+	    };
+	},
+	getCellProperty : function(data,tab,type,cindex){
+		var cell = {"targets"	: cindex};
+		if (type!='checkbox') {
+			cell["createdCell"] = function (td, cellData, rowData, row, col) {
+		 			if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
+			 				$(td).addClass( "editInline" );
+			 	        	var table = $('#table_'+tab).DataTable();
+			 				actions.applyEditable(tab,type,td, cellData, rowData, row, col);
+			 			}
+			    };
+		}
+		switch(type){
+		case "text":
+	    	break;
+		case "number":
+			cell["render"] = function ( data2, type2, row ) {
+								var rendered = data2;
+								if(data2!=null){
+									rendered = parseFloat(data2).toFixed(2);
+								}
+								return rendered;
+							};
+	    	break;
+		case "date":
+			cell["render"] = function ( data2, type2, row ) {
+								if (data2==null) { 
+									return "";
+								}
+								if (data2.constructor.name == "Date") { 
+									return moment(data2).format("MM/DD/YYYY");
+								}
+								return moment(data2,"YYYY-MM-DD").format("MM/DD/YYYY");
+							};
+	    	break;
+		case "datetimepicker":
+			cell["render"] = function ( data2, type2, row ) {
+								if (data2==null) { 
+									return "";
+								}
+								if (data2.constructor.name == "Date") { 
+									return moment(data2).format("MM/DD/YYYY HH:mm");
+								}
+								return moment(data2,"YYYY-MM-DD HH:mm").format("MM/DD/YYYY HH:mm");
+							};
+	    	break;
+		case "checkbox":
+//			cell["className"] = 'select-checkbox';
+			cell["render"] = function ( data2, type2, row ) {
+								return '<input style="width:20px; " type="checkbox" value="'+data2+'" class="CTV204 " size="15">';
+							};
+	    	break;
+		}
+		return cell;
+	},
+	createdFirstCellColumn : function (td, cellData, rowData, row, col) {}
 }
 
 
+	

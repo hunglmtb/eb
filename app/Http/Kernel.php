@@ -34,7 +34,7 @@ class Kernel extends HttpKernel {
 		'ajax' => \App\Http\Middleware\IsAjax::class,
         'saveWorkspace' => \App\Http\Middleware\SaveWorkspace::class,
         'locked' => \App\Http\Middleware\CheckTableLocked::class,
-			
+		'checkRight' => \App\Http\Middleware\CheckRight::class,
 	];
 
 }

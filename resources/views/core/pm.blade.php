@@ -12,71 +12,15 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 @section('adaptData')
 @parent
 <script>
+
 	actions.loadSuccess =  function(data){
+		$('#buttonLoadData').attr('value', 'Refresh');
 		postData = data.postData;
 		var tab = postData['{{config("constants.tabTable")}}'];
 		actions.loadedData[tab] = postData;
 		var exclude = [0];
 		var uoms = data.uoms;
 
-// 		var tabindex = 0;
-		var getEditSuccessfn  = function(td, cellData, rowData, row, col) {
-			/* 
-			var enterHander = function(eInner) {
-		        if (eInner.keyCode == 13) //if its a enter key
-		        {
-		        	var tabindex = $(this).attr('tabindex');
-		            $('[tabindex=' + tabindex + ']').trigger( "click" );
-		            
-		            /* var e = jQuery.Event("keyup"); // or keypress/keydown
-				    e.keyCode = 27; // for Esc
-				    $(td).trigger(e); // trigger it on document
-		            var tabindex = $(this).attr('tabindex');
-		            tabindex++; //increment tabindex
-		            $('[tabindex=' + tabindex + ']').focus(); *//*
-// 		            $('#Msg').text($(this).attr('id') + " tabindex: " + tabindex + " next element: " + $('*').attr('tabindex').id);
-
-
-		            // to cancel out Onenter page postback in asp.net
-		            return false;
-		        }
-		    };
-		    
-			$(td).bind('keypress', enterHander);
-
-			$( td ).blur(function() {
- 				 e.keyCode = 27; // for Esc
- 				 $(td).trigger(e); // trigger it on document
-			});
-			 */
-	        var table = $('#table_'+tab).DataTable();
-			return function(response, newValue) {
-		    	if (!(tab in actions.editedData)) {
-		    		actions.editedData[tab] = [];
-		    	}
-		    	var eData = actions.editedData[tab];
-	        	var result = $.grep(eData, function(e){ 
-								               	 return e[actions.type.idName] == rowData[actions.type.idName];
-								                });
-	        	var columnName = table.settings()[0].aoColumns[col].data;
-	        	if (result.length == 0) {
-		        	var editedData = {};
-		        	editedData[actions.type.idName] = rowData[actions.type.xIdName];
-		        	editedData[columnName] = newValue;
-	        		eData.push(editedData);
-	        	}
-	        	else{
-	        		result[0][columnName] = newValue;
-	        	}
-	        	rowData[columnName] = newValue;
-  				table.row( '#'+rowData['DT_RowId'] ).data(rowData);
-	        	$(td).css('color', 'red');
-	        	 /* var tabindex = $(this).attr('tabindex');
-	            $('[tabindex=' + (tabindex +1)+ ']').focus(); */
-		    };
-		}
-
-	    
 		$.each(uoms, function( index, value ) {
 			var collection = value['data'];
 			exclude.push(uoms[index]["targets"]);
@@ -84,18 +28,19 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 							                var result = $.grep(collection, function(e){ 
 								                return e['ID'] == data;
 								                });
-											if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined" &&result[0].hasOwnProperty('CODE')){
-		                						return value['COLUMN_NAME']=="ALLOC_TYPE"?result[0]['NAME']:result[0]['CODE'];
+											if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined" &&result[0].hasOwnProperty('NAME')){
+		                						return value['COLUMN_NAME']=="ALLOC_TYPE"?result[0]['NAME']:result[0]['NAME'];
 											}
 											return data;
 								                
                 					};
             $.each(collection, function( i, vl ) {
             	vl['value']=vl['ID'];
-            	vl['text']=value['COLUMN_NAME']=="ALLOC_TYPE"?vl['NAME']:vl['CODE'];
+            	vl['text']=vl['NAME'];
             });
             uoms[index]["createdCell"] = function (td, cellData, rowData, row, col) {
                 if(data.properties[col].DATA_METHOD==1&&data.properties[col].DATA_METHOD=='1'){
+	 				$(td).addClass( "editInline" );
 		        	$(td).editable({
 		        	    type: 'select',
 		        	    title: 'edit',
@@ -103,7 +48,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 		        	    value:cellData,
 		        	    showbuttons:false,
 		        	    source: collection,
-		        	    success: getEditSuccessfn(td, cellData, rowData, row, col),
+		        	    success: actions.getEditSuccessfn(tab,td, cellData, rowData, row, col),
 		        	});
                 }
    			}
@@ -112,65 +57,16 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 		var original = Array.apply(null, Array(data.properties.length)).map(function (_, i) {return i;});
 		var finalArray = $(original).not(exclude).get();
 
-		var cell = {"targets": finalArray,
-					"render": function ( data, type, row ) {
-									var number = data;
-									if(data!=null){
-						        		number = parseFloat(data).toFixed(2);
-						        	}
-									return number;
-								},
-			    	"createdCell": function (td, cellData, rowData, row, col) {
-// 			    						var tdf = $(td).attr("id","newId");
-//  										var hd = $(td).column();
-//  										var $th = $(td).closest('table').find('th').eq($(td).index());
-// 								      	if ( cellData < 1 ) {
-// 											$(td).attr('tabindex', tabindex++);
-               				 			if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
-								        	$(td).editable({
-								        	    type : 'number',
-								        	    step: 'any',
-								        	    title: 'edit',
-								        	    onblur: 'cancel',
-								        	    emptytext: '',
-								        	    showbuttons:false,
-								        	    validate: function(value) {
-								        	        if($.trim(value) == '') {
-								        	            return 'This field is required';
-								        	        }
-								        	    },
-								        	    success: getEditSuccessfn(td, cellData, rowData, row, col),
-								        	});
-
-								        	$(td).on("shown", function(e, editable) {
-								        		  editable.input.$input.get(0).select();
-								        	});
-               				 			}
-								        	/* var enterHander = function(eInner) {
-										        if (eInner.keyCode == 13) //if its a enter key
-										        {
-										        	var tabindex = $(this).attr('tabindex');
-										            $('[tabindex=' + tabindex + ']').trigger( "click" );
-										            return false;
-										        }
-										    };
-										    
- 											$(td).bind('keypress', enterHander); */
-// 								      	}
-								    }
-			  		};
-
+		$.each(finalArray, function( i, cindex ) {
+			var type = typetoclass(data.properties[cindex].INPUT_TYPE);
+			var cell = actions.getCellProperty(data,tab,type,cindex);
+    		uoms.push(cell);
+        });
+		
 		var phase = {"targets": 0,
-					"render": function ( data, type, rowData ) {
-								var html = data+"<div class='phase "+rowData['PHASE_CODE']+"'>"+
-			        						rowData['PHASE_NAME']+"</div>";
-								if(rowData.hasOwnProperty('STATUS_NAME')){
-									html +="<span class='eustatus'>"+rowData['STATUS_NAME']+"</span>";
-								}
-								return html;
-							}
+					"render": actions.renderFirsColumn,
+					"createdCell": actions.createdFirstCellColumn
 		  			};
-		uoms.push(cell);
 		uoms.push(phase);
 
 		var  marginLeft = 0;
@@ -186,6 +82,20 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
         });
 		$('#table_'+tab).css('width',(tblWdth)+'px');
 
+		data.dataSet = actions.preDataTable(data.dataSet);
+
+		/*  $('#table_'+tab).append(
+			    $('<tfoot/>').append( $("#table_"+tab+" thead tr").clone() )
+			); */
+
+		/* var footer = $("<tfoot></tfoot>").appendTo('#table_'+tab);
+		var footertr = $("<tr></tr>").appendTo(footer);
+		 
+		//Add footer cells
+		$.each( data.properties, function( i, vl ) {
+			 $("<td></td>").appendTo(footertr);
+		}); */
+			
 		var tbl = $('#table_'+tab).DataTable( {
  	          data: data.dataSet,
 	          columns: data.properties,
@@ -195,10 +105,31 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
  	         "autoWidth": false,
 	       	"scrollY":        "270px",
 // 	                "scrollCollapse": true,
-			"paging":         false
+			"paging":         false,
+			"dom": '<"#toolbar_'+tab+'">frtip',
+			/* initComplete: function () {
+				var cls = this.api().columns();
+	            cls.every( function () {
+	                var column = this;
+	                var ft = $(column.footer());
+	                ft.html("keke");
+	                var select = $('<select><option value=""></option></select>')
+	                    .appendTo( $(column.footer()).empty() );
+	            } );
+	        }, */
+	        /* "footerCallback": function ( row, data, start, end, display ) {
+	            var cls = this.api().columns();
+	            cls.every( function () {
+	                var column = this;
+	                var ft = $(column.footer());
+ 	                ft.html("keke");
+	            } );
+	        }, */
+// 			 "dom": '<"top"i>rt<"bottom"flp><"clear">'
 // 	           paging: false,
 // 	          searching: false 
 	    } );
+		actions.afterDataTable(tbl,tab);
 		actions.updateView(postData);
 
 		if($( window ).width()>$('#table_'+tab).width()){
@@ -243,7 +174,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 			if($('#table_'+key).children().length>0){
 				table = $('#table_'+key).DataTable();
 				$.each(data.updatedData[key], function( index, value) {
-					row = table.row( '#'+value[actions.type.idName] );
+					row = table.row( '#'+value[actions.type.saveKeyField(key)] );
 					var tdata = row.data();
 					if( typeof(tdata) !== "undefined" && tdata !== null ){
 						for (var pkey in value) {
@@ -256,12 +187,17 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 				        	$(td).css('color', '');
 				        });
 					}
+					else{
+						value['DT_RowId'] = value[actions.type.saveKeyField(key)];
+						table.row.add(value).draw( false );
+					}
 		        });
+				actions.afterGotSavedData(data,table,key);
 			}
 		}
 
 		actions.editedData = {};
-		alert(JSON.stringify(postData));
+		alert(JSON.stringify(data.updatedData));
 		if(data.hasOwnProperty('lockeds')){
 			alert(JSON.stringify(data.lockeds));
 		}

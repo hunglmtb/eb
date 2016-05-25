@@ -4,6 +4,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class DynamicModel extends Model {
 	
+	protected $primaryKey = 'ID';
 	protected $isOracleModel = false;
 	protected $isReservedName = false;
 	public $timestamps = false;
@@ -49,16 +50,4 @@ class DynamicModel extends Model {
 	{
 		return with(new static)->getTable();
 	}
-	
-	public static function updateOrCreateWithCalculating(array $attributes, array $values = [],$options=null){
-	
-		if($options&&count($options)>0){
-			$values = self::calculateBeforeUpdateOrCreate($attributes,$values,$options);
-		}
-		return parent::updateOrCreate($attributes,$values);
-	}
-	
-	/* public static function calculateBeforeUpdateOrCreate(array $attributes, array $values = [],$options=null){
-		return false;
-	} */
 }

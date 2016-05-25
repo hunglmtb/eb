@@ -69,11 +69,14 @@ input[type="button"]:focus, button:focus{
 .product_filter, .date_filter{
     margin-right: 10px;
     float: left;
+    margin-bottom: 5px;
    	background-color: #E6E6E6;
+   	padding-right: 10px;
+    padding-left: 10px;
 }
 
 .filter,.date_input {
-	width: 130px;
+	width: auto;
 	float: left;
     padding: 3px;
 }
@@ -96,12 +99,24 @@ input[type="button"]:focus, button:focus{
 
 
 .ui-widget input {
-    width: 97px;
-    height: 29px;
+    /* width: 97px; */
+    /* height: 29px; */
+    width: 83%;
 }
 
 .editable-input {
-    width: 125px;
+   width: auto;
+}
+
+.editInline{
+	/* background: chocolate; */
+}
+
+.editable-clear-x {
+    right: 0%;
+}
+.input-medium{
+	width: 85%;
 }
 
 .dataTables_wrapper table{
@@ -127,7 +142,7 @@ table.dataTable {
 }
 
 .phase {
-	margin-right: 25px;
+	margin-right: 5px;
 	width: 60px;
 	height: 13px;
 	overflow: hidden;
@@ -137,15 +152,15 @@ table.dataTable {
 	background: #bbb
 }
 
-.OIL {
+.OIL,.Oil {
 	background: #FBD070;
 }
 
-.GAS {
+.GAS ,.Gas {
 	background: #FF9696;
 }
 
-.WTR {
+.WTR,.W,.Water {
 	background: #62CEFB;
 }
 
@@ -156,7 +171,7 @@ table.dataTable {
 	width: 115px;
 }
 
-.eustatus {
+.eustatus, .eventType {
     color: #888888;
     border: 1px solid #888888;
     padding: 1px;
@@ -170,5 +185,9 @@ table.dataTable {
 .allocation{
     width: 220px;
     float: left;
+}
 
+.toolbarAction {
+    float: left;
+    margin-top: 20px;
 }

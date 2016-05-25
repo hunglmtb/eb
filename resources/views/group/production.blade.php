@@ -8,33 +8,29 @@ $mapping = ['LoProductionUnit'		=> 	array('filterName'	=>'Production Unit',
 											'dependences'	=> array_merge(['Facility'],$filters['productionFilterGroup'])),
 			'Facility'				=>	array('filterName'	=>'Facility',
 											'name'			=>'facility',
-											'dependences'	=>$filters['productionFilterGroup']),
-			'Tank'					=>	array('filterName'	=>'Tank',
-											'name'			=>'tank'),
-			'EnergyUnitGroup'		=>	array('filterName'	=>'Energy Unit Group',
-											'name'			=>'energyUnitGroup',
-											'default'		=>['value'=>'0','name'=>'No Group']),
-			'CodeReadingFrequency'	=>	array('filterName'	=>'Record Frequency',
-											'name'			=>'CodeReadingFrequency',
-											'id'			=>'CodeReadingFrequency',
-											'default'		=>['value'=>0,'name'=>'All']),
-			'CodeFlowPhase'			=>	array('filterName'	=>'Phase Type',
-											'name'			=>'CodeFlowPhase',
-											'id'			=>'CodeFlowPhase',
-											'default'		=>['value'=>0,'name'=>'All']),
-			'CodeEventType'			=>	array('filterName'	=>'Event Type',
-											'name'			=>'CodeEventType',
-											'id'			=>'CodeEventType',
-											'default'		=>['value'=>0,'name'=>'All']),
-			'CodeAllocType'			=>	array('filterName'	=>'Alloc Type',
-											'name'			=>'CodeAllocType',
-											'id'			=>'CodeAllocType'),
+											'dependences'	=>$filters['productionFilterGroup'])
 			];
+$subMapping = config("constants.subProductFilterMapping");
+$mapping = array_merge($mapping,$subMapping);
+
 ?>
 <script type='text/javascript'>
 var javascriptFilterGroups = <?php echo json_encode($filterGroups); ?>
 </script>
 <script src="/common/js/eb.js"></script>
+<script>
+$( document ).ready(function() {
+    console.log( "ready!" );
+    var onChangeFunction = function() {
+    	if ($('#buttonLoadData').attr('value')=='Refresh') {
+	    	actions.doLoad(true);
+		}
+    };
+    
+    $( "#date_begin" ).change(onChangeFunction);
+    $( "#date_end" ).change(onChangeFunction);
+});
+</script>
 @foreach( $filterGroups as $key => $filters )
 		@if($key=='productionFilterGroup')
 		<div class = "product_filter">

@@ -19,9 +19,16 @@ ENERGY UNIT DATA CAPTURE
 @section('adaptData')
 @parent
 <script>
-	actions.loadUrl = "/code/loadeu";
-	actions.saveUrl = "/code/saveeu";
-	actions.type = {idName:'EU_ID',xIdName:'X_EU_ID'};
+	actions.loadUrl = "/eu/load";
+	actions.saveUrl = "/eu/save";
+	actions.type = {
+					idName:['{{config("constants.euId")}}','{{config("constants.euFlowPhase")}}'],
+					keyField:'ID',
+					saveKeyField : function (model){
+						return '{{config("constants.euPhaseConfigId")}}';
+					},
+// 					xIdName:'X_EU_ID'
+					};
 	var aLoadNeighbor = actions.loadNeighbor;
 	actions.loadNeighbor = function() {
 		var activeTabID = getActiveTabID();

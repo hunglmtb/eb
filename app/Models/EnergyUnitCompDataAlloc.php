@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Models;
-use App\Models\DynamicModel;
+use App\Models\FeatureEuModel;
 
-class EnergyUnitCompDataAlloc extends DynamicModel
+class EnergyUnitCompDataAlloc extends FeatureEuModel
 {
 	protected $table = 'ENERGY_UNIT_COMP_DATA_ALLOC';
 	

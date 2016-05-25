@@ -3,19 +3,27 @@
 namespace App\Http\Controllers;
 use App\Http\ViewComposers\ProductionGroupComposer;
 use App\Models\CfgFieldProps;
+use App\Models\CodeAllocType;
 use App\Models\CodeFlowPhase;
 use App\Models\CodePressUom;
 use App\Models\Facility;
-use App\Models\Flow;
 use App\Models\StandardUom;
-use App\Models\CodeAllocType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Models\CodeTestingMethod;
+use App\Models\CodeTestingUsage;
+use App\Models\CodeQltySrcType;
 
 
 class CodeController extends EBController {
 	 
-	protected $type = null;
+	protected $fdcModel;
+	protected $idColumn;
+	protected $phaseColumn;
+	protected $valueModel ;
+	protected $theorModel ;
+	protected $isApplyFormulaAfterSaving = true;
+	
 	
 	public function getCodes(Request $request)
     {
@@ -33,7 +41,12 @@ class CodeController extends EBController {
 			else  break;
 			if (count ( $eCollection ) > 0) {
 				$unit = ProductionGroupComposer::getCurrentSelect ( $eCollection );
-				$results [] = ProductionGroupComposer::getFilterArray ( $model, $eCollection, $unit );
+				$filterArray = ProductionGroupComposer::getFilterArray ( $model, $eCollection, $unit );
+				if (array_key_exists($model,  config("constants.subProductFilterMapping"))&&
+						array_key_exists('default',  config("constants.subProductFilterMapping")[$model])) {
+					$eCollection[] = config("constants.subProductFilterMapping")[$model]['default'];
+				}
+				$results [] = $filterArray;
 			}
 			else break;
 		}
@@ -53,8 +66,8 @@ class CodeController extends EBController {
      	$occur_date = $postData['date_begin'];
      	$occur_date = Carbon::parse($occur_date);
      	
-      	$data = $this->getDataSet($postData,$dcTable,$facility_id,$occur_date);
  		$results = $this->getProperties($dcTable,$facility_id,$occur_date);
+      	$data = $this->getDataSet($postData,$dcTable,$facility_id,$occur_date,$results);
         $results['postData'] = $postData;
         $results = array_merge($results, $data);
     	return response()->json($results);
@@ -65,20 +78,32 @@ class CodeController extends EBController {
     	$properties = CfgFieldProps::where('TABLE_NAME', '=', $dcTable)
 									    	->where('USE_FDC', '=', 1)
 									    	->orderBy('FIELD_ORDER')
-									    	->get(['COLUMN_NAME as data','COLUMN_NAME as name', 'FDC_WIDTH as width','LABEL as title',"DATA_METHOD"]);
-    	$properties->prepend(['data'=>$dcTable,'title'=>'Object name','width'=>230]);
+									    	->get(['COLUMN_NAME as data',
+									    			'COLUMN_NAME as name',
+									    			'FDC_WIDTH as width',
+									    			'LABEL as title',
+									    			"DATA_METHOD",
+									    			'INPUT_TYPE',
+									    			'VALUE_MIN',
+									    			'VALUE_FORMAT',
+									    			'VALUE_MAX']);
+    	$firstProperty = $this->getFirstProperty($dcTable);
+    	$properties->prepend($firstProperty);
     	
     	$uoms = $this->getUoms($properties,$facility_id);
     	$locked = \Helper::checkLockedTable($dcTable,$occur_date,$facility_id);
-    	$results = ['properties'	=> $properties,
-	    			'uoms'		=>$uoms,
-	    			'locked'	=>$locked,
-	    			'rights'	=> session('statut')];
+    	$results = ['properties'	=>$properties,
+	    			'uoms'			=>$uoms,
+	    			'locked'		=>$locked,
+	    			'rights'		=>session('statut')];
     	return $results;
     }
     
+    public function getFirstProperty($dcTable){
+    	return  ['data'=>$dcTable,'title'=>'Object name','width'=>230];
+    }
     
-	public function getDataSet($postData, $dcTable, $facility_id, $occur_date) {
+	public function getDataSet($postData, $dcTable, $facility_id, $occur_date,$properties) {
 		return [];
 	}
     
@@ -86,30 +111,48 @@ class CodeController extends EBController {
     
     public function save(Request $request){
 //     	sleep(2);
+//     	return response()->json('[]');
+// 		throw new Exception("not Save");
     	$postData = $request->all();
-    	$editedData = $postData['editedData'];
-     	$record_freq = $postData['CodeReadingFrequency'];
-     	$phase_type = $postData['CodeFlowPhase'];
+    	if (!array_key_exists('editedData', $postData)&&!array_key_exists('deleteData', $postData)) {
+    		return response()->json('no data 2 update!');
+    	}
+    	if (!array_key_exists('editedData', $postData)) {
+    		$editedData = false;
+    	}
+    	else{
+	    	$editedData = $postData['editedData'];
+    	}
+//      	$record_freq = $postData['CodeReadingFrequency'];
+//      	$phase_type = $postData['CodeFlowPhase'];
      	$facility_id = $postData['Facility'];
      	$occur_date = $postData['date_begin'];
      	$occur_date = Carbon::parse($occur_date);
-     	$objectIds = $postData['objectIds'];
+     	$objectIds = array_key_exists('objectIds', $postData)?$postData['objectIds']:[];
+     	
      	$affectedIds = [];
-     	
      	$this->preSave($editedData,$affectedIds,$postData);
-     	
      	try
      	{
-     		$resultTransaction = \DB::transaction(function () use ($editedData,$objectIds,$affectedIds,$occur_date,$phase_type,$facility_id){
+     		$resultTransaction = \DB::transaction(function () use ($postData,$editedData,$objectIds,$affectedIds,
+													     		 $occur_date,$facility_id){
+     			$this->deleteData($postData);
+     			
+     			if(!$editedData) return [];
+     			
      			$lockeds= [];
      			$ids = [];
-     			$type = $this->type;
-     			$idField = $type['idField'];
-     			$typeName = $type['name'];
-     			$dateField = $type['dateField'];
+     			$resultRecords = [];
+     			
+     			//      			\DB::enableQueryLog();
      			foreach($editedData as $mdlName => $mdlData ){
-		     		$ids[$mdlName] = [];
 		     		$mdl = "App\Models\\".$mdlName;
+		     		if ($mdl::$ignorePostData) {
+		     			unset($editedData[$mdlName]);
+		     			continue;
+		     		}
+		     		$ids[$mdlName] = [];
+		     		$resultRecords[$mdlName] = [];
 		     		$locked = \Helper::checkLockedTable($mdlName,$occur_date,$facility_id);
 		     		if ($locked) {
 		     			$lockeds[$mdlName] = "Data of $mdlName with facility $facility_id was locked on $occur_date ";
@@ -117,21 +160,18 @@ class CodeController extends EBController {
 		     			continue;
 		     		}
 		     		foreach($mdlData as $key => $newData ){
-		     			$columns = [$idField => $newData[$idField],$dateField=>$occur_date];
-		      			$newData[$dateField]=$occur_date;
-		      			if ($mdlName=='FlowDataValue') {
-		      				$options = [config("constants.flowPhase")=>$phase_type];
-		      			}
-		      			elseif ($mdlName=='FlowDataTheor'){
-		      				$options = true;
-		      			}
-		      			else{
-			     			$options = null;
-		      			}
-		     			$returnRecord = $mdl::updateOrCreateWithCalculating($columns, $newData,$options);
-		     			$ids[$mdlName][] = $returnRecord['ID'];
+		     			$columns = $mdl::getKeyColumns($newData,$occur_date,$postData);
+ 		     			$mdlData[$key] = $newData;
+		     			$returnRecord = $mdl::updateOrCreateWithCalculating($columns, $newData);
+		     			if ($returnRecord) {
+		     				$returnRecord->updateAudit($columns,$newData,$postData);
+			     			$ids[$mdlName][] = $returnRecord['ID'];
+			     			$resultRecords[$mdlName][] = $returnRecord;
+		     			}
 		     		}
-		     	}
+		     		$editedData[$mdlName] = $mdlData;
+     			}
+// 		     	\Log::info(\DB::getQueryLog());
 		     	
 		     	$objectIds = array_unique($objectIds);
 		     	//doFormula in config table
@@ -143,47 +183,67 @@ class CodeController extends EBController {
 		     		}
 		     	}
 		     	
-		     	//get affected ids
-		     	foreach($editedData as $mdlName => $mdlData ){
-		     		foreach($mdlData as $key => $newData ){
-		     			$columns = array_keys($newData);
-		     			if (array_key_exists($mdlName, $affectColumns)) {
-			     			$columns = array_merge($columns,$affectColumns[$mdlName]);
-		     			}
-						$columns = array_diff($columns, [$idField]);
-		     			
-			     		$aIds = \FormulaHelpers::getAffects($mdlName,$columns,$newData[$idField],$typeName);
-			     		$affectedIds = array_merge($affectedIds,$aIds);
-		     		}	     
+		     	if ($this->isApplyFormulaAfterSaving) {
+			     	//get affected object with id
+		     		$objectWithformulas = [];
+			     	foreach($editedData as $mdlName => $mdlData ){
+			     		$mdl = "App\Models\\".$mdlName;
+			     		foreach($mdlData as $key => $newData ){
+			     			$columns = array_keys($newData);
+			     			if (array_key_exists($mdlName, $affectColumns)) {
+				     			$columns = array_merge($columns,$affectColumns[$mdlName]);
+			     			}
+		     				$uColumns = $mdl::getKeyColumns($newData,$occur_date,$postData);
+			     			$columns = array_diff($columns, $uColumns);
+			     			$aFormulas = $this->getAffectedObjects($mdlName,$columns,$newData);
+			     			$objectWithformulas = array_merge($objectWithformulas,$aFormulas);
+			     		}	     
+			     	}
+			     	$objectWithformulas = array_unique($objectWithformulas);
+			     	
+			     	//apply Formula in formula table
+		     		$applieds = \FormulaHelpers::applyAffectedFormula($objectWithformulas,$occur_date);
+		     		if ($applieds&&count($applieds)) {
+				     	foreach($applieds as $apply ){
+				     		$mdlName = $apply->modelName;
+				     		if (!array_key_exists($mdlName, $ids)) {
+				     			$ids[$mdlName] = [];
+				     		}
+				     		$ids[$mdlName][] = $apply->ID;
+				     		$ids[$mdlName]  = array_unique($ids[$mdlName]);
+		     				$resultRecords[$mdlName][] = $apply;
+				     		$resultRecords[$mdlName]  = array_unique($resultRecords[$mdlName]);
+				     	}
+		     		}
 		     	}
-		     	$affectedIds = array_unique($affectedIds);
 		     	
-		     	//apply Formula in formula table
-		     	foreach($editedData as $mdlName => $mdlData ){
-		     		$upids = \FormulaHelpers::applyFormula($mdlName,$affectedIds,$occur_date,$typeName,true);
-		     		$ids[$mdlName] = array_merge($ids[$mdlName], $upids);
-		     		$ids[$mdlName]  = array_unique($ids[$mdlName]);
-		     	}
-		     	$resultTr = [];
+		     	$this->afterSave($resultRecords,$occur_date);
+		     	
+		     	$resultTransaction = [];
 		     	if (count($lockeds)>0) {
-			     	$resultTr['lockeds'] = $lockeds;
+			     	$resultTransaction['lockeds'] = $lockeds;
 		     	}
-		     	$resultTr['ids']=$ids;
-		     	return $resultTr;
+		     	$resultTransaction['ids']=$ids;
+ 		     	return $resultTransaction;
 	     		
-	     	});
+	      	});
      	}
      	catch (\Exception $e)
      	{
-     		throw $e;
+      		\Log::info("\n----------------------hehe--------------------------------------------------------------------------\nException wher run transation\n ");
+//        		\Log::info($e->getTraceAsString());
+// 			return response($e->getMessage(), 400);
+			throw $e;
      	}
      	
      	//get updated data after apply formulas
      	$updatedData = [];
-     	foreach($resultTransaction['ids'] as $mdlName => $updatedIds ){
-//      		$updatedData[$mdlName] = $mdl::findMany($objectIds);
-     		$mdl = "App\Models\\".$mdlName;
-     		$updatedData[$mdlName] = $mdl::findMany($updatedIds);
+     	if (array_key_exists('ids', $resultTransaction)) {
+	     	foreach($resultTransaction['ids'] as $mdlName => $updatedIds ){
+	//      		$updatedData[$mdlName] = $mdl::findMany($objectIds);
+	     		$mdl = "App\Models\\".$mdlName;
+	     		$updatedData[$mdlName] = $mdl::findManyWithConfig($updatedIds);
+	     	}
      	}
 //      	\Log::info(\DB::getQueryLog());
     
@@ -194,8 +254,40 @@ class CodeController extends EBController {
     	return response()->json($results);
     }
     
-    public function preSave(&$editedData,&$affectedIds,$postData) {
+    protected function deleteData($postData) {
+    	if (array_key_exists ('deleteData', $postData )) {
+    		$deleteData = $postData['deleteData'];
+    		foreach($deleteData as $mdlName => $mdlData ){
+    			$mdl = "App\Models\\".$mdlName;
+    			$mdl::whereIn('ID', array_values($mdlData))->delete();
+    		}
+    	}
     }
+    
+	protected function preSave(&$editedData, &$affectedIds, $postData) {
+		if ($editedData&&array_key_exists ($this->fdcModel, $editedData )) {
+			$this->preSaveModel ( $editedData, $affectedIds, $this->valueModel);
+			$this->preSaveModel ( $editedData, $affectedIds, $this->theorModel);
+		}
+	}
+	
+    protected function afterSave($resultRecords,$occur_date) {
+	}
+	
+	protected function getAffectedObjects($mdlName,$columns,$newData){
+		$mdl = "App\Models\\".$mdlName;
+		$idField = $mdl::$idField;
+		$objectId = $newData [$idField];
+// 		$flowPhase = $newData [config ( "constants.euFlowPhase" )];
+		$flowPhase = $this->getFlowPhase($newData);
+		$aFormulas = \FormulaHelpers::getAffects ( $mdlName, $columns, $objectId,$flowPhase);
+		return $aFormulas;
+	}
+	
+	protected function getFlowPhase($newData) {
+		return false;
+	}
+	
     
     public function getUoms($properties = null,$facility_id)
     {
@@ -203,10 +295,12 @@ class CodeController extends EBController {
     	$model = null;
     	$withs = [];
     	$i = 0;
-    	$allocTypes = false;
-    	
+    	$selectData = false;
+    	$rs = [];
+    	 
     	foreach($properties as $property ){
-    		switch ($property['data']){
+    		$columnName = $property['data'];
+    		switch ($columnName){
     			case 'PRESS_UOM' :
     				$withs[] = 'CodePressUom';
     				$uoms[] = ['id'=>'CodePressUom','targets'=>$i,'COLUMN_NAME'=>'PRESS_UOM'];
@@ -230,15 +324,37 @@ class CodeController extends EBController {
 		    		$withs[] = 'CodeMassUom';
 		    		$uoms[] = ['id'=>'CodeMassUom','targets'=>$i,'COLUMN_NAME'=>'FL_MASS_UOM'];
 		    		break;
+		    	case 'VOL_UOM' :
 		    	case 'FL_VOL_UOM' :
 		    	case 'EU_VOL_UOM' :
 	    			$withs[] = 'CodeVolUom';
 	    			$uoms[] = ['id'=>'CodeVolUom','targets'=>$i,'COLUMN_NAME'=>'FL_VOL_UOM'];
 	    			break;
+	    			
     			case 'ALLOC_TYPE' :
-// 	    				$withs[] = 'CodeAllocType';
-	    				$allocTypes = ['id'=>'CodeAllocType','targets'=>$i,'COLUMN_NAME'=>'ALLOC_TYPE'];
-	    				$allocTypes['data'] = CodeAllocType::all();
+	    				$selectData = ['id'=>'CodeAllocType','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    				$selectData['data'] = CodeAllocType::all();
+	    				$rs[] = $selectData;
+	    				break;
+    			case 'TEST_METHOD' :
+    					$selectData = ['id'=>'CodeTestingMethod','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    					$selectData['data'] = CodeTestingMethod::all();
+    					$rs[] = $selectData;
+    					break;
+    			case 'TEST_USAGE' :
+    					$selectData = ['id'=>'CodeTestingUsage','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    					$selectData['data'] = CodeTestingUsage::all();
+    					$rs[] = $selectData;
+    					break;
+	    		case 'EVENT_TYPE' :
+		    			$selectData = ['id'=>'CodeEventType','targets'=>$i,'COLUMN_NAME'=>$columnName];
+		    			$selectData['data'] = CodeEventType::all();
+		    			$rs[] = $selectData;
+		    			break;
+    			case 'SRC_TYPE' :
+	    				$selectData = ['id'=>'CodeQltySrcType','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    				$selectData['data'] = CodeQltySrcType::all();
+	    				$rs[] = $selectData;
 	    				break;
     		}
     		$i++;
@@ -251,16 +367,12 @@ class CodeController extends EBController {
 	    	}
     	}
 //     	\DB::enableQueryLog();
-    	$rs = [];
     	if ($model!=null) {
 	    	foreach($uoms as $key => $uom ){
 	    		$uom['data'] = $model->$uom['id'];
 	    		$uoms[$key] = $uom;
+	    		$rs[] = $uom;
 	    	}
-	    	$rs = $uoms;
-    	}
-    	if ($allocTypes) {
-    		$rs[] = $allocTypes;
     	}
     	return $rs;
 //     	\Log::info(\DB::getQueryLog());
@@ -275,5 +387,27 @@ class CodeController extends EBController {
     		}
     	}
     	return $uom_type;
+    }
+    
+    
+    public function preSaveModel(&$editedData,&$affectedIds,$model) {
+    	if ($model) {
+	    	$fdcModel = $this->fdcModel;
+	    	if (array_key_exists($fdcModel, $editedData)) {
+	    		$idColumn = $this->idColumn;
+	    		$phaseColumn = $this->phaseColumn;
+	    
+	    		if (!array_key_exists($model, $editedData)){
+	    			$editedData[$model] = [];
+	    		}
+	    		foreach ($editedData[$fdcModel] as $element) {
+	    			$key = array_search($element[$idColumn],array_column($editedData[$model],$idColumn));
+	    			if ($key===FALSE) {
+	    				$editedData[$model][] =  array_intersect_key($element, array_flip(array($idColumn,$phaseColumn)));
+	    			}
+	    			$affectedIds[]=$element[$idColumn];
+	    		}
+	    	}
+    	}
     }
 }

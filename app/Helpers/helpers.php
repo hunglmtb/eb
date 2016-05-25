@@ -20,9 +20,9 @@ class Helper {
 	
 		$htmlFilter = 	"<div class=\"filter $name\"><div><b>$filterName</b>".
 				'</div>
-				<select id="'.$id.'" size="1" name="'.$name.'">';
+				<select id="'.$id.'" name="'.$name.'">';
 		if ($default) {
-			$htmlFilter .= '<option value="'.$default['value'].'" selected >'.$default['name'].'</option>';
+			$htmlFilter .= '<option value="'.$default['ID'].'" selected >'.$default['NAME'].'</option>';
 		}
 	
 		$currentId = array_key_exists('currentId', $option)?$option['currentId']:'';
@@ -50,13 +50,12 @@ class Helper {
 		$id=array_key_exists('id', $option)?$option['id']:'';
 		$sName=array_key_exists('sName', $option)?$option['sName']:'';
 	
-		$value=$value->format('m/d/Y');
 		$htmlFilter = '';
 		switch ($id) {
     			case 'date_begin':
     			case 'date_end':
-					
-					$htmlFilter.= "<div class='date_input'><div><b>$name</b></div><input readonly style='width:100%' type='text' id = '$id' name='$sName' size='15' value='$value'></div>";
+					$value=$value->format('m/d/Y');
+					$htmlFilter.= "<div class='date_input'><div><b>$name</b></div><input style='width:85%' type='text' id = '$id' name='$sName' size='15' value='$value'></div>";
 					$htmlFilter.= '<script>
 											$( "#'.$id.'" ).datepicker({
 												changeMonth:true,
@@ -67,7 +66,7 @@ class Helper {
     				break;
     				case 'cboFilterBy':
     					$htmlFilter = 	"<div class=\"filter\"><div><b>$name</b>".
-			    							'</div><select id="'.$id.'" size="1" name="'.$name.'">';
+			    							'</div><select id="'.$id.'" name="'.$name.'">';
     					$htmlFilter .= "<option value = 'SAMPLE_DATE'>Sample Date</option><option value = 'TEST_DATE'>Test Date</option><option value = 'EFFECTIVE_DATE'>Effective Date</option>";
 						$htmlFilter .= '</select></div>';
     					break;
@@ -87,5 +86,11 @@ class Helper {
 		      					->whereDate('LOCK_DATE', '>=', $occur_date)
 								->first();
 		return $lockTable!=null&&$lockTable!=false;
+	}
+	
+	
+	public static function camelize($input, $separator = '_')
+	{
+		return str_replace($separator, '', ucwords($input, $separator));
 	}
 }

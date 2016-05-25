@@ -39,5 +39,4 @@ class UomModel extends DynamicModel
 	{
 		return $this->hasMany('App\Models\CodeAllocType', 'UOM_TYPE', 'UOM_TYPE');
 	}
-	
 }

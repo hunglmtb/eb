@@ -30,7 +30,7 @@
 		@include('partials.header')
 		@yield('header')
 	</header>
-	<main role="main" class="container"> 
+	<main role="main" class="contentContainer"> 
 		@yield('main') 
 	 </main>
 

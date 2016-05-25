@@ -7,12 +7,24 @@ use App\Models\Flow;
 
 class FlowController extends CodeController {
     
-	protected $type = ['idField'=>'FLOW_ID',
+	/* protected $type = ['idField'=>'FLOW_ID',
 			'name'=>'FLOW',
 			'dateField'=>'OCCUR_DATE'
-	];
+	]; */
 	
-    public function getDataSet($postData,$dcTable,$facility_id,$occur_date){
+	
+	public function __construct() {
+		parent::__construct();
+		$this->fdcModel = "FlowDataFdcValue";
+		$this->idColumn = config("constants.flowId");
+		$this->phaseColumn = config("constants.flFlowPhase");
+	
+		$this->valueModel = "FlowDataValue";
+		$this->theorModel = "FlowDataTheor";
+		$this->isApplyFormulaAfterSaving = true;
+	}
+	
+    public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	$record_freq = $postData['CodeReadingFrequency'];
     	$phase_type = $postData['CodeFlowPhase'];
     	
@@ -38,7 +50,7 @@ class FlowController extends CodeController {
 				    	})
 				    	->select("$flow.name as $dcTable",
 				    			"$flow.ID as DT_RowId",
-				    			"$flow.ID as X_FL_ID",
+				    			"$flow.ID as ".config("constants.flowId"),
 				    			"$flow.phase_id as FL_FLOW_PHASE",
 				    			"$codeFlowPhase.name as PHASE_NAME",
 				    			"$codeFlowPhase.CODE as PHASE_CODE",
@@ -55,26 +67,13 @@ class FlowController extends CodeController {
     	return ['dataSet'=>$dataSet,'objectIds'=>$objectIds];
     }
     
-    public function preSave(&$editedData,&$affectedIds,$postData) {
-    	$flow = Flow::getTableName();
-    	if (array_key_exists("FlowDataFdcValue", $editedData)) {
-    		if (!array_key_exists("FlowDataValue", $editedData)){
-    			$editedData["FlowDataValue"] = [];
-    		}
-    		if (!array_key_exists("FlowDataTheor", $editedData)){
-    			$editedData["FlowDataTheor"] = [];
-    		}
-    		foreach ($editedData["FlowDataFdcValue"] as $element) {
-    			$key = array_search($element['FLOW_ID'], array_column($editedData["FlowDataValue"], 'FLOW_ID'));
-    			if ($key===FALSE) {
-    				$editedData["FlowDataValue"][] = ['FLOW_ID'=>$element['FLOW_ID']];
-    			}
-    			$key = array_search($element['FLOW_ID'], array_column($editedData["FlowDataTheor"], 'FLOW_ID'));
-    			if ($key===FALSE) {
-    				$editedData["FlowDataTheor"][] = ['FLOW_ID'=>$element['FLOW_ID']];
-    			}
-    			$affectedIds[]=$element['FLOW_ID'];
-    		}
-    	}
-    }
+	protected function getAffectedObjects($mdlName, $columns, $newData) {
+		$mdl = "App\Models\\".$mdlName;
+		$idField = $mdl::$idField;
+		$objectId = $newData [$idField];
+// 		$flowPhase = $newData [config ( "constants.flFlowPhase" )];
+		$aFormulas = \FormulaHelpers::getAffects ( $mdlName, $columns, $objectId);
+		return $aFormulas;
+	}
+    
 }

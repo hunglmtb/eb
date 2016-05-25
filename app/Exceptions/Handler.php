@@ -3,9 +3,10 @@
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Illuminate\Foundation\Validation\ValidationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Foundation\Validation\ValidationException;
+use Illuminate\Http\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler extends ExceptionHandler {
 
@@ -46,6 +47,13 @@ class Handler extends ExceptionHandler {
 		if($e instanceof ModelNotFoundException)
 		{
 			abort(404);
+		}
+		
+		if($e instanceof DataInputException)
+		{
+			$response = new Response($e->getMessage(), 400);
+ 	        $response->exception = $e;
+	        return $response;
 		}
 		return parent::render($request, $e);
 	}

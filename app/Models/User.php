@@ -146,18 +146,11 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 		return $ur ;
 	}
 	
-	
-	
-	/* public function hasRight($rights){
-		$result = true;
-		if ($rights&&is_array($rights)&&count($rights)>0) {
-			$available = $this->has('UserUserRole.UserRole.CODE','in',$rights);
-			$result = $available!=null;
-		}
+	public function hasRight($right){
+		$USER_RIGHTS = session('statut');
+		$result = in_array("_ALL_", $USER_RIGHTS)||in_array($right, $USER_RIGHTS);
 		return $result ;
 	}
-	 */
-	
 	
 	/**
 	 * One to Many relation

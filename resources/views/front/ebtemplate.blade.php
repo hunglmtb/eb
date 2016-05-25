@@ -384,48 +384,6 @@ function logout()
 	window.location.href="../auth/logout";
 }
 var is_logging_in=false;
-/* function login()
-{
-	if(!$('#username').val())
-	{
-		alert('Please input username');
-		$('#username').select();
-		$('#username').focus();
-		return;
-	}
-	if(!$('#password').val())
-	{
-		alert('Please input password');
-		$('#password').select();
-		$('#password').focus();
-		return;
-	}
-	is_logging_in=true;
-	randomCell();
-	$.post( 
-             "/auth/eblogin",
-             { username: $('#username').val(),password:$('#password').val() },
-             function(data) {
-				is_logging_in=false;
-                if(data=="ok")
-                {
-					if(_redirect) 
-						window.location.href=_redirect;
-					else
-					{
-						username=$('#username').val();
-						layoutUserLoggedIn(true);
-						$('#textUsername').html(username);
-						loadTasksCounting();
-					}
-				}
-                else
-                	alert(data);
-             }
-
-          );
-} */
-
 	var curCell=0;
 	function randomCell()
 	{
@@ -450,7 +408,7 @@ $("#password").keyup(function(e){
     var code = e.which; // recommended to use e.which, it's normalized across browsers
     if(code==13)e.preventDefault();
     if(code==32||code==13||code==188||code==186){
-        login();
+        logineb();
     } 
 });
 
@@ -496,11 +454,11 @@ var menu={};
 menu["production"]=[
 		{menutext:"Flow Stream",desc:"",url:"dc/flow"},
 		{menutext:"Energy Unit",desc:"",url:"../dc/eu"},
-		{menutext:"Tank & Storage",desc:"",url:"../dc/storage.php"},
-		{menutext:"Ticket",desc:"",url:"../dc/ticket.php"},
-		{menutext:"Well Test",desc:"",url:"../dc/eutest.php"},
-		{menutext:"Deferment",desc:"",url:"../dc/deferment.php"},
-		{menutext:"Quality",desc:"",url:"../dc/quality.php"}
+		{menutext:"Tank & Storage",desc:"",url:"../dc/storage"},
+		{menutext:"Ticket",desc:"",url:"../dc/ticket"},
+		{menutext:"Well Test",desc:"",url:"../dc/eutest"},
+		{menutext:"Deferment",desc:"",url:"../dc/deferment"},
+		{menutext:"Quality",desc:"",url:"../dc/quality"}
 	];
 menu["operation"]=[
 		{menutext:"Safety",desc:"",url:"fo/safety"},
