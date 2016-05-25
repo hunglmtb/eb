@@ -5,5 +5,5 @@ use App\Models\DynamicModel;
 
 class CodeEventType extends DynamicModel
 {
-	protected $table = 'CODE_EVENT_TYPE';
+	protected $table = 'code_event_type';
 }

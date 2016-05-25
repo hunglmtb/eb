@@ -34,6 +34,7 @@ class AdminController extends Controller {
 		
 		return view ( 'admin.users');
 	}
+		
 	public function getData(Request $request) {
 		
 		$listControls = $request->all ();

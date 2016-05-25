@@ -1,8 +1,14 @@
-<?php namespace App\Http\Controllers;
+<?php 
+namespace App\Http\Controllers;
 
 use App\Models\CfgFieldProps;
 
 class CommonController extends Controller {
+	
+	public function __construct() {
+		$this->isReservedName = config ( 'database.default' ) === 'oracle';
+		$this->middleware ( 'auth' );
+	}
 	
 	public function getField($tablename){		
 		

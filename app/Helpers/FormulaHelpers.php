@@ -1,4 +1,6 @@
 <?php
+include 'D:\xampp\htdocs\eblara\app\Models\FlowCompDayAlloc.php';
+require 'D:\xampp\htdocs\eblara\vendor\autoload.php';
 use App\Models\CfgFieldProps;
 use App\Models\Formula;
 use App\Models\Fovar;
@@ -6,8 +8,7 @@ use App\Models\CodeQltySrcType;
 use App\Models\QltyDataDetail;
 use App\Models\QltyData;
 use App\Models\QltyProductElementType;
-
-function evalErrorHandler($errno, $errstr, $errfile, $errline){
+/* function evalErrorHandler($errno, $errstr, $errfile, $errline){
     \Log::info("$errstr at errno $errno file $errfile line $errline");
 	if ($errstr == 'Division by zero') {
 		return null;
@@ -17,8 +18,27 @@ function evalErrorHandler($errno, $errstr, $errfile, $errline){
 	}
 	
 	throw new Exception("$errstr at errno $errno file $errfile line $errline");
+} */
+
+
+if(isset($argv)){
+ $obj = new FormulaHelpers();
+ $obj->ins("App\Models\\FlowCompDayAlloc");
 }
 class FormulaHelpers {
+	
+	public function ins($mdl){
+		$mdl::insert ( [
+				'FLOW_ID' => 28,
+				'OCCUR_DATE' => '2016-01-01',
+				'COMPOSITION' => 6
+		] );
+		
+	}
+	
+	public function __construct()
+	{
+	}
 	
 	public static function doFormula($tName,$keyfield,$keyvalues,$echo_only=false){
     	if(!$keyfield || !$keyvalues) return false;
