@@ -100,6 +100,7 @@ Route::post('eutest/save', 'EuTestController@save');
 Route::get('dc/quality', 'ProductManagementController@quality');
 Route::post('quality/load',['uses' =>'QualityController@load','middleware' => 'saveWorkspace']);
 Route::post('quality/save', 'QualityController@save');
+Route::post('quality/loadsrc', 'QualityController@loadsrc');
 
 //---------
 Route::post('fo/loadSafety', 'FOController@loadSafety');

@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 use App\Models\CodeTestingMethod;
 use App\Models\CodeTestingUsage;
 use App\Models\CodeQltySrcType;
-
+use App\Models\CodeProductType;
 
 class CodeController extends EBController {
 	 
@@ -356,6 +356,11 @@ class CodeController extends EBController {
 	    				$selectData['data'] = CodeQltySrcType::all();
 	    				$rs[] = $selectData;
 	    				break;
+		    	case 'PRODUCT_TYPE' :
+		    		$selectData = ['id'=>'CodeProductType','targets'=>$i,'COLUMN_NAME'=>$columnName];
+		    		$selectData['data'] = CodeProductType::all();
+		    		$rs[] = $selectData;
+		    		break;
     		}
     		$i++;
     	}

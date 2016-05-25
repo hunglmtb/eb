@@ -83,12 +83,14 @@ var actions = {
 	deleteData : {},
 	insertingData : {},
 	objectIds : [],
+	extraDataSetColumns : {},
 	loadSuccess : function(data){alert("success");},
 	loadError : function(data){
 					alert(JSON.stringify(data.responseText));
 				},
 	shouldLoad : function(data){return false;},
 	afterGotSavedData : function(data,table,key){},
+	dominoColumns : function(columnName,newValue,tab,rowData,collection){},
 	loadNeighbor: function (){
 		if (actions.shouldLoad()) {
 			actions.doLoad(false);
@@ -268,12 +270,12 @@ var actions = {
 		}
 		return html;
 	},
-	applyEditable : function (tab,type,td, cellData, rowData, row, col){
+	applyEditable : function (tab,type,td, cellData, rowData, row, col,collection){
 		var  editable = {
 	    	    title: 'edit',
 	    	    emptytext: '',
 	    	    showbuttons:false,
-	    	    success: actions.getEditSuccessfn(tab,td, cellData, rowData, row, col),
+	    	    success: actions.getEditSuccessfn(tab,td, rowData, col,collection),
 	    	};
 		
 		switch(type){
@@ -304,45 +306,21 @@ var actions = {
 								          		minuteStep :10
 								            };
 	    	break;
-		}
+		case "select":
+			editable['type'] = type;
+			editable['source'] = collection;
+			editable['value'] = cellData;
+			$(td).editable(editable);
+			return;
+	    	break;
+		}	
 		$(td).editable(editable);
     	$(td).on("shown", function(e, editable) {
     		  editable.input.$input.get(0).select();
     	});
 	},
-	getEditSuccessfn  : function(tab, td, cellData, rowData, row, col) {
-		/* 
-		var enterHander = function(eInner) {
-	        if (eInner.keyCode == 13) //if its a enter key
-	        {
-	        	var tabindex = $(this).attr('tabindex');
-	            $('[tabindex=' + tabindex + ']').trigger( "click" );
-	            
-	            /* var e = jQuery.Event("keyup"); // or keypress/keydown
-			    e.keyCode = 27; // for Esc
-			    $(td).trigger(e); // trigger it on document
-	            var tabindex = $(this).attr('tabindex');
-	            tabindex++; //increment tabindex
-	            $('[tabindex=' + tabindex + ']').focus(); *//*
-//		            $('#Msg').text($(this).attr('id') + " tabindex: " + tabindex + " next element: " + $('*').attr('tabindex').id);
-
-
-	            // to cancel out Onenter page postback in asp.net
-	            return false;
-	        }
-	    };
-	    
-		$(td).bind('keypress', enterHander);
-
-		$( td ).blur(function() {
-				 e.keyCode = 27; // for Esc
-				 $(td).trigger(e); // trigger it on document
-		});
-		 */
+	getEditSuccessfn  : function(tab, td, rowData, col,collection) {
 		return function(response, newValue) {
-			/*var id = rowData['ID'];
-			var isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
-			var recordData = isAdding?actions.insertingData:actions.editedData;*/
 			var table = $('#table_'+tab).DataTable();
 			var id = rowData['DT_RowId'];
 			var isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
@@ -376,19 +354,33 @@ var actions = {
         	rowData[columnName] = newValue;
 			table.row( '#'+rowData['DT_RowId'] ).data(rowData);
         	$(td).css('color', 'red');
+        	
+        	//dependence columns
+        	actions.dominoColumns(columnName,newValue,tab,rowData,collection);
         	 /* var tabindex = $(this).attr('tabindex');
             $('[tabindex=' + (tabindex +1)+ ']').focus(); */
 	    };
 	},
+	getCellType : function(data,type,cindex){
+		type = actions.extraDataSetColumns.hasOwnProperty(data.properties[cindex].data)?'select':type;
+		return type;
+	},
 	getCellProperty : function(data,tab,type,cindex){
 		var cell = {"targets"	: cindex};
+		type = actions.getCellType(data,type,cindex);
 		if (type!='checkbox') {
 			cell["createdCell"] = function (td, cellData, rowData, row, col) {
 		 			if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
-			 				$(td).addClass( "editInline" );
-			 	        	var table = $('#table_'+tab).DataTable();
-			 				actions.applyEditable(tab,type,td, cellData, rowData, row, col);
-			 			}
+		 				$(td).addClass( "editInline" );
+		 	        	var table = $('#table_'+tab).DataTable();
+		 	        	collection = null;
+		 	        	if(type=='select'){
+		 	        		column = actions.extraDataSetColumns[data.properties[cindex].data];
+		 	        		collectionColumn = rowData[column];
+		 	        		collection = data.extraDataSet[collectionColumn];
+		 	        	}
+		 				actions.applyEditable(tab,type,td, cellData, rowData, row, col,collection);
+		 			}
 			    };
 		}
 		switch(type){
@@ -430,6 +422,22 @@ var actions = {
 			cell["render"] = function ( data2, type2, row ) {
 								return '<input style="width:20px; " type="checkbox" value="'+data2+'" class="CTV204 " size="15">';
 							};
+	    	break;
+		case "select":
+			cell["render"] = function ( data2, type2, row ) {
+					column = actions.extraDataSetColumns[data.properties[cindex].data];
+		     		collectionColumn = row[column];
+		     		collection = data.extraDataSet[collectionColumn];
+		     		if(collection!=null){
+		     			var result = $.grep(collection, function(e){ 
+		     				return e['ID'] == data2;
+		     			});
+		     			if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined" &&result[0].hasOwnProperty('NAME')){
+		     				return result[0]['NAME'];
+		     			}
+		     		}
+					return data2;
+				};
 	    	break;
 		}
 		return cell;

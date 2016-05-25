@@ -21,6 +21,18 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 		var exclude = [0];
 		var uoms = data.uoms;
 
+		if(typeof(data.extraDataSet) !== "undefined"&&data.extraDataSet!=null){
+			$.each(data.extraDataSet, function( index, value ) {
+				if(value!=null){
+					var collection = value;
+		            $.each(collection, function( i, vl ) {
+		            	vl['value']=vl['ID'];
+		            	vl['text']=vl['NAME'];
+		            });
+				}
+			});
+		}
+
 		$.each(uoms, function( index, value ) {
 			var collection = value['data'];
 			exclude.push(uoms[index]["targets"]);
@@ -39,18 +51,18 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
             	vl['text']=vl['NAME'];
             });
             uoms[index]["createdCell"] = function (td, cellData, rowData, row, col) {
-                if(data.properties[col].DATA_METHOD==1&&data.properties[col].DATA_METHOD=='1'){
+            	if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
 	 				$(td).addClass( "editInline" );
-		        	$(td).editable({
+	 				$(td).editable({
 		        	    type: 'select',
 		        	    title: 'edit',
 		        	    emptytext: '',
 		        	    value:cellData,
 		        	    showbuttons:false,
 		        	    source: collection,
-		        	    success: actions.getEditSuccessfn(tab,td, cellData, rowData, row, col),
+		        	    success: actions.getEditSuccessfn(tab,td, rowData, col,collection),
 		        	});
-                }
+	 			}
    			}
 		});
 
