@@ -10,9 +10,7 @@
         "laravelcollective/html": "5.2.*",
         "bestmomo/filemanager": "1.1.2",
         "barryvdh/laravel-ide-helper": "^2.1",
-        "yajra/laravel-oci8": "~4.0",
-        "dompdf/dompdf": "^0.7.0",
-	"maatwebsite/excel": "~2.1.0"
+        "yajra/laravel-oci8": "~4.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -24,20 +22,16 @@
     },
     "autoload": {
         "classmap": [
-            "database",
-	    "src/Maatwebsite/Excel",
+            "database"
         ],
         "files": [
             "app/helpers.php",
             "app/Helpers/helpers.php",
-            "app/Helpers/FormulaHelpers.php"	    
+            "app/Helpers/FormulaHelpers.php"
         ],
         "psr-4": {
             "App\\": "app/"
-        },
-	"psr-0": {
-       		"Maatwebsite\\Excel\\": "src/"
-     	}
+        }
     },
     "autoload-dev": {
         "classmap": [

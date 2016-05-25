@@ -1,6 +1,24 @@
 <?php
-include 'D:\xampp\htdocs\eblara\app\Models\FlowCompDayAlloc.php';
-require 'D:\xampp\htdocs\eblara\vendor\autoload.php';
+
+function sum(){
+	$args = func_get_args();
+	$s=0;
+	foreach ($args as $arg)
+	{
+		if(is_array($arg))
+		{
+			foreach($arg as $value)
+			{
+				if(is_array($value))
+					$s += sum($value);
+					else $s += $value;
+			}
+		}
+		else $s += $arg;
+	}
+	return $s;
+}
+
 use App\Models\CfgFieldProps;
 use App\Models\Formula;
 use App\Models\Fovar;
@@ -8,7 +26,9 @@ use App\Models\CodeQltySrcType;
 use App\Models\QltyDataDetail;
 use App\Models\QltyData;
 use App\Models\QltyProductElementType;
-/* function evalErrorHandler($errno, $errstr, $errfile, $errline){
+use App\Models\StrappingTableData;
+
+function evalErrorHandler($errno, $errstr, $errfile, $errline){
     \Log::info("$errstr at errno $errno file $errfile line $errline");
 	if ($errstr == 'Division by zero') {
 		return null;
@@ -18,27 +38,8 @@ use App\Models\QltyProductElementType;
 	}
 	
 	throw new Exception("$errstr at errno $errno file $errfile line $errline");
-} */
-
-
-if(isset($argv)){
- $obj = new FormulaHelpers();
- $obj->ins("App\Models\\FlowCompDayAlloc");
 }
 class FormulaHelpers {
-	
-	public function ins($mdl){
-		$mdl::insert ( [
-				'FLOW_ID' => 28,
-				'OCCUR_DATE' => '2016-01-01',
-				'COMPOSITION' => 6
-		] );
-		
-	}
-	
-	public function __construct()
-	{
-	}
 	
 	public static function doFormula($tName,$keyfield,$keyvalues,$echo_only=false){
     	if(!$keyfield || !$keyvalues) return false;
@@ -155,11 +156,12 @@ class FormulaHelpers {
     	return true;
     }
     
-    public static function applyFormula($mdlName,$objectIds,$occur_date,$object_type,$returnAffectedIds=false){
+    public static function applyFormula($mdlName,$objectIds,$occur_date,$returnAffectedIds=false){
     	
 //     	global $object_id,$flow_phase,$occur_date,$facility_id;
     	$mdl = "App\Models\\$mdlName";
-    	
+    	$objectType = $mdl::$typeName;
+    	 
     	$result = [];
     	foreach($objectIds as $object_id){
 	    	$formulas = self::getFormulatedFields($mdl::getTableName(),$object_id,$object_type,$occur_date);
@@ -171,14 +173,20 @@ class FormulaHelpers {
 	    	}
 	    	
 	    	if (count($values)>0) {
-	    		$updateRecords = $mdl::where('OCCUR_DATE',$occur_date)
-							    		->where('flow_id',$object_id)
-							    		->update($values);
-	    		if ($updateRecords>0&&$returnAffectedIds) {
+	    		/* $updateRecords = $mdl::where('OCCUR_DATE',$occur_date)
+	    		->where(config("constants.idColumn.$object_type"),$object_id)
+	    		->update($values); */
+	    		
+	    		$updateRecords = $mdl::updateWithFormularedValues($values,$occur_date,$formulas);
+	    		/* if ($updateRecords>0&&$returnAffectedIds) {
 	    			$result[] = $mdl::where('OCCUR_DATE',$occur_date)
-								    		->where('flow_id',$object_id)
+								    		->where(config("constants.idColumn.$object_type"),$object_id)
 								    		->select('ID')
 								    		->first()->ID;
+	    		}; */
+	    		
+	    		if ($updateRecords>0&&$returnAffectedIds) {
+	    			$result[] = $updateRecords;
 	    		};
 	    	}
     	}
@@ -211,12 +219,15 @@ class FormulaHelpers {
     	return $fields;
     }
     
-    public static function getAffects($mdlName,$columns,$objectId,$objectType){
+    public static function getAffects($mdlName,$columns,$objectId,$flow_phase=false){
     	
     	$mdl = "App\Models\\$mdlName";
+		$objectType = $mdl::$typeName;
     	$where = ['OBJECT_TYPE'		=>	$objectType,
     			'OBJECT_ID'			=>	$objectId,
     			'TABLE_NAME'		=>	$mdl::getTableName()];
+    	
+    	if ($flow_phase) $where['FLOW_PHASE']=$flow_phase;
     	 
     	//     	\DB::enableQueryLog();
     	$foVars = FoVar::with('Formula')
@@ -225,17 +236,52 @@ class FormulaHelpers {
 //     						->select('AFFFECT_ID')
     						->get();
     	//     	\Log::info(\DB::getQueryLog());
-    	$affectIds = [];
+    	$affectedFormulas = [];
 	    foreach($foVars as $foVar ){
 	    	$fml = $foVar->Formula;
 	    	if ($fml) {
-		    	$affectIds[] = $fml->OBJECT_ID;
+		    	$affectedFormulas[] = $fml;
+//  		    	$affectedFormulas[] = $fml->OBJECT_ID;
 	    	}
 	    }
-	    $affectIds = array_unique($affectIds);
+ 	    $affectedFormulas = array_unique($affectedFormulas);
 	     
-    	return $affectIds;
+    	return $affectedFormulas;
     }
+    
+    public static function applyAffectedFormula($objectWithformulas,$occur_date){
+    	
+    	if (!$objectWithformulas) return false;
+    	$result = [];
+    	foreach($objectWithformulas as $objectWithformula){
+	    	$tableName = strtolower ( $objectWithformula->TABLE_NAME);
+	    	$mdlName = \Helper::camelize($tableName,'_');
+	    	if (!$mdlName)  continue;
+	    	$mdl = "App\Models\\$mdlName";
+	    	$object_type = $mdl::$typeName;
+	    	$object_id = $objectWithformula->OBJECT_ID;
+	    	$flow_phase= $objectWithformula->FLOW_PHASE;
+	    	$formulas = self::getFormulatedFields($tableName,$object_id,$object_type,$occur_date,$flow_phase);
+	    	$values = [];
+	    	foreach($formulas as $formula){
+// 	    		$temp_value="'".doFormulaObject($tablename, $field, $object_type, $object_id, $occur_date)."'";
+				$v=self::evalFormula($formula,$occur_date);
+	    		if ($v!==null) $values[$formula->VALUE_COLUMN]=$v;
+	    	}
+	    	
+	    	if (count($values)>0) {
+	    		$updateRecord = $mdl::updateWithFormularedValues($values,$object_id,$occur_date,$flow_phase);
+	    		if ($updateRecord) {
+	    			$updateRecord->{"modelName"} = $mdlName;
+	    			$result[] = $updateRecord;
+	    		};
+	    	}
+    	}
+    	return $result;
+    }
+    
+    
+    
     
     public static function evalFormula($formulaRow,$occur_date,  $show_echo = false){
     	if(!$formulaRow)
@@ -359,6 +405,7 @@ class FormulaHelpers {
     						//echo "field: $field<br>";
     						$params=explode(",",substr($row->STATIC_VALUE,$j+1,$k-$j-1));
     						$where = [];
+    						$swhere = false;
     						foreach ($params as $param)
     						{
     							$deli="";
@@ -399,18 +446,28 @@ class FormulaHelpers {
     									}
 	    							}
 	    							$sql.=" and $pp";
+//     								$swhere.=" and $pp";
 	    							if($whereItem[0]=="OCCUR_DATE"||$whereItem[0]=="EFFECTIVE_DATE"){
 	    								$whereItem[2] = $occur_date;
+		    							$where[]=$whereItem;
 	    							}
-	    							$where[]=$whereItem;
+	    							else if (strpos($whereItem[0], 'month') !== false || strpos($whereItem[0], 'year') !== false) {
+    									$swhere = $swhere?"$swhere and $pp":$pp;
+	    							}
+	    							else {
+		    							$where[]=$whereItem;
+	    							}
 	    							//echo "param: $pp<br>";
     							}
     						}
     						$sql .= " limit 100";
 //      						\DB::enableQueryLog();
-     						
-    						$getDataResult = DB::table($table)->where( \DB::raw($pp))->select($field)->skip(0)->take(100)->get();
-//      						$getDataResult = DB::table($table)->where($where)->select($field)->skip(0)->take(100)->get();
+//      						$getDataResult = DB::table($table)->where( \DB::raw($swhere))->select($field)->skip(0)->take(100)->get();
+       						$queryField = DB::table($table)->where($where);
+       						if ($swhere) {
+       							$queryField->where( \DB::raw($swhere));
+       						}
+    						$getDataResult = $queryField->select($field)->skip(0)->take(100)->get();
 //      						\Log::info(\DB::getQueryLog());
     						unset($table);
     						unset($where);
@@ -459,13 +516,14 @@ class FormulaHelpers {
     								$sqlvalue[]=$rox;
     							} */
     							
-    							$sqlvalue= $getDataResult->toArray();
+     							$sqlvalue= is_array ( $getDataResult )?$getDataResult:$getDataResult->toArray();
+//     							$sqlvalue= $getDataResult;
     							$sqlarray=array();
     							for($k=0;$k<$num_rows;$k++)
     							{
     								foreach ($sqlvalue[$k] as $key => $value)
     								{
-    									if(is_numeric($key))
+//     									if(is_numeric($key))
     										$sqlarray[$k][$key]=$value;
     								}
     								//for($i=0;$i<count($sqlvalue[$k])/2;$i++)
@@ -522,13 +580,18 @@ class FormulaHelpers {
     	/* while($row=mysql_fetch_array($result))
     	 {} */
     	$f=$formula;
-    	foreach($vvv as $v)
+    	$varsKey = [];
+    	foreach($vvv as $key => $v)
     	{
     		//$f=str_replace($v,$vars[$v],$f);
-    		if(!$vars[$v])
-    			$f=str_replace($v,"0",$f);
-    			else
-    				$f=str_replace($v,$vars[$v],$f);
+    		if(!$vars[$v]) $f=str_replace($v,"0",$f);
+    		
+    		else if(is_array($vars[$v])) {
+    			$varsKey[$v] = $vars[$v];
+    			$f=str_replace($v,"\$varsKey['$v']",$f);
+    		}
+    		
+    		else $f=str_replace($v,$vars[$v],$f);
     				//if() echo "$f<br>";
     	}
     	$f=str_replace("@DATE",$CURRENT_DATE,$f);
@@ -540,6 +603,7 @@ class FormulaHelpers {
 	    	try {
     			eval($s);
 	    	} catch( Exception $e ){
+    			\Log::info("Exception with eval $s ".$e->getMessage());
 	    		$vf=null;
 	    	}
 	    		
@@ -1176,5 +1240,52 @@ public static function calculateCrudeOil($T_obs, $P_obs, $API_obs) {
 	}
     
     //***************************************************************
+    
+	
+	public static function calculateTankVolume($tank_id,$tank_level){
+		$tank2 = StrappingTableData:: whereHas('Tank',function ($query) use ($tank_id) {
+													$query->where("ID",$tank_id );
+											})
+					->where("STRAPPING_READING",'>=',$tank_level )
+					->orderBy('STRAPPING_READING')
+					->first();
+		if($tank2){
+			if($tank2->STRAPPING_READING==$tank_level) return $tank2->STRAPPING_READING;
+			
+			$tank1 = StrappingTableData:: whereHas('Tank',function ($query) use ($tank_id) {
+								$query->where("ID",$tank_id );
+							})
+							->where("STRAPPING_READING",'<',$tank_level )
+							->orderBy('STRAPPING_READING','desc')
+							->first();
+			if($tank1){
+				return $tank1->STRAPPING_VALUE+
+						(($tank2->STRAPPING_VALUE-$tank1->STRAPPING_VALUE)*($tank_level-$tank1->STRAPPING_READING)/
+							($tank2->STRAPPING_READING-$tank1->STRAPPING_READING));
+			}
+		}
+							
+		/* $sSQL=
+		"SELECT b.`STRAPPING_READING`,b.`STRAPPING_VALUE` FROM tank a,strapping_table_data b
+		WHERE a.STRAPPING_TABLE_ID=b.STRAPPING_TABLE_ID and a.id='$tank_id'
+		and STRAPPING_READING>=$tank_level
+		order by STRAPPING_READING limit 1";
+		$r2=getOneRow($sSQL);
+		if($r2){
+			if($r2["STRAPPING_READING"]==$tank_level) return $r2["STRAPPING_VALUE"];
+			$sSQL=
+			"SELECT b.`STRAPPING_READING`,b.`STRAPPING_VALUE` FROM tank a,strapping_table_data b
+			WHERE a.STRAPPING_TABLE_ID=b.STRAPPING_TABLE_ID and a.id='$tank_id'
+			and STRAPPING_READING<$tank_level
+			order by STRAPPING_READING desc limit 1";
+			
+			$r1=getOneRow($sSQL);
+			if($r1){
+				//echo "$r1[STRAPPING_VALUE]+(($r2[STRAPPING_VALUE]-$r1[STRAPPING_VALUE])*($tank_level-$r1[STRAPPING_READING])/($r2[STRAPPING_READING]-$r1[STRAPPING_READING]))<br>";
+				return $r1["STRAPPING_VALUE"]+(($r2["STRAPPING_VALUE"]-$r1["STRAPPING_VALUE"])*($tank_level-$r1["STRAPPING_READING"])/($r2["STRAPPING_READING"]-$r1["STRAPPING_READING"]));
+			}
+		} */
+		return -1;
+	}
     
 }

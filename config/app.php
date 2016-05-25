@@ -173,7 +173,6 @@ return [
 		Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
 		Yajra\Oci8\Oci8ServiceProvider::class,
 		App\Providers\ComposerServiceProvider::class,
-		Maatwebsite\Excel\ExcelServiceProvider::class
 	],
 
 	/*
@@ -222,8 +221,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View'      => Illuminate\Support\Facades\View::class,
 		'Form'		=> Collective\Html\FormFacade::class,
-		'HTML'		=> Collective\Html\HtmlFacade::class,
-		'Excel' 	=> Maatwebsite\Excel\Facades\Excel::class
+		'HTML'		=> Collective\Html\HtmlFacade::class
 	],
 
 ];
