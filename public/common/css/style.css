@@ -182,6 +182,10 @@ table.dataTable {
 
 .CodeAllocType {display:none}
 
+.allocation{
+    width: 220px;
+    float: left;
+}
 
 .toolbarAction {
     float: left;

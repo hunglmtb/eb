@@ -74,12 +74,25 @@ function sendAjax(url,param, func)
     	url: url,
     	type: "post",
     	data: param,
+    	dataType: 'json',
     	success: function(_data){
     		hideWaiting(); 
     		func(_data);
 		}
-	});
-    
+	});    
+}
+
+function sendAjaxNotMessage(url,param, func)
+{
+    return $.ajax({
+    	url: url,
+    	type: "post",
+    	data: param,
+    	dataType: 'json',
+    	success: function(_data){
+    		func(_data);
+		}
+	});    
 }
 function zeroFill( number, width )
 {

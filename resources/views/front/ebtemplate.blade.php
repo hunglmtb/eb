@@ -472,7 +472,7 @@ menu["visual"]=[
 		{menutext:"Data View",desc:"",url:"../view"},
 		{menutext:"Report",desc:"",url:"../report"},
 		{menutext:"Advanced Graph",desc:"",url:"../graph/advgraph.php"},
-		{menutext:"Workflow",desc:"",url:"../wf"},
+		{menutext:"Workflow",desc:"",url:"workflow"},
 		{menutext:"Task Manager",desc:"",url:"../taskman/?com=task"}
 	];
 menu["allocation"]=[

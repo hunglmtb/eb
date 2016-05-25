@@ -74,8 +74,7 @@ $(function(){
 
 	$("#sur_flow_phase").html($("#Qflowphase").html());	
 
-	$("#outlineContainer").css("height",150);
-	
+	$("#outlineContainer").css("height",150);	
 });
 
 var diagram = {
@@ -154,7 +153,7 @@ var diagram = {
 
 			if(cfgFieldProps.length > 0){
 				for(var v in cfgFieldProps){
-					strCheck +='<input type="checkbox" style="width:18px; height:15px;" surveilance_settings="' + cfgFieldProps[v].TABLE_NAME + '.' + cfgFieldProps[v].COLUMN_NAME +'" '+ cfgFieldProps[v].CHECK+' value="'+checkValue(cfgFieldProps[v].LABEL, cfgFieldProps[v].TABLE_NAME + '/' + cfgFieldProps[v].COLUMN_NAME) + '">'+ cfgFieldProps[v].TABLE_NAME +'.<font color="#378de5"><b>'+cfgFieldProps[v].COLUMN_NAME+'</b></font>('+checkValue(cfgFieldProps[v].LABEL,'')+') <br>';
+					strCheck +='<input type="checkbox" style="width:18px; height:15px;" surveilance_settings="' + cfgFieldProps[v].TABLE_NAME + '/' + cfgFieldProps[v].COLUMN_NAME +'" '+ cfgFieldProps[v].CHECK+' value="'+checkValue(cfgFieldProps[v].LABEL, cfgFieldProps[v].TABLE_NAME + '/' + cfgFieldProps[v].COLUMN_NAME) + '">'+ cfgFieldProps[v].TABLE_NAME +'.<font color="#378de5"><b>'+cfgFieldProps[v].COLUMN_NAME+'</b></font>('+checkValue(cfgFieldProps[v].LABEL,'')+') <br>';
 					strCbo +='<option value="' + checkValue(cfgFieldProps[v].TABLE_NAME + '/' + cfgFieldProps[v].COLUMN_NAME, '') +'">'+ checkValue(cfgFieldProps[v].TABLE_NAME + '/' + cfgFieldProps[v].COLUMN_NAME, '') +'</option>';
 				}
 			}
@@ -208,6 +207,10 @@ var diagram = {
 					}
 				}
 			}
+
+			$('#btnTagsMapping').click(function(){
+				window.open("/tagsMapping", '_blank');
+			});
 			
 		},
 
@@ -232,7 +235,6 @@ var diagram = {
 			saveSvgAsPng($('#graph svg')[0], 'diagram.png');
 		}
 }
-
 
 var ed;
 function onInit(editor)
@@ -601,8 +603,7 @@ function onInit(editor)
     //loadListSavedDiagrams();
 }
 
-function buttonActionClick(act)
-{
+function buttonActionClick(act){
 	if(act=="print"){
 		var pageCount=1;
 		var scale = mxUtils.getScaleForPageCount(pageCount, ed.graph);
@@ -615,11 +616,13 @@ function buttonActionClick(act)
 		preview.print();
 		preview.close();
 	}
-    else if(act=="rotate"){
-		ed.graph.toggleCellStyles(mxConstants.STYLE_HORIZONTAL,"1",ed.graph.selectionModel.cells);
-	}
-    else 
-		ed.execute(act);
+    else{
+    	if(act=="rotate"){
+    		ed.graph.toggleCellStyles(mxConstants.STYLE_HORIZONTAL,"1",ed.graph.selectionModel.cells);
+    	}else{ 
+        	ed.execute(act);
+    	}
+    } 
 }
 
 function changeLineColor(color)
@@ -645,14 +648,15 @@ function changeLineColor(color)
 
 function cellMovedListener(sender, evt){
 	var cells = evt.getProperty('cells');
-	for (i = 0; i < cells.length; i++) {
-		var cell=cells[i];
-		if(cell.id.substr(0,8)=='sur_val_'){
-			updateSurPhaseCellPosition(cell);
-		}
-	}
-	//ed.graph.model.endUpdate();
-	ed.graph.refresh();
+ 	for (i = 0; i < cells.length; i++) {
+	  	var cell=cells[i];
+	  	if(cell.id!==null)
+	  	if(cell.id.substr(0,8)=='sur_val_'){
+	   		updateSurPhaseCellPosition(cell);
+	  	}
+ 	}
+	 //ed.graph.model.endUpdate();
+	 ed.graph.refresh();
 }
 
 function updateSurPhaseCellPosition(baseCell){
@@ -865,54 +869,42 @@ function display()
 		}
 
 		sendAjax('/getValueSurveillance', param, function(data){
-			
-		});
-		
-		/* //alert(vparam);
-		postRequest('getValueSurveillance.php',
-		   {
-			   'vparam':vparam,
-			   'occur_date':occur_date,
-			   'flow_phase':flow_phase
-		   },
-		   function(data){
-				if(data.substr(0,2)!='ok')
-				{
-					alert(data);
-					return;
-				}
-				var arrs=data.substr(2).split("#");
-				var i = 0;
-				for (; i < arrs.length; i++)
-				{ 
-					var vs=arrs[i].split("^");
-					if(vs.length>1){
-						if(vs[1]=="%SF"){
-							if(vs.length>2){
-								var arrfs=vs[2].split("%SV");
-								for(var j=0;j<arrfs.length-1;j+=2){
-									label=ed.graph.model.getCell('sur_val_'+vs[0]+'_'+arrfs[j]);
-									if(typeof label!=='undefined'){
-										var phase_name=label.getAttribute('phase_name', '');
-										var prefix=label.getAttribute('prefix', '');
-										var subfix=label.getAttribute('subfix', '');
-										label.setAttribute('label', (prefix==""?phase_name:prefix)+': '+arrfs[j+1]+' '+subfix);
-									}
+			if(data.substr(0,2)!='ok')
+			{
+				alert(data);
+				return;
+			}
+			var arrs=data.substr(2).split("#");
+			var i = 0;
+			for (; i < arrs.length; i++)
+			{ 
+				var vs=arrs[i].split("^");
+				if(vs.length>1){
+					if(vs[1]=="%SF"){
+						if(vs.length>2){
+							var arrfs=vs[2].split("%SV");
+							for(var j=0;j<arrfs.length-1;j+=2){
+								label=ed.graph.model.getCell('sur_val_'+vs[0]+'_'+arrfs[j]);
+								if(typeof label!=='undefined'){
+									var phase_name=label.getAttribute('phase_name', '');
+									var prefix=label.getAttribute('prefix', '');
+									var subfix=label.getAttribute('subfix', '');
+									label.setAttribute('label', (prefix==""?phase_name:prefix)+': '+arrfs[j+1]+' '+subfix);
 								}
 							}
 						}
-						else{
-							var label=ed.graph.model.getCell('label_'+vs[0]);
-							if(typeof label!=='undefined'){
-								if(vs[1]!="%SF")
-									label.setAttribute('label', vs[1]);
-							}
+					}
+					else{
+						var label=ed.graph.model.getCell('label_'+vs[0]);
+						if(typeof label!=='undefined'){
+							if(vs[1]!="%SF")
+								label.setAttribute('label', vs[1]);
 						}
 					}
 				}
-				ed.graph.refresh();
-		   }
-		); */
+			}
+			ed.graph.refresh();
+		   }); 
 	}
 }
 
@@ -1008,16 +1000,16 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 </script>
 <body onLoad="new mxApplication('/config/diagrameditor.xml?6');"
 	style="margin: 0px; background: #eeeeee;">
+	
+	
 	<div id="box_cell_image" style="display: none">
-		<span id="box_cell_image_input"> <br> Input image URL <input
-			type="text" id="txt_cell_image_url" style="width: 470px"> <br> <br>
-			or Upload from your computer <input type="file"
-			id="file_cell_image_url" style="width: 390px"> <br> <br> or <input
-			type="button" onclick="pick_cell_image()"
-			value="Pick available image">
-		</span>
-		<div id="box_pick_cell"
-			style="display: none; width: 100%; height: 100%"></div>
+			<span id="box_cell_image_input"> <br> Input image URL <input
+				type="text" id="txt_cell_image_url" style="width: 470px"> <br> <br>
+				or Upload from your computer <input type="file" name="files[]" multiple id="file_cell_image_url" style="width: 390px"> <br> <br> or <input
+				type="button" onclick="pick_cell_image()"
+				value="Pick available image">
+			</span>
+			<div id="box_pick_cell"	style="display: none; width: 100%; height: 100%"></div>
 	</div>
 
 	<div id="surveillanceSetting"
@@ -1044,7 +1036,7 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 							<tr>
 								<td><b>Other tags</b></td>
 								<td><input type="text" id="txt_sur_other_tag"
-									style="width: 370px; height:18px;" ></td>
+									style="width: 370px; height: 18px;"></td>
 							</tr>
 						</table>
 					</div>
@@ -1060,11 +1052,13 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 							<td></td>
 						</tr>
 						<tr>
-							<td>
-								<select id="sur_flow_phase"></select></td>
-							<td><input id="txt_sur_phase_prefix" style="width: 100px; height:18px;"></td>
-							<td><input id="txt_sur_phase_subfix" style="width: 100px; height:18px;"></td>
-							<td><input type="button" style="width: 60px; height:16px;" value="Add" onclick="diagram.add_sur_phase()"></input></td>
+							<td><select id="sur_flow_phase"></select></td>
+							<td><input id="txt_sur_phase_prefix"
+								style="width: 100px; height: 18px;"></td>
+							<td><input id="txt_sur_phase_subfix"
+								style="width: 100px; height: 18px;"></td>
+							<td><input type="button" style="width: 60px; height: 16px;"
+								value="Add" onclick="diagram.add_sur_phase()"></input></td>
 						</tr>
 					</table>
 					<hr>
@@ -1092,14 +1086,15 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 							<option value="{!!$lo->ID!!}">{!!$lo->NAME!!}</option>
 							@endforeach
 					</select></td>
-					<td width="140" style=""><select style="width: 100%;" id="cboArea" onchange="diagram.change('cboArea');"
-						size="1" name="cboArea"> @foreach($loArea as $area)
+					<td width="140" style=""><select style="width: 100%;" id="cboArea"
+						onchange="diagram.change('cboArea');" size="1" name="cboArea">
+							@foreach($loArea as $area)
 							<option value="{!!$area->ID!!}">{!!$area->NAME!!}</option>
 							@endforeach
 					</select></td>
-					<td width="140" style=""><select style="width: 100%;" onchange="diagram.change('cboFacility');"
-						id="cboFacility" size="1" name="cboFacility"> @foreach($facility
-							as $fa)
+					<td width="140" style=""><select style="width: 100%;"
+						onchange="diagram.change('cboFacility');" id="cboFacility"
+						size="1" name="cboFacility"> @foreach($facility as $fa)
 							<option value="{!!$fa->ID!!}">{!!$fa->NAME!!}</option>
 							@endforeach
 					</select></td>
@@ -1233,20 +1228,25 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 						width="100%">
 						<tr>
 							<td>&nbsp;</td>
-							<td id="tdToolBox" width="260" valign="top" style="border: none"><script>
-	var files;
+							<td id="tdToolBox" width="260" valign="top" style="border: none">
+<script>
+	var filesToUpload = [];
 	$('input[type=file]').on('change', prepareUpload);
 	function prepareUpload(event)
 	{
-	  files = event.target.files;
+	  var files = event.target.files || event.originalEvent.dataTransfer.files;
+	    // Itterate thru files (here I user Underscore.js function to do so).
+	    // Simply user 'for loop'.
+	    $.each(files, function(key, value) {
+	        filesToUpload.push(value);
+	    });
 	}
 	function pick_cell_image(){
 		$("#box_cell_image_input").hide();
 		$("#box_pick_cell").show();
 		$("#box_pick_cell").html("Loading...");
-		postRequest("pickcellimage.php?page=1",{},function(data){
-			$("#box_pick_cell").html(data);
-		})
+		
+		$("#box_pick_cell").html('No available image');
 	}
 	function set_cell_image(cell,url){
 		cell.style="shape=image;html=1;verticalLabelPosition=bottom;verticalAlign=top;imageAspect=1;image="+url;
@@ -1264,55 +1264,61 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 			title: "Set Image",
 			buttons: {
 				"OK": function(){
-					var url=$("#txt_cell_image_url").val().trim();
-					if(url!=""){
-						set_cell_image(cell,url);
-						$("#box_cell_image").dialog("close");
-					}
-					else if(files){
-						var data = new FormData();
-						$.each(files, function(key, value)
-						{
-							data.append(key, value);
-						});
-						showWaiting("Uploading image...");
-						$.ajax({
-							url: 'uploadcellimage.php?files',
-							type: 'POST',
-							data: data,
-							cache: false,
-							dataType: 'json',
-							processData: false, // Don't process the files
-							contentType: false, // Set content type to false as jQuery will tell the server its a query string request
-							success: function(data, textStatus, jqXHR)
-							{
-								hideWaiting();
-								if(typeof data.error === 'undefined')
+					var url=$("#txt_cell_image_url").val().trim();					
+						if(filesToUpload){
+							event.preventDefault();
+
+						    var form = this,
+						        formData = new FormData(form);
+
+						    // Add selected files to FormData which will be sent
+						    if (filesToUpload) {
+						        $.each(filesToUpload, function(key, value){
+						            formData.append(key, value);
+						        });        
+						    }
+						    
+						    showWaiting("Uploading image...");
+							$.ajax({
+						        type: "POST",
+						        url: '/uploadFile',
+						        data: formData,
+						        processData: false,
+						        contentType: false,
+						        dataType: 'json',
+						        success: function(data, textStatus, jqXHR)
 								{
-									// Success so call function to process the form
-									set_cell_image(cell,data.files[0]);
-									$("#box_cell_image").dialog("close");
-								}
-								else
+									hideWaiting();
+									if(typeof data.error === 'undefined')
+									{
+										// Success so call function to process the form
+										set_cell_image(cell,data.files);
+										filesToUpload = [];
+										$("#box_cell_image").dialog("close");
+									}
+									else
+									{
+										// Handle errors here
+										alert('Error: ' + data.error);
+										console.log('ERRORS: ' + data.error);
+									}
+								},
+								error: function(jqXHR, textStatus, errorThrown)
 								{
+									filesToUpload = [];
+									hideWaiting();
 									// Handle errors here
-									alert('Error: ' + data.error);
-									console.log('ERRORS: ' + data.error);
+									alert('Error: ' + textStatus);
+									console.log('ERRORS: ' + textStatus);
+									// STOP LOADING SPINNER
 								}
-							},
-							error: function(jqXHR, textStatus, errorThrown)
-							{
-								hideWaiting();
-								// Handle errors here
-								alert('Error: ' + textStatus);
-								console.log('ERRORS: ' + textStatus);
-								// STOP LOADING SPINNER
-							}
-						});						
-					}
+						        
+						    });
+						}
 				},
 				"Cancel": function(){
 					$("#box_cell_image").dialog("close");
+					filesToUpload = [];
 				}
 			}
 		});
@@ -1455,12 +1461,12 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 			l+=(l==""?"":"\n")+$(this).val()
 		});
 		$("#sur_tag_content :checked").each(function(){
-			s+=(s==""?"":"@")+$(this).attr("surveilance_settings");
+			s+=(s==""?"":"@")+"TAG:"+$(this).attr("surveilance_settings");
 			l+=(l==""?"":"\n")+$(this).val()
 		});
 		var other_tag=$("#txt_sur_other_tag").val().trim();
 		if(other_tag!=""){
-			s+=(s==""?"":"-")+"@TAG:"+other_tag;
+			s+=(s==""?"":"@")+"TAG:"+other_tag;
 			l+=(l==""?"":"\n")+other_tag
 		}
 		var rowlabel=$("#surveillanceSetting input:checked").length;
