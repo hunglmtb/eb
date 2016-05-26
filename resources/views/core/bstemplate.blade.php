@@ -26,6 +26,7 @@
 </head>
 
 <body style="margin:0; overflow-x:hidden">
+	@yield('floatWindow')
 	<header role="banner">
 		@include('partials.header')
 		@yield('header')

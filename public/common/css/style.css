@@ -191,3 +191,7 @@ table.dataTable {
     float: left;
     margin-top: 20px;
 }
+.actionLink {
+	color:gray;
+	margin: 5px;
+}

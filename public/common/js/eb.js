@@ -270,12 +270,12 @@ var actions = {
 		}
 		return html;
 	},
-	applyEditable : function (tab,type,td, cellData, rowData, row, col,collection){
+	applyEditable : function (tab,type,td, cellData, rowData, columnName,collection){
 		var  editable = {
 	    	    title: 'edit',
 	    	    emptytext: '',
 	    	    showbuttons:false,
-	    	    success: actions.getEditSuccessfn(tab,td, rowData, col,collection),
+	    	    success: actions.getEditSuccessfn(tab,td, rowData, columnName,collection),
 	    	};
 		
 		switch(type){
@@ -309,7 +309,7 @@ var actions = {
 		case "select":
 			editable['type'] = type;
 			editable['source'] = collection;
-			editable['value'] = cellData;
+			editable['value'] = cellData==null?(collection[0]!=null?collection[0].ID:0):cellData;
 			$(td).editable(editable);
 			return;
 	    	break;
@@ -319,7 +319,7 @@ var actions = {
     		  editable.input.$input.get(0).select();
     	});
 	},
-	getEditSuccessfn  : function(tab, td, rowData, col,collection) {
+	getEditSuccessfn  : function(tab, td, rowData, columnName,collection) {
 		return function(response, newValue) {
 			var table = $('#table_'+tab).DataTable();
 			var id = rowData['DT_RowId'];
@@ -332,7 +332,7 @@ var actions = {
         	var result = $.grep(eData, function(e){ 
 							               	 return e[actions.type.keyField] == rowData[actions.type.keyField];
 							                });
-        	var columnName = table.settings()[0].aoColumns[col].data;
+//        	var columnName = table.settings()[0].aoColumns[col].data;
         	if (newValue!=null&&newValue.constructor.name == "Date") { 
         		newValue = moment(newValue).format("YYYY-MM-DD HH:mm:ss");
 			}
@@ -372,6 +372,8 @@ var actions = {
 			cell["createdCell"] = function (td, cellData, rowData, row, col) {
 		 			if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
 		 				$(td).addClass( "editInline" );
+		 				columnName = data.properties[col].data;
+		 				$(td).addClass( columnName );
 		 	        	var table = $('#table_'+tab).DataTable();
 		 	        	collection = null;
 		 	        	if(type=='select'){
@@ -379,7 +381,7 @@ var actions = {
 		 	        		collectionColumn = rowData[column];
 		 	        		collection = data.extraDataSet[collectionColumn];
 		 	        	}
-		 				actions.applyEditable(tab,type,td, cellData, rowData, row, col,collection);
+		 				actions.applyEditable(tab,type,td, cellData, rowData, columnName,collection);
 		 			}
 			    };
 		}
@@ -442,7 +444,135 @@ var actions = {
 		}
 		return cell;
 	},
-	createdFirstCellColumn : function (td, cellData, rowData, row, col) {}
+	createdFirstCellColumn : function (td, cellData, rowData, row, col) {},
+	initTableOption : function (tab,data,options,renderFirsColumn,createdFirstCellColumn){
+		var exclude = [0];
+		if(typeof(data.uoms) == "undefined"||data.uoms==null){
+			data.uoms = [];
+		}
+		var uoms = data.uoms;
+		var invisible = options!=null&&(typeof(options.invisible) !== "undefined"&&options.invisible!=null)?options.invisible:null;
+		if(typeof(data.extraDataSet) !== "undefined"&&data.extraDataSet!=null){
+			$.each(data.extraDataSet, function( index, value ) {
+				if(value!=null){
+					var collection = value;
+		            $.each(collection, function( i, vl ) {
+		            	vl['value']=vl['ID'];
+		            	vl['text']=vl['NAME'];
+		            });
+				}
+			});
+		}
+		if(typeof(uoms) !== "undefined"&&uoms!=null){
+			$.each(uoms, function( index, value ) {
+				var collection = value['data'];
+				exclude.push(uoms[index]["targets"]);
+				uoms[index]["render"] = function ( data, type, row ) {
+								                var result = $.grep(collection, function(e){ 
+									                return e['ID'] == data;
+									                });
+												if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined" &&result[0].hasOwnProperty('NAME')){
+			                						return value['COLUMN_NAME']=="ALLOC_TYPE"?result[0]['NAME']:result[0]['NAME'];
+												}
+												return data;
+									                
+	                					};
+	            $.each(collection, function( i, vl ) {
+	            	vl['value']=vl['ID'];
+	            	vl['text']=vl['NAME'];
+	            });
+	            uoms[index]["createdCell"] = function (td, cellData, rowData, row, col) {
+	            	if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
+		 				$(td).addClass( "editInline" );
+		 				columnName = data.properties[col].data;
+		 				$(td).addClass( columnName );
+		 				$(td).editable({
+			        	    type: 'select',
+			        	    title: 'edit',
+			        	    emptytext: '',
+			        	    value:cellData,
+			        	    showbuttons:false,
+			        	    source: collection,
+			        	    success: actions.getEditSuccessfn(tab,td, rowData, columnName,collection),
+			        	});
+		 			}
+	   			}
+			});
+		}
+
+		var original = Array.apply(null, Array(data.properties.length)).map(function (_, i) {return i;});
+		var finalArray = $(original).not(exclude).get();
+
+		$.each(finalArray, function( i, cindex ) {
+			var type = typetoclass(data.properties[cindex].INPUT_TYPE);
+			var cell = actions.getCellProperty(data,tab,type,cindex);
+			if(invisible!=null&&$.inArray(data.properties[cindex].data, invisible)>=0){
+				cell['visible']=false;
+			}
+    		uoms.push(cell);
+        });
+		
+		var phase = {"targets": 0,
+					"render": renderFirsColumn,
+		  			};
+		if(createdFirstCellColumn!=null) phase["createdCell"] = createdFirstCellColumn;
+		uoms.push(phase);
+		
+		var  marginLeft = 0;
+		var  tblWdth = 0;
+		$.each(data.properties, function( ip, vlp ) {
+ 			if(ip==0){
+//  				vlp['className']= 'headcol';
+ 				marginLeft = vlp['width'];
+ 			}
+ 			var iw = (vlp['width']>1?vlp['width']:100);
+ 			tblWdth+=iw;
+ 			vlp['width']= iw+"px";
+        });
+		$('#table_'+tab).css('width',(tblWdth)+'px');
+		
+		option = {data: data.dataSet,
+		          columns: data.properties,
+		          destroy: true,
+		          "columnDefs": uoms,
+		          "scrollX": true,
+		         "autoWidth": false,
+		       	"scrollY":        "270px",
+//		                "scrollCollapse": true,
+				"paging":         false,
+				"dom": '<"#toolbar_'+tab+'">frtip',
+				/* initComplete: function () {
+					var cls = this.api().columns();
+		            cls.every( function () {
+		                var column = this;
+		                var ft = $(column.footer());
+		                ft.html("keke");
+		                var select = $('<select><option value=""></option></select>')
+		                    .appendTo( $(column.footer()).empty() );
+		            } );
+		        }, */
+		        /* "footerCallback": function ( row, data, start, end, display ) {
+		            var cls = this.api().columns();
+		            cls.every( function () {
+		                var column = this;
+		                var ft = $(column.footer());
+		                ft.html("keke");
+		            } );
+		        }, */
+//				 "dom": '<"top"i>rt<"bottom"flp><"clear">'
+//		           paging: false,
+//		          searching: false 
+		    };
+		    
+	    if (options!=null) {
+	 		if(typeof(options.tableOption) !== "undefined"&&options.tableOption!=null){
+	 			jQuery.extend(option, options.tableOption);
+	 		}
+		}
+		
+		var tbl = $('#table_'+tab).DataTable(option);
+		return tbl;
+	}
 }
 
 

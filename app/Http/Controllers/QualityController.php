@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 use App\Models\CodeQltySrcType;
 use Carbon\Carbon;
 use App\Models\PdVoyage;
+use App\Models\QltyDataDetail;
+use App\Models\QltyProductElementType;
+use App\Models\QltyData;
 use App\Models\PdVoyageDetail;
 use App\Models\Storage;
 use Illuminate\Http\Request;
@@ -42,7 +45,8 @@ class QualityController extends CodeController {
     	$extraDataSet = [];
     	$dataSet = null;
     	$codeQltySrcType = CodeQltySrcType::getTableName();
-	    $uoms = $properties['uoms'];
+//     	$qltData = $mdl::getTableName();
+    	$uoms = $properties['uoms'];
 	    $sourceTypekey = array_search('CodeQltySrcType', array_column($uoms, 'id'));
 	    $sourceTypes = $uoms[$sourceTypekey]['data'];
 	    $objectType = null;
@@ -64,8 +68,8 @@ class QualityController extends CodeController {
 								    							->where("$objectType.FACILITY_ID",'=',$facility_id) ;
 									})
 							    	->where($where)
-							    	->whereDate($filterBy, '>=', $occur_date)
-							    	->whereDate($filterBy, '<=', $date_end)
+							    	->whereDate("$dcTable.$filterBy", '>=', $occur_date)
+							    	->whereDate("$dcTable.$filterBy", '<=', $date_end)
 							    	->select(
 							    			"$dcTable.ID as $dcTable",
 							    			"$dcTable.ID as DT_RowId",
@@ -197,6 +201,66 @@ class QualityController extends CodeController {
     	}
     	return response()->json(['dataSet'=>$srcTypeData,
     							'postData'=>$postData]);
+    }
+    
+    public function edit(Request $request){
+    	$postData = $request->all();
+    	$id = $postData['id'];
+//     	$ptype= QltyData::find($id)->get('PRODUCT_TYPE');
+    	$dcTable =QltyData::getTableName();
+    	$qltyDataDetail =QltyDataDetail::getTableName();
+    	$qltyProductElementType =QltyProductElementType::getTableName();
+    	
+    	$properties = $this->getOriginProperties($qltyDataDetail);
+    	 
+    	$dataSet = QltyProductElementType::join($dcTable,function ($query) use ($dcTable,$id,$qltyProductElementType) {
+										    		$query->on("$dcTable.PRODUCT_TYPE",'=',"$qltyProductElementType.PRODUCT_TYPE")
+										    				->where("$dcTable.ID",'=',$id) ;
+									    	})
+									    	->leftJoin($qltyDataDetail, function($join) use ($qltyDataDetail,$id,$qltyProductElementType){
+									    				$join->on("$qltyDataDetail.ELEMENT_TYPE", '=', "$qltyProductElementType.ID")
+									    					->where("$qltyDataDetail.QLTY_DATA_ID",'=',$id);
+									    	})
+								    		->select(
+								    				"$qltyProductElementType.ORDER",
+								    				"$qltyProductElementType.NAME",
+								    				"$qltyProductElementType.PRODUCT_TYPE",
+								    				"$qltyProductElementType.DEFAULT_UOM",
+								    				/* "$qltyDataDetail.ELEMENT_TYPE",
+								    				"$qltyDataDetail.VALUE",
+								    				"$qltyDataDetail.UOM",
+								    				"$qltyDataDetail.GAMMA_C7",
+								    				"$qltyDataDetail.MOLE_FACTION",
+								    				"$qltyDataDetail.MASS_FRACTION",
+								    				"$qltyDataDetail.NORMALIZATION", */
+								    				"$qltyDataDetail.*"
+								    				)
+						    				->orderBy("$qltyProductElementType.ORDER")
+						    				->orderBy("$qltyProductElementType.NAME")
+						    				->get();
+									    	
+    	$results = ['properties'	=>$properties,
+    				'dataSet'		=>$dataSet,
+//  	    			'uoms'			=>[],
+// 	    			'locked'		=>$locked,
+// 	    			'rights'		=>session('statut')
+    	];
+    	return response()->json($results);
+    }
+    
+    public function getDetailDataSet(Request $request){
+    	//     	sleep(2);
+    	$postData = $request->all();
+    	$facility_id = $postData['Facility'];
+    	$name = $postData['name'];
+    	$srcTypeData = [];
+    	if ($name=='SRC_TYPE') {
+    		$src_type_id = $postData['value'];
+    		$objectType = $postData['srcType'];
+    		$srcTypeData = $this->getExtraDatasetBy($objectType,$facility_id);
+    	}
+    	return response()->json(['dataSet'=>$srcTypeData,
+    			'postData'=>$postData]);
     }
     
     
