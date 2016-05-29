@@ -195,3 +195,11 @@ table.dataTable {
 	color:gray;
 	margin: 5px;
 }
+
+.secondaryTable table.dataTable thead th,.secondaryTable table.dataTable thead td {
+    padding: 10px;
+}
+
+.secondaryTable .UOM,.secondaryTable .Quantity {
+   width: 100px;
+}

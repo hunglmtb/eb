@@ -94,13 +94,15 @@ class CodeController extends EBController {
     	->orderBy('FIELD_ORDER')
     	->get(['COLUMN_NAME as data',
     			'COLUMN_NAME as name',
-    			'FDC_WIDTH as width',
+     			'FDC_WIDTH as width',
     			'LABEL as title',
     			"DATA_METHOD",
     			"INPUT_ENABLE",
     			'INPUT_TYPE',
     			'VALUE_MIN',
     			'VALUE_FORMAT',
+    			'ID',
+    			'FIELD_ORDER',
     			'VALUE_MAX']);
     	return $properties;
     }

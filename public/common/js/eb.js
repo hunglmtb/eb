@@ -354,7 +354,7 @@ var actions = {
         	rowData[columnName] = newValue;
 			table.row( '#'+rowData['DT_RowId'] ).data(rowData);
         	$(td).css('color', 'red');
-        	
+        	table.draw(false);
         	//dependence columns
         	actions.dominoColumns(columnName,newValue,tab,rowData,collection);
         	 /* var tabindex = $(this).attr('tabindex');
@@ -387,6 +387,16 @@ var actions = {
 		}
 		switch(type){
 		case "text":
+			columnName = data.properties[cindex].data;
+			if(columnName=='UOM'){
+				cell["render"] = function ( data2, type2, row ) {
+					var rendered = data2;
+					if(data2==null){
+						rendered = row.DEFAULT_UOM;
+					}
+					return rendered;
+				};
+			}
 	    	break;
 		case "number":
 			cell["render"] = function ( data2, type2, row ) {
@@ -465,8 +475,10 @@ var actions = {
 		}
 		if(typeof(uoms) !== "undefined"&&uoms!=null){
 			$.each(uoms, function( index, value ) {
-				var collection = value['data'];
 				exclude.push(uoms[index]["targets"]);
+				if(value!=null&&value.hasOwnProperty('render')) return;
+				
+				var collection = value['data'];
 				uoms[index]["render"] = function ( data, type, row ) {
 								                var result = $.grep(collection, function(e){ 
 									                return e['ID'] == data;
@@ -518,25 +530,40 @@ var actions = {
 		if(createdFirstCellColumn!=null) phase["createdCell"] = createdFirstCellColumn;
 		uoms.push(phase);
 		
+		var autoWidth = false;
+		if( options!=null&&
+				(typeof(options.tableOption) !== "undefined"&&
+						options.tableOption!=null)&&
+						(typeof(options.tableOption.autoWidth) !== "undefined"&&
+								options.tableOption.autoWidth!=null)){
+			autoWidth = options.tableOption.autoWidth;
+		}
+		
 		var  marginLeft = 0;
 		var  tblWdth = 0;
 		$.each(data.properties, function( ip, vlp ) {
- 			if(ip==0){
+			if(autoWidth){
+				delete vlp['width'];
+			}
+			else{
+				if(ip==0){
 //  				vlp['className']= 'headcol';
- 				marginLeft = vlp['width'];
- 			}
- 			var iw = (vlp['width']>1?vlp['width']:100);
- 			tblWdth+=iw;
- 			vlp['width']= iw+"px";
+					marginLeft = vlp['width'];
+				}
+				var iw = (vlp['width']>1?vlp['width']:100);
+				tblWdth+=iw;
+				vlp['width']= iw+"px";
+			}
         });
-		$('#table_'+tab).css('width',(tblWdth)+'px');
+		
+		if(!autoWidth) $('#table_'+tab).css('width',(tblWdth)+'px');
 		
 		option = {data: data.dataSet,
 		          columns: data.properties,
 		          destroy: true,
 		          "columnDefs": uoms,
 		          "scrollX": true,
-		         "autoWidth": false,
+		         "autoWidth": autoWidth,
 		       	"scrollY":        "270px",
 //		                "scrollCollapse": true,
 				"paging":         false,

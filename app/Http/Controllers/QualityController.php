@@ -138,7 +138,9 @@ class QualityController extends CodeController {
     			}
     		}
     		else{
+//     			\DB::enableQueryLog();
 				$bySrcTypes = $dataSet->groupBy('SRC_ID');
+// 				\Log::info(\DB::getQueryLog());
 				if ($bySrcTypes) {
 					foreach($bySrcTypes as $key => $srcType ){
 						$srcTypeID = $srcType[0]->SRC_TYPE;
@@ -222,6 +224,7 @@ class QualityController extends CodeController {
 									    					->where("$qltyDataDetail.QLTY_DATA_ID",'=',$id);
 									    	})
 								    		->select(
+								    				"$qltyProductElementType.ID as DT_RowId",
 								    				"$qltyProductElementType.ORDER",
 								    				"$qltyProductElementType.NAME",
 								    				"$qltyProductElementType.PRODUCT_TYPE",
@@ -239,12 +242,30 @@ class QualityController extends CodeController {
 						    				->orderBy("$qltyProductElementType.NAME")
 						    				->get();
 									    	
-    	$results = ['properties'	=>$properties,
-    				'dataSet'		=>$dataSet,
-//  	    			'uoms'			=>[],
-// 	    			'locked'		=>$locked,
-// 	    			'rights'		=>session('statut')
-    	];
+    	$datasetGroups = $dataSet->groupBy(function ($item, $key) {
+									    return $item['DEFAULT_UOM']=='Mole fraction'?'MOLE_FACTION':'NONE_MOLE_FACTION';
+									});
+    	
+	    $results = [];
+	    if ($datasetGroups->has('NONE_MOLE_FACTION')) {
+	    	$gasElementColumns = ['ELEMENT_TYPE','VALUE','UOM'];
+		    $noneMole = $properties->groupBy(function ($item, $key) use ($gasElementColumns) {
+										    return in_array($item->name, $gasElementColumns)?'NONE_MOLE_FACTION':'MOLE_FACTION';
+		    });
+		    $results['NONE_MOLE_FACTION'] = ['properties'	=>$noneMole['NONE_MOLE_FACTION'],
+		    								'dataSet'		=>$datasetGroups['NONE_MOLE_FACTION']];
+	    }
+	    
+	    if ($datasetGroups->has('MOLE_FACTION')) {
+	    	$oilElementColumns = ['VALUE','UOM'];
+	    	$noneMole = $properties->groupBy(function ($item, $key) use ($oilElementColumns) {
+										    return in_array($item->name, $oilElementColumns)?'NONE_MOLE_FACTION':'MOLE_FACTION';
+	    	});
+    	
+    		$results['MOLE_FACTION'] = ['properties'	=>$noneMole['MOLE_FACTION'],
+	    								'dataSet'		=>$datasetGroups['MOLE_FACTION']];
+	    }
+	    
     	return response()->json($results);
     }
     
