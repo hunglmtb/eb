@@ -200,6 +200,9 @@ table.dataTable {
     padding: 10px;
 }
 
+.secondaryTable table.dataTable tfoot th, .secondaryTable table.dataTable tfoot td {
+    padding: 2px;
+}
 .secondaryTable .UOM,.secondaryTable .Quantity {
    width: 100px;
 }

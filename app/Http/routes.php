@@ -102,6 +102,7 @@ Route::post('quality/load',['uses' =>'QualityController@load','middleware' => 's
 Route::post('quality/save', 'QualityController@save');
 Route::post('quality/loadsrc', 'QualityController@loadsrc');
 Route::post('quality/edit', 'QualityController@edit');
+Route::post('quality/edit/saving', 'QualityController@editSaving');
 
 //---------
 Route::post('fo/loadSafety', 'FOController@loadSafety');

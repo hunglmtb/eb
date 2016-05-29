@@ -15,10 +15,10 @@ QUALITY DATA CAPTURE
 	actions.loadUrl = "/quality/load";
 	actions.saveUrl = "/quality/save";
 	actions.type = {
-					idName:['{{config("constants.qualityId")}}','{{config("constants.flFlowPhase")}}'],
-					keyField:'{{config("constants.qualityId")}}',
+					idName:['ID'],
+					keyField:'ElementTypeId',
 					saveKeyField : function (model){
-						return '{{config("constants.qualityIdColumn")}}';
+						return 'ID';
 						},
 					};
 	actions.extraDataSetColumns = {'SRC_ID':'SRC_TYPE'};
@@ -125,6 +125,7 @@ QUALITY DATA CAPTURE
 		});
     }
 
+    var editId = false;
 	actions['editRow'] = function (id,rowData){
 		$('#tableEditGroup').html("<p> Loading...</p>");
 		$('#tableEditGroup').css("display", "block");
@@ -133,12 +134,15 @@ QUALITY DATA CAPTURE
 // 		$('#table_editrow').html("");
 		$('#cationEditGroup').html(rowData.CODE);
 		editDataPosting = {id:id};
+		delete actions.editedData['editrowgas'];
+		delete actions.editedData['editrowoil'];
 		$.ajax({
 			url: "/quality/edit",
 			type: "post",
 			data: editDataPosting,
 			success:function(data){
 // 				$('#tableEditGroup').html(JSON.stringify(data));
+				editId = id;
 				$('#tableEditGroup').css("display", "none");
 				$('#contentview').css("display", "block");
 				tab = 'editrowgas';
@@ -181,7 +185,35 @@ QUALITY DATA CAPTURE
 			}
 		});
 	}
-
+ 
+	var saveEditGroup = function() {
+		if(editId&&editId!=null&&(actions.editedData.hasOwnProperty('editrowoil')||actions.editedData.hasOwnProperty('editrowgas'))){
+			showWaiting();
+			editData = {
+						id:editId,
+						oil: actions.editedData['editrowoil'],
+						gas: actions.editedData['editrowgas'],
+					};
+			$.ajax({
+				url: '/quality/edit/saving',
+				type: "post",
+				data: editData,
+				success:function(data){
+					console.log ( "success saveEditGroup "+JSON.stringify(data) );
+					alert(JSON.stringify(data));
+					hideWaiting();
+					$('#divEditGroup').hide('fast');
+				},
+				error: function(data) {
+					hideWaiting();
+					console.log ( "error saveEditGroup ");
+				}
+			});
+		}
+		else{
+			alert('data is empty');
+		}
+	}
 	
 </script>
 @stop

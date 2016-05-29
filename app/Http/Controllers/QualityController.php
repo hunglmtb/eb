@@ -224,6 +224,7 @@ class QualityController extends CodeController {
 									    					->where("$qltyDataDetail.QLTY_DATA_ID",'=',$id);
 									    	})
 								    		->select(
+ 								    				"$qltyProductElementType.ID as ElementTypeId",
 								    				"$qltyProductElementType.ID as DT_RowId",
 								    				"$qltyProductElementType.ORDER",
 								    				"$qltyProductElementType.NAME",
@@ -238,8 +239,8 @@ class QualityController extends CodeController {
 								    				"$qltyDataDetail.NORMALIZATION", */
 								    				"$qltyDataDetail.*"
 								    				)
-						    				->orderBy("$qltyProductElementType.ORDER")
-						    				->orderBy("$qltyProductElementType.NAME")
+// 						    				->orderBy("$qltyProductElementType.ORDER")
+// 						    				->orderBy("$qltyProductElementType.NAME")
 						    				->get();
 									    	
     	$datasetGroups = $dataSet->groupBy(function ($item, $key) {
@@ -282,6 +283,87 @@ class QualityController extends CodeController {
     	}
     	return response()->json(['dataSet'=>$srcTypeData,
     			'postData'=>$postData]);
+    }
+    
+    public function editSaving(Request $request){
+    	$postData = $request->all();
+    	$id = $postData['id'];
+    	
+    	$qltyDataEntry = QltyData::find($id);
+    	if ($qltyDataEntry) {
+    		$productType = $qltyDataEntry->PRODUCT_TYPE;
+    		switch ($productType){
+    			case 1://oil
+   					$attributes = ['QLTY_DATA_ID'=>$id];
+//    					$values = ['QLTY_DATA_ID'=>$id];
+   					$oils = array_key_exists("oil", $postData)?$postData['oil']:null;
+   					if ($oils&&count($oils)>0) {
+	    				foreach($oils as $oil ){
+	    					/* if (array_key_exists("ID", $oil)) {
+	    						unset($oil["ID"]);
+	    					} */
+	    					$attributes['ELEMENT_TYPE'] = $oil['DT_RowId'];
+   							$oil['QLTY_DATA_ID'] = $id;
+   							$oil['ELEMENT_TYPE'] = $oil['DT_RowId'];
+   							QltyDataDetail::updateOrCreate($attributes,$oil);
+	    				};
+   					}
+   					$gases = array_key_exists("gas", $postData)?$postData['gas']:null;
+   					if ($gases&&count($gases)>0) {
+	    				foreach($gases as $gas ){
+	    					/* if (array_key_exists("ID", $gas)) {
+	    						unset($gas["ID"]);
+	    					} */
+	    					$attributes['ELEMENT_TYPE'] = $gas['DT_RowId'];
+	    					$gas['QLTY_DATA_ID'] = $id;
+	    					$gas['ELEMENT_TYPE'] = $gas['DT_RowId'];
+		    				QltyDataDetail::updateOrCreate($attributes,$gas);
+	    				};
+   					}
+    				break;
+    			case 2://gas
+    				$constantElementTypes = QltyProductElementType::where("PRODUCT_TYPE",'=', $productType)->select("MOL_WEIGHT","CODE","ID")->get();
+    				
+    				$gases = array_key_exists("gas", $postData)?$postData['gas']:null;
+    				if ($gases) {
+	   					$attributes = ['QLTY_DATA_ID'=>$id];
+	   					$qltDetails = [];
+	    				foreach($constantElementTypes as $constantElementType ){
+	// 	   					$entries[$eid] = [];
+		    				$attributes['ELEMENT_TYPE'] = $constantElementType->ID;
+		    				$aqltyDataDetail = QltyDataDetail::firstOrNew($attributes);
+		    				$aqltyDataDetail->fill($attributes);
+		    				$qltDetails[$constantElementType->ID] = $aqltyDataDetail;
+	    				}
+	    				
+	    				if ($gases&&count($gases)>0) {
+	    					foreach($gases as $gas ){
+	    						$qltd = $qltDetails[$gas['DT_RowId']];
+	    						$qltd->fill($gas);
+	    					};
+	    					
+	    					$totalMole = 0;
+	    					foreach($constantElementTypes as $constantElementType ){
+	    						$qltd = $qltDetails[$constantElementType->ID];
+	    						$qltd->{'calculated'} = $qltd->MOLE_FACTION*$constantElementType->MOL_WEIGHT;
+	    						$totalMole+=$qltd->MOLE_FACTION*$constantElementType->MOL_WEIGHT;
+	    					};
+	    					
+	    					if ($totalMole!=0) {
+		    					foreach($qltDetails as $qltd ){
+		    						$qltd->MASS_FRACTION = $qltd->calculated/$totalMole;
+		    						unset($qltd->calculated);
+		    						$qltd->save();
+		    					};
+	    					}
+	    					else response()->json('total = 0');
+	    				}
+	    				else response()->json('no change data detected');
+    				}
+    				else response()->json('empty data');
+    		}
+    	}
+    	return response()->json('Edit Successfullly');
     }
     
     
