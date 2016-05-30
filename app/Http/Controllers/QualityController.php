@@ -224,7 +224,7 @@ class QualityController extends CodeController {
 									    					->where("$qltyDataDetail.QLTY_DATA_ID",'=',$id);
 									    	})
 								    		->select(
- 								    				"$qltyProductElementType.ID as ElementTypeId",
+ 								    				"$qltyProductElementType.ID as ID",
 								    				"$qltyProductElementType.ID as DT_RowId",
 								    				"$qltyProductElementType.ORDER",
 								    				"$qltyProductElementType.NAME",
@@ -365,16 +365,4 @@ class QualityController extends CodeController {
     	}
     	return response()->json('Edit Successfullly');
     }
-    
-    
-    
-	/* protected function getAffectedObjects($mdlName, $columns, $newData) {
-		$mdl = "App\Models\\".$mdlName;
-		$idField = $mdl::$idField;
-		$objectId = $newData [$idField];
-// 		$flowPhase = $newData [config ( "constants.flFlowPhase" )];
-		$aFormulas = \FormulaHelpers::getAffects ( $mdlName, $columns, $objectId);
-		return $aFormulas;
-	} */
-    
 }

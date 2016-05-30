@@ -16,14 +16,15 @@ QUALITY DATA CAPTURE
 	actions.saveUrl = "/quality/save";
 	actions.type = {
 					idName:['ID'],
-					keyField:'ElementTypeId',
+					keyField:'ID',
 					saveKeyField : function (model){
 						return 'ID';
 						},
 					};
 	actions.extraDataSetColumns = {'SRC_ID':'SRC_TYPE'};
 	
-	actions.dominoColumns = function(columnName,newValue,tab,rowData,collection){
+	actions.dominoColumns = function(columnName,newValue,tab,rowData,collection,table,td){
+		createdFirstCellColumnByTable(table,rowData,td,tab);
 		if(columnName=='SRC_TYPE') {
 			postData = actions.loadedData[tab];
 			var srcType = null;
@@ -46,7 +47,7 @@ QUALITY DATA CAPTURE
 				success:function(data){
 	// 				rowData[]
 					dataSet = data.dataSet;
-					var table = $('#table_'+tab).DataTable();
+// 					var table = $('#table_'+tab).DataTable();
 					dependenceColumnName = 'SRC_ID';
 					colName = 'SRC_ID';
 
@@ -78,7 +79,7 @@ QUALITY DATA CAPTURE
 	};
 
 
-	options.keepColumns = ['SRC_ID','SRC_TYPE'];
+	addingOptions.keepColumns = ['SAMPLE_DATE','TEST_DATE','EFFECTIVE_DATE','PRODUCT_TYPE','SRC_ID','SRC_TYPE'];
 
 	var renderFirsColumn = actions.renderFirsColumn;
 	actions.renderFirsColumn  = function ( data, type, rowData ) {
@@ -185,7 +186,13 @@ QUALITY DATA CAPTURE
 			}
 		});
 	}
- 
+
+	var closeEditWindow = function() {
+		$('#divEditGroup').hide('fast');
+		delete actions.editedData['editrowgas'];
+		delete actions.editedData['editrowoil'];
+	}
+	
 	var saveEditGroup = function() {
 		if(editId&&editId!=null&&(actions.editedData.hasOwnProperty('editrowoil')||actions.editedData.hasOwnProperty('editrowgas'))){
 			showWaiting();
@@ -202,7 +209,7 @@ QUALITY DATA CAPTURE
 					console.log ( "success saveEditGroup "+JSON.stringify(data) );
 					alert(JSON.stringify(data));
 					hideWaiting();
-					$('#divEditGroup').hide('fast');
+					closeEditWindow();
 				},
 				error: function(data) {
 					hideWaiting();
@@ -214,7 +221,7 @@ QUALITY DATA CAPTURE
 			alert('data is empty');
 		}
 	}
-	
+
 </script>
 @stop
 
@@ -223,7 +230,7 @@ QUALITY DATA CAPTURE
 <div style="background:#eee;border:2px solid #666;display:none;position: fixed; width: 950px; height: 430px; z-index: 1; left:50%; margin-left:-450px; top:145px" id="divEditGroup">
 	<div onClick="saveEditGroup()" style="cursor:pointer; position: absolute; right:72px;top:-27px;border:2px solid #666;background:#eee; width: 82px; height: 23px;line-height:23px; z-index: 1" id="layer1">
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font size="2">Save</font></div>
-	<div onClick="$('#divEditGroup').hide('fast')" style="cursor:pointer;position: absolute; right:-2px;top:-27px;border:2px solid #666;background:#eee; width: 75px; height: 23px;line-height:23px; z-index: 1" id="layer1">&nbsp;&nbsp;&nbsp;&nbsp;
+	<div onClick="closeEditWindow()" style="cursor:pointer;position: absolute; right:-2px;top:-27px;border:2px solid #666;background:#eee; width: 75px; height: 23px;line-height:23px; z-index: 1" id="layer1">&nbsp;&nbsp;&nbsp;&nbsp;
 		<font size="2">Close</font>
 	</div>
 	<div id="contentview" style="width:100%;height:100%">

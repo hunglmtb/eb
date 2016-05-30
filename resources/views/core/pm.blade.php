@@ -90,6 +90,7 @@ $subMenus = [array('title' => 'FLOW STREAM', 'link' => 'flow'),
 		}
 
 		actions.editedData = {};
+		actions.deleteData = {};
 		alert(JSON.stringify(data.updatedData));
 		if(data.hasOwnProperty('lockeds')){
 			alert(JSON.stringify(data.lockeds));

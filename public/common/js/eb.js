@@ -90,7 +90,7 @@ var actions = {
 				},
 	shouldLoad : function(data){return false;},
 	afterGotSavedData : function(data,table,key){},
-	dominoColumns : function(columnName,newValue,tab,rowData,collection){},
+	dominoColumns : function(columnName,newValue,tab,rowData,collection,td){},
 	loadNeighbor: function (){
 		if (actions.shouldLoad()) {
 			actions.doLoad(false);
@@ -309,7 +309,7 @@ var actions = {
 		case "select":
 			editable['type'] = type;
 			editable['source'] = collection;
-			editable['value'] = cellData==null?(collection[0]!=null?collection[0].ID:0):cellData;
+			editable['value'] = cellData==null?(collection&&collection[0]!=null?collection[0].ID:0):cellData;
 			$(td).editable(editable);
 			return;
 	    	break;
@@ -321,45 +321,50 @@ var actions = {
 	},
 	getEditSuccessfn  : function(tab, td, rowData, columnName,collection) {
 		return function(response, newValue) {
-			var table = $('#table_'+tab).DataTable();
-			var id = rowData['DT_RowId'];
-			var isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
-			var recordData = actions.editedData;
-	    	if (!(tab in recordData)) {
-	    		recordData[tab] = [];
-	    	}
-	    	var eData = recordData[tab];
-        	var result = $.grep(eData, function(e){ 
-							               	 return e[actions.type.keyField] == rowData[actions.type.keyField];
-							                });
-//        	var columnName = table.settings()[0].aoColumns[col].data;
-        	if (newValue!=null&&newValue.constructor.name == "Date") { 
-        		newValue = moment(newValue).format("YYYY-MM-DD HH:mm:ss");
-			}
-        	if (result.length == 0) {
-	        	var editedData = {};
-	        	 $.each(actions.type.idName, function( i, vl ) {
-		        	editedData[vl] = rowData[vl];
-	             });
-	        	editedData[columnName] = newValue;
-	        	if(isAdding) {
-	        		editedData['isAdding'] = true;
-	        	}
-	        	editedData['DT_RowId'] = rowData['DT_RowId'];
-        		eData.push(editedData);
-        	}
-        	else{
-        		result[0][columnName] = newValue;
-        	}
+        	rowData = actions.putModifiedData(tab,columnName,newValue,rowData);
         	rowData[columnName] = newValue;
-			table.row( '#'+rowData['DT_RowId'] ).data(rowData);
+        	var table = $('#table_'+tab).dataTable();
+			table.api().row( '#'+rowData['DT_RowId'] ).data(rowData);
         	$(td).css('color', 'red');
-        	table.draw(false);
+        	table.api().draw(false);
         	//dependence columns
-        	actions.dominoColumns(columnName,newValue,tab,rowData,collection);
+        	actions.dominoColumns(columnName,newValue,tab,rowData,collection,table,td);
         	 /* var tabindex = $(this).attr('tabindex');
             $('[tabindex=' + (tabindex +1)+ ']').focus(); */
 	    };
+	},
+	putModifiedData : function(tab,columnName,newValue,rowData){
+		var table = $('#table_'+tab).dataTable();
+		var id = rowData['DT_RowId'];
+		var isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
+		var recordData = actions.editedData;
+    	if (!(tab in recordData)) {
+    		recordData[tab] = [];
+    	}
+    	var eData = recordData[tab];
+    	var result = $.grep(eData, function(e){ 
+						               	 return e[actions.type.keyField] == rowData[actions.type.keyField];
+						                });
+//    	var columnName = table.settings()[0].aoColumns[col].data;
+    	if (newValue!=null&&newValue.constructor.name == "Date") { 
+    		newValue = moment(newValue).format("YYYY-MM-DD HH:mm:ss");
+		}
+    	if (result.length == 0) {
+        	var editedData = {};
+        	 $.each(actions.type.idName, function( i, vl ) {
+	        	editedData[vl] = rowData[vl];
+             });
+        	editedData[columnName] = newValue;
+        	if(isAdding) {
+        		editedData['isAdding'] = true;
+        	}
+        	editedData['DT_RowId'] = rowData['DT_RowId'];
+    		eData.push(editedData);
+    	}
+    	else{
+    		result[0][columnName] = newValue;
+    	}
+    	return rowData;
 	},
 	getCellType : function(data,type,cindex){
 		type = actions.extraDataSetColumns.hasOwnProperty(data.properties[cindex].data)?'select':type;

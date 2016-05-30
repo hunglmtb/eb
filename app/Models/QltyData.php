@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Models;
-use App\Models\DynamicModel;
+use App\Models\EbBussinessModel;
 
-class QltyData extends DynamicModel
+class QltyData extends EbBussinessModel
 {
 	protected $table = 'QLTY_DATA';
 	protected $primaryKey = 'ID';
@@ -25,6 +25,8 @@ class QltyData extends DynamicModel
 							'QLTY_VALUE5',
 							'ENGY_RATE'];
 	
+	public  static  $idField = 'ID';
+	public  static  $typeName = 'QLTY';
 	
 	public function CodeQltySrcType()
 	{
@@ -41,6 +43,14 @@ class QltyData extends DynamicModel
 					->whereDate('EFFECTIVE_DATE','<=',$occur_date)
 					->orderBy('EFFECTIVE_DATE','desc')
 					->first();
+	}
+	
+	public function delete()
+	{
+		// Delete all of the products that have the same ids...
+		QltyDataDetail::where("QLTY_DATA_ID", $this->primaryKey)->delete();
+		// Finally, delete this category...
+		return parent::delete();
 	}
 	
 }
