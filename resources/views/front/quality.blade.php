@@ -35,11 +35,19 @@ QUALITY DATA CAPTURE
 				srcType = result[0]['CODE'];
 			}
 			else return;
-	
+
+			DT_RowId = rowData['DT_RowId'];
 			srcData = {name : columnName,
 						value : newValue,
 						srcType : srcType,
 						Facility : postData['Facility']};
+
+			dependenceColumnName = 'SRC_ID';
+			rowData[dependenceColumnName] = '';
+			td = $('#'+DT_RowId+" ."+dependenceColumnName);
+			td.editable("destroy");
+			table.api().row( '#'+DT_RowId ).data(rowData);
+			
 			$.ajax({
 				url: "/quality/loadsrc",
 				type: "post",
@@ -48,10 +56,8 @@ QUALITY DATA CAPTURE
 	// 				rowData[]
 					dataSet = data.dataSet;
 // 					var table = $('#table_'+tab).DataTable();
-					dependenceColumnName = 'SRC_ID';
-					colName = 'SRC_ID';
 
-					td = $('#'+rowData['DT_RowId']+" ."+colName);
+					td = $('#'+DT_RowId+" ."+dependenceColumnName);
 					td.editable("destroy");
 					cellData=null;
 					if(typeof(dataSet) !== "undefined"&&dataSet!=null){
@@ -64,9 +70,9 @@ QUALITY DATA CAPTURE
 						});
 					}
 
- 	 				actions.applyEditable(tab,'select',td, cellData, rowData, colName,dataSet);
 					rowData[dependenceColumnName] = cellData;
-					table.row( '#'+rowData['DT_RowId'] ).data(rowData);
+ 	 				actions.applyEditable(tab,'select',td, cellData, rowData, dependenceColumnName,dataSet);
+// 					table.api().row( '#'+DT_RowId ).data(rowData);
 					
 					console.log ( "success:function dominoColumns "+data );
 				},

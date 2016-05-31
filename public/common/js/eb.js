@@ -309,7 +309,7 @@ var actions = {
 		case "select":
 			editable['type'] = type;
 			editable['source'] = collection;
-			editable['value'] = cellData==null?(collection&&collection[0]!=null?collection[0].ID:0):cellData;
+			editable['value'] = cellData==null?(collection!=null&&collection[0]!=null?collection[0].ID:0):cellData;
 			$(td).editable(editable);
 			return;
 	    	break;
