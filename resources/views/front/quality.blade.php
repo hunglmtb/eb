@@ -24,7 +24,6 @@ QUALITY DATA CAPTURE
 	actions.extraDataSetColumns = {'SRC_ID':'SRC_TYPE'};
 	
 	actions.dominoColumns = function(columnName,newValue,tab,rowData,collection,table,td){
-		createdFirstCellColumnByTable(table,rowData,td,tab);
 		if(columnName=='SRC_TYPE') {
 			postData = actions.loadedData[tab];
 			var srcType = null;
@@ -44,8 +43,8 @@ QUALITY DATA CAPTURE
 
 			dependenceColumnName = 'SRC_ID';
 			rowData[dependenceColumnName] = '';
-			td = $('#'+DT_RowId+" ."+dependenceColumnName);
-			td.editable("destroy");
+			dependencetd = $('#'+DT_RowId+" ."+dependenceColumnName);
+			dependencetd.editable("destroy");
 			table.api().row( '#'+DT_RowId ).data(rowData);
 			
 			$.ajax({
@@ -57,8 +56,8 @@ QUALITY DATA CAPTURE
 					dataSet = data.dataSet;
 // 					var table = $('#table_'+tab).DataTable();
 
-					td = $('#'+DT_RowId+" ."+dependenceColumnName);
-					td.editable("destroy");
+// 					dependencetd = $('#'+DT_RowId+" ."+dependenceColumnName);
+// 					dependencetd.editable("destroy");
 					cellData=null;
 					if(typeof(dataSet) !== "undefined"&&dataSet!=null){
 						$.each(dataSet, function( index, value ) {
@@ -71,9 +70,9 @@ QUALITY DATA CAPTURE
 					}
 
 					rowData[dependenceColumnName] = cellData;
- 	 				actions.applyEditable(tab,'select',td, cellData, rowData, dependenceColumnName,dataSet);
+ 	 				actions.applyEditable(tab,'select',dependencetd, cellData, rowData, dependenceColumnName,dataSet);
 // 					table.api().row( '#'+DT_RowId ).data(rowData);
-					
+					createdFirstCellColumnByTable(table,rowData,td,tab);
 					console.log ( "success:function dominoColumns "+data );
 				},
 				error: function(data) {
@@ -81,7 +80,7 @@ QUALITY DATA CAPTURE
 				}
 			});
 		}
-			
+		createdFirstCellColumnByTable(table,rowData,td,tab);
 	};
 
 

@@ -74,16 +74,16 @@
 	    	//remove in postdata
         	var eData = recordData[tab];
         	if(isAdding) {
-	    	var editedData = actions.editedData[tab];
-	    	if(editedData!=null){
-	        		var result = $.grep(editedData, function(e){ 
-	               	 return e[actions.type.keyField] == rowData[actions.type.keyField];
-	                });
-			    if (result.length > 0) {
-//					    	result[0]['deleted'] = true;
-			    	editedData.splice( $.inArray(result[0], editedData), 1 );
-			    }
-	    	}
+		    	var editedData = actions.editedData[tab];
+		    	if(editedData!=null){
+		        		var result = $.grep(editedData, function(e){ 
+		               	 return e[actions.type.keyField] == rowData[actions.type.keyField];
+		                });
+				    if (result.length > 0) {
+	//					    	result[0]['deleted'] = true;
+				    	editedData.splice( $.inArray(result[0], editedData), 1 );
+				    }
+		    	}
 		   	}
         	else{
 		    	eData.push({'ID':id});
