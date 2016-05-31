@@ -303,7 +303,9 @@ var actions = {
 			editable['viewformat'] = 'mm/dd/yyyy hh:ii';
 			editable['datetimepicker'] 	= 	{
 								          		weekStart: 1,
-								          		minuteStep :10
+								          		minuteStep :5,
+								          		showMeridian : true,
+//								          		startView:1
 								            };
 	    	break;
 		case "select":
