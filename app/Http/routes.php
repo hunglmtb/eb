@@ -85,24 +85,36 @@ Route::post('password/reset', 'Auth\PasswordController@postReset');
 
 //-----EB
 Route::post('code/list', 'CodeController@getCodes');
+
 Route::get('dc/flow', 'ProductManagementController@flow');
 Route::post('code/load',['uses' =>'FlowController@load','middleware' => 'saveWorkspace']);
 Route::post('code/save', 'FlowController@save');
+
 Route::get('dc/eu', 'ProductManagementController@eu');
 Route::post('eu/load',['uses' =>'EuController@load','middleware' => 'saveWorkspace']);
 Route::post('eu/save', 'EuController@save');
+
 Route::get('dc/storage',['uses' =>'ProductManagementController@storage','middleware' => 'checkRight:FDC_STORAGE']);
 Route::post('storage/load',['uses' =>'StorageController@load','middleware' => 'saveWorkspace']);
 Route::post('storage/save', 'StorageController@save');
+
 Route::get('dc/eutest', 'ProductManagementController@eutest');
 Route::post('eutest/load',['uses' =>'EuTestController@load','middleware' => 'saveWorkspace']);
 Route::post('eutest/save', 'EuTestController@save');
+
 Route::get('dc/quality', 'ProductManagementController@quality');
 Route::post('quality/load',['uses' =>'QualityController@load','middleware' => 'saveWorkspace']);
 Route::post('quality/save', 'QualityController@save');
 Route::post('quality/loadsrc', 'QualityController@loadsrc');
 Route::post('quality/edit', 'QualityController@edit');
 Route::post('quality/edit/saving', 'QualityController@editSaving');
+
+Route::get('dc/deferment', 'ProductManagementController@deferment');
+Route::post('deferment/load',['uses' =>	'DefermentController@load','middleware' => 'saveWorkspace']);
+Route::post('deferment/save', 			'DefermentController@save');
+Route::post('deferment/loadsrc', 		'DefermentController@loadsrc');
+Route::post('deferment/edit', 			'DefermentController@edit');
+Route::post('deferment/edit/saving', 	'DefermentController@editSaving');
 
 //---------
 Route::post('fo/loadSafety', 'FOController@loadSafety');

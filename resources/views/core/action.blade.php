@@ -105,3 +105,8 @@
 	
 </script>
 @stop
+
+
+@section('floatWindow')
+	@include('core.float_window')
+@stop

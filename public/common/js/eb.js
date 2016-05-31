@@ -377,6 +377,8 @@ var actions = {
 		type = actions.getCellType(data,type,cindex);
 		if (type!='checkbox') {
 			cell["createdCell"] = function (td, cellData, rowData, row, col) {
+					columnName = data.properties[col].data;
+	 				$(td).addClass( columnName );
 		 			if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
 		 				$(td).addClass( "editInline" );
 		 				columnName = data.properties[col].data;
@@ -501,10 +503,10 @@ var actions = {
 	            	vl['text']=vl['NAME'];
 	            });
 	            uoms[index]["createdCell"] = function (td, cellData, rowData, row, col) {
+	            	columnName = data.properties[col].data;
+	 				$(td).addClass( columnName );
 	            	if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
 		 				$(td).addClass( "editInline" );
-		 				columnName = data.properties[col].data;
-		 				$(td).addClass( columnName );
 		 				$(td).editable({
 			        	    type: 'select',
 			        	    title: 'edit',

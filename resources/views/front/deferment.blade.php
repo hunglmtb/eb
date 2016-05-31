@@ -1,19 +1,19 @@
 <?php
-	$currentSubmenu ='quality';
-	$tables = ['QltyData'	=>['name'=>'QUALITY DATA']];
+	$currentSubmenu ='deferment';
+	$tables = ['Deferment'	=>['name'=>'DEFERMENT']];
  	$active = 0;
 ?>
 
 @extends('core.action')
 @section('funtionName')
-QUALITY DATA CAPTURE
+DEFERMENT DATA CAPTURE
 @stop
 
 @section('adaptData')
 @parent
 <script>
-	actions.loadUrl = "/quality/load";
-	actions.saveUrl = "/quality/save";
+	actions.loadUrl = "/deferment/load";
+	actions.saveUrl = "/deferment/save";
 	actions.type = {
 					idName:['ID'],
 					keyField:'ID',

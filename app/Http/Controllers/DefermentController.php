@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\CodeQltySrcType;
+use App\Models\CodeDeferGroupType;
 use Carbon\Carbon;
 use App\Models\PdVoyage;
 use App\Models\QltyDataDetail;
@@ -11,18 +11,12 @@ use App\Models\PdVoyageDetail;
 use App\Models\Storage;
 use Illuminate\Http\Request;
 
-class QualityController extends CodeController {
+class DefermentController extends CodeController {
     
-	/* protected $type = ['idField'=>'FLOW_ID',
-			'name'=>'FLOW',
-			'dateField'=>'OCCUR_DATE'
-	]; */
-	
-	
 	public function __construct() {
 		parent::__construct();
-		$this->fdcModel = "QualityData";
-		$this->idColumn = config("constants.qualityId");
+		/* $this->fdcModel = "DefermentData";
+		$this->idColumn = config("constants.defermentId"); */
 		/* $this->phaseColumn = config("constants.flFlowPhase");
 	
 		$this->valueModel = "FlowDataValue";
@@ -35,101 +29,51 @@ class QualityController extends CodeController {
 	}
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
+    	
     	$mdlName = $postData[config("constants.tabTable")];
     	$mdl = "App\Models\\$mdlName";
-    	$src_type_id = $postData['CodeQltySrcType'];
     	$date_end = $postData['date_end'];
     	$date_end = Carbon::parse($date_end);
-    	$filterBy = $postData['cboFilterBy'];
+    	
+    	/* $sSQL="select b.CODE AS DEFER_GROUP_CODE,
+    			a.ID, 
+    			DATE_FORMAT(a.BEGIN_TIME,'%m/%d/%Y %H:%i') BEGIN_TIME,
+    			DATE_FORMAT(a.END_TIME,'%m/%d/%Y %H:%i') END_TIME,
+    			".$fields."
+    			from deferment a 
+    			left join code_defer_group_type b 
+    			on a.DEFER_GROUP_TYPE=b.id
+    			where a.facility_id='$facility_id'
+    			and DATE(a.begin_time)>=STR_TO_DATE('$date_begin', '%m/%d/%Y')
+    			and DATE(a.end_time)<=STR_TO_DATE('$date_end', '%m/%d/%Y')
+    	"; */
     	
     	$extraDataSet = [];
     	$dataSet = null;
-    	$codeQltySrcType = CodeQltySrcType::getTableName();
-//     	$qltData = $mdl::getTableName();
-    	$uoms = $properties['uoms'];
+    	$codeDeferGroupType = CodeDeferGroupType::getTableName();
+    	/* $uoms = $properties['uoms'];
 	    $sourceTypekey = array_search('CodeQltySrcType', array_column($uoms, 'id'));
 	    $sourceTypes = $uoms[$sourceTypekey]['data'];
-	    $objectType = null;
+	    $objectType = null;  */
 	    
-    	$src_type_ids = $src_type_id==0?[1,2,3,4,5,6]:[$src_type_id];
-	    $query = null;
-// 	    \DB::enableQueryLog();
-	    foreach($src_type_ids as $srcTypeId ){
-	    	$where = ['SRC_TYPE' => $srcTypeId];
-	    	switch ($srcTypeId) {
-	    		case 1:						
-	    		case 2:						
-	    		case 3:						
-	    		case 4:
-	    			$objectType = $sourceTypes->find($srcTypeId);
-			    	$objectType = $objectType->CODE;
-		    		$cquery = $mdl::join($objectType,function ($query) use ($objectType,$facility_id,$dcTable) {
-								    							$query->on("$objectType.ID",'=',"$dcTable.SRC_ID")
-								    							->where("$objectType.FACILITY_ID",'=',$facility_id) ;
-									})
+	    $where = ['FACILITY_ID' => $facility_id];
+	    
+    	$dataSet = $mdl::leftJoin($codeDeferGroupType,"$dcTable.DEFER_GROUP_TYPE",'=',"$codeDeferGroupType.ID")
 							    	->where($where)
-							    	->whereDate("$dcTable.$filterBy", '>=', $occur_date)
-							    	->whereDate("$dcTable.$filterBy", '<=', $date_end)
+							    	->whereDate("$dcTable.BEGIN_TIME", '>=', $occur_date)
+							    	->whereDate("$dcTable.END_TIME", '<=', $date_end)
 							    	->select(
-							    			"$dcTable.ID as $dcTable",
+ 							    			"$dcTable.ID as $dcTable",
+							    			"$codeDeferGroupType.CODE as DEFER_GROUP_CODE",
 							    			"$dcTable.ID as DT_RowId",
 							    			"$dcTable.ID",
 							    			"$dcTable.*"
 							    			)
-					    			->orderBy($dcTable);
-// 									->get();
-					$query = $query==null?$cquery:$query->union($cquery);
-	    			break;
-		    	case 5:
-		    		$objectType = $sourceTypes->find($srcTypeId);
-		    		$objectType = $objectType->CODE;
-		    		$storage = Storage::getTableName();
-		    		$pdVoyageDetail = PdVoyageDetail::getTableName();
-		    		$pdVoyage = PdVoyage::getTableName();
-		    		
-		    		$cquery = $mdl::join($pdVoyageDetail, "$dcTable.SRC_ID", '=', "$pdVoyageDetail.ID")
-									->join($pdVoyage, "$pdVoyageDetail.VOYAGE_ID", '=', "$pdVoyage.ID")
-									->join($storage,function ($query) use ($storage,$facility_id,$pdVoyage) {
-											    			$query->on("$storage.ID",'=',"$pdVoyage.STORAGE_ID")
-											    			->where("$storage.FACILITY_ID",'=',$facility_id) ;
-						    		})
-									->where($where)
-						    		->whereDate($filterBy, '>=', $occur_date)
-						    		->whereDate($filterBy, '<=', $date_end)
-						    		->select(
-						    				"$dcTable.ID as $dcTable",
-						    				"$dcTable.ID as DT_RowId",
-						    				"$dcTable.ID",
-						    				"$dcTable.*"
-						    				)
-				    				->orderBy($dcTable);
-// 				    				->get();
-					$query = $query==null?$cquery:$query->union($cquery);
-    				break;
-	    		case 6:
-	    			$objectType = $sourceTypes->find($srcTypeId);
-	    			$objectType = $objectType->CODE;
-		    		$cquery = $mdl::where($where)
-						    		->whereDate($filterBy, '>=', $occur_date)
-						    		->whereDate($filterBy, '<=', $date_end)
-						    		->select(
-						    				"$dcTable.ID as $dcTable",
-						    				"$dcTable.ID as DT_RowId",
-						    				"$dcTable.ID",
-						    				"$dcTable.*"
-						    				)
-						    				->orderBy($dcTable);
-// 						    				->get();
-					$query = $query==null?$cquery:$query->union($cquery);
-    				break;
-	    	}
-    	}
+// 					    			->orderBy($dcTable)
+ 									->get();
 	    
-    	if ($query!=null) {
-    		$dataSet= $query->get();
-    	}
 //     	\Log::info(\DB::getQueryLog());
-    	 
+    	/*  
     	if ($dataSet&&$dataSet->count()>0) {
     		if ($src_type_id>0) {
     			$srcTypeData = $this->getExtraDatasetBy($objectType,$facility_id);
@@ -153,7 +97,7 @@ class QualityController extends CodeController {
 					}
 				}
     		}
-    	}
+    	} */
     	
     	return ['dataSet'=>$dataSet,
      			'extraDataSet'=>$extraDataSet

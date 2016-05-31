@@ -14,6 +14,11 @@ use App\Models\CodeTestingMethod;
 use App\Models\CodeTestingUsage;
 use App\Models\CodeQltySrcType;
 use App\Models\CodeProductType;
+use App\Models\CodeDeferReason;
+use App\Models\CodeDeferStatus;
+use App\Models\CodeDeferCategory;
+use App\Models\CodeDeferGroupType;
+use App\Models\CodeDeferCode1;
 
 class CodeController extends EBController {
 	 
@@ -369,7 +374,33 @@ class CodeController extends EBController {
 		    		$selectData = ['id'=>'CodeProductType','targets'=>$i,'COLUMN_NAME'=>$columnName];
 		    		$selectData['data'] = CodeProductType::all();
 		    		$rs[] = $selectData;
+	    		case 'DEFER_REASON' :
+	    			$selectData = ['id'=>'CodeDeferReason','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = CodeDeferReason::all();
+	    			$rs[] = $selectData;
 		    		break;
+	    		case 'DEFER_STATUS' :
+	    			$selectData = ['id'=>'CodeDeferStatus','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = CodeDeferStatus::all();
+	    			$rs[] = $selectData;
+	    			break;
+    			case 'CODE1' :
+    				$selectData = ['id'=>'CodeDeferCode1','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = CodeDeferCode1::all();
+    				$rs[] = $selectData;
+    				break;
+    			case 'DEFER_CATEGORY' :
+    				$selectData = ['id'=>'CodeDeferCategory','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = CodeDeferCategory::all();
+    				$rs[] = $selectData;
+    				break;
+    			case 'DEFER_GROUP_TYPE' :
+    				$selectData = ['id'=>'CodeDeferGroupType','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = CodeDeferGroupType::all();
+    				$rs[] = $selectData;
+    				break;
+    				
+    				
     		}
     		$i++;
     	}
