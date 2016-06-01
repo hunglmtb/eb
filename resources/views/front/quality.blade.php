@@ -52,27 +52,12 @@ QUALITY DATA CAPTURE
 				type: "post",
 				data: srcData,
 				success:function(data){
-	// 				rowData[]
 					dataSet = data.dataSet;
-// 					var table = $('#table_'+tab).DataTable();
-
-// 					dependencetd = $('#'+DT_RowId+" ."+dependenceColumnName);
-// 					dependencetd.editable("destroy");
-					cellData=null;
-					if(typeof(dataSet) !== "undefined"&&dataSet!=null){
-						$.each(dataSet, function( index, value ) {
-							if(value!=null){
-								value['value']=value['ID'];
-								value['text']=value['NAME'];
-								cellData=cellData==null?value['ID']:cellData;
-							}
-						});
-					}
-
+					cellData=dataSet[0]['ID'];
 					rowData[dependenceColumnName] = cellData;
  	 				actions.applyEditable(tab,'select',dependencetd, cellData, rowData, dependenceColumnName,dataSet);
-// 					table.api().row( '#'+DT_RowId ).data(rowData);
 					createdFirstCellColumnByTable(table,rowData,td,tab);
+					actions.putModifiedData(tab,dependenceColumnName,cellData,rowData);
 					console.log ( "success:function dominoColumns "+data );
 				},
 				error: function(data) {

@@ -1,131 +1,167 @@
 @charset "utf-8";
 
 @font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Open Sans'), local('OpenSans'), url(../../common/css/font/opensans.ttf) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+	font-family: 'Open Sans';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Open Sans'), local('OpenSans'),
+		url(../../common/css/font/opensans.ttf) format('woff2');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC,
+		U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 
 * {
 	font-family: 'Open Sans', sans-serif;
 }
-.center_content{position: absolute;top: 50%;left:50%;transform: translate(-50%,-50%);}
-.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+
+.center_content {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button
+	{
 	font-family: 'Open Sans', sans-serif;
-    font-size: 10pt !important;
+	font-size: 10pt !important;
 }
 
-table td {font-size:9pt}
-div {font-size:9pt}
-input {border:1px solid #888}
-th {font-size: 9pt; text-align: left;}
+table td {
+	font-size: 9pt;
+	overflow: hidden;
+}
+
+div {
+	font-size: 9pt
+}
+
+input {
+	border: 1px solid #888
+}
+
+th {
+	font-size: 9pt;
+	text-align: left;
+}
+
 a, h2 a:hover, h3 a:hover {
-    color: #0000ff;
-    text-decoration: none;
+	color: #0000ff;
+	text-decoration: none;
 }
+
 a:hover {
-    color: #0000ff;
-    text-decoration: underline;
+	color: #0000ff;
+	text-decoration: underline;
 }
-input[type="button"], button
-{
-	background-color:#378de5;
-	display:inline-block;
-	cursor:pointer;
-	color:#ffffff;
-	font-size:13px;
-	font-weight:bold;
-	padding:3px 5px;
-	border:none;
-	text-decoration:none;
-	text-shadow:0px 1px 0px #528ecc;
-	min-width:50px;
-	min-height:25px;
+
+input[type="button"], button {
+	background-color: #378de5;
+	display: inline-block;
+	cursor: pointer;
+	color: #ffffff;
+	font-size: 13px;
+	font-weight: bold;
+	padding: 3px 5px;
+	border: none;
+	text-decoration: none;
+	text-shadow: 0px 1px 0px #528ecc;
+	min-width: 50px;
+	min-height: 25px;
 }
+
 input[type="button"]:hover, button:hover {
-	background-color:#79bbff;
+	background-color: #79bbff;
 }
+
 input[type="button"]:active, button:active {
-	position:relative;
-	top:1px;
-}
-input[type="button"]:focus, button:focus{
-    outline: 0;
-}
-._numeric{text-align:right}
-.function_title{
-	color:#378de5;
-	font-size:16pt;
-	font-weight:550;
-	margin:5px 0px;
-}
-.ui-dialog-title{
-	font-size:10pt;
-	font-weight:bold;
+	position: relative;
+	top: 1px;
 }
 
-.product_filter, .date_filter{
-    margin-right: 10px;
-    float: left;
-    margin-bottom: 5px;
-   	background-color: #E6E6E6;
-   	padding-right: 10px;
-    padding-left: 10px;
+input[type="button"]:focus, button:focus {
+	outline: 0;
 }
 
-.filter,.date_input {
+._numeric {
+	text-align: right
+}
+
+.function_title {
+	color: #378de5;
+	font-size: 16pt;
+	font-weight: 550;
+	margin: 5px 0px;
+}
+
+.ui-dialog-title {
+	font-size: 10pt;
+	font-weight: bold;
+}
+
+.product_filter, .date_filter {
+	margin-right: 10px;
+	float: left;
+	margin-bottom: 5px;
+	background-color: #E6E6E6;
+	padding-right: 10px;
+	padding-left: 10px;
+}
+
+.filter, .date_input {
 	width: auto;
 	float: left;
-    padding: 3px;
+	padding: 3px;
 }
 
 .date_input {
 	width: 120px;
 }
+
 .date_input input {
-    margin-top: 5px;
+	margin-top: 5px;
 	width: 100%;
 }
+
 .filter select {
-    margin-top: 5px;
+	margin-top: 5px;
 	width: 100%;
 }
 
-#tabs{
-    clear: both;
+#tabs {
+	clear: both;
 }
-
 
 .input-append .ui-widget input {
-    /* width: 97px; */
-    /* height: 29px; */
-    width: 83%;
+	/* width: 97px; */
+	/* height: 29px; */
+	width: 83%;
 }
 
 .editable-input {
-   width: auto;
+	width: auto;
 }
 
-.editInline{
+.editInline {
 	/* background: chocolate; */
+	
 }
 
 .editable-clear-x {
-    right: 0%;
+	right: 0%;
 }
-.input-medium{
+
+.input-medium {
 	width: 85%;
 }
 
-.dataTables_wrapper table{
-  margin: 0 auto;
-  width: 100%;
-  clear: both;
-  border-collapse: collapse;
-  table-layout: fixed; 
-  word-wrap:break-word;
+.dataTables_wrapper table {
+	margin: 0 auto;
+	width: 100%;
+	clear: both;
+	border-collapse: collapse;
+	table-layout: fixed;
+	word-wrap: break-word;
 }
 
 table.dataTable {
@@ -152,65 +188,75 @@ table.dataTable {
 	background: #bbb
 }
 
-.OIL,.Oil {
+.OIL, .Oil {
 	background: #FBD070;
 }
 
-.GAS ,.Gas {
+.GAS, .Gas {
 	background: #FF9696;
 }
 
-.WTR,.W,.Water {
+.WTR, .W, .Water {
 	background: #62CEFB;
 }
 
-.rootMain{
-	padding-left:10px;
+.rootMain {
+	padding-left: 10px;
 }
-.eu .CodeReadingFrequency,.eu .CodeEventType,.eu .CodeFlowPhase,.eu .CodeAllocType{
+
+.eu .CodeReadingFrequency, .eu .CodeEventType, .eu .CodeFlowPhase, .eu .CodeAllocType
+	{
 	width: 115px;
 }
 
 .eustatus, .eventType {
-    color: #888888;
-    border: 1px solid #888888;
-    padding: 1px;
-    height: 13px;
-    float: right;
-    font-size: 8pt;
+	color: #888888;
+	border: 1px solid #888888;
+	padding: 1px;
+	height: 13px;
+	float: right;
+	font-size: 8pt;
 }
 
-.CodeAllocType {display:none}
+.CodeAllocType {
+	display: none
+}
 
-.allocation{
-    width: 220px;
-    float: left;
+.allocation {
+	width: 220px;
+	float: left;
 }
 
 .toolbarAction {
-    float: left;
-    margin-top: 5px;
+	float: left;
+	margin-top: 5px;
 }
+
 .actionLink {
-	color:gray;
+	color: gray;
 	margin: 5px;
 }
 
-.secondaryTable table.dataTable thead th,.secondaryTable table.dataTable thead td {
-    padding: 10px;
+.secondaryTable table.dataTable thead th, .secondaryTable table.dataTable thead td
+	{
+	padding: 10px;
 }
 
-.secondaryTable table.dataTable tfoot th, .secondaryTable table.dataTable tfoot td {
-    padding: 2px;
+.secondaryTable table.dataTable tfoot th, .secondaryTable table.dataTable tfoot td
+	{
+	padding: 2px;
 }
-.secondaryTable .UOM,.secondaryTable .Quantity {
-   width: 100px;
+
+.secondaryTable .UOM, .secondaryTable .Quantity {
+	width: 100px;
 }
-.THEOR_OIL_PERDAY , .THEOR_GAS_PERDAY, .THEOR_WATER_PERDAY{
+
+.THEOR_OIL_PERDAY, .THEOR_GAS_PERDAY, .THEOR_WATER_PERDAY {
 	background-clip: content-box;
-    background-color: yellow;
+	background-color: yellow;
 }
-.CALC_DEFER_OIL_VOL , .CALC_DEFER_GAS_VOL, .CALC_DEFER_WATER_VOL{
+
+.CALC_DEFER_OIL_VOL, .CALC_DEFER_GAS_VOL, .CALC_DEFER_WATER_VOL {
 	background-clip: content-box;
-    background-color: orange;
+	background-color: orange;
 }

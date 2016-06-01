@@ -21,7 +21,7 @@ DEFERMENT DATA CAPTURE
 						return 'ID';
 						},
 					};
-	actions.extraDataSetColumns = {'SRC_ID':'SRC_TYPE'};
+	actions.extraDataSetColumns = {'DEFER_TARGET':'DEFER_GROUP_TYPE','CODE2':'CODE1','CODE3':'CODE2'};
 	
 	actions.dominoColumns = function(columnName,newValue,tab,rowData,collection,table,td){
 		if(columnName=='SRC_TYPE') {

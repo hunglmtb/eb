@@ -233,6 +233,12 @@ var actions = {
 			return false;
 		}
 	},
+	getExtraDataSetColumn :function(data,cindex,rowData){
+		ecolumn = actions.extraDataSetColumns[data.properties[cindex].data];
+ 		ecollectionColumn = rowData[ecolumn];
+ 		ecollection = data.extraDataSet[ecolumn][ecollectionColumn];
+ 		return ecollection;
+	},
 	isEditable : function (row,rowData,rights){
 		var rs = row.DATA_METHOD==1||row.DATA_METHOD=='1';
 		if (rs) {
@@ -386,9 +392,7 @@ var actions = {
 		 	        	var table = $('#table_'+tab).DataTable();
 		 	        	collection = null;
 		 	        	if(type=='select'){
-		 	        		column = actions.extraDataSetColumns[data.properties[cindex].data];
-		 	        		collectionColumn = rowData[column];
-		 	        		collection = data.extraDataSet[collectionColumn];
+		 	        		collection = actions.getExtraDataSetColumn(data,cindex,rowData);
 		 	        	}
 		 				actions.applyEditable(tab,type,td, cellData, rowData, columnName,collection);
 		 			}
@@ -446,9 +450,7 @@ var actions = {
 	    	break;
 		case "select":
 			cell["render"] = function ( data2, type2, row ) {
-					column = actions.extraDataSetColumns[data.properties[cindex].data];
-		     		collectionColumn = row[column];
-		     		collection = data.extraDataSet[collectionColumn];
+ 	        		collection = actions.getExtraDataSetColumn(data,cindex,row);
 		     		if(collection!=null){
 		     			var result = $.grep(collection, function(e){ 
 		     				return e['ID'] == data2;
@@ -471,7 +473,7 @@ var actions = {
 		}
 		var uoms = data.uoms;
 		var invisible = options!=null&&(typeof(options.invisible) !== "undefined"&&options.invisible!=null)?options.invisible:null;
-		if(typeof(data.extraDataSet) !== "undefined"&&data.extraDataSet!=null){
+		/*if(typeof(data.extraDataSet) !== "undefined"&&data.extraDataSet!=null){
 			$.each(data.extraDataSet, function( index, value ) {
 				if(value!=null){
 					var collection = value;
@@ -481,7 +483,8 @@ var actions = {
 		            });
 				}
 			});
-		}
+		}*/
+		
 		if(typeof(uoms) !== "undefined"&&uoms!=null){
 			$.each(uoms, function( index, value ) {
 				exclude.push(uoms[index]["targets"]);

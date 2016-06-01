@@ -2,19 +2,26 @@
 
 namespace App\Http\Controllers;
 use App\Models\CodeDeferGroupType;
-use Carbon\Carbon;
-use App\Models\PdVoyage;
+use App\Models\QltyData;
 use App\Models\QltyDataDetail;
 use App\Models\QltyProductElementType;
-use App\Models\QltyData;
-use App\Models\PdVoyageDetail;
-use App\Models\Storage;
+use App\Models\EnergyUnit;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DefermentController extends CodeController {
     
+	protected $extraDataSetColumns;
 	public function __construct() {
 		parent::__construct();
+		$this->extraDataSetColumns = [	'DEFER_GROUP_TYPE'	=>	[	'column'	=>'DEFER_TARGET',
+																	'model'		=>'DefermentGroup'],
+										'CODE1'				=>	[	'column'	=>'CODE2',
+																	'model'		=>'CodeDeferCode2'],
+										'CODE2'				=>	[	'column'	=>'CODE3',
+																	'model'		=>'CodeDeferCode3']
+									];
+		
 		/* $this->fdcModel = "DefermentData";
 		$this->idColumn = config("constants.defermentId"); */
 		/* $this->phaseColumn = config("constants.flFlowPhase");
@@ -72,32 +79,15 @@ class DefermentController extends CodeController {
 // 					    			->orderBy($dcTable)
  									->get();
 	    
-//     	\Log::info(\DB::getQueryLog());
-    	/*  
-    	if ($dataSet&&$dataSet->count()>0) {
-    		if ($src_type_id>0) {
-    			$srcTypeData = $this->getExtraDatasetBy($objectType,$facility_id);
-    			if ($srcTypeData) {
-					$extraDataSet[$src_type_id] = $srcTypeData;
-    			}
-    		}
-    		else{
 //     			\DB::enableQueryLog();
-				$bySrcTypes = $dataSet->groupBy('SRC_ID');
-// 				\Log::info(\DB::getQueryLog());
-				if ($bySrcTypes) {
-					foreach($bySrcTypes as $key => $srcType ){
-						$srcTypeID = $srcType[0]->SRC_TYPE;
-						$table = $sourceTypes->find($srcTypeID);
-						$table = $table->CODE;
-						$srcTypeData = $this->getExtraDatasetBy($table,$facility_id);
-						if ($srcTypeData) {
-							$extraDataSet[$srcTypeID] = $srcTypeData;
-						}
-					}
-				}
+//     	\Log::info(\DB::getQueryLog());
+    	
+    	if ($dataSet&&$dataSet->count()>0) {
+    		$bunde = ['FACILITY_ID' => $facility_id];
+    		foreach($this->extraDataSetColumns as $column => $extraDataSetColumn){
+    			$extraDataSet[$column] = $this->getExtraEntriesBy($column,$extraDataSetColumn,$dataSet,$bunde);
     		}
-    	} */
+    	}
     	
     	return ['dataSet'=>$dataSet,
      			'extraDataSet'=>$extraDataSet
@@ -105,35 +95,56 @@ class DefermentController extends CodeController {
     }
     
     
-    public function getExtraDatasetBy($objectType,$facility_id){
-    	$srcTypeData =null;
-    	if($objectType=="PARCEL"){
-    		$storage = Storage::getTableName();
-    		$pdVoyageDetail = PdVoyageDetail::getTableName();
-    		$pdVoyage = PdVoyage::getTableName();
-    		$srcTypeData = PdVoyage::join($storage,function ($query) use ($storage,$facility_id,$pdVoyage) {
-    			$query->on("$pdVoyage.STORAGE_ID",'=',"$storage.ID")
-    			->where("$storage.FACILITY_ID",'=',$facility_id) ;
-    		})
-    		->join($pdVoyageDetail,"$pdVoyage.ID", '=', "$pdVoyageDetail.VOYAGE_ID")
-    		->select(
-    				"$pdVoyageDetail.ID",
-    				"$pdVoyageDetail.ID as CODE",
-    				"$pdVoyage.NAME as NAME",
-    				"$pdVoyageDetail.PARCEL_NO as PARCEL_NO"
-    				)
-    				->orderBy("$pdVoyage.ID")
-    				->orderBy("$pdVoyageDetail.PARCEL_NO")
-    				->get();
+    public function getExtraEntriesBy($sourceColumn,$extraDataSetColumn,$dataSet,$bunde){
+    	$extraDataSet = null;
+    	$subDataSets = $dataSet->groupBy($sourceColumn);
+    	if ($subDataSets&&count($subDataSets)>0) {
+    		$extraDataSet = [];
+    		foreach($subDataSets as $key => $subData ){
+    			$entry = $subData[0];
+    			$sourceColumnValue = $entry->$sourceColumn;
+    			$data = $this->loadTargetEntries($entry,$sourceColumn,$extraDataSetColumn,$bunde);
+    			if ($data) {
+    				$extraDataSet[$sourceColumnValue] = $data;
+    			}
+    		}
+    		$extraDataSet=count($extraDataSet)>0?$extraDataSet:null;
     	}
-    	else if($objectType=="RESERVOIR")
-    		$srcTypeData =\DB::table($objectType)->get(['ID','CODE','NAME']);
-    	else if ($objectType){
-    		$srcTypeData =\DB::table($objectType)->where("FACILITY_ID",$facility_id)->get(['ID','CODE','NAME']);
-    	}
-    	return $srcTypeData;
+    	return $extraDataSet;
     }
     
+    public function loadTargetEntries($entry,$sourceColumn,$extraDataSetColumn,$bunde){
+    	$data = null;
+    	switch ($sourceColumn) {
+    		case 'CODE1':
+    		case 'CODE2':
+		    	$sourceColumnValue = $entry->$sourceColumn;
+		    	$targetModel = $extraDataSetColumn['model'];
+		    	$targetEloquent = "App\Models\\$targetModel";
+		    	$data = $targetEloquent::where('PARENT_ID','=',$sourceColumnValue)->select(
+									    			"*",
+		 							    			"ID as value",
+									    			"NAME as text"
+									    			)->get();
+    			break;
+    			
+    		case 'DEFER_GROUP_TYPE':
+		    	$sourceColumnValue = $entry->DEFER_GROUP_CODE;
+    			if ($sourceColumnValue=='WELL') {
+    				$facility_id = $bunde['FACILITY_ID'];
+    				$data = EnergyUnit::where(['FACILITY_ID'=>$facility_id,
+    									'FDC_DISPLAY'=>1
+    							])
+    							->select("ID","NAME","ID as value","NAME as text")
+    							->orderBy('text')
+    							->get();
+    			}
+    			break;
+    	}
+    	return $data;
+    }
+    
+    /* 
     public function loadsrc(Request $request){
     	//     	sleep(2);
     	$postData = $request->all();
@@ -174,13 +185,6 @@ class DefermentController extends CodeController {
 								    				"$qltyProductElementType.NAME",
 								    				"$qltyProductElementType.PRODUCT_TYPE",
 								    				"$qltyProductElementType.DEFAULT_UOM",
-								    				/* "$qltyDataDetail.ELEMENT_TYPE",
-								    				"$qltyDataDetail.VALUE",
-								    				"$qltyDataDetail.UOM",
-								    				"$qltyDataDetail.GAMMA_C7",
-								    				"$qltyDataDetail.MOLE_FACTION",
-								    				"$qltyDataDetail.MASS_FRACTION",
-								    				"$qltyDataDetail.NORMALIZATION", */
 								    				"$qltyDataDetail.*"
 								    				)
 // 						    				->orderBy("$qltyProductElementType.ORDER")
@@ -214,21 +218,6 @@ class DefermentController extends CodeController {
     	return response()->json($results);
     }
     
-    public function getDetailDataSet(Request $request){
-    	//     	sleep(2);
-    	$postData = $request->all();
-    	$facility_id = $postData['Facility'];
-    	$name = $postData['name'];
-    	$srcTypeData = [];
-    	if ($name=='SRC_TYPE') {
-    		$src_type_id = $postData['value'];
-    		$objectType = $postData['srcType'];
-    		$srcTypeData = $this->getExtraDatasetBy($objectType,$facility_id);
-    	}
-    	return response()->json(['dataSet'=>$srcTypeData,
-    			'postData'=>$postData]);
-    }
-    
     public function editSaving(Request $request){
     	$postData = $request->all();
     	$id = $postData['id'];
@@ -243,9 +232,6 @@ class DefermentController extends CodeController {
    					$oils = array_key_exists("oil", $postData)?$postData['oil']:null;
    					if ($oils&&count($oils)>0) {
 	    				foreach($oils as $oil ){
-	    					/* if (array_key_exists("ID", $oil)) {
-	    						unset($oil["ID"]);
-	    					} */
 	    					$attributes['ELEMENT_TYPE'] = $oil['DT_RowId'];
    							$oil['QLTY_DATA_ID'] = $id;
    							$oil['ELEMENT_TYPE'] = $oil['DT_RowId'];
@@ -255,9 +241,6 @@ class DefermentController extends CodeController {
    					$gases = array_key_exists("gas", $postData)?$postData['gas']:null;
    					if ($gases&&count($gases)>0) {
 	    				foreach($gases as $gas ){
-	    					/* if (array_key_exists("ID", $gas)) {
-	    						unset($gas["ID"]);
-	    					} */
 	    					$attributes['ELEMENT_TYPE'] = $gas['DT_RowId'];
 	    					$gas['QLTY_DATA_ID'] = $id;
 	    					$gas['ELEMENT_TYPE'] = $gas['DT_RowId'];
@@ -308,5 +291,5 @@ class DefermentController extends CodeController {
     		}
     	}
     	return response()->json('Edit Successfullly');
-    }
+    } */
 }

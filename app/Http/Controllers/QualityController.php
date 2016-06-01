@@ -129,12 +129,13 @@ class QualityController extends CodeController {
     		$dataSet= $query->get();
     	}
 //     	\Log::info(\DB::getQueryLog());
-    	 
+    	$sourceColumn = 'SRC_TYPE';
     	if ($dataSet&&$dataSet->count()>0) {
     		if ($src_type_id>0) {
     			$srcTypeData = $this->getExtraDatasetBy($objectType,$facility_id);
     			if ($srcTypeData) {
-					$extraDataSet[$src_type_id] = $srcTypeData;
+    				$extraDataSet[$sourceColumn]= [];
+					$extraDataSet[$sourceColumn][$src_type_id] = $srcTypeData;
     			}
     		}
     		else{
@@ -142,13 +143,14 @@ class QualityController extends CodeController {
 				$bySrcTypes = $dataSet->groupBy('SRC_ID');
 // 				\Log::info(\DB::getQueryLog());
 				if ($bySrcTypes) {
+    				$extraDataSet[$sourceColumn]= [];
 					foreach($bySrcTypes as $key => $srcType ){
 						$srcTypeID = $srcType[0]->SRC_TYPE;
 						$table = $sourceTypes->find($srcTypeID);
 						$table = $table->CODE;
 						$srcTypeData = $this->getExtraDatasetBy($table,$facility_id);
 						if ($srcTypeData) {
-							$extraDataSet[$srcTypeID] = $srcTypeData;
+    						$extraDataSet[$sourceColumn][$srcTypeID] = $srcTypeData;
 						}
 					}
 				}
@@ -176,6 +178,8 @@ class QualityController extends CodeController {
     				"$pdVoyageDetail.ID",
     				"$pdVoyageDetail.ID as CODE",
     				"$pdVoyage.NAME as NAME",
+    				"$pdVoyage.ID as value",
+    				"$pdVoyage.NAME as text",
     				"$pdVoyageDetail.PARCEL_NO as PARCEL_NO"
     				)
     				->orderBy("$pdVoyage.ID")
@@ -183,9 +187,9 @@ class QualityController extends CodeController {
     				->get();
     	}
     	else if($objectType=="RESERVOIR")
-    		$srcTypeData =\DB::table($objectType)->get(['ID','CODE','NAME']);
+    		$srcTypeData =\DB::table($objectType)->get(['ID','CODE','NAME','ID as value','NAME as text']);
     	else if ($objectType){
-    		$srcTypeData =\DB::table($objectType)->where("FACILITY_ID",$facility_id)->get(['ID','CODE','NAME']);
+    		$srcTypeData =\DB::table($objectType)->where("FACILITY_ID",$facility_id)->get(['ID','CODE','NAME','ID as value','NAME as text']);
     	}
     	return $srcTypeData;
     }
@@ -268,21 +272,6 @@ class QualityController extends CodeController {
 	    }
 	    
     	return response()->json($results);
-    }
-    
-    public function getDetailDataSet(Request $request){
-    	//     	sleep(2);
-    	$postData = $request->all();
-    	$facility_id = $postData['Facility'];
-    	$name = $postData['name'];
-    	$srcTypeData = [];
-    	if ($name=='SRC_TYPE') {
-    		$src_type_id = $postData['value'];
-    		$objectType = $postData['srcType'];
-    		$srcTypeData = $this->getExtraDatasetBy($objectType,$facility_id);
-    	}
-    	return response()->json(['dataSet'=>$srcTypeData,
-    			'postData'=>$postData]);
     }
     
     public function editSaving(Request $request){
