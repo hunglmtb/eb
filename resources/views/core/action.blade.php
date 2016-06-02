@@ -2,9 +2,17 @@
 @section('adaptData')
 @parent
 <script>
+	var intVal = function ( i ) {
+	    return typeof i === 'string' ?
+	        i.replace(/[\$,]/g, '')*1 :
+	        typeof i === 'number' ?
+	            i : 0;
+	};
 	var index = 1000;
 	var addingOptions ={keepColumns:[]};
-	
+	var source = {
+					initRequest	:	function(){}
+				};
 	actions.afterDataTable = function (table,tab){
 		$("#toolbar_"+tab).html('<button>Add</button>');
 		$("#toolbar_"+tab).addClass('toolbarAction');
@@ -57,6 +65,45 @@
     };
 
 	actions.dominoColumns = function(columnName,newValue,tab,rowData,collection,table,td){
+// 		if(columnName=='SRC_TYPE') {
+		if(columnName!=null&&source!=null&&source.hasOwnProperty(columnName)){
+			srcData = source.initRequest(tab,columnName,newValue,collection);
+			if(srcData==null) return;
+			
+			DT_RowId = rowData['DT_RowId'];
+			dependenceColumnNames = source[columnName].dependenceColumnName;
+			$.each(dependenceColumnNames, function( i, dependence ) {
+				rowData[dependence] = '';
+				dependencetd = $('#'+DT_RowId+" ."+dependence);
+				dependencetd.editable("destroy");
+			});
+			table.api().row( '#'+DT_RowId ).data(rowData);
+			$.ajax({
+				url: source[columnName].url,
+				type: "post",
+				data: srcData,
+				success:function(data){
+					$.each(dependenceColumnNames, function( i, dependence ) {
+						dataSet = data.dataSet[dependence].data;
+						if(typeof(dataSet) !== "undefined"&&dataSet.length>0){
+							sourceColumn = data.dataSet[dependence].sourceColumn;
+							ofId = data.dataSet[dependence].ofId;
+							cellData=dataSet[0]['ID'];
+							rowData[dependence] = cellData;
+							actions.extraDataSet[sourceColumn][ofId] = dataSet;
+		 					dependencetd = $('#'+DT_RowId+" ."+dependence);
+		 	 				actions.applyEditable(tab,'select',dependencetd, cellData, rowData, dependence,dataSet);
+							actions.putModifiedData(tab,dependence,cellData,rowData);
+// 		 					createdFirstCellColumnByTable(table,rowData,dependencetd,tab);
+						}
+					});
+					console.log ( "success dominoColumns "+data );
+				},
+				error: function(data) {
+					console.log ( "error dominoColumns "+data );
+				}
+			});
+		}
 		createdFirstCellColumnByTable(table,rowData,td,tab);
 	}
 
@@ -109,4 +156,5 @@
 
 @section('floatWindow')
 	@include('core.float_window')
+	@yield('editBox')
 @stop

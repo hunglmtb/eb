@@ -23,65 +23,26 @@ DEFERMENT DATA CAPTURE
 					};
 	actions.extraDataSetColumns = {'DEFER_TARGET':'DEFER_GROUP_TYPE','CODE2':'CODE1','CODE3':'CODE2'};
 	
-	actions.dominoColumns = function(columnName,newValue,tab,rowData,collection,table,td){
-		if(columnName=='SRC_TYPE') {
-			postData = actions.loadedData[tab];
-			var srcType = null;
-			var result = $.grep(collection, function(e){ 
-	          	 return e['ID'] == newValue;
-	           });
-			if (result.length > 0) {
-				srcType = result[0]['CODE'];
-			}
-			else return;
-
-			DT_RowId = rowData['DT_RowId'];
-			srcData = {name : columnName,
-						value : newValue,
-						srcType : srcType,
-						Facility : postData['Facility']};
-
-			dependenceColumnName = 'SRC_ID';
-			rowData[dependenceColumnName] = '';
-			dependencetd = $('#'+DT_RowId+" ."+dependenceColumnName);
-			dependencetd.editable("destroy");
-			table.api().row( '#'+DT_RowId ).data(rowData);
-			
-			$.ajax({
-				url: "/quality/loadsrc",
-				type: "post",
-				data: srcData,
-				success:function(data){
-	// 				rowData[]
-					dataSet = data.dataSet;
-// 					var table = $('#table_'+tab).DataTable();
-
-// 					dependencetd = $('#'+DT_RowId+" ."+dependenceColumnName);
-// 					dependencetd.editable("destroy");
-					cellData=null;
-					if(typeof(dataSet) !== "undefined"&&dataSet!=null){
-						$.each(dataSet, function( index, value ) {
-							if(value!=null){
-								value['value']=value['ID'];
-								value['text']=value['NAME'];
-								cellData=cellData==null?value['ID']:cellData;
-							}
-						});
-					}
-
-					rowData[dependenceColumnName] = cellData;
- 	 				actions.applyEditable(tab,'select',dependencetd, cellData, rowData, dependenceColumnName,dataSet);
-// 					table.api().row( '#'+DT_RowId ).data(rowData);
-					createdFirstCellColumnByTable(table,rowData,td,tab);
-					console.log ( "success:function dominoColumns "+data );
-				},
-				error: function(data) {
-					console.log ( "error dominoColumns "+data );
-				}
-			});
-		}
-		createdFirstCellColumnByTable(table,rowData,td,tab);
+	source['DEFER_GROUP_TYPE']	={	dependenceColumnName	:	['DEFER_TARGET'],
+									url						: 	'/deferment/loadsrc'
+								};
+	source['CODE1']	={	dependenceColumnName	:	['CODE2','CODE3'],
+						url						: 	'/deferment/loadsrc'
+		};
+	source['CODE2']	={	dependenceColumnName	:	['CODE3'],
+						url						: 	'/deferment/loadsrc'
 	};
+
+	source.initRequest = function(tab,columnName,newValue,collection){
+		postData = actions.loadedData[tab];
+		srcData = {	name : columnName,
+					value : newValue,
+					Facility : postData['Facility'],
+ 					target: source[columnName].dependenceColumnName,
+// 					srcType : srcType,
+				};
+		return srcData;
+	}
 
 
 	addingOptions.keepColumns = ['SAMPLE_DATE','TEST_DATE','EFFECTIVE_DATE','PRODUCT_TYPE','SRC_ID','SRC_TYPE'];
@@ -111,14 +72,6 @@ DEFERMENT DATA CAPTURE
 			etbl = actions.initTableOption(tab,subData,options,renderFirsEditColumn,null);
 		}
 	};
-
-	 // Remove the formatting to get integer data for summation
-    var intVal = function ( i ) {
-        return typeof i === 'string' ?
-            i.replace(/[\$,]/g, '')*1 :
-            typeof i === 'number' ?
-                i : 0;
-    };
 
     var renderSumRow = function (api,columns){
     	$.each(columns, function( i, column ) {

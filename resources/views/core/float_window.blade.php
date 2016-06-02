@@ -1,3 +1,12 @@
+<script>
+	var editBox = {fields : []};
+	var closeEditWindow = function() {
+	$('#divEditGroup').hide('fast');
+	$.each(editBox.fields, function( index, value ) {
+		delete actions.editedData[value];
+    });
+}
+</script>
 <div style="background:#eee;border:2px solid #666;display:none;position: fixed; width: 950px; height: 430px; z-index: 1; left:50%; margin-left:-450px; top:145px" id="divEditGroup">
 	<div onClick="saveEditGroup()" style="cursor:pointer; position: absolute; right:72px;top:-27px;border:2px solid #666;background:#eee; width: 82px; height: 23px;line-height:23px; z-index: 1" id="layer1">
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font size="2">Save</font></div>

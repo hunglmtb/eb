@@ -201,9 +201,12 @@ class QualityController extends CodeController {
     	$name = $postData['name'];
     	$srcTypeData = [];
     	if ($name=='SRC_TYPE') {
-	    	$src_type_id = $postData['value'];
+ 	    	$src_type_id = $postData['value'];
 	    	$objectType = $postData['srcType'];
-    		$srcTypeData = $this->getExtraDatasetBy($objectType,$facility_id);
+    		$srcTypeData['SRC_ID'] = [	'data'			=>	$this->getExtraDatasetBy($objectType,$facility_id),
+    									'ofId'			=>	$src_type_id,
+    									'sourceColumn'	=>	$name
+    		];
     	}
     	return response()->json(['dataSet'=>$srcTypeData,
     							'postData'=>$postData]);

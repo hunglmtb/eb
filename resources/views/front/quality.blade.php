@@ -22,52 +22,28 @@ QUALITY DATA CAPTURE
 						},
 					};
 	actions.extraDataSetColumns = {'SRC_ID':'SRC_TYPE'};
+
+	source['SRC_TYPE']={dependenceColumnName	:	['SRC_ID'],
+						url						: 	'/quality/loadsrc'
+						};
 	
-	actions.dominoColumns = function(columnName,newValue,tab,rowData,collection,table,td){
-		if(columnName=='SRC_TYPE') {
-			postData = actions.loadedData[tab];
-			var srcType = null;
-			var result = $.grep(collection, function(e){ 
-	          	 return e['ID'] == newValue;
-	           });
-			if (result.length > 0) {
-				srcType = result[0]['CODE'];
-			}
-			else return;
-
-			DT_RowId = rowData['DT_RowId'];
-			srcData = {name : columnName,
-						value : newValue,
-						srcType : srcType,
-						Facility : postData['Facility']};
-
-			dependenceColumnName = 'SRC_ID';
-			rowData[dependenceColumnName] = '';
-			dependencetd = $('#'+DT_RowId+" ."+dependenceColumnName);
-			dependencetd.editable("destroy");
-			table.api().row( '#'+DT_RowId ).data(rowData);
-			
-			$.ajax({
-				url: "/quality/loadsrc",
-				type: "post",
-				data: srcData,
-				success:function(data){
-					dataSet = data.dataSet;
-					cellData=dataSet[0]['ID'];
-					rowData[dependenceColumnName] = cellData;
- 	 				actions.applyEditable(tab,'select',dependencetd, cellData, rowData, dependenceColumnName,dataSet);
-					createdFirstCellColumnByTable(table,rowData,td,tab);
-					actions.putModifiedData(tab,dependenceColumnName,cellData,rowData);
-					console.log ( "success:function dominoColumns "+data );
-				},
-				error: function(data) {
-					console.log ( "error dominoColumns "+data );
-				}
-			});
+	source.initRequest = function(tab,columnName,newValue,collection){
+		postData = actions.loadedData[tab];
+		var srcType = null;
+		var result = $.grep(collection, function(e){ 
+          	 return e['ID'] == newValue;
+           });
+		if (result.length > 0) {
+			srcType = result[0]['CODE'];
 		}
-		createdFirstCellColumnByTable(table,rowData,td,tab);
-	};
+		else return null;
 
+		srcData = {name : columnName,
+					value : newValue,
+					srcType : srcType,
+					Facility : postData['Facility']};
+		return srcData;
+	}
 
 	addingOptions.keepColumns = ['SAMPLE_DATE','TEST_DATE','EFFECTIVE_DATE','PRODUCT_TYPE','SRC_ID','SRC_TYPE'];
 
@@ -96,14 +72,6 @@ QUALITY DATA CAPTURE
 			etbl = actions.initTableOption(tab,subData,options,renderFirsEditColumn,null);
 		}
 	};
-
-	 // Remove the formatting to get integer data for summation
-    var intVal = function ( i ) {
-        return typeof i === 'string' ?
-            i.replace(/[\$,]/g, '')*1 :
-            typeof i === 'number' ?
-                i : 0;
-    };
 
     var renderSumRow = function (api,columns){
     	$.each(columns, function( i, column ) {
@@ -177,12 +145,6 @@ QUALITY DATA CAPTURE
 		});
 	}
 
-	var closeEditWindow = function() {
-		$('#divEditGroup').hide('fast');
-		delete actions.editedData['editrowgas'];
-		delete actions.editedData['editrowoil'];
-	}
-	
 	var saveEditGroup = function() {
 		if(editId&&editId!=null&&(actions.editedData.hasOwnProperty('editrowoil')||actions.editedData.hasOwnProperty('editrowgas'))){
 			showWaiting();
@@ -212,5 +174,12 @@ QUALITY DATA CAPTURE
 		}
 	}
 
+</script>
+@stop
+
+
+@section('editBox')
+<script type="text/javascript">
+	editBox.fields = ['editrowgas','editrowoil'];
 </script>
 @stop

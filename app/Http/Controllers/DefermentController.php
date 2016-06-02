@@ -1,13 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use App\Models\CodeDeferGroupType;
 use App\Models\QltyData;
 use App\Models\QltyDataDetail;
 use App\Models\QltyProductElementType;
 use App\Models\EnergyUnit;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
+use App\Models\DefermentGroup;
 
 class DefermentController extends CodeController {
     
@@ -41,19 +42,6 @@ class DefermentController extends CodeController {
     	$mdl = "App\Models\\$mdlName";
     	$date_end = $postData['date_end'];
     	$date_end = Carbon::parse($date_end);
-    	
-    	/* $sSQL="select b.CODE AS DEFER_GROUP_CODE,
-    			a.ID, 
-    			DATE_FORMAT(a.BEGIN_TIME,'%m/%d/%Y %H:%i') BEGIN_TIME,
-    			DATE_FORMAT(a.END_TIME,'%m/%d/%Y %H:%i') END_TIME,
-    			".$fields."
-    			from deferment a 
-    			left join code_defer_group_type b 
-    			on a.DEFER_GROUP_TYPE=b.id
-    			where a.facility_id='$facility_id'
-    			and DATE(a.begin_time)>=STR_TO_DATE('$date_begin', '%m/%d/%Y')
-    			and DATE(a.end_time)<=STR_TO_DATE('$date_end', '%m/%d/%Y')
-    	"; */
     	
     	$extraDataSet = [];
     	$dataSet = null;
@@ -103,7 +91,10 @@ class DefermentController extends CodeController {
     		foreach($subDataSets as $key => $subData ){
     			$entry = $subData[0];
     			$sourceColumnValue = $entry->$sourceColumn;
-    			$data = $this->loadTargetEntries($entry,$sourceColumn,$extraDataSetColumn,$bunde);
+    			if ($sourceColumn=='DEFER_GROUP_TYPE') {
+    				$bunde['DEFER_GROUP_CODE'] = $entry->DEFER_GROUP_CODE;
+    			}
+    			$data = $this->loadTargetEntries($sourceColumnValue,$sourceColumn,$extraDataSetColumn,$bunde);
     			if ($data) {
     				$extraDataSet[$sourceColumnValue] = $data;
     			}
@@ -113,12 +104,11 @@ class DefermentController extends CodeController {
     	return $extraDataSet;
     }
     
-    public function loadTargetEntries($entry,$sourceColumn,$extraDataSetColumn,$bunde){
+    public function loadTargetEntries($sourceColumnValue,$sourceColumn,$extraDataSetColumn,$bunde){
     	$data = null;
     	switch ($sourceColumn) {
     		case 'CODE1':
     		case 'CODE2':
-		    	$sourceColumnValue = $entry->$sourceColumn;
 		    	$targetModel = $extraDataSetColumn['model'];
 		    	$targetEloquent = "App\Models\\$targetModel";
 		    	$data = $targetEloquent::where('PARENT_ID','=',$sourceColumnValue)->select(
@@ -129,37 +119,67 @@ class DefermentController extends CodeController {
     			break;
     			
     		case 'DEFER_GROUP_TYPE':
-		    	$sourceColumnValue = $entry->DEFER_GROUP_CODE;
-    			if ($sourceColumnValue=='WELL') {
-    				$facility_id = $bunde['FACILITY_ID'];
-    				$data = EnergyUnit::where(['FACILITY_ID'=>$facility_id,
-    									'FDC_DISPLAY'=>1
-    							])
-    							->select("ID","NAME","ID as value","NAME as text")
-    							->orderBy('text')
-    							->get();
+    			if ($bunde&&array_key_exists('DEFER_GROUP_CODE', $bunde)) {
+	    			$defer_group_code = $bunde['DEFER_GROUP_CODE'];
+	    			if ($defer_group_code=='WELL') {
+	    				$facility_id = $bunde['FACILITY_ID'];
+	    				$data = EnergyUnit::where(['FACILITY_ID'=>$facility_id,
+	    									'FDC_DISPLAY'=>1
+	    							])
+	    							->select("ID","NAME","ID as value","NAME as text")
+	    							->orderBy('text')
+	    							->get();
+	    			}
+	    			else{
+	    				$data = DefermentGroup::where(['DEFER_GROUP_TYPE'=>$sourceColumnValue])
+							    				->select("ID","NAME","ID as value","NAME as text")
+							    				->orderBy('text')
+							    				->get();
+	    			}
     			}
     			break;
     	}
     	return $data;
     }
     
-    /* 
+    
     public function loadsrc(Request $request){
     	//     	sleep(2);
     	$postData = $request->all();
-    	$facility_id = $postData['Facility'];
-    	$name = $postData['name'];
-    	$srcTypeData = [];
-    	if ($name=='SRC_TYPE') {
-	    	$src_type_id = $postData['value'];
-	    	$objectType = $postData['srcType'];
-    		$srcTypeData = $this->getExtraDatasetBy($objectType,$facility_id);
+    	$sourceColumn = $postData['name'];
+    	$sourceColumnValue = $postData['value'];
+    	$bunde = [];
+    	$dataSet = [];
+    	if ($sourceColumn=='DEFER_GROUP_TYPE') {
+    		$codeColumn = 'DEFER_GROUP_CODE';
+    		$entry = CodeDeferGroupType::select("CODE as $codeColumn")->find($sourceColumnValue);
+	    	$bunde[$codeColumn] = $entry->$codeColumn;
+	    	
+	    	$facility_id = $postData['Facility'];
+	    	$bunde['FACILITY_ID'] = $facility_id;
     	}
-    	return response()->json(['dataSet'=>$srcTypeData,
+    	$targetExists = true;
+    	$loopIndex = 0;
+    	while($loopIndex<5){
+    		$loopIndex++;
+    		if (!array_key_exists($sourceColumn, $this->extraDataSetColumns)) break;
+	    	$extraDataSetColumn = $this->extraDataSetColumns[$sourceColumn];
+	    	$targetColumn = $extraDataSetColumn['column'];
+	    	$data = $this->loadTargetEntries($sourceColumnValue,$sourceColumn,$extraDataSetColumn,$bunde);
+	    	$dataSet[$targetColumn] = [	'data'			=>	$data,
+								    	'ofId'			=>	$sourceColumnValue,
+								    	'sourceColumn'	=>	$sourceColumn
+								    	];
+	    	
+	    	$sourceColumn = $targetColumn;
+	    	$sourceColumnValue = $data&&$data->count()>0?$data[0]->ID:null;
+	    	if (!$sourceColumnValue) break;
+    	}
+    	
+    	return response()->json(['dataSet'=>$dataSet,
     							'postData'=>$postData]);
     }
-    
+    /*
     public function edit(Request $request){
     	$postData = $request->all();
     	$id = $postData['id'];

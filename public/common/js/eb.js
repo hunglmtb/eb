@@ -84,6 +84,7 @@ var actions = {
 	insertingData : {},
 	objectIds : [],
 	extraDataSetColumns : {},
+	extraDataSet : {},
 	loadSuccess : function(data){alert("success");},
 	loadError : function(data){
 					alert(JSON.stringify(data.responseText));
@@ -236,7 +237,7 @@ var actions = {
 	getExtraDataSetColumn :function(data,cindex,rowData){
 		ecolumn = actions.extraDataSetColumns[data.properties[cindex].data];
  		ecollectionColumn = rowData[ecolumn];
- 		ecollection = data.extraDataSet[ecolumn][ecollectionColumn];
+ 		ecollection = actions.extraDataSet[ecolumn][ecollectionColumn];
  		return ecollection;
 	},
 	isEditable : function (row,rowData,rights){
@@ -526,7 +527,9 @@ var actions = {
 
 		var original = Array.apply(null, Array(data.properties.length)).map(function (_, i) {return i;});
 		var finalArray = $(original).not(exclude).get();
-
+		if(data.hasOwnProperty('extraDataSet')){
+			actions.extraDataSet = data.extraDataSet;
+		}
 		$.each(finalArray, function( i, cindex ) {
 			var type = typetoclass(data.properties[cindex].INPUT_TYPE);
 			var cell = actions.getCellProperty(data,tab,type,cindex);
