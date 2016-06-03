@@ -37,11 +37,7 @@ class EnergyUnitDataTheor extends FeatureEuModel{
 			$flow_phase = $attributes[config("constants.flowPhase")];
 			$object_id = $attributes[config("constants.euIdColumn")];
 			$occur_date = $attributes['OCCUR_DATE'];
- 			$rowTest=EuTestDataValue::where([['EU_ID',$object_id],
- 												['TEST_USAGE',1]])
-				    				->whereDate('EFFECTIVE_DATE', '<=', $occur_date)
-				    				->orderBy('EFFECTIVE_DATE','desc')
- 									->first();
+			$rowTest=static :: getEUTest($object_id,$occur_date);
 				
 			$theoFields = CfgFieldProps::getConfigFields( static::getTableName())->get();
 			$theoFieldArray =array_column($theoFields->toArray(), 'COLUMN_NAME');

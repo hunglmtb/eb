@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use App\Models\DynamicModel;
-use Carbon\Carbon;
-use App\Models\AuditTrail;
 use App\Exceptions\DataInputException;
+use Carbon\Carbon;
+use App\Models\DynamicModel;
+use App\Models\AuditTrail;
+use App\Models\EuTestDataValue;
 
 class EbBussinessModel extends DynamicModel {
 	
@@ -15,7 +16,7 @@ class EbBussinessModel extends DynamicModel {
 	
 	protected $excludeColumns = [];
 	public  static $ignorePostData = false;
-	
+	protected $oldValues = null;
 	
 	public static function getKeyColumns(&$newData,$occur_date,$postData)
 	{
@@ -102,13 +103,13 @@ class EbBussinessModel extends DynamicModel {
 	        	}
 	        }
 			$instance->fill($values)->save();
+// 	        $values = static::calculateBeforeUpdateOrCreate ( $attributes, $values );
 	        return $instance;
 		}
 		
 		$values = static::calculateBeforeUpdateOrCreate ( $attributes, $values );
-		
-//  		\DB::enableQueryLog();
 		$instance = static::firstOrNew($attributes);
+	//  		\DB::enableQueryLog();
 //  		\Log::info(\DB::getQueryLog());
 		$oldValues = [];
 		foreach ( $values as $column => $value ) {
@@ -119,8 +120,7 @@ class EbBussinessModel extends DynamicModel {
 		}
 		
 		$instance->fill($values)->save();
-		$instance->{'oldValues'} = $oldValues;
-// 		$instance->{config ( "constants.idColumn" )[static :: $typeName]} = $attributes[static::$idField];
+		$instance->oldValues = $oldValues;
 		
 		return $instance; 
 	}
@@ -143,6 +143,9 @@ class EbBussinessModel extends DynamicModel {
 	public function getObjectDesc($rowID) {
 		$mdl = 'App\Models\\'.$this->objectModel;
 		return $mdl::find($rowID);
+	}
+	
+	public function afterSaving($postData) {
 	}
 	
 	public function updateAudit($attributes,$values,$postData) {
@@ -201,5 +204,17 @@ class EbBussinessModel extends DynamicModel {
 			AuditTrail::insert($records);
 		}
 	}
+	
+	
+	public static function getEUTest($object_id,$occur_date) {
+		$rowTest=EuTestDataValue::where([['EU_ID',$object_id],
+				['TEST_USAGE',1]])
+				->whereDate('EFFECTIVE_DATE', '<=', $occur_date)
+				->orderBy('EFFECTIVE_DATE','desc')
+				->first();
+		return $rowTest;
+	}
+	
+		
 	
 }

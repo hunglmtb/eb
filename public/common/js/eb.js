@@ -260,22 +260,24 @@ var actions = {
 		$("#toolbar_"+tab).html('');
 	},
 	renderFirsColumn : function ( data, type, rowData ) {
-		var html = data;
+		var html = "<div class='firstColumn'>"+data+"</div>";
+		var extraHtml = "<div class='extraFirstColumn'>";
 		if(rowData.hasOwnProperty('PHASE_CODE')){
-			html += "<div class='phase "+rowData['PHASE_CODE']+"'>"+
+			extraHtml += "<div class='phase "+rowData['PHASE_CODE']+"'>"+
 					rowData['PHASE_NAME']+"</div>";
 		}
 		else if(rowData.hasOwnProperty('PHASE_NAME')){
-			html += "<div class='phase "+rowData['PHASE_NAME']+"'>"+
+			extraHtml += "<div class='phase "+rowData['PHASE_NAME']+"'>"+
 			rowData['PHASE_NAME']+"</div>";
 		}
 		if(rowData.hasOwnProperty('STATUS_NAME')){
-			html +="<span class='eustatus'>"+rowData['STATUS_NAME']+"</span>";
+			extraHtml +="<span class='eustatus'>"+rowData['STATUS_NAME']+"</span>";
 		}
 		if(rowData.hasOwnProperty('TYPE_CODE')){
-			html +="<span class='eventType'>"+rowData['TYPE_CODE']+"</span>";
+			extraHtml +="<span class='eventType'>"+rowData['TYPE_CODE']+"</span>";
 		}
-		return html;
+		extraHtml += "</div>";
+		return html+extraHtml;
 	},
 	applyEditable : function (tab,type,td, cellData, rowData, columnName,collection){
 		var  editable = {
@@ -446,7 +448,7 @@ var actions = {
 		case "checkbox":
 //			cell["className"] = 'select-checkbox';
 			cell["render"] = function ( data2, type2, row ) {
-								return '<input style="width:20px; " type="checkbox" value="'+data2+'" class="CTV204 " size="15">';
+								return '<div  class="checkboxCell" ><input type="checkbox" value="'+data2+'"size="15"></div>';
 							};
 	    	break;
 		case "select":
@@ -460,7 +462,7 @@ var actions = {
 		     				return result[0]['NAME'];
 		     			}
 		     		}
-					return data2;
+					return '';
 				};
 	    	break;
 		}

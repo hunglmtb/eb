@@ -27,22 +27,6 @@ class FlowDataValue extends FeatureFlowModel
 							'STATUS_DATE',
 							'RECORD_STATUS' ];
 	
-	/* public function getDataMethodAttribute($value){
-		$rv = $value;
-		$user = auth()->user();
-		switch ($rv) {
-			case 'A':
-				$rv = $user->hasRight(["ADMIN_APPROVE"])?$rv:0;
-				break;
-			case 'V':
-				$rv = $user->hasRight(["ADMIN_APPROVE","ADMIN_VALIDATE"])?$rv:0;
-				break;
-			default:
-			break;
-		}
-		return $rv;
-	} */
-	
 	public static function getKeyColumns(&$newData,$occur_date,$postData)
 	{
 		$cls = parent::getKeyColumns($newData,$occur_date,$postData);

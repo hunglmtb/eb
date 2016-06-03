@@ -181,6 +181,7 @@ table.dataTable {
 	margin-right: 5px;
 	width: 60px;
 	height: 13px;
+	line-height: 13px;
 	overflow: hidden;
 	padding: 2px;
 	float: right;
@@ -214,6 +215,7 @@ table.dataTable {
 	border: 1px solid #888888;
 	padding: 1px;
 	height: 13px;
+	line-height: 13px;
 	float: right;
 	font-size: 8pt;
 }
@@ -259,4 +261,21 @@ table.dataTable {
 .CALC_DEFER_OIL_VOL, .CALC_DEFER_GAS_VOL, .CALC_DEFER_WATER_VOL {
 	background-clip: content-box;
 	background-color: orange;
+}
+
+.firstColumn {
+	width: 50%;
+	float: left;
+	height: 100%;
+	line-height: 100%;
+}
+
+.extraFirstColumn {
+	width: 50%;
+	float: right;
+	height: 100%;
+}
+
+.checkboxCell {
+	margin-left: 15px;
 }

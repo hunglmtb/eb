@@ -52,5 +52,4 @@ class QltyData extends EbBussinessModel
 		// Finally, delete this category...
 		return parent::delete();
 	}
-	
 }

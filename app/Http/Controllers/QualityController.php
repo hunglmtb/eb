@@ -21,6 +21,7 @@ class QualityController extends CodeController {
 	
 	public function __construct() {
 		parent::__construct();
+		$this->isApplyFormulaAfterSaving = false;
 		$this->fdcModel = "QualityData";
 		$this->idColumn = config("constants.qualityId");
 		/* $this->phaseColumn = config("constants.flFlowPhase");

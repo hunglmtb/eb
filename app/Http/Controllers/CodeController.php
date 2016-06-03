@@ -196,6 +196,12 @@ class CodeController extends EBController {
 		     		}
 		     	}
 		     	
+		     	foreach($resultRecords as $mdlName => $records ){
+		     		foreach($records as $key => $returnRecord ){
+		     			$returnRecord->afterSaving($postData);
+		     		}
+		     	}
+		     	
 		     	if ($this->isApplyFormulaAfterSaving) {
 			     	//get affected object with id
 		     		$objectWithformulas = [];
