@@ -144,17 +144,30 @@
 		var editFunction = function(){
 			var r = table.fnGetPosition(td)[0];
 		    var rowData = table.api().data()[ r];
-			actions.editRow(id,rowData);
+		    editBox.editRow(id,rowData);
 		};
 		$(td).find('#edit_row_'+id).click(editFunction);
 		$('#edit_row_'+id).click(editFunction);
 	}
-	
+
+	var renderTable = function (tab,subData,options) {
+		if(subData==null){
+			$('#table_'+tab+'_containerdiv').css("display", "none");
+		}
+		else{
+			$('#table_'+tab+'_containerdiv').css("display", "block");
+// 			$('#table_'+tab+'_containerdiv').html('<table id="table_'+tab+'" border="0" cellpadding="3" width="100%"></table>');
+			etbl = actions.initTableOption(tab,subData,options,renderFirsEditColumn,null);
+		}
+	};
+
+	var renderFirsEditColumn = function ( data, type, rowData ) {
+		return '<b>'+rowData.NAME+'</b>';
+	};
 </script>
 @stop
 
-
 @section('floatWindow')
-	@include('core.float_window')
 	@yield('editBox')
+	@include('core.float_window')
 @stop

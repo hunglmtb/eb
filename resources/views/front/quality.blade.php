@@ -16,7 +16,7 @@ QUALITY DATA CAPTURE
 	actions.saveUrl = "/quality/save";
 	actions.type = {
 					idName:['ID'],
-					keyField:'ID',
+					keyField:'DT_RowId',
 					saveKeyField : function (model){
 						return 'ID';
 						},
@@ -58,128 +58,94 @@ QUALITY DATA CAPTURE
 		return html;
 	};
 
-	var renderFirsEditColumn = function ( data, type, rowData ) {
-		return '<b>'+rowData.NAME+'</b>';
-	};
-
-	var renderTable = function (tab,subData,options) {
-		if(subData==null){
-			$('#table_'+tab+'_containerdiv').css("display", "none");
-		}
-		else{
-			$('#table_'+tab+'_containerdiv').css("display", "block");
-// 			$('#table_'+tab+'_containerdiv').html('<table id="table_'+tab+'" border="0" cellpadding="3" width="100%"></table>');
-			etbl = actions.initTableOption(tab,subData,options,renderFirsEditColumn,null);
-		}
-	};
-
-    var renderSumRow = function (api,columns){
-    	$.each(columns, function( i, column ) {
-            total = 0;
-            $.each(api.columns(column).data()[0], function( index, value ) {
-            	total += intVal(value);
-			});
-            // Update footer
-            $( api.columns(column).footer() ).html(total.toFixed(3));
-		});
-    }
-
-    var editId = false;
-	actions['editRow'] = function (id,rowData){
-		$('#tableEditGroup').html("<p> Loading...</p>");
-		$('#tableEditGroup').css("display", "block");
-		$('#contentview').css("display", "none");
-		$('#divEditGroup').show("fast");
-// 		$('#table_editrow').html("");
-		$('#cationEditGroup').html(rowData.CODE);
-		editDataPosting = {id:id};
-		delete actions.editedData['editrowgas'];
-		delete actions.editedData['editrowoil'];
-		$.ajax({
-			url: "/quality/edit",
-			type: "post",
-			data: editDataPosting,
-			success:function(data){
-// 				$('#tableEditGroup').html(JSON.stringify(data));
-				editId = id;
-				$('#tableEditGroup').css("display", "none");
-				$('#contentview').css("display", "block");
-				tab = 'editrowgas';
- 				options = {
- 		 					tableOption :	{
- 	 		 									searching: false,
- 	 		 									autoWidth: true,
- 	 		 									bInfo 		: false,
- 	 		 									scrollY		:	"320px",
- 	 		 									footerCallback : function ( row, data3, start, end, display ) {
-										            var api = this.api();
-										            columns = [1,2,3];
-										            renderSumRow(api,columns);
-										        }
- 	 		 								}
-						};
-				subData = data['MOLE_FACTION'];
-				renderTable(tab,subData,options);
-
-				tab = 'editrowoil';
-				options = {
-						tableOption :{	searching	: false,
-										autoWidth	: true,
-										bInfo 		: false,
-		 								scrollY		:	"250px",
-										footerCallback : function ( row, data3, start, end, display ) {
-															var api = this.api();
-												            columns = [1];
-												            renderSumRow(api,columns);
-											       		}
-		        					}
-				};
-				subData = data['NONE_MOLE_FACTION'];
-				renderTable(tab,subData,options);
-				console.log ( "success:function editRow "+data );
-			},
-			error: function(data) {
-				$('#tableEditGroup').html(JSON.stringify(data));
-				console.log ( "error editRow "+JSON.stringify(data) );
-			}
-		});
-	}
-
-	var saveEditGroup = function() {
-		if(editId&&editId!=null&&(actions.editedData.hasOwnProperty('editrowoil')||actions.editedData.hasOwnProperty('editrowgas'))){
-			showWaiting();
-			editData = {
-						id:editId,
-						oil: actions.editedData['editrowoil'],
-						gas: actions.editedData['editrowgas'],
-					};
-			$.ajax({
-				url: '/quality/edit/saving',
-				type: "post",
-				data: editData,
-				success:function(data){
-					console.log ( "success saveEditGroup "+JSON.stringify(data) );
-					alert(JSON.stringify(data));
-					hideWaiting();
-					closeEditWindow();
-				},
-				error: function(data) {
-					hideWaiting();
-					console.log ( "error saveEditGroup ");
-				}
-			});
-		}
-		else{
-			alert('data is empty');
-		}
-	}
-
 </script>
 @stop
 
 
-@section('editBox')
-<script type="text/javascript">
-	editBox.fields = ['editrowgas','editrowoil'];
-</script>
+@section('editBoxParams')
+@parent
+<script>
+	editBox.fields = {	gas		:	'gas',
+						oil		:	'oil'
+					};
+	
+	editBox.loadUrl = "/quality/edit";
+	editBox.saveUrl = '/quality/edit/saving';
+	editBox.editGroupSuccess = function(data,id){
+	//	    				$('#tableEditGroup').html(JSON.stringify(data));
+	    			tab = 'gas';
+	    				options = {
+	    		 					tableOption :	{
+	    	 		 									searching: false,
+	    	 		 									autoWidth: true,
+	    	 		 									bInfo 		: false,
+	    	 		 									scrollY		:	"320px",
+	    	 		 									footerCallback : function ( row, data3, start, end, display ) {
+	    									            var api = this.api();
+	    									            columns = [1,2,3];
+	    									            renderSumRow(api,columns);
+	    									        }
+	    	 		 								}
+	    					};
+	    			subData = data['MOLE_FACTION'];
+	    			renderTable(tab,subData,options);
+
+	    			tab = 'oil';
+	    			options = {
+	    					tableOption :{	searching	: false,
+	    									autoWidth	: true,
+	    									bInfo 		: false,
+	    	 								scrollY		:	"250px",
+	    									footerCallback : function ( row, data3, start, end, display ) {
+	    														var api = this.api();
+	    											            columns = [1];
+	    											            renderSumRow(api,columns);
+	    										       		}
+	    	        					}
+	    			};
+	    			subData = data['NONE_MOLE_FACTION'];
+	    			renderTable(tab,subData,options);
+	}
+	</script>
+	
+@stop
+
+@section('editBoxContentview')
+@parent
+<table border='0' cellpadding='0' style='width:100%;height:100%'>
+			<caption style='background:gray;color:white;height:20px;font-size:10.5pt' id = 'cationEditGroup'></caption>
+			<tr>
+				<td valign='top'>
+					<div id="table_oil_containerdiv" class="secondaryTable" style='height:400px;overflow:auto'>
+						<table id="table_oil" class="fixedtable nowrap display">
+							<tfoot>
+								<tr>
+									<td style="text-align:left">Sum:</td>
+									<td style="text-align:left"></td>
+									<td style="text-align:left" colspan="1"></td>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+				</td>
+				<td valign='top' width="10">
+					<div class="paddingOfTable" style='width:10px;overflow:auto'>
+					</div>
+				</td>
+				<td valign='top'>
+					<div id="table_gas_containerdiv" class="secondaryTable" style='height:400px;overflow:auto'>
+						<table id="table_gas" class="fixedtable nowrap display">
+						<tfoot>
+							<tr>
+								<td style="text-align:left">Sum:</td>
+								<td style="text-align:left"></td>
+								<td style="text-align:left"></td>
+								<td style="text-align:left" colspan="3"></td>
+							</tr>
+						</tfoot>
+					</table>
+					</div>
+				</td>
+			</tr>
+		</table>
 @stop

@@ -253,12 +253,12 @@ table.dataTable {
 	width: 100px;
 }
 
-.THEOR_OIL_PERDAY, .THEOR_GAS_PERDAY, .THEOR_WATER_PERDAY {
+#table_Deferment .THEOR_OIL_PERDAY,#table_Deferment  .THEOR_GAS_PERDAY,#table_Deferment  .THEOR_WATER_PERDAY {
 	background-clip: content-box;
 	background-color: yellow;
 }
 
-.CALC_DEFER_OIL_VOL, .CALC_DEFER_GAS_VOL, .CALC_DEFER_WATER_VOL {
+#table_Deferment .CALC_DEFER_OIL_VOL,#table_Deferment  .CALC_DEFER_GAS_VOL,#table_Deferment  .CALC_DEFER_WATER_VOL {
 	background-clip: content-box;
 	background-color: orange;
 }

@@ -476,17 +476,6 @@ var actions = {
 		}
 		var uoms = data.uoms;
 		var invisible = options!=null&&(typeof(options.invisible) !== "undefined"&&options.invisible!=null)?options.invisible:null;
-		/*if(typeof(data.extraDataSet) !== "undefined"&&data.extraDataSet!=null){
-			$.each(data.extraDataSet, function( index, value ) {
-				if(value!=null){
-					var collection = value;
-		            $.each(collection, function( i, vl ) {
-		            	vl['value']=vl['ID'];
-		            	vl['text']=vl['NAME'];
-		            });
-				}
-			});
-		}*/
 		
 		if(typeof(uoms) !== "undefined"&&uoms!=null){
 			$.each(uoms, function( index, value ) {
@@ -570,6 +559,11 @@ var actions = {
 				var iw = (vlp['width']>1?vlp['width']:100);
 				tblWdth+=iw;
 				vlp['width']= iw+"px";
+				
+				if(ip!=0&&(vlp.title==null||vlp.title=='')) {
+					vlp.title=vlp.data;
+					vlp['width']= (iw*1.5)+"px";
+				}
 			}
         });
 		

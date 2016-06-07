@@ -8,7 +8,10 @@ use App\Models\QltyData;
 use App\Models\QltyDataDetail;
 use App\Models\QltyProductElementType;
 use App\Models\EnergyUnit;
+use App\Models\DefermentDetail;
 use App\Models\DefermentGroup;
+use App\Models\DefermentGroupEu;
+use App\Models\Deferment;
 
 class DefermentController extends CodeController {
     
@@ -68,9 +71,6 @@ class DefermentController extends CodeController {
 // 					    			->orderBy($dcTable)
  									->get();
 	    
-//     			\DB::enableQueryLog();
-//     	\Log::info(\DB::getQueryLog());
-    	
     	if ($dataSet&&$dataSet->count()>0) {
     		$bunde = ['FACILITY_ID' => $facility_id];
     		foreach($this->extraDataSetColumns as $column => $extraDataSetColumn){
@@ -180,137 +180,68 @@ class DefermentController extends CodeController {
     	return response()->json(['dataSet'=>$dataSet,
     							'postData'=>$postData]);
     }
-    /*
+    
     public function edit(Request $request){
     	$postData = $request->all();
     	$id = $postData['id'];
-//     	$ptype= QltyData::find($id)->get('PRODUCT_TYPE');
-    	$dcTable =QltyData::getTableName();
-    	$qltyDataDetail =QltyDataDetail::getTableName();
-    	$qltyProductElementType =QltyProductElementType::getTableName();
+    	$defermentDetail =DefermentDetail::getTableName();
+    	$properties = $this->getOriginProperties($defermentDetail);
     	
-    	$properties = $this->getOriginProperties($qltyDataDetail);
-    	 
-    	$dataSet = QltyProductElementType::join($dcTable,function ($query) use ($dcTable,$id,$qltyProductElementType) {
-										    		$query->on("$dcTable.PRODUCT_TYPE",'=',"$qltyProductElementType.PRODUCT_TYPE")
-										    				->where("$dcTable.ID",'=',$id) ;
-									    	})
-									    	->leftJoin($qltyDataDetail, function($join) use ($qltyDataDetail,$id,$qltyProductElementType){
-									    				$join->on("$qltyDataDetail.ELEMENT_TYPE", '=', "$qltyProductElementType.ID")
-									    					->where("$qltyDataDetail.QLTY_DATA_ID",'=',$id);
-									    	})
-								    		->select(
- 								    				"$qltyProductElementType.ID as ID",
-								    				"$qltyProductElementType.ID as DT_RowId",
-								    				"$qltyProductElementType.ORDER",
-								    				"$qltyProductElementType.NAME",
-								    				"$qltyProductElementType.PRODUCT_TYPE",
-								    				"$qltyProductElementType.DEFAULT_UOM",
-								    				"$qltyDataDetail.*"
-								    				)
-// 						    				->orderBy("$qltyProductElementType.ORDER")
-// 						    				->orderBy("$qltyProductElementType.NAME")
-						    				->get();
-									    	
-    	$datasetGroups = $dataSet->groupBy(function ($item, $key) {
-									    return $item['DEFAULT_UOM']=='Mole fraction'?'MOLE_FACTION':'NONE_MOLE_FACTION';
-									});
-    	
+    	$dataSet = $this->getDefermentDetails($id);
 	    $results = [];
-	    if ($datasetGroups->has('NONE_MOLE_FACTION')) {
-	    	$gasElementColumns = ['ELEMENT_TYPE','VALUE','UOM'];
-		    $noneMole = $properties->groupBy(function ($item, $key) use ($gasElementColumns) {
-										    return in_array($item->name, $gasElementColumns)?'NONE_MOLE_FACTION':'MOLE_FACTION';
-		    });
-		    $results['NONE_MOLE_FACTION'] = ['properties'	=>$noneMole['NONE_MOLE_FACTION'],
-		    								'dataSet'		=>$datasetGroups['NONE_MOLE_FACTION']];
-	    }
-	    
-	    if ($datasetGroups->has('MOLE_FACTION')) {
-	    	$oilElementColumns = ['VALUE','UOM'];
-	    	$noneMole = $properties->groupBy(function ($item, $key) use ($oilElementColumns) {
-										    return in_array($item->name, $oilElementColumns)?'NONE_MOLE_FACTION':'MOLE_FACTION';
-	    	});
-    	
-    		$results['MOLE_FACTION'] = ['properties'	=>$noneMole['MOLE_FACTION'],
-	    								'dataSet'		=>$datasetGroups['MOLE_FACTION']];
-	    }
+    	$results['deferment'] = ['properties'	=>$properties,
+	    							'dataSet'		=>$dataSet];
 	    
     	return response()->json($results);
     }
+    public function getDefermentDetails($id){
+    	$defermentDetail =DefermentDetail::getTableName();
+    	//     	$defermentGroupEu =DefermentGroupEu::getTableName();
+    	$energyUnit =EnergyUnit::getTableName();
+    	$deferment =Deferment::getTableName();
+    	$dataSet = Deferment::join($energyUnit, "$deferment.DEFER_TARGET", '=', "$energyUnit.ID")
+					    	->leftJoin($defermentDetail, function($join) use ($defermentDetail,$deferment,$energyUnit){
+					    		$join->on("$defermentDetail.DEFERMENT_ID", '=', "$deferment.ID")
+					    		->on("$defermentDetail.EU_ID",'=',"$energyUnit.ID");
+					    	})
+					    	->where("$deferment.ID",'=',$id)
+					    	//well
+					    	->where("$deferment.DEFER_GROUP_TYPE",'=',3)
+					    	->select(
+					    			"$energyUnit.ID as ID",
+					    			"$energyUnit.NAME as NAME",
+					    			"$energyUnit.ID as DT_RowId",
+					    			"$deferment.DEFER_GROUP_TYPE",
+					    			"$defermentDetail.*"
+					    			)
+					    			->get();
+    	return $dataSet;
+    }
+    
+    
     
     public function editSaving(Request $request){
     	$postData = $request->all();
     	$id = $postData['id'];
+	    $mdlData = $postData['deferment'];
+	    $columns = ['DEFERMENT_ID'=>$id];
+	    foreach($mdlData as $key => $newData ){
+	    	$columns['EU_ID'] = $newData['DT_RowId'];
+	    	$newData['EU_ID'] = $newData['DT_RowId'];
+	    	$newData['DEFERMENT_ID'] = $id;
+	    	$returnRecord = DefermentDetail::updateOrCreate($columns, $newData);
+	    }
+	    
+    	$dataSet = $this->getDefermentDetails($id);
+    	$totalOfOvrDeferOilVol = $dataSet->sum('OVR_DEFER_OIL_VOL');
+    	$totalOfOvrDeferGasVol = $dataSet->sum('OVR_DEFER_GAS_VOL');
+    	$totalOfOvrDeferWaterVol = $dataSet->sum('OVR_DEFER_WATER_VOL');
     	
-    	$qltyDataEntry = QltyData::find($id);
-    	if ($qltyDataEntry) {
-    		$productType = $qltyDataEntry->PRODUCT_TYPE;
-    		switch ($productType){
-    			case 1://oil
-   					$attributes = ['QLTY_DATA_ID'=>$id];
-//    					$values = ['QLTY_DATA_ID'=>$id];
-   					$oils = array_key_exists("oil", $postData)?$postData['oil']:null;
-   					if ($oils&&count($oils)>0) {
-	    				foreach($oils as $oil ){
-	    					$attributes['ELEMENT_TYPE'] = $oil['DT_RowId'];
-   							$oil['QLTY_DATA_ID'] = $id;
-   							$oil['ELEMENT_TYPE'] = $oil['DT_RowId'];
-   							QltyDataDetail::updateOrCreate($attributes,$oil);
-	    				};
-   					}
-   					$gases = array_key_exists("gas", $postData)?$postData['gas']:null;
-   					if ($gases&&count($gases)>0) {
-	    				foreach($gases as $gas ){
-	    					$attributes['ELEMENT_TYPE'] = $gas['DT_RowId'];
-	    					$gas['QLTY_DATA_ID'] = $id;
-	    					$gas['ELEMENT_TYPE'] = $gas['DT_RowId'];
-		    				QltyDataDetail::updateOrCreate($attributes,$gas);
-	    				};
-   					}
-    				break;
-    			case 2://gas
-    				$constantElementTypes = QltyProductElementType::where("PRODUCT_TYPE",'=', $productType)->select("MOL_WEIGHT","CODE","ID")->get();
-    				
-    				$gases = array_key_exists("gas", $postData)?$postData['gas']:null;
-    				if ($gases) {
-	   					$attributes = ['QLTY_DATA_ID'=>$id];
-	   					$qltDetails = [];
-	    				foreach($constantElementTypes as $constantElementType ){
-	// 	   					$entries[$eid] = [];
-		    				$attributes['ELEMENT_TYPE'] = $constantElementType->ID;
-		    				$aqltyDataDetail = QltyDataDetail::firstOrNew($attributes);
-		    				$aqltyDataDetail->fill($attributes);
-		    				$qltDetails[$constantElementType->ID] = $aqltyDataDetail;
-	    				}
-	    				
-	    				if ($gases&&count($gases)>0) {
-	    					foreach($gases as $gas ){
-	    						$qltd = $qltDetails[$gas['DT_RowId']];
-	    						$qltd->fill($gas);
-	    					};
-	    					
-	    					$totalMole = 0;
-	    					foreach($constantElementTypes as $constantElementType ){
-	    						$qltd = $qltDetails[$constantElementType->ID];
-	    						$qltd->{'calculated'} = $qltd->MOLE_FACTION*$constantElementType->MOL_WEIGHT;
-	    						$totalMole+=$qltd->MOLE_FACTION*$constantElementType->MOL_WEIGHT;
-	    					};
-	    					
-	    					if ($totalMole!=0) {
-		    					foreach($qltDetails as $qltd ){
-		    						$qltd->MASS_FRACTION = $qltd->calculated/$totalMole;
-		    						unset($qltd->calculated);
-		    						$qltd->save();
-		    					};
-	    					}
-	    					else response()->json('total = 0');
-	    				}
-	    				else response()->json('no change data detected');
-    				}
-    				else response()->json('empty data');
-    		}
-    	}
+    	Deferment::where('ID', $id)
+    			->update(array('OVR_DEFER_OIL_VOL' => $totalOfOvrDeferOilVol,
+    					'OVR_DEFER_GAS_VOL' => $totalOfOvrDeferGasVol,
+    					'OVR_DEFER_WATER_VOL' => $totalOfOvrDeferWaterVol
+    			));
     	return response()->json('Edit Successfullly');
-    } */
+    }
 }
