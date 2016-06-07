@@ -1,17 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
 use App\Models\CodeDeferGroupType;
-use App\Models\QltyData;
-use App\Models\QltyDataDetail;
-use App\Models\QltyProductElementType;
-use App\Models\EnergyUnit;
+use App\Models\Deferment;
 use App\Models\DefermentDetail;
 use App\Models\DefermentGroup;
 use App\Models\DefermentGroupEu;
-use App\Models\Deferment;
+use App\Models\EnergyUnit;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class DefermentController extends CodeController {
     
@@ -27,6 +24,7 @@ class DefermentController extends CodeController {
 																	'model'		=>'CodeDeferCode3']
 									];
 		
+		$this->keyColumns = [$this->idColumn,$this->phaseColumn];
 		/* $this->fdcModel = "DefermentData";
 		$this->idColumn = config("constants.defermentId"); */
 		/* $this->phaseColumn = config("constants.flFlowPhase");

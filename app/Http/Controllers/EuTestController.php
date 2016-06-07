@@ -14,6 +14,7 @@ class EuTestController extends CodeController {
 		
 		$this->valueModel = "EnergyUnitDataValue";
 		$this->theorModel = "EnergyUnitDataTheor";
+		$this->keyColumns = [$this->idColumn,$this->phaseColumn];
 	}
 	
     public function getFirstProperty($dcTable){

@@ -15,6 +15,7 @@ class StorageController extends CodeController {
  		$this->phaseColumn = config("constants.tankFlowPhase");
 		
  		$this->valueModel = "TankDataValue";
+ 		$this->keyColumns = [$this->idColumn,$this->phaseColumn];
 // 		$this->theorModel = "TankDataTheor";
 	}
 	

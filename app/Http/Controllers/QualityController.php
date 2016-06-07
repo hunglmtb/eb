@@ -29,6 +29,8 @@ class QualityController extends CodeController {
 		$this->valueModel = "FlowDataValue";
 		$this->theorModel = "FlowDataTheor"; */
 // 		$this->isApplyFormulaAfterSaving = true;
+
+		$this->keyColumns = [$this->idColumn,$this->phaseColumn];
 	}
 	
 	public function getFirstProperty($dcTable){

@@ -11,6 +11,7 @@ return [
 		'euId' 						=> 'X_EU_ID',
 		'euFlowPhase' 				=> 'EU_FLOW_PHASE',
 		'euPhaseConfigId' 			=> 'EU_PHASE_CONFIG_ID',
+		'eventType' 				=> 'EU_CONFIG_EVENT_TYPE',
 		'tankId' 					=> 'X_TANK_ID',
 		'tankIdColumn' 				=> 'TANK_ID',
 		'tankFlowPhase' 			=> 'OBJ_FLOW_PHASE',

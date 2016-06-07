@@ -19,6 +19,9 @@ class EuController extends CodeController {
 		
 		$this->valueModel = "EnergyUnitDataValue";
 		$this->theorModel = "EnergyUnitDataTheor";
+		
+		$this->keyColumns = [$this->idColumn,$this->phaseColumn];
+		$this->keyColumns[] = config("constants.eventType");
 	}
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
@@ -57,7 +60,8 @@ class EuController extends CodeController {
 											    	//TODO add table name 
 										    		$join->on("$eu.ID", '=', "$dcTable.EU_ID")
 	 					 				    			->on("$dcTable.FLOW_PHASE",'=',"$euPhaseConfig.FLOW_PHASE")
-	 									    			->where("$dcTable.OCCUR_DATE",'=',$occur_date);
+	 					 				    			->on("$dcTable.EVENT_TYPE",'=',"$euPhaseConfig.EVENT_TYPE")
+	 					 				    			->where("$dcTable.OCCUR_DATE",'=',$occur_date);
 									    		
  									    			$energyUnitDataAlloc = EnergyUnitDataAlloc::getTableName();
  									    			$energyUnitCompDataAlloc = EnergyUnitCompDataAlloc::getTableName();
@@ -72,6 +76,7 @@ class EuController extends CodeController {
 				    			"$euPhaseConfig.ID as DT_RowId",
  				    			"$codeFlowPhase.name as PHASE_NAME",
  				    			"$codeEventType.name as TYPE_NAME",
+				    			"$euPhaseConfig.EVENT_TYPE as ".config("constants.eventType"),
 				    			"$eu.ID as ".config("constants.euId"),
    				    			"$euPhaseConfig.FLOW_PHASE as EU_FLOW_PHASE",
   				    			"$codeStatus.NAME as STATUS_NAME",

@@ -22,6 +22,7 @@ class FlowController extends CodeController {
 		$this->valueModel = "FlowDataValue";
 		$this->theorModel = "FlowDataTheor";
 		$this->isApplyFormulaAfterSaving = true;
+		$this->keyColumns = [$this->idColumn,$this->phaseColumn];
 	}
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){

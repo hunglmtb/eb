@@ -26,9 +26,14 @@ class CodeController extends EBController {
 	protected $idColumn;
 	protected $phaseColumn;
 	protected $valueModel ;
+	protected $keyColumns ;
 	protected $theorModel ;
 	protected $isApplyFormulaAfterSaving = true;
 	
+	
+	/* public function __construct() {
+		parent::__construct();
+	} */
 	
 	public function getCodes(Request $request)
     {
@@ -454,7 +459,7 @@ class CodeController extends EBController {
 	    		foreach ($editedData[$fdcModel] as $element) {
 	    			$key = array_search($element[$idColumn],array_column($editedData[$model],$idColumn));
 	    			if ($key===FALSE) {
-	    				$editedData[$model][] =  array_intersect_key($element, array_flip(array($idColumn,$phaseColumn)));
+	    				$editedData[$model][] =  array_intersect_key($element, array_flip($this->keyColumns));
 	    			}
 	    			$affectedIds[]=$element[$idColumn];
 	    		}

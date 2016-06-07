@@ -20,8 +20,10 @@ class FeatureEuModel extends EbBussinessModel
 		}
 		$newData[static::$dateField] = $occur_date;
 		$newData[config("constants.flowPhase")] = $newData[config("constants.euFlowPhase")];
+		$newData['EVENT_TYPE'] = $newData[config("constants.eventType")];
 		return [static::$idField => $newData[static::$idField],
 				config("constants.flowPhase") => $newData[config("constants.euFlowPhase")],
+				'EVENT_TYPE' => $newData[config("constants.eventType")],
 				static::$dateField=>$occur_date];
 	}
 	
@@ -31,6 +33,7 @@ class FeatureEuModel extends EbBussinessModel
 		$euPhaseConfig = EuPhaseConfig::getTableName();
 		$result = static::join($euPhaseConfig, function ($query) use ($tableName,$euPhaseConfig) {
 													$query->on("$euPhaseConfig.EU_ID",'=', "$tableName.EU_ID")
+															->on("$tableName.EVENT_TYPE",'=',"$euPhaseConfig.EVENT_TYPE")
 															->on("$euPhaseConfig.FLOW_PHASE",'=', "$tableName.FLOW_PHASE");
 											})
 						->whereIn("$tableName.ID",$updatedIds)
