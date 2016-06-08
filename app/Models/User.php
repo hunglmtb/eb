@@ -48,12 +48,12 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 	{
 // 		\DB::enableQueryLog();
 	
-		$wp = User::join('USER_WORKSPACE', $this->table.'.ID', '=', 'USER_WORKSPACE.USER_ID')
+		$wp = UserWorkspace::join( $this->table, $this->table.'.ID', '=', 'USER_WORKSPACE.USER_ID')
 		->join('FACILITY', 'USER_WORKSPACE.W_FACILITY_ID', '=', 'FACILITY.ID')
 		->join('LO_AREA', 'FACILITY.AREA_ID', '=', 'LO_AREA.ID')
 		->join('LO_PRODUCTION_UNIT', 'LO_AREA.PRODUCTION_UNIT_ID', '=', 'LO_PRODUCTION_UNIT.ID')
 		->where( $this->table.'.ID', '=', $this->ID)
-		->select('USER_WORKSPACE.*', 'USER_WORKSPACE.W_DATE_BEGIN','USER_WORKSPACE.W_DATE_END', 'FACILITY.AREA_ID', 'LO_AREA.PRODUCTION_UNIT_ID')
+		->select('USER_WORKSPACE.*','FACILITY.AREA_ID', 'LO_AREA.PRODUCTION_UNIT_ID')
 		->get()->first();
 		
 // 		$wp->W_DATE_BEGIN = Carbon::parse($wp->W_DATE_BEGIN);
@@ -68,14 +68,14 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 	{
 		// 		\DB::enableQueryLog();
 		$columns = ['USER_ID'=>$this->ID];
-		$newData = [];
+		$newData = ['USER_ID'=>$this->ID,'USER_NAME'=>$this->username];
 		if ($date_begin) {
-			$date_begin = Carbon::parse($date_begin);
+ 			$date_begin = Carbon::parse($date_begin);
 			$newData['W_DATE_BEGIN']=$date_begin;
 		}
 		if ($facility_id) $newData['W_FACILITY_ID']=$facility_id;
 		if ($date_end) {
-			$date_end = Carbon::parse($date_end);
+ 			$date_end = Carbon::parse($date_end);
 			$newData['W_DATE_END']=$date_end;
 		}
 		return  UserWorkspace::updateOrCreate($columns, $newData);
