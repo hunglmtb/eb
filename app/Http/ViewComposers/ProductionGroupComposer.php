@@ -5,6 +5,7 @@ namespace App\Http\ViewComposers;
 use Illuminate\View\View;
 use App\Repositories\UserRepository as UserRepository;
 use App\Models\LoProductionUnit;
+use Carbon\Carbon;
 
 class ProductionGroupComposer
 {
@@ -55,8 +56,14 @@ class ProductionGroupComposer
     
     public function initDateFilterGroup($workspace,$extra=null){
     	if ($extra==null) return null;
-    	$beginDate = $workspace->W_DATE_BEGIN;
-    	$endDate = $workspace->W_DATE_END;
+    	if ($workspace) {
+    		$beginDate = $workspace->W_DATE_BEGIN;
+    		$endDate = $workspace->W_DATE_END;
+    	}
+    	else{
+	    	$beginDate = Carbon::yesterday();
+	    	$endDate = Carbon::now();
+    	}
     	
     	for($i = 0; $i < count($extra);$i++){
     		switch ($extra[$i]['id']) {
@@ -78,9 +85,16 @@ class ProductionGroupComposer
     
     public function initProductionFilterGroup($workspace,$extras=null)
     {
-    	$pid = $workspace->PRODUCTION_UNIT_ID;
-    	$aid = $workspace->AREA_ID;
-    	$fid = $workspace->W_FACILITY_ID;
+    	if ($workspace) {
+	    	$pid = $workspace->PRODUCTION_UNIT_ID;
+	    	$aid = $workspace->AREA_ID;
+	    	$fid = $workspace->W_FACILITY_ID;
+    	}
+    	else{
+    		$pid = 0;
+    		$aid = 0;
+    		$fid = 0;
+    	}
     	
     	$productionUnits = LoProductionUnit::all(['ID', 'NAME']);
     	$currentProductUnit = ProductionGroupComposer::getCurrentSelect($productionUnits,$pid);

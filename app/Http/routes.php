@@ -116,6 +116,10 @@ Route::post('deferment/loadsrc', 		'DefermentController@loadsrc');
 Route::post('deferment/edit', 			'DefermentController@edit');
 Route::post('deferment/edit/saving', 	'DefermentController@editSaving');
 
+Route::get('dc/ticket', 		'ProductManagementController@ticket');
+Route::post('ticket/load',		['uses' =>	'TicketController@load','middleware' => 'saveWorkspace']);
+Route::post('ticket/save', 		'TicketController@save');
+
 //---------
 Route::post('fo/loadSafety', 'FOController@loadSafety');
 Route::get('fo/safety', 'FOController@safety');

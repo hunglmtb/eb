@@ -9,6 +9,7 @@ use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Carbon\Carbon;
+
 class User extends DynamicModel implements AuthenticatableContract, CanResetPasswordContract {
 
 	use Authenticatable, CanResetPassword;
@@ -55,8 +56,8 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 		->select('USER_WORKSPACE.*', 'USER_WORKSPACE.W_DATE_BEGIN','USER_WORKSPACE.W_DATE_END', 'FACILITY.AREA_ID', 'LO_AREA.PRODUCTION_UNIT_ID')
 		->get()->first();
 		
-		$wp->W_DATE_BEGIN = Carbon::parse($wp->W_DATE_BEGIN);
-		$wp->W_DATE_END = Carbon::parse($wp->W_DATE_END);
+// 		$wp->W_DATE_BEGIN = Carbon::parse($wp->W_DATE_BEGIN);
+// 		$wp->W_DATE_END = Carbon::parse($wp->W_DATE_END);
 	
 // 		\Log::info(\DB::getQueryLog());
 	
