@@ -74,7 +74,7 @@
 	
 		$("#iframeWorkflow").attr("src","data:text/html;charset=utf-8," + escape(''));
 		show_wf_loading();
-		$("#iframeWorkflow").attr("src","/wf/wfshow.php");
+		$("#iframeWorkflow").attr("src","loadWfShow");
 	}
 	var help="";
 	function showHelp(){
@@ -139,8 +139,8 @@
 	</script>
 	</div>
 		<div id="boxWorkflow" style="display:none;width:100%;height:100%;background:#ffffff;overflow:hidden;">
-			<iframe id="iframeWorkflow" onload="loadTasksCounting()" style="border:none;padding:0px;width:100%;height:100%;box-sizing: border-box;"></iframe>
-			<div id="wf_loading_box" style="position:absolute;left:0px;top:0px;width:100%;height:100%;background:white;opacity:0.8"><center id="notify_splash"><img class="center_content" src="/wf/images/loading.gif"></center></div>
+		    <iframe id="iframeWorkflow" onload="loadTasksCounting()" style="border:none;padding:0px;width:100%;height:100%;box-sizing: border-box;"></iframe>
+				<div id="wf_loading_box" style="position:absolute;left:0px;top:0px;width:100%;height:100%;background:white;opacity:0.8"><center id="notify_splash"><img class="center_content" src="/wf/images/loading.gif"></center></div>
 		</div>
 	<!-- <div id="boxWorkflow" onclick="showWorkflow()" style="z-index:1;display:none;position:fixed;top:0px;left:0px;width:100%;height:100%;background:rgba(0,0,0,0.3)">
 		<div id="boxWorkflow_content" style="z-index:100;padding:0px;position:absolute;top: 99px;left:50%;transform: translateX(-50%);width:900px;height:520px;background:#ffffff;border:1px solid #333333;border-radius:0px;box-shadow:0px 5px 20px rgba(0,0,0,0.4)">

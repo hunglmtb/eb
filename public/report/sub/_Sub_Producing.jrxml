@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version last-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Sub_Producing" pageWidth="1684" pageHeight="1190" orientation="Landscape" columnWidth="1644" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8d2b0d9e-20e4-4152-ad46-8ceb890978a1">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="dbOil"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="facility_id" class="java.lang.Integer"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT
+x.FACILITY_NAME,
+x.WELL_NAME,
+x.THEOR_METHOD,
+x.OCCUR_DATE,
+x.GOR,
+x.SW,
+10 ACTIVE_HRS,
+x1.EU_DAY_GRS_VOL AS OIL_ALLOC, y1.EU_DAY_GRS_VOL AS OIL_THEOR,
+x2.EU_DAY_GRS_VOL AS GAS_ALLOC, y2.EU_DAY_GRS_VOL AS GAS_THEOR,
+x3.EU_DAY_GRS_VOL AS WATER_ALLOC, y3.EU_DAY_GRS_VOL AS WATER_THEOR
+FROM
+(SELECT
+f.NAME AS FACILITY_NAME,
+eu.ID AS EU_ID,
+eu.NAME AS WELL_NAME,
+eu.TEST_METHOD AS THEOR_METHOD,
+udv.OCCUR_DATE AS OCCUR_DATE,
+MAX(udv.ACTIVE_HRS) AS ACTIVE_HRS,
+MAX(GOR) AS GOR,
+MAX(SW) AS SW 
+FROM energy_unit AS eu
+INNER JOIN energy_unit_day_value AS udv
+ON eu.ID = udv.EU_ID
+INNER JOIN facility AS f
+ON eu.FACILITY_ID = f.ID
+INNER JOIN code_event_type AS et
+ON eu.EVENT_TYPE=et.ID
+WHERE f.ID=$P{facility_id}
+AND et.ID=1
+GROUP BY eu.ID, eu.NAME, eu.TEST_METHOD, udv.OCCUR_DATE) AS x
+INNER JOIN energy_unit_day_alloc AS x1
+ON x.EU_ID = x1.EU_ID AND x.OCCUR_DATE = x1.OCCUR_DATE AND x1.FLOW_PHASE = 1
+INNER JOIN energy_unit_day_alloc AS x2
+ON x.EU_ID = x2.EU_ID AND x.OCCUR_DATE = x2.OCCUR_DATE AND x2.FLOW_PHASE = 2
+INNER JOIN energy_unit_day_alloc AS x3
+ON x.EU_ID = x3.EU_ID AND x.OCCUR_DATE = x3.OCCUR_DATE AND x3.FLOW_PHASE = 3
+INNER JOIN energy_unit_day_theor AS y1
+ON x.EU_ID = y1.EU_ID AND y1.OCCUR_DATE = y1.OCCUR_DATE AND y1.FLOW_PHASE = 1
+INNER JOIN energy_unit_day_theor AS y2
+ON x.EU_ID = y2.EU_ID AND y2.OCCUR_DATE = y2.OCCUR_DATE AND y2.FLOW_PHASE = 2
+INNER JOIN energy_unit_day_theor AS y3
+ON x.EU_ID = y3.EU_ID AND y3.OCCUR_DATE = y3.OCCUR_DATE AND y3.FLOW_PHASE = 3
+GROUP BY x.FACILITY_NAME,
+x.WELL_NAME,
+x.THEOR_METHOD,
+x.OCCUR_DATE,
+x.GOR,
+x.SW,
+x.ACTIVE_HRS]]>
+	</queryString>
+	<field name="FACILITY_NAME" class="java.lang.String"/>
+	<field name="WELL_NAME" class="java.lang.String"/>
+	<field name="THEOR_METHOD" class="java.lang.Integer"/>
+	<field name="OCCUR_DATE" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="GOR" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="SW" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ACTIVE_HRS" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="OIL_ALLOC" class="java.math.BigDecimal"/>
+	<field name="OIL_THEOR" class="java.math.BigDecimal"/>
+	<field name="GAS_ALLOC" class="java.math.BigDecimal"/>
+	<field name="GAS_THEOR" class="java.math.BigDecimal"/>
+	<field name="WATER_ALLOC" class="java.math.BigDecimal"/>
+	<field name="WATER_THEOR" class="java.math.BigDecimal"/>
+	<variable name="GAS_ALLOC1" class="java.math.BigDecimal" resetType="Group" resetGroup="Group1" calculation="Sum">
+		<variableExpression><![CDATA[$F{GAS_ALLOC}]]></variableExpression>
+	</variable>
+	<variable name="GAS_THEOR1" class="java.math.BigDecimal" resetType="Group" resetGroup="Group1" calculation="Sum">
+		<variableExpression><![CDATA[$F{GAS_THEOR}]]></variableExpression>
+	</variable>
+	<variable name="OIL_ALLOC1" class="java.math.BigDecimal" resetType="Group" resetGroup="Group1" calculation="Sum">
+		<variableExpression><![CDATA[$F{OIL_ALLOC}]]></variableExpression>
+	</variable>
+	<variable name="OIL_THEOR1" class="java.math.BigDecimal" resetType="Group" resetGroup="Group1" calculation="Sum">
+		<variableExpression><![CDATA[$F{OIL_THEOR}]]></variableExpression>
+	</variable>
+	<group name="Group1">
+		<groupHeader>
+			<band height="50">
+				<staticText>
+					<reportElement x="100" y="30" width="100" height="20" uuid="1d731a69-983b-495c-afb4-e08431c5753e"/>
+					<text><![CDATA[FACILITY_NAME]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="200" y="30" width="100" height="20" uuid="1e85815d-b713-4b67-b34d-c275e9bab175"/>
+					<text><![CDATA[WELL_NAME]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="300" y="30" width="100" height="20" uuid="87fc11ae-f360-4dde-b1a8-82accead8918"/>
+					<text><![CDATA[THEOR_METHOD]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="400" y="30" width="100" height="20" uuid="53ee3d37-d4ef-45db-bdc1-0f48326d0ba5"/>
+					<text><![CDATA[OCCUR_DATE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="0" width="150" height="20" uuid="6a3f8e8f-5e63-48d2-bdc0-8f58f66b42cc"/>
+					<textElement>
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Producing Wells]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="500" y="30" width="100" height="20" uuid="c63d4d6a-c9d3-4f05-b8a4-f41acb881824"/>
+					<text><![CDATA[ACTIVE_HRS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="620" y="30" width="100" height="20" uuid="f23b24b7-9188-4864-84e1-2c623f9643e4"/>
+					<text><![CDATA[GAS_ALLOC]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="720" y="30" width="100" height="20" uuid="653e911a-7278-4a16-b419-188103944101"/>
+					<text><![CDATA[GAS_THEOR]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="830" y="30" width="100" height="20" uuid="c5052425-8cc8-4746-91ad-0571f8d54f4f"/>
+					<text><![CDATA[OIL_ALLOC]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1060" y="30" width="100" height="20" uuid="9f3cab3f-7bde-4be6-9beb-abf31fe2a659"/>
+					<text><![CDATA[WATER_ALLOC]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="930" y="30" width="100" height="20" uuid="d21ecce7-6691-4bb2-abb4-d0d2ea22f265"/>
+					<text><![CDATA[OIL_THEOR]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1160" y="30" width="100" height="20" uuid="241560c1-d1e6-4ae3-b392-a3caa54ef185"/>
+					<text><![CDATA[WATER_THEOR]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="620" y="10" width="200" height="20" uuid="4819d5ac-99a3-44a2-8a35-a445a386c125"/>
+					<textElement textAlignment="Center">
+						<font size="11" isBold="true"/>
+					</textElement>
+					<text><![CDATA[GAS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="830" y="10" width="200" height="20" uuid="be7017f4-0904-4a1f-8395-218d2751c4de"/>
+					<textElement textAlignment="Center">
+						<font size="11" isBold="true"/>
+					</textElement>
+					<text><![CDATA[OIL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1060" y="10" width="200" height="20" uuid="34b2a02c-59cb-46bb-98c6-b80759f0661a"/>
+					<textElement textAlignment="Center">
+						<font size="11" isBold="true"/>
+					</textElement>
+					<text><![CDATA[WATER]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1280" y="30" width="100" height="20" uuid="f9ed0617-291a-4d9c-b4ac-09a0be1ae818"/>
+					<text><![CDATA[GOR]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1380" y="30" width="100" height="20" uuid="95f9fc5a-edd0-49c5-aaa7-ed3e8b30d255"/>
+					<text><![CDATA[SW]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="20">
+				<staticText>
+					<reportElement x="-1" y="0" width="141" height="20" uuid="7f911d32-5f92-47cf-a906-bc32f4ac84ea"/>
+					<textElement>
+						<font size="11" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total Facility Name]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="620" y="0" width="100" height="20" uuid="e1b6c600-d1bc-4a80-83cc-970917a5cdcd"/>
+					<textFieldExpression><![CDATA[$V{GAS_ALLOC1}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="720" y="0" width="100" height="20" uuid="e7761db7-6296-4e5b-8f7a-ed4a9ac9c0fc"/>
+					<textFieldExpression><![CDATA[$V{GAS_THEOR1}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="830" y="0" width="100" height="20" uuid="89b4922c-aff7-459e-815e-d94a7c755ad3"/>
+					<textFieldExpression><![CDATA[$V{OIL_ALLOC1}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="930" y="0" width="100" height="20" uuid="ac5604ae-80cf-4b23-9ad3-a17e6b0822d1"/>
+					<textFieldExpression><![CDATA[$V{OIL_THEOR1}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="100" y="0" width="100" height="20" uuid="dff8ff9e-c534-4531-89db-898ceee2dfa2"/>
+				<textFieldExpression><![CDATA[$F{FACILITY_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="200" y="0" width="100" height="20" uuid="7093755a-42f4-4589-b242-c20979cae854"/>
+				<textFieldExpression><![CDATA[$F{WELL_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="300" y="0" width="100" height="20" uuid="e636f839-697b-4266-93e8-fdfc2b2f45ce"/>
+				<textFieldExpression><![CDATA[$F{THEOR_METHOD}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="400" y="0" width="100" height="20" uuid="71ed0e15-4f10-4a2e-b438-27a3ae72cfc4"/>
+				<textFieldExpression><![CDATA[$F{OCCUR_DATE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="500" y="0" width="100" height="20" uuid="e7af107d-228c-4868-990c-2c02c32fcc95"/>
+				<textFieldExpression><![CDATA[$F{ACTIVE_HRS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="620" y="0" width="100" height="20" uuid="24aa88c4-492a-4407-a4df-1a007790fa2e"/>
+				<textFieldExpression><![CDATA[$F{GAS_ALLOC}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="720" y="0" width="100" height="20" uuid="c68b7e23-660f-4151-901b-d784a4bff3ae"/>
+				<textFieldExpression><![CDATA[$F{GAS_THEOR}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="830" y="0" width="100" height="20" uuid="28b4ec8e-436d-4bd4-98b7-22460ae93fa4"/>
+				<textFieldExpression><![CDATA[$F{OIL_ALLOC}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1060" y="0" width="100" height="20" uuid="d972b5c0-8c75-427e-b791-92fe61e00b62"/>
+				<textFieldExpression><![CDATA[$F{WATER_ALLOC}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="930" y="0" width="100" height="20" uuid="309eb47c-b7b1-47c1-be28-efa59148bd69"/>
+				<textFieldExpression><![CDATA[$F{OIL_THEOR}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1160" y="0" width="100" height="20" uuid="914ad355-2774-4bea-93f8-67f8fb3bcd68"/>
+				<textFieldExpression><![CDATA[$F{WATER_THEOR}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1280" y="0" width="100" height="20" uuid="035fe668-9a6b-46f3-b0e1-e10640a2d7f6"/>
+				<textFieldExpression><![CDATA[$F{GOR}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1380" y="0" width="100" height="20" uuid="665fadbb-f76c-4254-831f-aef3602ea0c3"/>
+				<textFieldExpression><![CDATA[$F{SW}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

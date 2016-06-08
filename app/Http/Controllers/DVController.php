@@ -27,6 +27,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 
 class DVController extends Controller {
+	
 	public function __construct() {
 		$this->isReservedName = config ( 'database.default' ) === 'oracle';
 		$this->middleware ( 'auth' );
@@ -438,19 +439,21 @@ class DVController extends Controller {
 		
 		return response ()->json ( "ok$ret" );
 	}
+	
 	public function uploadFile() {
 		$files = Input::all ();
-		$tmpFilePath = '/images/upload/';
+		$tmpFilePath = '/fileUpload/';
 		$error = false;
 		if (count ( $files ) > 0) {
 			// foreach ($files as $file){
-			$file = $files [0];
+			$file = $files[0];
 			$tmpFileName = $file->getClientOriginalName ();
 			$v = explode ( '.', $tmpFileName );
 			$tmpFileName = $v [0] . '_' . time () . '.' . $v [1];
 			$file = $file->move ( public_path () . $tmpFilePath, $tmpFileName );
 			if ($file) {
 				$result = $tmpFilePath . $tmpFileName;
+				$this->file = $result;
 			} else {
 				$error = true;
 			}
@@ -468,6 +471,39 @@ class DVController extends Controller {
 		}
 		return response ()->json ( $data );
 	}
+	
+	public function uploadImg() {
+		$files = Input::all ();
+		$tmpFilePath = '/images/upload/';
+		$error = false;
+		if (count ( $files ) > 0) {
+			// foreach ($files as $file){
+			$file = $files [0];
+			$tmpFileName = $file->getClientOriginalName ();
+			$v = explode ( '.', $tmpFileName );
+			$tmpFileName = $v [0] . '_' . time () . '.' . $v [1];
+			$file = $file->move ( public_path () . $tmpFilePath, $tmpFileName );
+			if ($file) {
+				$result = $tmpFilePath . $tmpFileName;
+				$this->file = $result;
+			} else {
+				$error = true;
+			}
+			// }
+			$data = ($error) ? [
+					'error' => 'There was an error uploading your files'
+			] : [
+					'files' => $result
+			];
+		} else {
+			$data = array (
+					'success' => 'Form was submitted',
+					'formData' => $_POST
+			);
+		}
+		return response ()->json ( $data );
+	}
+	
 	public function _indexTagsMapping() {
 		return view ( 'front.tagsmapping' );
 	}
@@ -535,7 +571,7 @@ class DVController extends Controller {
 			$result ['INTRO'] = $data [0]->INTRO;
 			$result ['ISRUN'] = $data [0]->ISRUN;
 		}
-		
+		$xml = $result ['DATA'];
 		if ($readonly) {
 			$tmWorkflowTask = TmWorkflowTask::where ( [ 
 					'WF_ID' => $diagram_id 
@@ -546,7 +582,7 @@ class DVController extends Controller {
 					'RUNBY',
 					'START_TIME',
 					'FINISH_TIME',
-					'IFNULL(LOG,"") AS LOG' 
+					'LOG' 
 			] );
 			
 			$flowTask = array ();
@@ -876,8 +912,7 @@ class DVController extends Controller {
 		return response ()->json ( [
 				'result' => $result
 		] );
-		
-	}	
+	}
 	
 	private function getTmWorkflow(){
 		$result = TmWorkflow::where ( ['STATUS' => 1] )

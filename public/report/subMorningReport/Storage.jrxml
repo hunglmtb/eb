@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.1.0.final using JasperReports Library version 6.1.0  -->
+<!-- 2015-08-09T19:25:37 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Storage" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="45d9621b-deee-4cc4-9491-53cf6587948f">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL addapter"/>
+	<parameter name="date" class="java.util.Date"/>
+	<parameter name="facility_id" class="java.lang.Integer"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT a.occur_date, b.name storage, c.name product, 
+  case f.UOM_TYPE when 2 then 'Bbl' else 'm3' end uom, 
+  a.storage_grs_vol, null max_vol, a.storage_grs_vol-closingPrevDayStorage(a.occur_date, storage_id) grs_diff_prev_day 
+FROM storage_day_value a, facility f, 
+STORAGE b LEFT JOIN code_product_type c ON c.id = b.product
+WHERE a.occur_date=$P{date}
+AND b.facility_id=$P{facility_id}
+AND b.id = a.storage_id
+AND b.FACILITY_ID = f.ID]]>
+	</queryString>
+	<field name="occur_date" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="storage" class="java.lang.String"/>
+	<field name="product" class="java.lang.String"/>
+	<field name="uom" class="java.lang.String"/>
+	<field name="grs_diff_prev_day" class="java.math.BigDecimal"/>
+	<field name="storage_grs_vol" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="max_vol" class="java.lang.Object"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="55" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="30" width="250" height="20" uuid="b4ff9357-c878-4841-994f-83a3bb5887e5"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Storage]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="23" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="269" height="20" uuid="af891982-0882-4c51-92e6-ebe2b478ca57"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Storage Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="269" y="0" width="100" height="20" uuid="cb9e00bd-3308-4c2c-9511-568071e68b2e"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Product]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="369" y="0" width="110" height="20" uuid="4efedf4d-8071-42c9-805b-e161c17c7f99"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[UOM]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="479" y="0" width="100" height="20" uuid="6585676f-6815-4942-9779-b8e70bcb86a8"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Closing Grs Vol]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="579" y="0" width="100" height="20" uuid="607b6b52-7dff-44cf-9352-7db833cbd431"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Max Vol]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="679" y="0" width="111" height="20" uuid="028e3d8e-f5c1-4da1-8e8c-3cfe21a2cf9d"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Grs Diff from Prev Day]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="19" width="802" height="1" uuid="d31128df-cdb6-4c8a-a633-e3c247573422"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="25" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="269" height="20" uuid="86237684-332c-4ccd-a4c9-4aa63d0ccb9c"/>
+				<textFieldExpression><![CDATA[$F{storage}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="269" y="0" width="100" height="20" uuid="185f53bb-4178-4b61-a298-0d6264e18762"/>
+				<textFieldExpression><![CDATA[$F{product}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="369" y="0" width="111" height="20" uuid="dbbc6894-299f-41c4-9ce1-a637dac45dd1"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{uom}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="480" y="0" width="100" height="20" uuid="41ba30e0-f9d3-4a13-bfbb-5d788a631954"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{storage_grs_vol}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="580" y="0" width="100" height="20" uuid="718ced53-9558-41c2-b559-e5951fa51125"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{max_vol}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="680" y="0" width="100" height="20" uuid="6d908cdd-c4e4-4d34-ac9f-962ca0833a19"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{grs_diff_prev_day}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="21" width="802" height="1" uuid="99366f02-b322-4ae8-bf6b-4ad19a8e73f0"/>
+				<graphicElement>
+					<pen lineStyle="Dotted" lineColor="#9C7B7B"/>
+				</graphicElement>
+			</line>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="9" splitType="Stretch"/>
+	</summary>
+</jasperReport>

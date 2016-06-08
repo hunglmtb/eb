@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Carbon\Carbon;
+use Mail;
 
 use App\Models\TmWorkflow;
 use App\Models\TmWorkflowTask;
@@ -74,7 +75,6 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     		$from_date=$from[1].'-'.$from[2].'-'.$from[0];
     		$to=explode('-',$taskconfig->to);
     		$to_date=$to[1].'-'.$to[2].'-'.$to[0];
-    		$email=$taskconfig->email;
     
     		$r=1;
     		//$r=evalFormula($formula_id,false);
@@ -131,7 +131,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     	}
     }
     
-    private function finishWorkflow($task_id){
+    public function finishWorkflow($task_id){
     	$r = TmWorkflowTask::where(['ID'=>$task_id])->select('wf_id')->first();
     	if(count($r) >0 ){
     		TmWorkflow::where(['ID'=>$r['wf_id']])->update(['ISRUN'=>'no']);
@@ -225,8 +225,19 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     		$to=explode('-',$taskconfig->to);
     		$to_date=$to[1].'-'.$to[2].'-'.$to[0];
     		$email=$taskconfig->email;
-    		execInBackground("..\\..\\report\\export.php $taskid $report_id $facility_id $type $from_date $to_date $email");
-    		//header('location:'."../../report/export.php?report_id={$id}&type=PDF&date_from={$from_date}&date_to={$to_date}&facility_id={$facility}&email={$email}");
+    		
+    		$param = [
+    				'task_id'=> $taskid,
+    				'report_id'=> $report_id,
+    				'facility_id'=> $facility_id,
+    				'date_type'=> $type,
+    				'from_date'=> $from_date,
+    				'to_date'=> $to_date,
+    				'email'=> $email
+    		];
+    		
+    		$obj = new export($param);
+    		$obj->handle($param);
     	}
     	else if($taskname=='INT_IMPORT_DATA'){
     		$conn_id=$taskconfig->conn_id;
@@ -240,7 +251,26 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     		execInBackground("..\\..\\interface\\pi.php $taskid $conn_id $tagset_id $type $from_date $to_date $email");
     		//header('location:'."../../report/export.php?report_id={$id}&type=PDF&date_from={$from_date}&date_to={$to_date}&facility_id={$facility}&email={$email}");
     	}
-    	else if($taskconfig->formula_id>0){
+    	else if($taskname == 'EMAIL'){
+    		$from = $taskconfig->from;
+    		$to = $taskconfig->to;
+    		$subject = $taskconfig->subject;
+    		$content = $taskconfig->content;
+    		
+    		if (filter_var($from, FILTER_VALIDATE_EMAIL) && filter_var($to, FILTER_VALIDATE_EMAIL)) {
+    			try
+    			{
+    				$mailFrom = env('MAIL_USERNAME');
+    				$data = ['content' => $content];
+    				$ret = Mail::send('front.sendmail',$data, function ($message) use ($from, $subject, $to) {
+    					$message->from($from, 'Your Application');
+    					$message->to($to)->subject($subject);
+    				});
+    			}catch (\Exception $e)
+    			{
+    				\Log::info($e->getMessage());
+    			}
+    		}
     	}
     	else{
     

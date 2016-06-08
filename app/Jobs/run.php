@@ -64,9 +64,6 @@ class run extends Job
     			
     			$ds = explode ( "-", $to_date );
     			$d2 = "$ds[2]-$ds[0]-$ds[1]";
-    			
-    			/* $d1 = Carbon::createFromFormat('Y-m-d', $from_date);//date('Y-m-d', strtotime($from_date));
-    			$d2 = Carbon::createFromFormat('Y-m-d', $to_date); //date('Y-m-d', strtotime($to_date)); */
     	
     			while ( strtotime ( $d1 ) <= strtotime ( $d2 ) ) {
     				$ds = explode ( "-", $d1 );
@@ -105,13 +102,19 @@ class run extends Job
     		$this->finalizeTask($task_id,($this->error_count>0?3:1),$this->log,$email);
     		if($this->log){   
     			if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-	    			$data = ['log' => $this->log];
-	    			$subjectName = ($this->error_count>0?"[ERROR] ":"")."Automatic allocation task's log"; 
-	    			$ret = Mail::send('front.sendmail',$data, function ($message) use ($email, $subjectName) {
-	    				$message->from('testeb2016@gmail.com', 'Your Application');
-	    				$message->to($email)->subject($subjectName);
-	    	
-	    			});
+    				try
+    				{
+    					$mailFrom = env('MAIL_USERNAME');
+		    			$data = ['content' => $this->log];
+		    			$subjectName = ($this->error_count>0?"[ERROR] ":"")."Automatic allocation task's log"; 
+		    			$ret = Mail::send('front.sendmail',$data, function ($message) use ($email, $subjectName, $mailFrom) {
+		    				$message->from($mailFrom, 'Your Application');
+		    				$message->to($email)->subject($subjectName);
+		    			});
+    				}catch (\Exception $e)
+    				{
+    					\Log::info($e->getMessage());
+    				}
     			}
     		}
     	}else{
@@ -1588,7 +1591,7 @@ class run extends Job
     	echo "<b>Allocation request: ".$_REQUEST["act"]."</b><br>";
     }
     
-    private function finalizeTask($task_id,$status,$log,$email){
+    public function finalizeTask($task_id,$status,$log,$email){
     	if($task_id>0){
     		
     		$now = Carbon::now('Europe/London');

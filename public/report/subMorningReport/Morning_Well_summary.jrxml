@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.1.0.final using JasperReports Library version 6.1.0  -->
+<!-- 2015-08-07T03:41:01 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_A4_Landscape" pageWidth="1700" pageHeight="842" orientation="Landscape" columnWidth="1660" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1ec0eccc-40e5-4724-a3e7-783ce0d26ecf">
+	<property name="com.jaspersoft.studio.data.sql.tables" value="ZWIuZW5lcmd5X3VuaXRfZGF5X2FsbG9jIEFTICwxODMsOTs="/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter 1"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<parameter name="date" class="java.util.Date">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<parameter name="facility_id" class="java.lang.Integer"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT event_type, eu_id, well_name, max(well_status) well_status, occur_date, max(active_hrs) active_hrs, sum(alloc_oil) alloc_oil, sum(alloc_gas) alloc_gas, sum(alloc_water) alloc_water, sum(alloc_gl) alloc_gl, sum(theor_oil) theor_oil, sum(theor_gas) theor_gas, sum(theor_water) theor_water, sum(theor_gl) theor_gl, max(whp) whp, max(wht) wht, max(bhp) bhp, max(bht) bht, max(annulusP) annulusP, max(glp) glp, max(choke) choke, max(gor) gor, max(watercut) watercut FROM
+(
+SELECT b.name event_type, eu_id, c.name well_name, e.name well_status, OCCUR_DATE, ACTIVE_HRS, EU_DAY_GRS_VOL as alloc_oil, null alloc_gas, null alloc_water, null alloc_gl, null theor_oil, null theor_gas, null theor_water, null theor_gl, null whp, null wht, null bhp, null bht, null annulusP, null glp, null choke, null gor, null watercut
+FROM 
+	energy_unit_day_alloc a, code_event_type b, energy_unit c, code_flow_phase d, code_status e
+WHERE c.EVENT_TYPE=b.id
+	AND a.eu_id=c.id
+	AND a.FLOW_PHASE=d.id
+	AND c.status=e.id
+	AND c.facility_id=$P{facility_id}
+	AND a.occur_date = $P{date}
+	AND a.FLOW_PHASE = 1
+
+UNION ALL
+
+SELECT b.name event_type, eu_id, c.name well_name, e.name well_status, OCCUR_DATE, ACTIVE_HRS, null alloc_oil, EU_DAY_GRS_VOL alloc_gas, null alloc_water, null alloc_gl, null theor_oil, null theor_gas, null theor_water, null theor_gl, null whp, null wht, null bhp, null bht, null annulusP, null glp, null choke, null gor, null watercut
+FROM 
+	energy_unit_day_alloc a, code_event_type b, energy_unit c, code_flow_phase d, code_status e
+WHERE c.EVENT_TYPE=b.id
+	AND a.eu_id=c.id
+	AND a.FLOW_PHASE=d.id
+	AND c.status=e.id
+	AND c.facility_id=$P{facility_id}
+	AND a.occur_date = $P{date}
+	AND a.FLOW_PHASE = 2
+
+UNION ALL
+
+SELECT b.name event_type, eu_id, c.name well_name, e.name well_status, OCCUR_DATE, ACTIVE_HRS, null alloc_oil, null alloc_gas, EU_DAY_GRS_VOL alloc_water, null alloc_gl, null theor_oil, null theor_gas, null theor_water, null theor_gl, null whp, null wht, null bhp, null bht, null annulusP, null glp, null choke, null gor, null watercut
+FROM 
+	energy_unit_day_alloc a, code_event_type b, energy_unit c, code_flow_phase d, code_status e
+WHERE c.EVENT_TYPE=b.id
+	AND a.eu_id=c.id
+	AND a.FLOW_PHASE=d.id
+	AND c.status=e.id
+	AND c.facility_id=$P{facility_id}
+	AND a.occur_date = $P{date}
+	AND a.FLOW_PHASE = 3
+
+UNION ALL
+
+SELECT b.name event_type, eu_id, c.name well_name, e.name well_status, OCCUR_DATE, ACTIVE_HRS, null alloc_oil, null alloc_gas, null alloc_water, EU_DAY_GRS_VOL alloc_gl, null theor_oil, null theor_gas, null theor_water, null theor_gl, null whp, null wht, null bhp, null bht, null annulusP, null glp, null choke, null gor, null watercut
+FROM 
+	energy_unit_day_theor a, code_event_type b, energy_unit c, code_flow_phase d, code_status e
+WHERE c.EVENT_TYPE=b.id
+	AND a.eu_id=c.id
+	AND a.FLOW_PHASE=d.id
+	AND c.status=e.id
+	AND c.facility_id=$P{facility_id}
+	AND a.occur_date = $P{date}
+	AND a.FLOW_PHASE = 21
+
+UNION ALL
+
+SELECT b.name event_type, eu_id, c.name well_name, e.name well_status, OCCUR_DATE, ACTIVE_HRS, null alloc_oil, null alloc_gas, null alloc_water, null alloc_gl, EU_DAY_GRS_VOL theor_oil, null theor_gas, null theor_water, null theor_gl, null whp, null wht, null bhp, null bht, null annulusP, null glp, null choke, null gor, null watercut
+FROM 
+	energy_unit_day_theor a, code_event_type b, energy_unit c, code_flow_phase d, code_status e
+WHERE c.EVENT_TYPE=b.id
+	AND a.eu_id=c.id
+	AND a.FLOW_PHASE=d.id
+	AND c.status=e.id
+	AND c.facility_id=$P{facility_id}
+	AND a.occur_date = $P{date}
+	AND a.FLOW_PHASE = 1
+
+UNION ALL
+
+SELECT b.name event_type, eu_id, c.name well_name, e.name well_status, OCCUR_DATE, ACTIVE_HRS, null alloc_oil, null alloc_gas, null alloc_water, null alloc_gl, null theor_oil, EU_DAY_GRS_VOL theor_gas, null theor_water, null theor_gl, null whp, null wht, null bhp, null bht, null annulusP, null glp, null choke, null gor, null watercut
+FROM 
+	energy_unit_day_theor a, code_event_type b, energy_unit c, code_flow_phase d, code_status e
+WHERE c.EVENT_TYPE=b.id
+	AND a.eu_id=c.id
+	AND a.FLOW_PHASE=d.id
+	AND c.status=e.id
+	AND c.facility_id=$P{facility_id}
+	AND a.occur_date = $P{date}
+	AND a.FLOW_PHASE = 2
+
+UNION ALL
+
+SELECT b.name event_type, eu_id, c.name well_name, e.name well_status, OCCUR_DATE, ACTIVE_HRS, null alloc_oil, null alloc_gas, null alloc_water, null alloc_gl, null theor_oil, null theor_gas, EU_DAY_GRS_VOL theor_water, null theor_gl, null whp, null wht, null bhp, null bht, null annulusP, null glp, null choke, null gor, null watercut
+FROM 
+	energy_unit_day_theor a, code_event_type b, energy_unit c, code_flow_phase d, code_status e
+WHERE c.EVENT_TYPE=b.id
+	AND a.eu_id=c.id
+	AND a.FLOW_PHASE=d.id
+	AND c.status=e.id
+	AND c.facility_id=$P{facility_id}
+	AND a.occur_date = $P{date}
+	AND a.FLOW_PHASE = 3
+
+UNION ALL
+
+SELECT b.name event_type, eu_id, c.name well_name, e.name well_status, OCCUR_DATE, ACTIVE_HRS, null alloc_oil, null alloc_gas, null alloc_water, null alloc_gl, null theor_oil, null theor_gas, null theor_water, EU_DAY_GRS_VOL theor_gl, null whp, null wht, null bhp, null bht, null annulusP, null glp, null choke, null gor, null watercut
+FROM 
+	energy_unit_day_theor a, code_event_type b, energy_unit c, code_flow_phase d, code_status e
+WHERE c.EVENT_TYPE=b.id
+	AND a.eu_id=c.id
+	AND a.FLOW_PHASE=d.id
+	AND c.status=e.id
+	AND c.facility_id=$P{facility_id}
+	AND a.occur_date = $P{date}
+	AND a.FLOW_PHASE = 21
+
+UNION ALL
+
+SELECT b.name event_type, eu_id, c.name well_name, e.name well_status, OCCUR_DATE, ACTIVE_HRS, null alloc_oil, null alloc_gas, null alloc_water, null alloc_gl, null theor_oil, null theor_gas, null theor_water, EU_DAY_GRS_VOL theor_gl, eu_day_avg_whp whp, eu_day_avg_wht wht, eu_day_avg_bhp bhp, eu_day_avg_bht bht, null annulusP, gas_lift_pressure glp, choke_setting choke, gor gor, sw watercut
+FROM 
+	energy_unit_day_fdc_value a, code_event_type b, energy_unit c, code_flow_phase d, code_status e
+WHERE c.EVENT_TYPE=b.id
+	AND a.eu_id=c.id
+	AND a.FLOW_PHASE=d.id
+	AND c.status=e.id
+	AND c.facility_id=$P{facility_id}
+	AND a.occur_date = $P{date}
+) x
+GROUP BY event_type, eu_id,occur_date
+ORDER BY event_type, eu_id, occur_date]]>
+	</queryString>
+	<field name="event_type" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="eu_id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="well_name" class="java.lang.String"/>
+	<field name="occur_date" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="active_hrs" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="alloc_oil" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="alloc_gas" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="alloc_water" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="theor_oil" class="java.math.BigDecimal"/>
+	<field name="theor_gas" class="java.math.BigDecimal"/>
+	<field name="theor_water" class="java.math.BigDecimal"/>
+	<field name="alloc_gl" class="java.math.BigDecimal"/>
+	<field name="theor_gl" class="java.math.BigDecimal"/>
+	<field name="whp" class="java.math.BigDecimal"/>
+	<field name="wht" class="java.math.BigDecimal"/>
+	<field name="bhp" class="java.math.BigDecimal"/>
+	<field name="bht" class="java.math.BigDecimal"/>
+	<field name="annulusP" class="java.lang.Object"/>
+	<field name="glp" class="java.math.BigDecimal"/>
+	<field name="choke" class="java.math.BigDecimal"/>
+	<field name="gor" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="watercut" class="java.math.BigDecimal"/>
+	<field name="well_status" class="java.lang.String"/>
+	<variable name="eventlabel" class="java.lang.String">
+		<variableExpression><![CDATA[$F{event_type}]]></variableExpression>
+		<initialValueExpression><![CDATA[""]]></initialValueExpression>
+	</variable>
+	<group name="Group1">
+		<groupExpression><![CDATA[$F{event_type}]]></groupExpression>
+	</group>
+	<group name="EventType">
+		<groupExpression><![CDATA[$F{event_type}]]></groupExpression>
+		<groupHeader>
+			<band height="18">
+				<textField>
+					<reportElement x="11" y="0" width="103" height="16" uuid="066308a1-5480-4b1f-9894-fa42a876bcf0">
+						<property name="local_mesure_unitheight" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textFieldExpression><![CDATA[$F{event_type}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="33">
+				<textField>
+					<reportElement x="54" y="10" width="64" height="20" uuid="9aefd2e9-8fd2-4afd-b8ae-5a298ec7d36f"/>
+					<textFieldExpression><![CDATA[$V{EventType_COUNT}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="11" y="10" width="43" height="20" uuid="5c9e5860-72f6-4409-bfd9-727445e36b62"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total:]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch">
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="63" splitType="Stretch">
+			<staticText>
+				<reportElement x="11" y="28" width="100" height="20" uuid="aed64817-ab68-4743-a9e9-1a8b6e236f5a"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="111" y="28" width="111" height="20" uuid="9e4192ae-575e-40cb-a523-bdec5395d4ec"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Well name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="291" y="28" width="100" height="20" uuid="d0e6d639-ca63-4af5-b1c7-c1d2d7d66720"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Occur day]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="FixRelativeToBottom" x="391" y="28" width="70" height="20" uuid="6876d075-49c1-4dca-9295-c32f1eb52cb7"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Active hrs]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="461" y="28" width="70" height="20" uuid="d8dd9c3a-7ec9-4c95-aada-abd6ce1ccebb"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Net oil]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="531" y="28" width="70" height="20" uuid="d6692cf7-cb20-4f36-9240-be6036aefa2e"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Gas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="601" y="28" width="70" height="20" uuid="36a1c4a7-8a9b-4978-ae94-4997e82c6db4"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Water]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="490" y="7" width="100" height="13" uuid="360cb152-5384-4709-8933-00e0174133ac"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<text><![CDATA[Allocation volume]]></text>
+			</staticText>
+			<line>
+				<reportElement x="391" y="24" width="280" height="1" uuid="f7d4a49e-d967-42df-94c7-c713928f3e00"/>
+			</line>
+			<staticText>
+				<reportElement x="681" y="28" width="70" height="20" uuid="158305f3-b44b-4e84-93e7-259261b9345a"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Net oil]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="751" y="28" width="70" height="20" uuid="a7c5307f-fbe1-42b6-a036-9116e2146e23"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Gas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="821" y="28" width="70" height="20" uuid="e45d7f93-87a7-48fd-9f2b-4546e32fe541"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Water]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="891" y="28" width="70" height="20" uuid="1bcfa336-fb33-47d5-b092-259a57c9019e"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[GL]]></text>
+			</staticText>
+			<line>
+				<reportElement x="691" y="24" width="250" height="1" uuid="2616bf18-ba68-4ac4-816c-b4274c17b96d"/>
+			</line>
+			<staticText>
+				<reportElement x="780" y="7" width="132" height="13" uuid="6937bfae-900a-427e-99c8-3953d2929d36"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<text><![CDATA[Theoretical volume]]></text>
+			</staticText>
+			<line>
+				<reportElement x="981" y="25" width="390" height="1" uuid="777e5fe4-ae77-4f20-8f8c-465c4adee064"/>
+			</line>
+			<staticText>
+				<reportElement x="1170" y="7" width="119" height="13" uuid="a2f4ad30-c610-4fc0-9a69-edeb6f4d1e53"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<text><![CDATA[Average]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="971" y="28" width="70" height="20" uuid="e2cf4c08-c820-462d-886a-24b285d780cd"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[WHP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1111" y="28" width="70" height="20" uuid="b5e967ea-bbf7-47cd-982f-db53f61b019c"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[BHP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1041" y="28" width="70" height="20" uuid="d7cbf289-8e1a-4013-aba9-f25218fce3ca"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[WHT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1181" y="28" width="70" height="20" uuid="aa2f5867-53f0-4dfa-840b-8ac910e554cc"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[BHT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1251" y="28" width="70" height="20" uuid="9c6a182c-f2d2-4533-ad87-e5c1022ae0ec"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[AnnulusP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1321" y="28" width="70" height="20" uuid="4f7cd4e7-4392-4e12-83eb-9eb9f517fc04"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[GLP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1402" y="28" width="70" height="20" uuid="38939fa4-2f08-48f7-8595-faf200322e1c"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Choke]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1472" y="28" width="70" height="20" uuid="9a9aec0b-0425-4a09-ac91-8cc1eb7802c4"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[GOR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1542" y="28" width="70" height="20" uuid="f0edd72c-241c-47b2-9aec-37edca4de306"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Watercut]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="222" y="28" width="68" height="20" uuid="2b4acacb-d96a-4089-a172-792c87171140"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Well status]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="11" y="46" width="103" height="14" uuid="3751fd80-d442-4395-a2e1-7506553eb9e9"/>
+				<textFieldExpression><![CDATA[$V{eventlabel}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="11" y="48" width="1600" height="1" uuid="45fd4de9-4b3e-4120-9052-4006da2a6ab2"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="23" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="111" y="1" width="111" height="20" uuid="c2d8e112-0b0c-4222-80f3-47dcdc704cc2"/>
+				<textFieldExpression><![CDATA[$F{well_name}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MM/dd/yyyy" isBlankWhenNull="true">
+				<reportElement x="291" y="1" width="100" height="20" uuid="d9cd327b-95a1-45f0-a4af-cb5ef422efae"/>
+				<textFieldExpression><![CDATA[$F{occur_date}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="391" y="1" width="70" height="20" uuid="02ddad3b-6344-426c-a717-41f788699e6e"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{active_hrs}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement x="222" y="1" width="68" height="20" uuid="5017efea-3963-43d4-aa13-b2899d13268b"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{well_status}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="461" y="1" width="70" height="20" uuid="e2d1f8a7-ef9d-4e5d-ae45-173af24788fa"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{alloc_oil}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="531" y="1" width="70" height="20" uuid="58bd047b-ccd5-47ec-9650-51a17af34351"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{alloc_gas}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="601" y="1" width="70" height="20" uuid="01897c43-66c8-4f95-b36f-d27d5f9b9476"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{alloc_water}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="681" y="1" width="70" height="20" uuid="d78e9dfe-bd6b-4175-8d81-39577a29cec2"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{theor_oil}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="751" y="1" width="69" height="20" uuid="bf851df5-15c1-4d5c-9167-562f613f6348"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{theor_gas}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="820" y="1" width="71" height="20" uuid="4c5dc560-5f04-45e4-b27b-a3afb63eb0b5"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{theor_water}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="891" y="1" width="70" height="20" uuid="5d3ea60f-362c-4fd2-af00-dc455f0f3c86"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{theor_gl}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="971" y="1" width="70" height="20" uuid="0d71b6cb-5f4b-4e90-a2eb-3532fcadab08"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{whp}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1041" y="1" width="70" height="20" uuid="5e8506ad-0e12-4cde-a359-24191ab9aa2c"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{wht}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1111" y="1" width="70" height="20" uuid="414fe970-f7dd-4023-a2f3-d9a73ac363da"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{bhp}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1181" y="1" width="70" height="20" uuid="9db60c34-3489-4802-9483-710e6a4c2ed5"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{bht}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1251" y="1" width="70" height="20" uuid="dc94dc1b-36a6-4fd0-8905-8bf812d694b4"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{annulusP}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1321" y="1" width="70" height="20" uuid="844ed726-ac15-43e0-87bb-8007245ae1a3"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{glp}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1402" y="1" width="70" height="20" uuid="d93ae6a7-4a36-4f7d-8439-d91f601ed135"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{choke}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1472" y="1" width="70" height="20" uuid="05e42043-c340-443f-b251-6a32a855efa2"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{gor}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1542" y="1" width="70" height="20" uuid="6b3d3780-f256-491c-ba80-fe6de79d592a"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{watercut}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="28" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>
