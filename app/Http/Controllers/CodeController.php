@@ -19,6 +19,10 @@ use App\Models\CodeDeferStatus;
 use App\Models\CodeDeferCategory;
 use App\Models\CodeDeferGroupType;
 use App\Models\CodeDeferCode1;
+use App\Models\CodeTicketType;
+use App\Models\PdTransitCarrier;
+use App\Models\BaAddress;
+use App\Models\Tank;
 
 class CodeController extends EBController {
 	 
@@ -410,8 +414,26 @@ class CodeController extends EBController {
     				$selectData['data'] = CodeDeferGroupType::all();
     				$rs[] = $selectData;
     				break;
-    				
-    				
+    			case 'TICKET_TYPE' :
+	    			$selectData = ['id'=>'CodeTicketType','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = CodeTicketType::all();
+	    			$rs[] = $selectData;
+	    			break;
+    			case 'TARGET_TANK' :
+    				$selectData = ['id'=>'Tank','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = Tank::where('FACILITY_ID', $facility_id)->get();
+    				$rs[] = $selectData;
+    				break;
+    			case 'CARRIER_ID' :
+    				$selectData = ['id'=>'PdTransitCarrier','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = PdTransitCarrier::where('TRANSIT_TYPE',1)->get();
+    				$rs[] = $selectData;
+    				break;
+    			case 'BA_ID' :
+    				$selectData = ['id'=>'BaAddress','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = BaAddress::all();
+    				$rs[] = $selectData;
+    				break;
     		}
     		$i++;
     	}

@@ -65,4 +65,14 @@ class ProductManagementController extends EBController {
 		return view ( 'front.deferment',['filters'=>$filterGroups]);
 	}
 	
+	public function ticket() {
+		$filterGroups = array('productionFilterGroup'	=> ['Tank'],
+				'dateFilterGroup'=> array(
+						['id'=>'date_begin','name'=>'From Date'],
+						['id'=>'date_end','name'=>'To Date'],
+				)
+		);
+		return view ( 'front.ticket',['filters'=>$filterGroups]);
+	}
+	
 }
