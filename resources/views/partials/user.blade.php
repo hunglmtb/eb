@@ -1,3 +1,23 @@
+<meta name="_token"
+	content="{{ app('Illuminate\Encryption\Encrypter')->encrypt(csrf_token()) }}" />
+
+<script src="/common/js/jquery-1.9.1.js"></script>
+<script src="/common/js/jquery-ui.js"></script>
+<script type="text/javascript" src="/common/js/utils.js"></script>
+
+<script type="text/javascript">	
+
+var ebtoken = $('meta[name="_token"]').attr('content');
+$.ajaxSetup({
+	headers: {
+		'X-XSRF-Token': ebtoken
+	}
+});
+
+$(function(){
+
+});
+</script>
 <script>
 	function loadjscssfile(filename, filetype){
 	    if (filetype=="js"){ //if filename is a external JavaScript file
@@ -118,14 +138,26 @@
 	var username= '{{$current_username}}';
 	function _loadTasksCounting(){
 		//alert("_loadTasksCounting");
-		$.get("/taskman/ajaxs/WorkflowTaskCounter.php?user="+username,function(data){
+		param = {};
+		sendAjaxNotMessage('/countWorkflowTask', param, function(data){
+			$("#wf_notify").html(data);
+			if(data=="0") 
+				$("#wf_notify_box").hide();
+			else
+				$("#wf_notify_box").show();
+			taskCountingTimer=setTimeout(_loadTasksCounting,30000);
+		});
+		
+		
+		
+		/* $.get("/taskman/ajaxs/WorkflowTaskCounter.php?user="+username,function(data){
 				$("#wf_notify").html(data);
 				if(data=="0") 
 					$("#wf_notify_box").hide();
 				else
 					$("#wf_notify_box").show();
 				taskCountingTimer=setTimeout(_loadTasksCounting,30000);
-			});
+			}); */
 	}
 	function loadTasksCounting(){
 		if(taskCountingTimer) {
@@ -150,6 +182,3 @@
 	</div> -->
 	<div id="boxHelp" style="display:none;width:100%;height:100%"><img class="center_content" src="/wf/images/loading.gif"></div>
 	<div id="boxTaskLog" style="display:none;z-index:100;width:100%;height:100%"></div>
-
-
-

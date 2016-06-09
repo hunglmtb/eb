@@ -3,12 +3,18 @@
 namespace App\Jobs;
 
 use App\Jobs\Job;
+use Illuminate\Contracts\Bus\SelfHandling;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use App\Models\TmWorkflowTask, App\Models\AllocJob, 
 	App\Models\AllocRunner, App\Models\AllocRunnerObjects;
 use  DB, Carbon\Carbon, Mail;
+use App\Http\Controllers\WorkflowProcessController;
 
-class run extends Job 
+class run extends Job implements ShouldQueue, SelfHandling
 {    
+	use InteractsWithQueue, SerializesModels;
     protected $param=[], $log, $error_count = 0;
 
     /**
@@ -105,7 +111,7 @@ class run extends Job
     				try
     				{
     					$mailFrom = env('MAIL_USERNAME');
-		    			$data = ['content' => $this->log];
+		    			$data = ['content' => strip_tags($this->log)];
 		    			$subjectName = ($this->error_count>0?"[ERROR] ":"")."Automatic allocation task's log"; 
 		    			$ret = Mail::send('front.sendmail',$data, function ($message) use ($email, $subjectName, $mailFrom) {
 		    				$message->from($mailFrom, 'Your Application');
@@ -1601,7 +1607,7 @@ class run extends Job
     
     		if($status==1){
     			//task finish, check next task
-    			$objAll = new runAllocation(null, null);
+    			$objAll = new WorkflowProcessController(null, null);
     			$objAll->processNextTask($task_id);
     		}
     	}

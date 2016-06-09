@@ -39,13 +39,13 @@ $listControls = [
 		),
 		
 		'begin_date' => array (
-				'label' => 'From Date (<span style="font-size:10px; color: red;">for approve All</span>)',
+				'label' => 'From Date (<span style="font-size:9px; color: red;">for approve All</span>)',
 				'ID' => 'begin_date',
 				'TYPE' => 'DATE' 
 		),
 		
 		'end_date' => array (
-				'label' => 'To Date (<span style="font-size:10px; color: red;">for approve All</span>)',
+				'label' => 'To Date (<span style="font-size:9px; color: red;">for approve All</span>)',
 				'ID' => 'end_date',
 				'TYPE' => 'DATE' 
 		) ,

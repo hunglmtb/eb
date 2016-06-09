@@ -1281,7 +1281,7 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 						    showWaiting("Uploading image...");
 							$.ajax({
 						        type: "POST",
-						        url: '/uploadFile',
+						        url: '/uploadImg',
 						        data: formData,
 						        processData: false,
 						        contentType: false,

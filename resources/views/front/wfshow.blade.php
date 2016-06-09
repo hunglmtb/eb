@@ -1,6 +1,7 @@
 <meta name="_token"
 	content="{{ app('Illuminate\Encryption\Encrypter')->encrypt(csrf_token()) }}" />
 <link rel="stylesheet" href="/common/css/admin.css">
+<link rel="stylesheet" href="/common/css/style.css">
 <link rel="stylesheet" href="/common/css/jquery-ui.css">
 
 <script src="/common/js/jquery-1.9.1.js"></script>
@@ -12,19 +13,11 @@
 <script type="text/javascript" src="/common/js/mxApplication.js?3"></script>
 
 <?php
- //$username=$current_username;
- 	$wf_id = isset($_REQUEST["wf_id"]) ? $_REQUEST["wf_id"]:null;
+// $username=$current_username;
+$wf_id = isset ( $_REQUEST ["wf_id"] ) ? $_REQUEST ["wf_id"] : null;
 ?>
 
-<script type="text/javascript">
-var ebtoken = $('meta[name="_token"]').attr('content');
-
-$.ajaxSetup({
-	headers: {
-		'X-XSRF-Token': ebtoken
-	}
-});
-	
+<script type="text/javascript">	
 $(function(){
 	var ebtoken = $('meta[name="_token"]').attr('content');
 	$.ajaxSetup({
@@ -32,6 +25,11 @@ $(function(){
 			'X-XSRF-Token': ebtoken
 		}
 	});
+
+	if(_wfshow.count == 0){
+		parent.hide_wf_loading();
+	}
+	
 	$('#cbo_wflist').change(function(){
 		var wfid=$(this).val();
 		loadSavedDiagram(wfid);		
@@ -52,6 +50,8 @@ $(function(){
 });
 
 var _wfshow = {
+	count : 0,
+	
 	loadData:function(){
 		param = {}
 		sendAjax('reLoadtTmworkflow', param, function(data){
@@ -63,6 +63,7 @@ var _wfshow = {
 		var cbo = '';
 		for(var v in _data){
 			cbo += ' 		<option value="' + _data[v].ID + '">' + _data[v].NAME + '</option>';
+			_wfshow.count += 1;
 		}
 		$('#cbo_wflist').html(cbo);
 		$('#cbo_wflist').change();
@@ -71,22 +72,16 @@ var _wfshow = {
 </script>
 
 <body
-	onload="<?php 
-	//if($wf_id>0) 
-		echo " new mxApplication('/config/diagrameditor-workflow.xml?3');"; 
-	//else 
-	//	echo "parent.hide_wf_loading()"; 
-?>"
+	onload="<?php	echo " new mxApplication('/config/diagrameditor-workflow.xml?3');";?>"
 	style="margin: 0px; background: white; overflow: hidden">
 	<div id='wflist'
 		style='margin-top: 5px; width: 100%; height: 30px; border-top: 0px solid #aaaaaa; padding-top: 0px; background: white'>
-		<b> Workflow </b> 
-		<select id='cbo_wflist'	style='min-width: 200px; height: 30px; margin: 0 2px; border-color: #378de5'>
+		<b> Workflow </b> <select id='cbo_wflist'
+			style='min-width: 200px; height: 30px; margin: 0 2px; border-color: #378de5'>
 			@foreach($tmworkflow as $unit)
-				<option value="{!!$unit->ID!!}">{!!$unit->NAME!!}</option>
+			<option value="{!!$unit->ID!!}">{!!$unit->NAME!!}</option>
 			@endforeach
-		</select>
-		<input type='button' value='Refresh'
+		</select> <input type='button' value='Refresh'
 			style="margin: 0 2px; height: 30px; width: 80px"
 			onclick="_wfshow.loadData();">
 		<button type='text' id='cmd_open_task' onclick="openTask()"
@@ -96,12 +91,14 @@ var _wfshow = {
 			style='display: none; margin: 0 2px; width: 120px; height: 30px'>Finish
 			Task</button>
 	</div>
+
+
 	<center>
 		<div id="graph"
 			style="margin-top: 15px; position: relative; height: calc(100% - 60px); width: 100%; box-sizing: border-box; cursor: default; overflow: hidden; border: 0px solid #a0a0a0;">
-
-</div>
+		</div>
 	</center>
+	
 	<div id='task_process'
 		style='display: none; text-align: center; padding-top: 0px'>
 		<span id='task_info' style="display: none">Task Name:<span
