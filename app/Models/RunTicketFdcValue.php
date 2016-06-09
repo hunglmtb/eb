@@ -1,8 +1,39 @@
 <?php 
 namespace App\Models; 
-use App\Models\DynamicModel; 
+use App\Models\FeatureTicketModel; 
 
- class RunTicketFdcValue extends DynamicModel 
+ class RunTicketFdcValue extends FeatureTicketModel 
 { 
-	protected $table = 'run_ticket_fdc_value'; 
+	protected $table = 'RUN_TICKET_FDC_VALUE';
+	protected $primaryKey = 'ID';
+	protected $dates = ['OCCUR_DATE'];
+	protected $fillable  = ['NAME', 
+							'TICKET_NO', 
+							'LOADING_TIME', 
+							'TICKET_TYPE', 
+							'BA_ID', 
+							'TANK_ID', 
+							'TARGET_TANK', 
+							'OCCUR_DATE', 
+							'LAST_DATA_READ', 
+							'OBS_API', 
+							'OBS_TEMP', 
+							'OBS_PRESS', 
+							'BEGIN_LEVEL', 
+							'END_LEVEL', 
+							'BEGIN_VOL', 
+							'END_VOL', 
+							'SW', 
+							'TICKET_GRS_VOL', 
+							'TICKET_NET_VOL', 
+							'TICKET_DENSITY', 
+							'TICKET_GRS_MASS', 
+							'TICKET_NET_MASS', 
+							'TICKET_WTR_VOL', 
+							'VOL_UOM', 
+							'MASS_UOM', 
+							'CTV', 
+							'TEMP_UOM', 
+							'PRESS_UOM', 
+							'CARRIER_ID'];
 } 

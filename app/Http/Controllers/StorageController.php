@@ -10,6 +10,7 @@ class StorageController extends CodeController {
     
 	public function __construct() {
 		parent::__construct();
+		$this->isApplyFormulaAfterSaving = true;
 		$this->fdcModel = "TankDataFdcValue";
 		$this->idColumn = config("constants.tankId");
  		$this->phaseColumn = config("constants.tankFlowPhase");

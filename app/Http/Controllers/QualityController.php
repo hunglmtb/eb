@@ -12,16 +12,9 @@ use App\Models\Storage;
 use Illuminate\Http\Request;
 
 class QualityController extends CodeController {
-    
-	/* protected $type = ['idField'=>'FLOW_ID',
-			'name'=>'FLOW',
-			'dateField'=>'OCCUR_DATE'
-	]; */
-	
-	
+
 	public function __construct() {
 		parent::__construct();
-		$this->isApplyFormulaAfterSaving = false;
 		$this->fdcModel = "QualityData";
 		$this->idColumn = config("constants.qualityId");
 		/* $this->phaseColumn = config("constants.flFlowPhase");

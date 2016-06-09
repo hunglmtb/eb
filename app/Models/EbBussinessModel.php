@@ -33,17 +33,16 @@ class EbBussinessModel extends DynamicModel {
 			$unnecessary = $unnecessary && array_key_exists ( $field, $values ) && $values [$field] != null && $values [$field] != '';
 		}
 		
-		if ($unnecessary)
-			return;
+		if ($unnecessary) return;
 		
 		$flow_phase = $attributes [config ( "constants.flowPhase" )];
 		// OIL or GAS
 		if (($flow_phase == 1 || $flow_phase == 2 || $flow_phase == 21)) {
-			$object_id = $attributes [$fields [config ( "constants.keyField" )]];
-			$occur_date = $attributes ["OCCUR_DATE"];
-			
 			$fdcValues = static::getFdcValues ( $attributes );
 			if (!$fdcValues) return ;
+			
+			$object_id = $attributes [$fields [config ( "constants.keyField" )]];
+			$occur_date = $fdcValues ["OCCUR_DATE"];
 			
 			$T_obs = $fdcValues ["OBS_TEMP"];
 			$P_obs = $fdcValues ["OBS_PRESS"];
@@ -215,6 +214,10 @@ class EbBussinessModel extends DynamicModel {
 		return $rowTest;
 	}
 	
+	
+	public static function getCalculateFields() {
+		return null;
+	}
 		
 	
 }

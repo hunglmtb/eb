@@ -15,7 +15,6 @@ class DefermentController extends CodeController {
 	protected $extraDataSetColumns;
 	public function __construct() {
 		parent::__construct();
-		$this->isApplyFormulaAfterSaving = false;
 		$this->extraDataSetColumns = [	'DEFER_GROUP_TYPE'	=>	[	'column'	=>'DEFER_TARGET',
 																	'model'		=>'DefermentGroup'],
 										'CODE1'				=>	[	'column'	=>'CODE2',

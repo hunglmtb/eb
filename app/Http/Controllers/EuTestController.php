@@ -8,6 +8,7 @@ class EuTestController extends CodeController {
     
 	public function __construct() {
 		parent::__construct();
+		$this->isApplyFormulaAfterSaving = true;
 		$this->fdcModel = "EnergyUnitDataFdcValue";
 		$this->idColumn = config("constants.euId");
 		$this->phaseColumn = config("constants.euFlowPhase");

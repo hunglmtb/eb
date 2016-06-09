@@ -7,12 +7,6 @@ use App\Models\Flow;
 
 class FlowController extends CodeController {
     
-	/* protected $type = ['idField'=>'FLOW_ID',
-			'name'=>'FLOW',
-			'dateField'=>'OCCUR_DATE'
-	]; */
-	
-	
 	public function __construct() {
 		parent::__construct();
 		$this->fdcModel = "FlowDataFdcValue";

@@ -1,5 +1,8 @@
 <?php
 use App\Models\LockTable;
+use App\Models\AuditValidateTable;
+use App\Models\AuditApproveTable;
+
 class Helper {
 	public static function filter($option=null) {
 		if ($option==null) return;
@@ -87,6 +90,22 @@ class Helper {
 		$lockTable = LockTable::where(['TABLE_NAME'=>$dcTable,'FACILITY_ID'=>$facility_id])
 		      					->whereDate('LOCK_DATE', '>=', $occur_date)
 								->first();
+		return $lockTable!=null&&$lockTable!=false;
+	}
+	
+	public static function checkApproveTable($dcTable,$occur_date,$facility_id) {
+		$lockTable = AuditApproveTable::where(['TABLE_NAME'=>$dcTable,'FACILITY_ID'=>$facility_id])
+		->whereDate('DATE_FROM', '<=', $occur_date)
+		->whereDate('DATE_TO', '>=', $occur_date)
+		->first();
+		return $lockTable!=null&&$lockTable!=false;
+	}
+	
+	public static function checkValidateTable($dcTable,$occur_date,$facility_id) {
+		$lockTable = AuditValidateTable::where(['TABLE_NAME'=>$dcTable,'FACILITY_ID'=>$facility_id])
+		->whereDate('DATE_FROM', '<=', $occur_date)
+		->whereDate('DATE_TO', '>=', $occur_date)
+		->first();
 		return $lockTable!=null&&$lockTable!=false;
 	}
 	

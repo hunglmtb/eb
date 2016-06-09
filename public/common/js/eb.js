@@ -63,8 +63,8 @@ var typetoclass = function (data){
 			return "datetimepicker";
 		case 5:
 			return "checkbox";
-		/*case 6:
-			return "_timepicker";*/
+		case 6:
+			return "timepicker";
 	}
 	return "text";
 };
@@ -317,6 +317,20 @@ var actions = {
 //								          		startView:1
 								            };
 	    	break;
+	    	
+		case "timepicker":
+			editable['onblur'] = 'submit';
+			editable['type'] = 'datetime';
+			editable['format'] = 'hh:ii:ss';
+			editable['viewformat'] = 'hh:ii:ss';
+			editable['datetimepicker'] 	= 	{
+								          		minuteStep :5,
+								          		showMeridian : true,
+								          		startView:1,
+								          		minView:0,
+								          		maxView:1,
+								            };
+	    	break;
 		case "select":
 			editable['type'] = type;
 			editable['source'] = collection;
@@ -328,6 +342,8 @@ var actions = {
 		$(td).editable(editable);
     	$(td).on("shown", function(e, editable) {
     		  editable.input.$input.get(0).select();
+    		  if(type=="timepicker") $(".table-condensed thead").css("visibility","hidden");
+//    		  if(type=="timepicker") $(".table-condensed th").text("");
     	});
 	},
 	getEditSuccessfn  : function(tab, td, rowData, columnName,collection) {
@@ -443,6 +459,17 @@ var actions = {
 									return moment(data2).format("MM/DD/YYYY HH:mm");
 								}
 								return moment(data2,"YYYY-MM-DD HH:mm").format("MM/DD/YYYY HH:mm");
+							};
+	    	break;
+		case "timepicker":
+			cell["render"] = function ( data2, type2, row ) {
+								if (data2==null) { 
+									return "";
+								}
+								if (data2.constructor.name == "Date") { 
+									return moment(data2).format("HH:mm:ss");
+								}
+								return moment(data2,"HH:mm:ss").format("HH:mm:ss");
 							};
 	    	break;
 		case "checkbox":

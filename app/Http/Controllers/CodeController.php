@@ -32,12 +32,13 @@ class CodeController extends EBController {
 	protected $valueModel ;
 	protected $keyColumns ;
 	protected $theorModel ;
-	protected $isApplyFormulaAfterSaving = true;
+	protected $isApplyFormulaAfterSaving;
 	
 	
-	/* public function __construct() {
+	 public function __construct() {
 		parent::__construct();
-	} */
+		$this->isApplyFormulaAfterSaving = false;
+	}
 	
 	public function getCodes(Request $request)
     {
@@ -94,7 +95,10 @@ class CodeController extends EBController {
     	$properties->prepend($firstProperty);
     	
     	$uoms = $this->getUoms($properties,$facility_id);
-    	$locked = \Helper::checkLockedTable($dcTable,$occur_date,$facility_id);
+    	$locked = \Helper::checkLockedTable($dcTable,$occur_date,$facility_id)||
+    				\Helper::checkApproveTable($dcTable,$occur_date,$facility_id)||
+    				\Helper::checkValidateTable($dcTable,$occur_date,$facility_id);
+    	 
     	$results = ['properties'	=>$properties,
 	    			'uoms'			=>$uoms,
 	    			'locked'		=>$locked,
@@ -479,13 +483,21 @@ class CodeController extends EBController {
 	    			$editedData[$model] = [];
 	    		}
 	    		foreach ($editedData[$fdcModel] as $element) {
-	    			$key = array_search($element[$idColumn],array_column($editedData[$model],$idColumn));
-	    			if ($key===FALSE) {
-	    				$editedData[$model][] =  array_intersect_key($element, array_flip($this->keyColumns));
+	    			$notExist = $this->checkExistPostEntry($editedData,$model,$element,$idColumn);
+	    			if ($notExist) {
+	    				$autoElement = array_intersect_key($element, array_flip($this->keyColumns));
+	    				$autoElement['auto'] = true;
+	    				$editedData[$model][] =  $autoElement;
 	    			}
 	    			$affectedIds[]=$element[$idColumn];
 	    		}
 	    	}
     	}
     }
+    
+    public function checkExistPostEntry($editedData,$model,$element,$idColumn){
+    	$key = array_search($element[$idColumn],array_column($editedData[$model],$idColumn));
+    	return $key===FALSE;
+    }
+    
 }

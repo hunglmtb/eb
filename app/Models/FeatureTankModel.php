@@ -53,10 +53,6 @@ class FeatureTankModel extends EbBussinessModel
 		return $values;
 	}
 	
-	public static function getCalculateFields() {
-		return null;
-	}
-	
 	
 	public static function updateValues(array $attributes, array &$values = [], $type, $fields) {
 		$object_id = $attributes [$fields [config ( "constants.keyField" )]];
@@ -88,12 +84,4 @@ class FeatureTankModel extends EbBussinessModel
 	public static function updateDependenceFields($object_id,$values){
 		return $values;
 	}
-	
-	/* public static function updateWithFormularedValues($values,$object_id,$occur_date,$flow_phase) {
-	
-		$newData = [static::$idField=>$object_id,config("constants.euFlowPhase")=>$flow_phase];
-		$attributes = static::getKeyColumns($newData,$occur_date,null);
-	
-		return parent::updateOrCreate($attributes,$values);;
-	} */
 }

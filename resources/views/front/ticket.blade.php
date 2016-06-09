@@ -18,15 +18,15 @@ RUN TICKET CAPTURE
 	actions.loadUrl = "/ticket/load";
 	actions.saveUrl = "/ticket/save";
 	actions.type = {
-					idName:['ID'],
+					idName:['ID','FLOW_PHASE','TANK_ID','OCCUR_DATE','TICKET_NO'],
 					keyField:'ID',
 					saveKeyField : function (model){
 										return 'ID';
 									},
 					};
-	actions.afterDataTable  = function (table,tab){
+	/* actions.afterDataTable  = function (table,tab){
 		$("#toolbar_"+tab).html('');
-	}
+	} */
 	addingOptions.keepColumns = ['SAMPLE_DATE','TEST_DATE','EFFECTIVE_DATE','PRODUCT_TYPE','SRC_ID','SRC_TYPE'];
 	
 </script>
