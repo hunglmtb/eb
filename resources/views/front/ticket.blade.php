@@ -27,7 +27,7 @@ RUN TICKET CAPTURE
 	/* actions.afterDataTable  = function (table,tab){
 		$("#toolbar_"+tab).html('');
 	} */
-	addingOptions.keepColumns = ['SAMPLE_DATE','TEST_DATE','EFFECTIVE_DATE','PRODUCT_TYPE','SRC_ID','SRC_TYPE'];
+	addingOptions.keepColumns = ['OCCUR_DATE','TICKET_NO','TICKET_TYPE'];
 	
 </script>
 @stop

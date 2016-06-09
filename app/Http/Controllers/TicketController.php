@@ -13,7 +13,7 @@ class TicketController extends CodeController {
 		$this->phaseColumn = 'FLOW_PHASE';
 		
  		$this->valueModel = "RunTicketValue";
-		$this->keyColumns = [$this->idColumn,$this->phaseColumn,'TANK_ID'];
+		$this->keyColumns = [$this->idColumn,$this->phaseColumn,'TANK_ID','OCCUR_DATE','TICKET_NO'];
 	}
 	
     public function getFirstProperty($dcTable){

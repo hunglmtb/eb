@@ -68,6 +68,12 @@ use App\Models\FeatureTicketModel;
 // 				$values['LOADING_TIME']= $fdcValues->LOADING_TIME;
 				$values['TICKET_NO']= $fdcValues->TICKET_NO;
 			}
+			else  {
+				$attributes = ['OCCUR_DATE'=>$values['OCCUR_DATE'],
+						'TICKET_NO'=>$values['TICKET_NO'],
+						'TANK_ID'=>$values['TANK_ID'],
+				];
+			}
 		}
 		
 		if(array_key_exists('FLOW_PHASE', $attributes)) unset($attributes['FLOW_PHASE']);
