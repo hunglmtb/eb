@@ -1,7 +1,6 @@
 <meta name="_token"
 	content="{{ app('Illuminate\Encryption\Encrypter')->encrypt(csrf_token()) }}" />
 
-<script src="/common/js/jquery-1.9.1.js"></script>
 <script src="/common/js/jquery-ui.js"></script>
 <script type="text/javascript" src="/common/js/utils.js"></script>
 
@@ -14,9 +13,6 @@ $.ajaxSetup({
 	}
 });
 
-$(function(){
-
-});
 </script>
 <script>
 	function loadjscssfile(filename, filetype){
