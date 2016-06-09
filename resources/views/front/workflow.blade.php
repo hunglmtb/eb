@@ -43,7 +43,7 @@ $(function(){
 		position: 'top'
 	});
 
-	$("#outlineContainer").css("height",150);
+	//$("#outlineContainer").css("height",150);
 	
 	$( "input" ).css( "height",'auto' );
 	$( "input[type=text]" ).css( "width",200 );
@@ -59,6 +59,11 @@ $(function(){
 	})
 
 	_workFlow.formFormula = $('#formula').html();
+
+
+	//$("#outlineContainer").css("height",$(window).height()-$("#tdToolBox").height()-70);
+	 $("#graph").css("width",$(window).width()-$("#tdToolBox").width()-30);
+	 $("#graph").css("height",$(window).height()-170);
 
 });
 
@@ -139,7 +144,7 @@ var _workFlow = {
 				title: "Workflows list",
 			});
 		},
-
+		
 		hideBoxDiagrams:function()
 		{
 			$("#listSavedDiagrams").dialog("close");
@@ -766,7 +771,61 @@ var _workFlow = {
 			setTimeout(function () {
 				$('#choice_task').val(data.task_code);			
 				$('#choice_task').change();
-		    }, 3000);
+		    }, 1000);
+
+		    if(data.task_code == "NODE_CONDITION"){
+		    	var task_config = JSON.parse(data.task_config);
+		    	setTimeout(function () {
+		    		$('#choose_formula_group').val(task_config['formula_group']);	
+					$('#choose_formula_group').change();
+			    }, 1000);
+		    	
+		    	$('#choose_formula').val(task_config['formula_id']);
+		    	$('#cbo_datetype').val(task_config['type']);
+		    	$('#cbo_datetype').change();
+		    	if(task_config['type'] == 'date'){
+		    		$('#txt_from').val(task_config['from']);
+		    		$('#txt_to').val(task_config['to']);
+		    	}
+
+		    	var conds = task_config['condition'].length;
+		    	var str = '';
+		    	$('#form-group-condition').html(str);
+		    	for(var i = 0; i < conds; i++){
+			    	var _value = task_config['condition'][i];
+			    	var s = _workFlow.loadCboFormula(_value['target_task_id']);
+		    		str += '<div class="condition_item" id="condition0" style="display: block">';
+		    		str += '<input type="text" value = '+_value['condition']+' class="form-control" name="txt_condition" id="txt_condition" placeholder="$r>1 and $r<=10" style="height: auto; width: 200px;"> &gt;&gt;'; 
+		    		str += '<select class="cbo_target_task" >'+s+'</select>'; 
+		    		str += '<input type="button" onclick="deleteCondition(this)" style="margin: 2px; width: 70px; height: auto;" value="Delete">';
+		    		str += '</div>';
+			    }
+
+			    $('#form-group-condition').append(str);
+			}else if(data.task_code == "EMAIL"){
+				var task_config = JSON.parse(data.task_config);
+				$('#fromEmail').val(task_config['from']);
+				$('#toEmail').val(task_config['to']);
+				$('#txt_subject').val(task_config['subject']);
+				$('#txt_mess').val(task_config['content']);
+			}
+		},
+
+		loadCboFormula : function(id){
+			var s = "";
+			var n=curent_object.getEdgeCount();
+			for(i=0;i<n;i++){
+				var se = '';
+				var e=curent_object.getEdgeAt(i);
+				var to=e.getTerminal(false);
+				if(to.id!=curent_object.id){
+					if(to.getAttribute('task_id') == id){
+						se = "selected";
+					}
+					s+="<option value='"+to.getAttribute('task_id')+"' "+se+">"+to.getAttribute('label')+"</option>";
+				}
+			}
+			return s;
 		},
 
 		formFormula : '',
@@ -1316,11 +1375,15 @@ function showBoxTaskConfig(){
 					
 					_task['id']=$('#txt_task_id').val();
 					_task['name']=$('#txt_task_name').val();
-					if(isCellStyle(curent_object,'style_plus') || isCellStyle(curent_object,'rhombus') ){
+					if(isCellStyle(curent_object,'style_plus') || isCellStyle(curent_object,'rhombus') || isCellStyle(curent_object,'style_email')){
 						_task['runby']=1;
 						_task['user']='';
 						_task['task_group']='';
-						_task['task_code']=(isCellStyle(curent_object,'style_plus')?'NODE_COMBINE':'NODE_CONDITION');
+						if(isCellStyle(curent_object,'style_email')){
+							_task['task_code']= 'EMAIL';
+						}else{
+							_task['task_code']=(isCellStyle(curent_object,'style_plus')?'NODE_COMBINE':'NODE_CONDITION');
+						}
 					}else{
 						_task['runby']=$('#task_run_type').val();
 						_task['user']=$('#txt_user').val();
@@ -1377,6 +1440,7 @@ function showBoxTaskConfig(){
 						task_config['formula_group']=$('#choose_formula_group').val();
 						task_config['formula_id']=$('#choose_formula').val();
 						task_config['type']=$('#cbo_datetype').val();
+						
 						if(task_config['type']=='date'){
 							task_config['from']=$('#txt_from').val();
 							task_config['to']=$('#txt_to').val();
@@ -1387,8 +1451,17 @@ function showBoxTaskConfig(){
 							arr.push({condition:$(this).find("#txt_condition").val(),target_task_id:$(this).find("select").val()});
 						})
 						task_config['condition']=arr;
+					}else if(_task['task_code']=='EMAIL'){	
+
+						upfile();
+					    task_config['from'] = $('#fromEmail').val();
+						task_config['to'] = $('#toEmail').val();
+						task_config['subject'] = $('#txt_subject').val();
+						task_config['content'] = $('#txt_mess').val();
+						task_config['file'] = $('#hiddenFile').val();
+											    
 					}else{
-						
+
 					}
 					
 					task_config=JSON.stringify(task_config);
@@ -1404,7 +1477,7 @@ function showBoxTaskConfig(){
 						var enc = new mxCodec();
 						var node = enc.encode(ed.graph.getModel());
 						var currentXML=mxUtils.getPrettyXml(node);
-
+						
 						param = {
 							'wfid' : currentDiagramId,
 							'taskdata' : task,
@@ -1429,12 +1502,32 @@ function showBoxTaskConfig(){
 		if(style == 'rhombus' || style == 'style_plus'){
 		 	$('#userRun').css('display','none');
 			$('#runtask').css('display','none');
-			$('#formula').css('display','block');			
+			$('#formula').css('display','block');	
+			$('#frm_email').css('display','none');
+			$('#cbo_datetype').change(function(){
+				if($(this).val()=='date'){
+					$('#date_config').show();
+				}else{
+					$('#date_config').hide();
+				}
+				$('input[type=date]').css('height', 'auto');
+				$('input[type=date]').css('width', '130');
+			});		
 		}else{
-			$('#formula').css('display','none');
-			$('#userRun').css('display','block');
-			$('#runtask').css('display','block');	
+			if(style == 'style_email'){
+				$('#userRun').css('display','block');
+				$('#runtask').css('display','none');
+				$('#formula').css('display','none');	
+				$('#frm_email').css('display','');				
+			}else{
+				$('#formula').css('display','none');
+				$('#userRun').css('display','block');
+				$('#runtask').css('display','block');
+				$('#frm_email').css('display','none');
+			}	
 		}
+
+		$('#txt_file').on('change', prepareUpload);
 
 		var n=curent_object.getEdgeCount();
 		var s="";
@@ -1454,6 +1547,40 @@ function showBoxTaskConfig(){
 		loadTaskConfig();
 	}else{
 		$("#task_config").html('Please select a task to config!');
+	}
+}
+
+function upfile(){
+	if(filesToUpload){
+		event.preventDefault();
+
+	    var form = this,
+	        formData = new FormData(form);
+
+	    // Add selected files to FormData which will be sent
+        $.each(filesToUpload, function(key, value){
+            formData.append(key,filesToUpload[1]);
+        });    
+
+      /*   sendAjaxNotMessage('/upFile', formData, function(_data){
+    		if(_data != null){
+    			$('#hiddenFile').val(data.files);
+    		}	
+    	}); */
+
+        $.ajax({
+	        type: "POST",
+	        url: '/upFile',
+	        data: formData,
+	        processData: false,
+	        contentType: false,
+	        dataType: 'json',
+	        success: function(data)
+			{
+				$('#hiddenFile').val(data.files);
+				
+			}
+    	}); 
 	}
 }
 
@@ -1505,11 +1632,7 @@ function loadSaveForm(isAddNew){
 
 window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 </script>
-<body
-	onLoad="new mxApplication('/config/diagrameditor-workflow.xml?2');"
-	style="margin: 0px; background: #eeeeee;">
-
-
+<body onLoad="new mxApplication('/config/diagrameditor-workflow.xml?2');">
 	<div id="box_cell_image" style="display: none">
 		<span id="box_cell_image_input"> <br> Input image URL <input
 			type="text" id="txt_cell_image_url" style="width: 470px"> <br> <br>
@@ -1643,7 +1766,7 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 	    // Itterate thru files (here I user Underscore.js function to do so).
 	    // Simply user 'for loop'.
 	    $.each(files, function(key, value) {
-	        filesToUpload.push(value);
+	        filesToUpload.push(key, value);
 	    });
 	}
 	function pick_cell_image(){
@@ -1669,7 +1792,7 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 			title: "Set Image",
 			buttons: {
 				"OK": function(){
-					var url=$("#txt_cell_image_url").val().trim();					
+					//var url=$("#txt_cell_image_url").val().trim();					
 						if(filesToUpload){
 							event.preventDefault();
 
@@ -1686,7 +1809,7 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 						    showWaiting("Uploading image...");
 							$.ajax({
 						        type: "POST",
-						        url: '/uploadFile',
+						        url: '/uploadImg',
 						        data: formData,
 						        processData: false,
 						        contentType: false,
@@ -1807,10 +1930,8 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 													</td>
 												</tr>
 												<tr>
-													<td
-														style="display:; background: #fff; border: 1px solid #666">
-														<div id="outlineContainer"
-															style="background: #fff; width: 248px; height: 99px;"></div>
+													<td	style="display:; background: #fff; border: 1px solid #666; height: 140px;">
+														<div id="outlineContainer"	style="background: #fff;  height: 137px;"></div>
 													</td>
 												</tr>
 											</table>
@@ -1822,7 +1943,7 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 								id="imgShowHideToolBox" width=10 src='/images/arrow_left.png'></td>
 							<td width="1000">
 								<div id="graph"
-									style="position: relative; height: 507px; width: 1051px; cursor: default; overflow: hidden; border: 1px solid #666; background-image: url('/images/bg.png')">
+									style="position: relative; height: 499px; width: 1051px; cursor: default; overflow: hidden; border: 1px solid #666; background-image: url('/images/bg.png')">
 									<!-- Graph Here -->
 									<center id="splash" style="padding-top: 230px;">
 										<img src="/images/loading.gif">
@@ -1851,7 +1972,7 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 									id="txt_task_id" value=''>
 							</div>
 						</div>
-						
+
 						<div class="form-group" id="userRun">
 							<label class='col-md-2 control-label'>Run Type*:</label>
 							<div class="col-md-4">
@@ -1866,7 +1987,7 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 									<div class='col-md-9'>
 										<div class="btn-group">
 											<input class='form-control' id='txt_user' name='txt_user'
-												value='' />
+												value='' style="width:350px;"/>
 											<button type="button" class="btn btn-primary"
 												onclick="_workFlow.listUser();" id='btn_choice_user'>Select
 												user</button>
@@ -1882,10 +2003,10 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 					<legend>Configure Task</legend>
 					<div id="tabbtn_choice_user" class="tab-pane fade">
 						<div class="form-group">
-							<div id ='runtask'>
+							<div id='runtask'>
 								<div>
 									<label class='col-md-2'>Run Task:</label>
-								</div>							
+								</div>
 								<select id='choice_task_group' class='form-control'
 									onchange="_workFlow.changeCboRunTask();">
 									<option value='normal-fun'>Select Task Group</option>
@@ -1896,27 +2017,28 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 								</select> <select id='choice_task' class='form-control'
 									onchange="_workFlow.loadFormSetting();">
 								</select>
-								
+
 								<div id='config_panel'>
-								<fieldset><legend>Setting</legend>
-								<div id='task_config'></div>
-								</fieldset>
+									<fieldset>
+										<legend>Setting</legend>
+										<div id='task_config'></div>
+									</fieldset>
 								</div>
 							</div>
-							
-							<div id ='formula'>
+
+							<div id='formula'>
 								<div>
 									<label class='col-md-2'>Formula:</label>
-								</div>							
+								</div>
 								<select id='choose_formula_group' class='form-control'>
 									<option value='normal-fun'>Select a formula</option>
 									@foreach($foGroup as $fo)
 									<option value="{!!$fo->ID!!}">{!!$fo->NAME!!}</option>
 									@endforeach
 
-								</select> <select id='choose_formula' class='form-control'									>
+								</select> <select id='choose_formula' class='form-control'>
 								</select>
-								
+
 								<div class="form-group">
 									<label class='col-md-2 control-label'>Set date:</label>
 									<div class="col-md-5">
@@ -1924,26 +2046,64 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 											<option value='date'>Date</option>
 											<option value='day' selected>This Day</option>
 											<option value='month'>This Month</option>
-										</select>
-										<span id='date_config' style="display: none">
-										<input type="date" class="form-control" name="txt_from" id="txt_from" >
-										<input type="date" class="form-control" name="txt_to" id="txt_to">
+										</select> <span id='date_config' style="display: none"> 
+										<input type="date" class="form-control" name="txt_from"	id="txt_from"> 
+										<input type="date" class="form-control"	name="txt_to" id="txt_to">
 										</span>
 									</div>
 								</div>
-								
+
 								<div class="form-group" id="form-group-condition">
 									<label class='col-md-2 control-label'>Condition</label>
-									<div class="condition_item" id="condition0" style="display:block">
-										<input type="text" class="form-control" name="txt_condition" id="txt_condition" placeholder='$r>1 and $r<=10'>
-										>>
-										<select class='cbo_target_task'>
-										</select>
-										<input type="button" onclick="deleteCondition(this)" style="margin:2px 2px;" value="Delete">
+									<div class="condition_item" id="condition0"
+										style="display: block">
+										<input type="text" class="form-control" name="txt_condition"
+											id="txt_condition" placeholder='$r>1 and $r<=10'> >> <select
+											class='cbo_target_task'>
+										</select> <input type="button" onclick="deleteCondition(this)"
+											style="margin: 2px 2px; width: 70px;" value="Delete">
 									</div>
 								</div>
-								<input type="button" onclick="addCondition()" style="margin:2px 0px;" value="Add">
+								<input type="button" onclick="addCondition()"
+									style="margin: 2px 0px; width: 70px;" value="Add">
 							</div>
+							
+							<div id="frm_email" style="display: none;">
+		<div class="form-group">
+			<label class='col-md-2 control-label'>From</label>
+			<div class="col-md-10">
+				<input type="text" class="form-control" name="txt_from"
+					id="fromEmail">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class='col-md-2 control-label'>To:</label>
+			<div class="col-md-10">
+				<input type="text" class="form-control" name="txt_to" id="toEmail">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class='col-md-2 control-label'>Subject:</label>
+			<div class="col-md-10">
+				<input type="text" class="form-control" name="txt_subject"
+					id="txt_subject">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class='col-md-2 control-label'>Contents:</label>
+			<div class="col-md-10">
+				<textarea id='txt_mess' style="width:440px;" class='form-control' name="txt_mess"
+					rows='4'></textarea>
+			</div>
+		</div>
+		<div class="form-group">
+			 <label class='col-md-2 control-label'>Attach file:</label>
+			<div class="col-md-10">
+				<input type="hidden" class="form-control" name="hiddenFile"id="hiddenFile">
+				<input type="file" name="files[]" multiple id="txt_file" style="width: 390px; height: auto;">
+			</div>
+		</div>
+	</div>
 						</div>
 					</div>
 				</fieldset>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version last-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Sub_Water_Injection" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="612e012d-fadd-4658-9aa7-5c50a95763c6">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="dbOil"/>
+	<parameter name="facility_id" class="java.lang.Integer"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT
+x.FACILITY_NAME,
+x.WELL_NAME,
+x.THEOR_METHOD,
+x.OCCUR_DATE,
+x.ACTIVE_HRS,
+x1.EU_DAY_GRS_VOL AS WATER_ALLOC, y1.EU_DAY_GRS_VOL AS WATER_THEOR
+FROM
+(SELECT
+f.NAME AS FACILITY_NAME,
+eu.ID AS EU_ID,
+eu.NAME AS WELL_NAME,
+eu.TEST_METHOD AS THEOR_METHOD,
+al.OCCUR_DATE AS OCCUR_DATE,
+al.ACTIVE_HRS  AS ACTIVE_HRS
+FROM energy_unit AS eu
+INNER JOIN energy_unit_day_alloc AS al
+ON eu.ID = al.EU_ID
+INNER JOIN facility AS f
+ON eu.FACILITY_ID = f.ID
+INNER JOIN code_event_type AS et
+ON eu.EVENT_TYPE=et.ID
+WHERE f.ID=$P{facility_id}
+GROUP BY eu.ID, eu.NAME, eu.TEST_METHOD, al.OCCUR_DATE) AS x
+INNER JOIN energy_unit_day_alloc x1
+ON x.EU_ID = x1.EU_ID AND x.OCCUR_DATE = x1.OCCUR_DATE AND x1.FLOW_PHASE = 3
+INNER JOIN energy_unit_day_theor AS y1
+ON x.EU_ID = y1.EU_ID AND y1.OCCUR_DATE = y1.OCCUR_DATE AND y1.FLOW_PHASE = 3
+GROUP BY x.FACILITY_NAME,
+x.WELL_NAME,
+x.THEOR_METHOD,
+x.OCCUR_DATE,
+x.ACTIVE_HRS]]>
+	</queryString>
+	<field name="FACILITY_NAME" class="java.lang.String"/>
+	<field name="WELL_NAME" class="java.lang.String"/>
+	<field name="THEOR_METHOD" class="java.lang.Integer"/>
+	<field name="OCCUR_DATE" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ACTIVE_HRS" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="WATER_ALLOC" class="java.math.BigDecimal"/>
+	<field name="WATER_THEOR" class="java.math.BigDecimal"/>
+	<group name="Group1">
+		<groupHeader>
+			<band height="50">
+				<staticText>
+					<reportElement x="120" y="30" width="100" height="20" uuid="ecee12fd-648c-441a-806d-a937a45d522a"/>
+					<text><![CDATA[FACILITY_NAME]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="220" y="30" width="100" height="20" uuid="939a48a4-cb65-4f53-a2f2-a4c547672a9c"/>
+					<text><![CDATA[WELL_NAME]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="0" width="190" height="20" uuid="90fc6c65-9319-4ef8-a005-2ce988fff0a5"/>
+					<textElement>
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Water Injection Wells]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="320" y="30" width="100" height="20" uuid="943b403f-6510-41c6-99bc-6e81ecdd8610"/>
+					<text><![CDATA[THEOR_METHOD]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="420" y="30" width="100" height="20" uuid="8145ceb6-72c3-4ba2-90ff-bcf17018af3e"/>
+					<text><![CDATA[OCCUR_DATE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="520" y="30" width="100" height="20" uuid="3f592713-acec-4b9d-ab0a-930a6a167cc8"/>
+					<text><![CDATA[INJECTION_HRS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="633" y="30" width="100" height="20" uuid="cba470ed-bd14-4c62-b57f-2c5eb95407c9"/>
+					<text><![CDATA[WATER_ALLOC]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="733" y="30" width="89" height="20" uuid="a3b67fb8-a1e6-4049-8846-567b918443c5"/>
+					<text><![CDATA[WATER_THEOR]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="633" y="10" width="189" height="20" uuid="67260a4a-68a4-4006-9356-f3d5261ebeb5"/>
+					<textElement textAlignment="Center">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[WATER]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="50"/>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="67" splitType="Stretch">
+			<textField>
+				<reportElement x="120" y="0" width="100" height="20" uuid="d2fa7e28-4d87-4279-8e91-0167ec5aaade"/>
+				<textFieldExpression><![CDATA[$F{FACILITY_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="0" width="100" height="20" uuid="11d04f46-3e05-4242-9d57-589fe7aecf99"/>
+				<textFieldExpression><![CDATA[$F{WELL_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="320" y="0" width="100" height="20" uuid="8eb48479-3d97-4540-86cf-ac64bd70ce1f"/>
+				<textFieldExpression><![CDATA[$F{THEOR_METHOD}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="420" y="0" width="100" height="20" uuid="c6401a3d-d058-44fb-a9fd-a99f72f7ef34"/>
+				<textFieldExpression><![CDATA[$F{OCCUR_DATE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="520" y="0" width="100" height="20" uuid="9f5f8c0c-bc7f-40a5-9597-b05c97b534a9"/>
+				<textFieldExpression><![CDATA[$F{ACTIVE_HRS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="633" y="0" width="100" height="20" uuid="fa7ff5a7-d7e1-4af8-8956-c4ddbfd22a1c"/>
+				<textFieldExpression><![CDATA[$F{WATER_ALLOC}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="733" y="0" width="89" height="20" uuid="05c1ec89-0d6f-444a-a8c2-1187cf18220f"/>
+				<textFieldExpression><![CDATA[$F{WATER_THEOR}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

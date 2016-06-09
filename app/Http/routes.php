@@ -177,9 +177,8 @@ Route::post('deletediagram', 'DVController@deletediagram');
 Route::post('onChangeObj', 'DVController@onChangeObj');
 Route::post('getSurveillanceSetting', 'DVController@getSurveillanceSetting');
 Route::post('getValueSurveillance', 'DVController@getValueSurveillance');
-Route::post('uploadFile', 'DVController@uploadFile');
+Route::post('uploadImg', 'DVController@uploadImg');
 Route::get('tagsMapping', 'DVController@_indexTagsMapping');
-
 Route::get('workflow', 'DVController@_indexWorkFlow');
 Route::post('getListWorkFlow', 'DVController@getListWorkFlow');
 Route::post('getXMLCodeWF', 'DVController@getXMLCodeWF');
@@ -194,3 +193,11 @@ Route::post('stopWorkFlow', 'DVController@stopWorkFlow');
 Route::post('runWorkFlow', 'DVController@runWorkFlow');
 Route::post('getKey', 'DVController@getKey');
 Route::resource('runAlloc', 'RunController@runAlloc');
+Route::get('workreport', 'ReportController@_index');
+Route::get('loadWfShow', 'wfShowController@loadData');
+Route::post('reLoadtTmworkflow', 'wfShowController@reLoadtTmworkflow');
+Route::post('finish_workflowtask', 'wfShowController@finish_workflowtask');
+Route::post('upFile', 'DVController@uploadFile');
+Route::post('openTask', 'wfShowController@openTask');
+
+

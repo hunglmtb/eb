@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version last-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="NewMain" pageWidth="1500" pageHeight="1190" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="1460" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="217d4128-7ded-4d45-bda4-9776ce666c2d">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL addapter"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="facility_id" class="java.lang.Integer"/>
+	<parameter name="begin_date" class="java.util.Date"/>
+	<parameter name="end_date" class="java.util.Date"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT a.name facility, b.name area
+FROM facility a, lo_area b 
+WHERE a.area_id=b.id
+AND a.id=$P{facility_id}]]>
+	</queryString>
+	<field name="facility" class="java.lang.String"/>
+	<field name="area" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="145" splitType="Stretch">
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<staticText>
+				<reportElement x="30" y="45" width="145" height="15" uuid="6be57617-f3da-40c3-9615-82a3c832ac5c"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Facility:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="210" y="45" width="200" height="15" uuid="7929c77a-f269-4d16-8ab6-df46fd8fd3e9"/>
+				<textFieldExpression><![CDATA[$F{facility}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="30" y="60" width="145" height="15" uuid="60bd8a3a-70ae-4038-be95-2ad13a7218a4">
+					<property name="local_mesure_unitheight" value="pixel"/>
+				</reportElement>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Area:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="30" y="75" width="145" height="15" uuid="50ea7940-5162-4b27-b0f3-63ea9d668fec"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Begin Date:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="30" y="90" width="145" height="15" uuid="77a5e660-44a9-45b8-b22f-f040adf74c47"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[End Date:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="210" y="75" width="200" height="15" uuid="2ebaafd3-59ab-4b22-8edc-b3245a10578d"/>
+				<textFieldExpression><![CDATA[$P{begin_date}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="210" y="90" width="200" height="15" uuid="27be70d9-d801-4dfc-9503-7ac78c155e65"/>
+				<textFieldExpression><![CDATA[$P{end_date}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="30" y="105" width="145" height="15" uuid="0c16e163-6921-4c32-aa56-1d2b79f1767e"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Unit Of Measure:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="30" y="120" width="145" height="15" uuid="7c735d74-dd12-404f-97c0-b1ccdcea3caa"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Run Datetime:]]></text>
+			</staticText>
+			<textField pattern="MMMMM dd, yyyy">
+				<reportElement x="210" y="120" width="200" height="15" uuid="d3d782f6-f84b-41ef-9b41-641888f1bad1"/>
+				<textElement>
+					<font isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="1" y="144" width="1429" height="1" uuid="846eb361-4cf4-4320-9aea-2ddd190a35ee">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineStyle="Double" lineColor="#000000"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="30" y="10" width="180" height="25" uuid="c8ef56b1-e1d7-454e-9e0f-343684142b04"/>
+				<textElement>
+					<font size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Daily Allocation]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="210" y="105" width="200" height="15" uuid="bf2cb6dd-b807-4973-832d-b161e3789a84"/>
+				<textElement>
+					<font isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Sl"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="210" y="60" width="200" height="15" uuid="eda3996f-d472-42aa-a5da-c6f043280f18"/>
+				<textFieldExpression><![CDATA[$F{area}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="37">
+			<subreport>
+				<reportElement x="0" y="5" width="1430" height="25" uuid="eacd12e8-b828-4968-99e3-697f7f385a00"/>
+				<subreportParameter name="facilityId">
+					<subreportParameterExpression><![CDATA[$P{facility_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="beginTime">
+					<subreportParameterExpression><![CDATA[$P{begin_date}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="endTime">
+					<subreportParameterExpression><![CDATA[$P{end_date}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="facilityName">
+					<subreportParameterExpression><![CDATA[$F{facility}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["NewProducing.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="35">
+			<subreport>
+				<reportElement x="0" y="5" width="1070" height="25" uuid="3c43f1d2-d9fa-459b-a177-2ef0901c6054"/>
+				<subreportParameter name="facilityId">
+					<subreportParameterExpression><![CDATA[$P{facility_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="beginTime">
+					<subreportParameterExpression><![CDATA[$P{begin_date}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="endTime">
+					<subreportParameterExpression><![CDATA[$P{end_date}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="facilityName">
+					<subreportParameterExpression><![CDATA[$F{facility}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["NewGas.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="36">
+			<subreport>
+				<reportElement x="0" y="7" width="1068" height="23" uuid="73985898-90f5-446b-9928-306a2d341321"/>
+				<subreportParameter name="facilityId">
+					<subreportParameterExpression><![CDATA[$P{facility_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="beginTime">
+					<subreportParameterExpression><![CDATA[$P{begin_date}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="endTime">
+					<subreportParameterExpression><![CDATA[$P{end_date}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="facilityName">
+					<subreportParameterExpression><![CDATA[$F{facility}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["NewWater.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<summary>
+		<band height="37"/>
+	</summary>
+</jasperReport>

@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version last-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="NewProducing" pageWidth="900" pageHeight="1190" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="860" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="280176ec-021b-4cce-b620-af4be1fefc43">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL addapter"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<parameter name="facilityId" class="java.lang.Integer"/>
+	<parameter name="beginTime" class="java.util.Date"/>
+	<parameter name="endTime" class="java.util.Date"/>
+	<parameter name="facilityName" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT eu_group_name, well_name, max(theor_method) theor_method, occur_date, max(active_hrs) active_hrs, sum(alloc_gas) alloc_gas, sum(theor_gas) theor_gas
+FROM (
+SELECT gr.name eu_group_name, c.name well_name, e.name theor_method, occur_date, active_hrs, EU_DAY_GRS_VOL as alloc_gas, null theor_gas
+FROM 
+	energy_unit_day_alloc a
+INNER JOIN energy_unit c ON a.eu_id=c.id AND a.flow_phase=2 AND c.facility_id=$P{facilityId} AND a.occur_date >= $P{beginTime} AND a.occur_date <= $P{endTime}
+INNER JOIN code_flow_phase d ON a.flow_phase=d.id 
+LEFT JOIN energy_unit_group gr ON gr.id=c.eu_group_id
+LEFT JOIN code_testing_method e ON c.test_method=e.id
+	
+UNION ALL
+
+SELECT gr.name eu_group_name, c.name well_name, e.name theor_method, occur_date, active_hrs, null alloc_gas, EU_DAY_GRS_VOL as theor_gas
+FROM 
+	energy_unit_day_theor a
+INNER JOIN energy_unit c ON a.eu_id=c.id AND a.flow_phase=2 AND c.facility_id=$P{facilityId} AND a.occur_date >= $P{beginTime} AND a.occur_date <= $P{endTime}
+INNER JOIN code_flow_phase d ON a.flow_phase=d.id 
+LEFT JOIN energy_unit_group gr ON gr.id=c.eu_group_id
+LEFT JOIN code_testing_method e ON c.test_method=e.id
+
+) x
+GROUP BY eu_group_name, well_name, occur_date]]>
+	</queryString>
+	<field name="eu_group_name" class="java.lang.String"/>
+	<field name="well_name" class="java.lang.String"/>
+	<field name="theor_method" class="java.lang.String"/>
+	<field name="occur_date" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="active_hrs" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="alloc_gas" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="theor_gas" class="java.math.BigDecimal"/>
+	<group name="Group1">
+		<groupExpression><![CDATA[$F{eu_group_name}]]></groupExpression>
+		<groupHeader>
+			<band height="21">
+				<textField>
+					<reportElement x="0" y="0" width="160" height="20" uuid="a58176f2-4519-45a6-babc-fbf54171cb10"/>
+					<textFieldExpression><![CDATA[$F{eu_group_name}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="5">
+				<line>
+					<reportElement x="0" y="3" width="839" height="1" uuid="3150996c-98df-4257-a86d-b829389081cf">
+						<property name="local_mesure_unitheight" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<graphicElement>
+						<pen lineStyle="Dashed" lineColor="#C2C0C0"/>
+					</graphicElement>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="92">
+			<staticText>
+				<reportElement x="160" y="71" width="179" height="18" uuid="153bf0ea-40ab-4acf-aa7d-344941009a6b"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Well Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="339" y="71" width="100" height="18" uuid="8127358f-59fe-4649-b693-905602230bf5"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Theor Method]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="439" y="71" width="100" height="18" uuid="afff6027-4435-4520-96c9-3c8b8ba822d9"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Occur Day]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="539" y="71" width="100" height="18" uuid="1e4d1ff2-564c-4fe3-a7a4-63b7ce1d2aeb"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hrs on Jinection]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="639" y="70" width="100" height="18" uuid="90a7c52c-44ee-449f-ba0e-899e38f42739"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Alloc Gas Inj (Sm³)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="739" y="70" width="100" height="18" uuid="e796ccf8-10a3-447e-b0fa-b34d6b37958d"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Theor Gas Inj (Sm³)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="17" width="340" height="20" uuid="5d4b3aa0-5fb0-4263-82cd-6c88feb73bd8"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[GAS INJECTION WELLS]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="88" width="839" height="1" uuid="3d2a8480-c674-4076-a022-535bcb89a763"/>
+			</line>
+			<textField>
+				<reportElement x="0" y="40" width="100" height="20" uuid="7ead0a0a-068c-4dc0-a616-157c1d4c59b8"/>
+				<textFieldExpression><![CDATA[$P{facilityName}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="71" width="160" height="17" uuid="24336b84-448e-40c1-b239-66030b80500a"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Energy Unit Group Name]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="24" splitType="Stretch">
+			<textField>
+				<reportElement x="160" y="2" width="178" height="20" uuid="7469cf78-20e5-4cd6-b8f2-065d58a66ab1"/>
+				<textFieldExpression><![CDATA[$F{well_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="338" y="2" width="100" height="20" uuid="5b272966-94ce-4894-b158-caaa939cdd9f"/>
+				<textFieldExpression><![CDATA[$F{theor_method}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MM/dd/yyyy">
+				<reportElement x="439" y="2" width="100" height="20" uuid="700d6a33-cc9b-4a0b-a458-9e232736e16f"/>
+				<textFieldExpression><![CDATA[$F{occur_date}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="539" y="2" width="100" height="20" uuid="22f231eb-053c-410e-8b23-220806adf118"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{active_hrs}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="639" y="2" width="100" height="20" uuid="9dba70f4-b607-4c00-bf66-53155804453b"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{alloc_gas}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="739" y="2" width="100" height="20" uuid="e4ab5366-f5b0-4281-b943-d80cff7b09e5"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{theor_gas}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band/>
+	</columnFooter>
+	<pageFooter>
+		<band height="19"/>
+	</pageFooter>
+</jasperReport>

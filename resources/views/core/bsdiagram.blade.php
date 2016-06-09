@@ -3,7 +3,7 @@ if (!isset($currentSubmenu)) $currentSubmenu ='';
 $subMenus = [
 		array('title' => 'NETWORK MODELS', 'link' => 'diagram'),
 		array('title' => 'DATA VIEWS', 'link' => 'roles'),
-		array('title' => 'REPORT', 'link' => 'audittrail'),
+		array('title' => 'REPORT', 'link' => 'workreport'),
 		array('title' => 'ADVANCED GRAPH', 'link' => 'validatedata'),
 		array('title' => 'TASK MANAGER', 'link' => 'approvedata'),
 		array('title' => 'WORKFLOW', 'link' => 'workflow')
