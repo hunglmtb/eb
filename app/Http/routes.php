@@ -199,5 +199,5 @@ Route::post('reLoadtTmworkflow', 'wfShowController@reLoadtTmworkflow');
 Route::post('finish_workflowtask', 'wfShowController@finish_workflowtask');
 Route::post('upFile', 'DVController@uploadFile');
 Route::post('openTask', 'wfShowController@openTask');
-
+Route::post('countWorkflowTask', 'wfShowController@countWorkflowTask');
 

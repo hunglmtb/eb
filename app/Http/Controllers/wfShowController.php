@@ -1,12 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\EbFunctions;
 use App\Models\TmWorkflow;
 use App\Models\TmWorkflowTask;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\Jobs\runAllocation;
-use App\Models\EbFunctions;
+use Illuminate\Http\Request;
 
 class wfShowController extends Controller {
 	
@@ -21,7 +20,11 @@ class wfShowController extends Controller {
 	}
 	
 	public function getTmworkflow(){
-		$user_name = 'tung';
+		
+		$user_name = '';
+		if((auth()->user() != null)){
+			$user_name = auth()->user()->username;
+		}
 		
 		\DB::enableQueryLog ();
 		$tmworkflowtask = collect(TmWorkflowTask::whereIn('ISRUN', [2,3])
@@ -52,7 +55,7 @@ class wfShowController extends Controller {
 	
 		TmWorkflowTask::where(['ID'=>$data['ID']])->update(['ISRUN'=>1, 'FINISH_TIME'=>$time]);
 	
-		$objRun = new runAllocation(null, null);
+		$objRun = new WorkflowProcessController(null, null);
 		$objRun->processNextTask($data['ID']);
 		
 		return response ()->json ( 'OK' );
@@ -70,5 +73,29 @@ class wfShowController extends Controller {
 		}
 		
 		return response ()->json ( 'OK' );
+	}
+	
+	public function countWorkflowTask(){		
+		$user_name = '';
+		if((auth()->user() != null)){
+			$user_name = auth()->user()->username;
+		}
+		
+		\DB::enableQueryLog ();			
+		$tmworkflow = collect(TmWorkflow::where(['ISRUN'=>'yes'])
+		->get(['ID']))->toArray();
+		\Log::info ( \DB::getQueryLog () );
+		
+		\DB::enableQueryLog ();
+		$tmworkflowtask = TmWorkflowTask::whereIn('ISRUN', [2,3])
+			->where ( function ($q) use ($user_name) {
+				$q->where('USER', 'like', '%,'.$user_name.',%');
+				$q->orWhere('USER', 'like', $user_name.'%');
+			} )			
+			->whereIn('WF_ID', $tmworkflow)
+			->get(['WF_ID']);
+		\Log::info ( \DB::getQueryLog () );
+		
+		return response ()->json ( count($tmworkflowtask) );
 	}
 }

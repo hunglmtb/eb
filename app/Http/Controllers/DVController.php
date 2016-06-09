@@ -446,7 +446,7 @@ class DVController extends Controller {
 		$error = false;
 		if (count ( $files ) > 0) {
 			// foreach ($files as $file){
-			$file = $files[0];
+			$file = $files[1];
 			$tmpFileName = $file->getClientOriginalName ();
 			$v = explode ( '.', $tmpFileName );
 			$tmpFileName = $v [0] . '_' . time () . '.' . $v [1];
@@ -478,7 +478,11 @@ class DVController extends Controller {
 		$error = false;
 		if (count ( $files ) > 0) {
 			// foreach ($files as $file){
-			$file = $files [0];
+			if(count ( $files ) == 1){
+				$file = $files [0];
+			}else{
+				$file = $files [1];
+			}
 			$tmpFileName = $file->getClientOriginalName ();
 			$v = explode ( '.', $tmpFileName );
 			$tmpFileName = $v [0] . '_' . time () . '.' . $v [1];
@@ -901,11 +905,11 @@ class DVController extends Controller {
 			->where('ID', '<>', $tmWorkflowTask['id'])
 			->update(['ISRUN'=>0]);
 			
-			/* $objRun = new runAllocation(null, $tmWorkflowTask);
-			$objRun->runTask(null, $tmWorkflowTask); */
+			$objRun = new WorkflowProcessController(null, $tmWorkflowTask);
+			$objRun->runTask(null, $tmWorkflowTask);
 		
-			$job = (new runAllocation(null, $tmWorkflowTask));
-			$this->dispatch($job);
+			/* $job = (new runAllocation(null, $tmWorkflowTask));
+			$this->dispatch($job); */
 		}
 		
 		$result = $this->getTmWorkflow();

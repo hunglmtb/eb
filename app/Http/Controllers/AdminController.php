@@ -1077,8 +1077,8 @@ class AdminController extends Controller {
 	
 		$data = $request->all();
 	
-		$date_from = Carbon::parse($data['DATE_FROM']);
-		$date_to = Carbon::parse($data['DATE_TO']);
+		$date_from = Carbon::createFromFormat('m/d/Y',$data['DATE_FROM'])->format('Y-m-d');
+		$date_to = Carbon::createFromFormat('m/d/Y',$data['DATE_TO'])->format('Y-m-d');
 		$username = trim($data['USERNAME']);
 		$result = array();
 	
