@@ -1,6 +1,7 @@
 <?php 
 namespace App\Models; 
 use App\Models\FeatureTicketModel; 
+use App\Models\Tank; 
 
  class RunTicketValue extends FeatureTicketModel 
 { 
@@ -55,6 +56,11 @@ use App\Models\FeatureTicketModel;
 						"TICKET_GRS_VOL",
 						"TICKET_NET_VOL",
 						config("constants.keyField") 	=>	'TANK_ID'];
+			if(!array_key_exists('FLOW_PHASE', $attributes)) {
+				$tank = Tank::where('ID','=',$attributes['TANK_ID'])->select('PRODUCT')->first();
+				$attributes['FLOW_PHASE'] = $tank?$tank->PRODUCT:null;
+			}
+				
 // 			$values[config ( "constants.flowPhase" )] = $values[config ( "constants.flowPhase" )];
 			static::updateValues($attributes,$values,'TANK',$fields);
 			$fdcValues = static::getFdcValues ( $attributes );

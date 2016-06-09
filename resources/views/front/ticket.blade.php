@@ -31,3 +31,10 @@ RUN TICKET CAPTURE
 	
 </script>
 @stop
+
+@section('editBoxParams')
+@parent
+<script>
+	editBox.hidenFields = [{name:'Tank',field:'TANK_ID'}];
+</script>
+@stop

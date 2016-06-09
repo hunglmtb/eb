@@ -8,6 +8,7 @@ class Helper {
 		if ($option==null) return;
 		$model='App\\Models\\'.$option['id'];
 		$collection = $model::all(['ID', 'NAME']);
+// 		$collection = $model::select(['ID', 'NAME'])->orderBy('NAME')->get();
 		$option['collection']=$collection;
 		Helper::buildFilter($option);
 	}

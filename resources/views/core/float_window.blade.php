@@ -1,6 +1,7 @@
 <script>
 	var editBox = {	fields : [],
-					enableRefresh:false
+					enableRefresh:false,
+					hidenFields : [],
 					};
 	
 	var closeEditWindow = function() {
