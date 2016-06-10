@@ -28,8 +28,10 @@ class wfShowController extends Controller {
 		
 		\DB::enableQueryLog ();
 		$tmworkflowtask = collect(TmWorkflowTask::whereIn('ISRUN', [2,3])
-			->where('USER', 'like', '%,'.$user_name.',%')
-			->orWhere('USER', 'like', $user_name.'%')
+			/* ->where ( function ($q) use ($user_name) {
+				$q->where('USER', 'like', '%,'.$user_name.',%');
+				$q->orWhere('USER', 'like', $user_name.',%');
+			} ) */
 			->get(['WF_ID']))->toArray();
 			\Log::info ( \DB::getQueryLog () );
 			
@@ -58,7 +60,7 @@ class wfShowController extends Controller {
 		$objRun = new WorkflowProcessController(null, null);
 		$objRun->processNextTask($data['ID']);
 		
-		return response ()->json ( 'OK' );
+		return response ()->json ( ['ok'=>'OK'] );
 	}
 	
 	public function openTask(Request $request){
@@ -71,8 +73,6 @@ class wfShowController extends Controller {
 			
 			return response ()->json ( ['url'=>$url] );
 		}
-		
-		return response ()->json ( 'OK' );
 	}
 	
 	public function countWorkflowTask(){		
@@ -84,17 +84,17 @@ class wfShowController extends Controller {
 		\DB::enableQueryLog ();			
 		$tmworkflow = collect(TmWorkflow::where(['ISRUN'=>'yes'])
 		->get(['ID']))->toArray();
-		\Log::info ( \DB::getQueryLog () );
+		\Log::info (\DB::getQueryLog () );
 		
 		\DB::enableQueryLog ();
 		$tmworkflowtask = TmWorkflowTask::whereIn('ISRUN', [2,3])
+			->whereIn('WF_ID', $tmworkflow)
 			->where ( function ($q) use ($user_name) {
 				$q->where('USER', 'like', '%,'.$user_name.',%');
-				$q->orWhere('USER', 'like', $user_name.'%');
-			} )			
-			->whereIn('WF_ID', $tmworkflow)
+				$q->orWhere('USER', 'like', $user_name.',%');
+			} )
 			->get(['WF_ID']);
-		\Log::info ( \DB::getQueryLog () );
+		\Log::info (\DB::getQueryLog () );
 		
 		return response ()->json ( count($tmworkflowtask) );
 	}

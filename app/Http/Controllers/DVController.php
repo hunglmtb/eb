@@ -557,24 +557,24 @@ class DVController extends Controller {
 		$param = $request->all ();
 		
 		$diagram_id = isset ( $param ['ID'] ) ? $param ['ID'] : 0;
-		$readonly = isset ( $param ['readonly'] ) ? $param ['readonly'] : false;
+		$readonly = isset ( $param ['readonly'] ) ? $param ['readonly'] : 0;
 		
-		$data = TmWorkflow::where ( [ 
+		$result = TmWorkflow::where ( [ 
 				'ID' => $diagram_id 
-		] )->get ( [ 
+		] )->select (  
 				'DATA',
 				'NAME',
 				'INTRO',
 				'ISRUN' 
-		] );
+		)->first();
 		
-		$result = array ();
+		/* $result = array ();
 		if (count ( $data ) > 0) {
 			$result ['NAME'] = $data [0]->NAME;
 			$result ['DATA'] = $data [0]->DATA;
 			$result ['INTRO'] = $data [0]->INTRO;
 			$result ['ISRUN'] = $data [0]->ISRUN;
-		}
+		} */
 		$xml = $result ['DATA'];
 		if ($readonly) {
 			$tmWorkflowTask = TmWorkflowTask::where ( [ 

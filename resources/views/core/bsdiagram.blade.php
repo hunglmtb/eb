@@ -12,7 +12,7 @@ $subMenus = [
 @extends('core.bstemplate',['subMenus' => array('pairs' => $subMenus, 'currentSubMenu' => $currentSubmenu)])
 @section('script')
 	<script type="text/javascript" src="/common/js/mxClient.js?3"></script>
-	<script type="text/javascript" src="/common/js/utils"></script>
+	<script type="text/javascript" src="/common/js/utils.js"></script>
 	<script type="text/javascript" src="/common/js/mxApplication.js?3"></script>
 	<script src="/common/js/svgtopng.js"></script>
 	<script src="/common/js/skinable_tabs.min.js"></script>

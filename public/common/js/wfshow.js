@@ -132,7 +132,10 @@ function loadSavedDiagram(sId){
 	} 
 
  	sendAjax('/getXMLCodeWF', param, function(xmlcode){
- 		loadDiagramFromXML(xmlcode.result['DATA']);
+ 		if(xmlcode != null){
+ 			loadDiagramFromXML(xmlcode.result['DATA']);
+ 		}
+ 		
 		if(parent) parent.loadTasksCounting();
 	});
 }

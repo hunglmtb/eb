@@ -75,15 +75,15 @@ class WorkflowProcessController extends Controller {
 				$b=false;
 				$exp=str_replace("=","==",$cond_item->condition);
 	
-				echo '$b=('.$exp.');';
+				//echo '$b=('.$exp.');';
 				eval('$b=('.$exp.');');
-				if($b===true){
-					echo "*************";
+				if($b === $r){
+					//echo "*************";
 					TmWorkflowTask::where(['ID'=>$task_id])->update(['ISRUN'=>1, 'FINISH_TIME'=>$time]);
 	
 					$target_task_id=$cond_item->target_task_id;
 					if($target_task_id>0){
-						$this->runTask($target_task_id);
+						$this->runTask($target_task_id, null);
 						return;
 					}
 				}
@@ -233,8 +233,11 @@ class WorkflowProcessController extends Controller {
 					'email'=> $email
 			];
 	
-			$obj = new export($param);
-			$obj->handle($param);
+			/* $obj = new export($param);
+			$obj->handle($param); */
+			
+			$job = (new export($param));
+			$this->dispatch($job);
 		}
 		else if($taskname=='INT_IMPORT_DATA'){
 			$conn_id=$taskconfig->conn_id;
@@ -268,9 +271,12 @@ class WorkflowProcessController extends Controller {
 					\Log::info($e->getMessage());
 				}
 			}
+		}else if($taskconfig->formula_id>0){
+			
 		}
 		else{
-	
+			
 		}
 	}
+	
 }

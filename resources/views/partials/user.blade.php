@@ -141,7 +141,7 @@ $.ajaxSetup({
 				$("#wf_notify_box").hide();
 			else
 				$("#wf_notify_box").show();
-			taskCountingTimer=setTimeout(_loadTasksCounting,30000);
+			taskCountingTimer=setTimeout(_loadTasksCounting,2000);
 		});
 		
 		
@@ -163,7 +163,7 @@ $.ajaxSetup({
 		if(username!="")
 			_loadTasksCounting();
 	}
-	taskCountingTimer=setTimeout(_loadTasksCounting,30000);
+	taskCountingTimer=setTimeout(_loadTasksCounting,2000);
 	</script>
 	</div>
 		<div id="boxWorkflow" style="display:none;width:100%;height:100%;background:#ffffff;overflow:hidden;">
