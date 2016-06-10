@@ -156,6 +156,7 @@ var actions = {
 				type: "post",
 				data: actions.loadParams(reLoadParams),
 				success:function(data){
+					hideWaiting();
 					if(data!=null&&data.hasOwnProperty('objectIds')){
 						actions.objectIds = data.objectIds;
 					}
@@ -166,7 +167,6 @@ var actions = {
 					else{
 						alert("load success");
 					}
-					hideWaiting();
 				},
 				error: function(data) {
 					hideWaiting();
@@ -212,13 +212,13 @@ var actions = {
 				type: "post",
 				data: actions.loadSaveParams(reLoadParams),
 				success:function(data){
+					hideWaiting();
 					if (typeof(actions.saveSuccess) == "function") {
 						actions.saveSuccess(data);
 					}
 					else{
 						alert("save success");
 					}
-					hideWaiting();
 				},
 				error: function(data) {
 					if (typeof(actions.loadError) == "function") {

@@ -120,28 +120,6 @@ class EBAuthenticate {
 		return $b_logged_in;
 	}
 	
-	function isRowEditable($facility_id, $tableName, $date, $datarow)
-	{
-		// is locked
-		$x=getOneValue("select 1 from LOCK_TABLE where TABLE_NAME='$tableName' and FACILITY_ID=$facility_id and LOCK_DATE>=STR_TO_DATE('$date', '%m/%d/%Y')");
-		if($x>0) return false;
-	
-		//is approved
-		if($datarow[RECORD_STATUS]=="A"){
-			if(!hasRight("ADMIN_APPROVE")) return false;
-		}
-		else if($datarow[RECORD_STATUS]=="V"){
-			if(!hasRight("ADMIN_APPROVE") && !hasRight("ADMIN_VALIDATE")) return false;
-		}
-		return true;
-	}
-	
-	function hasRight($rightCode)
-	{
-		global $USER_RIGHTS;
-		loadRights();
-		return in_array($rightCode, $USER_RIGHTS);
-	}
 	function loadRights()
 	{
 		global $USER_RIGHTS, $current_user_id;

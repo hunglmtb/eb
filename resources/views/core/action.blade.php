@@ -30,6 +30,10 @@
  						actions.putModifiedData(tab,vl.data,addingRow[vl.data],addingRow);
 					}
 		        });
+				$.each(editBox.hidenFields, function( i, vl ) {
+ 					actions.putModifiedData(tab,vl.field,actions.loadedData[tab][vl.name],addingRow);
+		        });
+		        
 // 				addingRow['notAttachedToList'] = true;
 				table.row.add(addingRow).draw( false );
 

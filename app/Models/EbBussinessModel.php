@@ -34,7 +34,7 @@ class EbBussinessModel extends DynamicModel {
 		}
 		
 		if ($unnecessary) return;
-		
+		if( !array_key_exists ( config ( "constants.flowPhase" ), $attributes )) return ;
 		$flow_phase = $attributes [config ( "constants.flowPhase" )];
 		// OIL or GAS
 		if (($flow_phase == 1 || $flow_phase == 2 || $flow_phase == 21)) {
