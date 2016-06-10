@@ -6,10 +6,11 @@ use App\Jobs\Job;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Bus\SelfHandling;
 use Mail;
 
 
-class export extends Job implements ShouldQueue
+class export extends Job implements ShouldQueue, SelfHandling
 {
     use InteractsWithQueue, SerializesModels;
     
@@ -30,9 +31,9 @@ class export extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function handle($param)
+    public function handle()
     {
-    	if(count($param) >= 6){
+    	//if(count($this->$param) >= 6){
 	    	$task_id = $this->param['task_id'];
 	    	$report_id = $this->param['report_id'];
 	    	$facility_id = $this->param['facility_id'];
@@ -57,6 +58,8 @@ class export extends Job implements ShouldQueue
 			if(count($fs)>=3){
 				$to_date="$fs[2]/$fs[0]/$fs[1]";
 			}
+			
+			$this->fff();
 			
 			if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
 				$host = "http://".ENV('DB_HOST');
@@ -105,8 +108,8 @@ class export extends Job implements ShouldQueue
 				$objRun->finalizeTask($task_id,1,null,null);
 			}
 			
-			exit();
-    	}else{
+			//exit();
+    	/* }else{
     		$facility_id=$_REQUEST["facility_id"];
     		$from_date=$_REQUEST["date_from"];
     		$to_date=$_REQUEST["date_to"];
@@ -170,6 +173,11 @@ class export extends Job implements ShouldQueue
     			echo "<b>Error...:</b>" . $ex->getCause ();
     		}
     		echo "done";
-    	}
+    	} */
+    }
+    
+    private function fff()
+    {
+    	echo "<b>Allocation request: Report </b><br>";
     }
 }

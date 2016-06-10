@@ -40,10 +40,11 @@ $(function(){
 		if(task_id>0){
 			param = {
 				'ID' : task_id
-			}
+			}			
 		 	sendAjax('/finish_workflowtask', param, function(data){
 		 		loadWorkflow();
-			});
+			}); 
+			if(parent) parent.loadTasksCounting();
 		}
 	})
 	

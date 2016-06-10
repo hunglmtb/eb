@@ -78,6 +78,10 @@ function sendAjax(url,param, func)
     	success: function(_data){
     		hideWaiting(); 
     		func(_data);
+		},
+		error: function(_data){
+    		hideWaiting(); 
+    		alert(_data + 'error');
 		}
 	});    
 }

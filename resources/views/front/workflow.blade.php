@@ -180,6 +180,7 @@ var _workFlow = {
 		},
 
 		listUser : function(){
+			$('.chk').each(function(){ this.checked = false; });
 			$( "#listUser" ).dialog({
 				width: 550,
 				modal: false,
@@ -193,7 +194,6 @@ var _workFlow = {
 								str_users+=chk[i].value+',';
 							}
 						}
-						str_users = str_users.substring(0,str_users.length-1);
 						$('#txt_user').val(str_users);
 						str_users='';						
 						$( this ).dialog( "close" );
@@ -203,6 +203,17 @@ var _workFlow = {
 					}
 				}
 			});
+
+			var vuser = $('#txt_user').val().split(',');
+			chk=document.getElementsByName('chk');
+			for(var j = 0; j < vuser.length; j++){
+				for(i=0;i<chk.length;i++){
+					if(chk[i].value == vuser[j]){
+						chk[i].checked = true;
+					}
+				}
+			}
+			
 			$("input[type=checkbox]").css('width','auto');
 		},
 		
@@ -1132,6 +1143,7 @@ function stopWorkFlow(sId)
 	sendAjax('/stopWorkFlow', param, function(data){
 		_workFlow.listData(data);
 	});
+    if(parent) parent.loadTasksCounting();
 }
 
 
@@ -1983,7 +1995,7 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 									<div class='col-md-9'>
 										<div class="btn-group">
 											<input class='form-control' id='txt_user' name='txt_user'
-												value='' style="width:350px;"/>
+												value ='' style="width:350px;"/>
 											<button type="button" class="btn btn-primary"
 												onclick="_workFlow.listUser();" id='btn_choice_user'>Select
 												user</button>
