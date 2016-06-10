@@ -5,6 +5,13 @@ use App\Models\DynamicModel;
 
 class LogUser extends DynamicModel
 {
-	protected $table = 'log_user';
+	protected $table = 'LOG_USER';
+	
+	protected $primaryKey = 'ID';
+	protected $fillable  = ['USERNAME', 
+							'LOGIN_TIME', 
+							'LOGOUT_TIME', 
+							'SESSION_ID', 
+							'IP'];
 	
 }

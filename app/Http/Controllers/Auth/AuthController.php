@@ -125,6 +125,7 @@ class AuthController extends Controller
 	
 		if(!$auth->validate($credentials)) {
 			if ($throttles) {
+// 				$request->merge(['remember'=>true]);
 				$this->incrementLoginAttempts($request);
 			}
 			

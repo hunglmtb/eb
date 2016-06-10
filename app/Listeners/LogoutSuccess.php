@@ -15,5 +15,9 @@ class LogoutSuccess extends ListenerBase
     public function handle(Logout $event)
     {
         $this->statut->setVisitorStatut();
+        if ($event->user) {
+	        $event->user->updateLogoutLog();
+        }
+        
     }
 }

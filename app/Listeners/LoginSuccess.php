@@ -15,5 +15,8 @@ class LoginSuccess extends ListenerBase
     public function handle(Login $login)
     {
         $this->statut->setLoginStatut($login);
+        if ($login->user) {
+	        $login->user->updateLoginLog();
+        }
     }
 }

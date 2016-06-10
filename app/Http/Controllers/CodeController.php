@@ -95,16 +95,27 @@ class CodeController extends EBController {
     	$properties->prepend($firstProperty);
     	
     	$uoms = $this->getUoms($properties,$facility_id);
-    	$locked = \Helper::checkLockedTable($dcTable,$occur_date,$facility_id)||
-    				\Helper::checkApproveTable($dcTable,$occur_date,$facility_id)||
-    				\Helper::checkValidateTable($dcTable,$occur_date,$facility_id);
-    	 
+    	$locked = $this->isLocked($dcTable,$occur_date,$facility_id);
+    	
     	$results = ['properties'	=>$properties,
 	    			'uoms'			=>$uoms,
 	    			'locked'		=>$locked,
 	    			'rights'		=>session('statut')];
     	return $results;
     }
+    
+    public function isLocked($dcTable,$occur_date,$facility_id){
+    	$user = auth()->user();
+    	$locked = 	$user->hasRight('DATA_READONLY')||
+    				\Helper::checkLockedTable($dcTable,$occur_date,$facility_id)||
+    				(\Helper::checkApproveTable($dcTable,$occur_date,$facility_id)&&
+    						!$user->hasRight('ADMIN_APPROVE'))||
+    				(\Helper::checkValidateTable($dcTable,$occur_date,$facility_id)&&
+    						!$user->hasRight('ADMIN_APPROVE')&&
+    						!$user->hasRight('ADMIN_VALIDATE'));
+    	return $locked;
+    }
+    
     
     public function getOriginProperties($dcTable){
     	$properties = CfgFieldProps::where('TABLE_NAME', '=', $dcTable)

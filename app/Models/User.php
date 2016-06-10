@@ -1,14 +1,17 @@
 <?php namespace App\Models;
 
 use App\Models\DynamicModel;
-use App\Models\UserWorkspace;
+use App\Models\UserRight;
 use App\Models\UserRole;
+use App\Models\UserRoleRight;
+use App\Models\UserUserRole;
+use App\Models\UserWorkspace;
 
+use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
-use Carbon\Carbon;
 
 class User extends DynamicModel implements AuthenticatableContract, CanResetPasswordContract {
 
@@ -103,8 +106,27 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 	{
 		/* $userRole = $this->UserRole();
 		$roles = $userRole->pluck('CODE'); */
+		/* $sSQL="select distinct c.CODE 
+		from user_user_role a, 
+		user_role_right b, 
+		user_right c 
+		where a.user_id=$current_user_id 
+		and a.role_id=b.role_id and 
+		b.right_id=c.id"; */
+		$user_user_role = UserUserRole::getTableName();
+		$user_role_right = UserRoleRight::getTableName();
+		$user_right = UserRight::getTableName();
 		
-		$rs = [];
+		$rows= UserUserRole::join($user_role_right,"$user_user_role.ROLE_ID", '=', "$user_role_right.ROLE_ID")
+							->join($user_right,"$user_right.ID", '=', "$user_role_right.RIGHT_ID")
+							->where("$user_user_role.USER_ID",$this->ID)
+							->select("$user_right.CODE")
+							->distinct()
+							->get();
+		$rs = $rows?$rows->map(function ($item, $key) {
+				    			return $item->CODE;
+					})->toArray():[];
+		/* $rs = [];
 		$row= UserUserRole::with(['UserRoleRight' => function ($query) {
 															$query->with('UserRight');
 													}]
@@ -115,8 +137,7 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 		
 		foreach ($roles as $role){
 			$rs[] = $role->UserRoleRight->UserRight->CODE;
-		}
-// 		\DB::enableQueryLog();
+		} */
 		//\Log::info(var_dump($this));
 		// $UserUserRole = \DB::table('UserUserRole')->where('role_id', $this->id)->first();
 		/* $uk = $this->with('UserUserRole.UserRole')->get();
@@ -148,8 +169,10 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 	}
 	
 	public function hasRight($right){
-		$USER_RIGHTS = session('statut');
-		$result = in_array("_ALL_", $USER_RIGHTS)||in_array($right, $USER_RIGHTS);
+// 		$USER_RIGHTS = session('statut');
+// 		$result = $USER_RIGHTS&&count($USER_RIGHTS)>0&&in_array("_ALL_", $USER_RIGHTS)||in_array($right, $USER_RIGHTS);
+		$USER_RIGHTS = $this->role();
+		$result = $USER_RIGHTS&&count($USER_RIGHTS)>0&&in_array($right, $USER_RIGHTS);
 		return $result ;
 	}
 	public function containRight($right){
@@ -158,6 +181,26 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 		return $result ;
 	}
 	
+	public function updateLogoutLog(){
+		$logUser = LogUser::where(['SESSION_ID'=>session()->getId()])->first();
+		if ($logUser) {
+			$values = [
+					'LOGOUT_TIME'	=>	Carbon::now(),
+			];
+			$logUser->fill($values)->save();
+		}
+	}
+	
+	public function updateLoginLog(){
+		$attributes = ['SESSION_ID'=>session()->getId()];
+		$logUser = LogUser::firstOrNew($attributes);
+		$values = [	'USERNAME'		=>	$this->username, 
+					'LOGIN_TIME'	=>	Carbon::now(), 
+					'IP'			=>	request()->ip(),
+					'SESSION_ID'=>session()->getId()
+		];
+		$logUser->fill($values)->save();
+	}
 	/**
 	 * One to Many relation
 	 *

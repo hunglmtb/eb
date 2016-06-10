@@ -10,16 +10,7 @@ class Statut  {
 	 */
 	public function setLoginStatut($login)
 	{
-		/* $uur = $login->user->user_user_role->first();
-		$userId =  $uur->USER_ID;
-		$roleId =  $uur->ROLE_ID;
-		$ur = $uur->user_role;
-		$role = $ur->CODE;
-		session()->put('statut', $role); */
 		session()->put('statut', $login->user->role());
-// 		session()->put('rights', $login->user->right());
-		
-// 		session()->put('statut', $login->user->role->slug);
 	}
 
 	/**
