@@ -1264,12 +1264,13 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 			title: "Set Image",
 			buttons: {
 				"OK": function(){
-					var url=$("#txt_cell_image_url").val().trim();					
+					var url=$("#txt_cell_image_url").val().trim();
+					if(url!=""){
+						set_cell_image(cell,url);
+						$("#box_cell_image").dialog("close");
+					}else{			
 						if(filesToUpload){
-							event.preventDefault();
-
-						    var form = this,
-						        formData = new FormData(form);
+						    var formData = new FormData();
 
 						    // Add selected files to FormData which will be sent
 						    if (filesToUpload) {
@@ -1286,6 +1287,7 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 						        processData: false,
 						        contentType: false,
 						        dataType: 'json',
+						        cache: false,
 						        success: function(data, textStatus, jqXHR)
 								{
 									hideWaiting();
@@ -1315,6 +1317,7 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 						        
 						    });
 						}
+					}
 				},
 				"Cancel": function(){
 					$("#box_cell_image").dialog("close");
