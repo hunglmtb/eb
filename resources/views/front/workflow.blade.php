@@ -1144,6 +1144,8 @@ function runWorkFlow(sId)
 	sendAjax('/runWorkFlow', param, function(data){
 		_workFlow.listData(data);
 	});
+
+    if(parent) parent.loadTasksCounting();
 }
 
 function loadSavedDiagram(sId,sName){
@@ -1552,21 +1554,13 @@ function showBoxTaskConfig(){
 
 function upfile(){
 	if(filesToUpload){
-		event.preventDefault();
-
-	    var form = this,
-	        formData = new FormData(form);
+		
+	    var formData = new FormData();
 
 	    // Add selected files to FormData which will be sent
         $.each(filesToUpload, function(key, value){
             formData.append(key,filesToUpload[1]);
-        });    
-
-      /*   sendAjaxNotMessage('/upFile', formData, function(_data){
-    		if(_data != null){
-    			$('#hiddenFile').val(data.files);
-    		}	
-    	}); */
+        }); 
 
         $.ajax({
 	        type: "POST",
@@ -1792,12 +1786,13 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 			title: "Set Image",
 			buttons: {
 				"OK": function(){
-					//var url=$("#txt_cell_image_url").val().trim();					
-						if(filesToUpload){
-							event.preventDefault();
-
-						    var form = this,
-						        formData = new FormData(form);
+					var url=$("#txt_cell_image_url").val().trim();
+					if(url!=""){
+						set_cell_image(cell,url);
+						$("#box_cell_image").dialog("close");
+					}else{					
+						if(filesToUpload){							
+						    var formData = new FormData();
 
 						    // Add selected files to FormData which will be sent
 						    if (filesToUpload) {
@@ -1843,6 +1838,7 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 						        
 						    });
 						}
+					}
 				},
 				"Cancel": function(){
 					$("#box_cell_image").dialog("close");
