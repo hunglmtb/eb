@@ -373,8 +373,8 @@ var actions = {
 						               	 return e[actions.type.keyField] == rowData[actions.type.keyField];
 						                });
 //    	var columnName = table.settings()[0].aoColumns[col].data;
-    	if (newValue!=null&&newValue.constructor.name == "Date") { 
-    		newValue = moment(newValue).format("YYYY-MM-DD HH:mm:ss");
+    	if (newValue!=null&&newValue.constructor.name == "Date") {
+    		newValue = moment.utc(newValue).format("YYYY-MM-DD HH:mm:ss");
 		}
     	if (result.length == 0) {
         	var editedData = {};
@@ -392,6 +392,22 @@ var actions = {
     		result[0][columnName] = newValue;
     	}
     	return rowData;
+	},
+	formatDate : function(columnName,newValue,table){
+		//TODO update funtion
+		properties = table.api().columns();
+		dateValue = moment.utc(newValue).format("YYYY-MM-DD HH:mm:ss");
+		var result = $.grep(properties, function(e){ 
+          	 return e.data == columnName;
+           });
+		if (result.length > 0) {
+    		result[0][columnName] = newValue;
+    		type = typetoclass(result[0].INPUT_TYPE);
+    		if(type=="date"){
+    			dateValue = dateValue.startOf('day');
+    		}
+		}
+		return dateValue;
 	},
 	getCellType : function(data,type,cindex){
 		type = actions.extraDataSetColumns.hasOwnProperty(data.properties[cindex].data)?'select':type;

@@ -51,10 +51,6 @@ use Carbon\Carbon;
 // 			if ( array_key_exists ( 'isAdding', $attributes )) unset($attributes['isAdding']);
 			if ( array_key_exists ( 'ID', $attributes )) unset($attributes['ID']);
 			if ( array_key_exists ( 'FLOW_PHASE', $attributes )) unset($attributes['FLOW_PHASE']); */
-			$attributes['OCCUR_DATE'] = 
-			$dt->hour = 22;
-			$dt->minute = 32;
-			$dt->second = 5;
 			$newAttributes = [	'OCCUR_DATE'=>$attributes['OCCUR_DATE'],
 								'TICKET_NO'=>$attributes['TICKET_NO'],
 								'TANK_ID'=>$attributes['TANK_ID'],
