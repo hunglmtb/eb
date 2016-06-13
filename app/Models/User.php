@@ -176,8 +176,8 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 		return $result ;
 	}
 	public function containRight($right){
-		$USER_RIGHTS = session('statut');
-		$result = in_array($right, $USER_RIGHTS);
+		$USER_RIGHTS = $this->role();
+		$result = $USER_RIGHTS&&count($USER_RIGHTS)>0&&(in_array("_ALL_", $USER_RIGHTS)||in_array($right, $USER_RIGHTS));
 		return $result ;
 	}
 	

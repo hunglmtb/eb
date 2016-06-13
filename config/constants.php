@@ -50,6 +50,8 @@ return [
 																		'name'			=>'CodeQltySrcType',
 																		'id'			=>'CodeQltySrcType',
 																		'default'		=>['ID'=>0,'NAME'=>'All']),
+										'CodeCommentType'		=>	array('filterName'	=>'Comment Type',
+																		'name'			=>'CodeCommentType'),
 										],
 		// etc
 ];

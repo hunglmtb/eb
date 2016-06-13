@@ -1,4 +1,4 @@
-@extends('core.pm')
+@extends('core.fo')
 @section('adaptData')
 @parent
 <script src="/common/js/eb_table_action.js"></script>
