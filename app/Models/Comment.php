@@ -23,6 +23,11 @@ class Comment extends EbBussinessModel
     	if (!array_key_exists('FACILITY_ID', $newData)||!$newData['FACILITY_ID']) {
     		$newData['FACILITY_ID'] = $postData['Facility'];
     	}
+    	
+    	if (!array_key_exists('COMMENTS', $newData)||!$newData['COMMENTS']) {
+    		$newData['COMMENTS'] = addslashes($newData['COMMENTS']);
+    	}
+    	
     	return [
     			'ID' => $newData['ID'],
     	];
