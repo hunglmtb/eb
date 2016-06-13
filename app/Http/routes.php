@@ -121,9 +121,9 @@ Route::post('ticket/load',		['uses' =>	'TicketController@load','middleware' => '
 Route::post('ticket/save', 		'TicketController@save');
 
 //---------
-Route::post('fo/loadSafety', 'FOController@loadSafety');
-Route::get('fo/safety', 'FOController@safety');
-Route::post('fo/saveSafety', 'FOController@saveSafety');
+Route::get('fo/safety', 		'FOController@safety');
+Route::post('safety/load',		['uses' =>	'SafetyController@load','middleware' => 'saveWorkspace']);
+Route::post('safety/save', 		'SafetyController@save');
 
 
 //----------admin

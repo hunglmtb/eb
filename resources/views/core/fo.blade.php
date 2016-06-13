@@ -8,7 +8,4 @@ $subMenus = [
 		
 ];
 ?>
-@extends('core.bsmain',['subMenus' => $subMenus])
-
-@section('content')
-@stop
+@extends('core.bscontent',['subMenus' => $subMenus])

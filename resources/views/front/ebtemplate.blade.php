@@ -462,10 +462,10 @@ menu["production"]=[
 	];
 menu["operation"]=[
 		{menutext:"Safety",desc:"",url:"fo/safety"},
-		{menutext:"Comments",desc:"",url:"../dc2/comment.php"},
-		{menutext:"Equipment",desc:"",url:"../dc2/equipment.php"},
-		{menutext:"Chemical",desc:"",url:"../dc2/chemical.php"},
-		{menutext:"Personnel",desc:"",url:"../dc2/personnel.php"}
+		{menutext:"Comments",desc:"",url:"../fo/comment"},
+		{menutext:"Equipment",desc:"",url:"../fo/equipment"},
+		{menutext:"Chemical",desc:"",url:"../fo/chemical"},
+		{menutext:"Personnel",desc:"",url:"../fo/personnel"}
 	];
 menu["visual"]=[
 		{menutext:"Network Model",desc:"",url:"diagram"},
