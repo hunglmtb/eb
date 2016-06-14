@@ -284,7 +284,6 @@ class AdminController extends Controller {
 	}
 	
 	public function editUser(Request $request, $id){
-		
 		$userDataScope = UserDataScope::getTableName();
 		$loProductionUnit = LoProductionUnit::getTableName();
 		$loArea = LoArea::getTableName();

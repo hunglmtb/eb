@@ -201,3 +201,8 @@ Route::post('upFile', 'DVController@uploadFile');
 Route::post('openTask', 'wfShowController@openTask');
 Route::post('countWorkflowTask', 'wfShowController@countWorkflowTask');
 
+Route::get('graph', 'graphController@_index');
+Route::post('loadVizObjects', 'graphController@loadVizObjects');
+Route::post('loadEUPhase', 'graphController@loadEUPhase');
+Route::get('loadchart/{param}/{minvalue}/{maxvalue}/{date_begin}/{date_end}/{input}', 'graphController@loadChart');
+
