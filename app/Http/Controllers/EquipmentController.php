@@ -27,13 +27,13 @@ class EquipmentController extends CodeController {
 				    		$join->where("$dcTable.OCCUR_DATE",'=',$occur_date);
 				    	})
 				    	->select(
-				    			"$equipment.ID as X_ID",
 				    			"$equipment.ID as DT_RowId",
 				    			"$equipment.NAME as $dcTable",
 				    			"$equipment.FUEL_TYPE",
 				    			"$equipment.GHG_REL_TYPE",
 // 				    			"$equipment.NAME as FL_NAME",
-				    			"$dcTable.*"
+				    			"$dcTable.*",
+				    			"$equipment.ID as EQUIPMENT_ID"
 // 				    			"$equipment.FUEL_TYPE as EQP_FUEL_CONS_TYPE",
 // 				    			"$equipment.GHG_REL_TYPE as EQP_GHG_REL_TYPE"
 				    			)

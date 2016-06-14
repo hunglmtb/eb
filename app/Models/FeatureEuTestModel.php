@@ -21,9 +21,9 @@ class FeatureEuTestModel extends EbBussinessModel
 	}
 	
 	public function afterSaving($postData) {
-		$occur_date = $this->OCCUR_DATE;
+		/* $occur_date = $this->OCCUR_DATE;
 		$object_id	=$this->EU_ID;
-		$quality	=$this->getQualityOil($object_id,"WELL",$occur_date);
+		$quality	=$this->getQualityOil($object_id,"WELL",$occur_date); */
 		
 	}
 }

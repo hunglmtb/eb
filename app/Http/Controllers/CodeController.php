@@ -208,9 +208,15 @@ class CodeController extends EBController {
  		     			$mdlData[$key] = $newData;
 		     			$returnRecord = $mdl::updateOrCreateWithCalculating($columns, $newData);
 		     			if ($returnRecord) {
+		     				$affectRecord = $returnRecord->updateDependRecords($occur_date,$newData,$postData);
 		     				$returnRecord->updateAudit($columns,$newData,$postData);
 			     			$ids[$mdlName][] = $returnRecord['ID'];
 			     			$resultRecords[$mdlName][] = $returnRecord;
+			     			if ($affectRecord) {
+			     				$ids[$mdlName][] = $affectRecord['ID'];
+			     				$resultRecords[$mdlName][] = $affectRecord;
+			     			}
+			     				 
 		     			}
 		     		}
 		     		$editedData[$mdlName] = $mdlData;

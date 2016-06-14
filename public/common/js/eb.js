@@ -518,6 +518,9 @@ var actions = {
 	notUniqueValue : function(uom,rowData){
 		return true;
 	},
+	isShownOf : function(value,postData){
+		return true;
+	},
 	initTableOption : function (tab,data,options,renderFirsColumn,createdFirstCellColumn){
 		var exclude = [0];
 		if(typeof(data.uoms) == "undefined"||data.uoms==null){

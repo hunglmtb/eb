@@ -97,22 +97,24 @@ if (!isset($active)) $active =1;
 			if($('#table_'+key).children().length>0){
 				table = $('#table_'+key).DataTable();
 				$.each(data.updatedData[key], function( index, value) {
-					row = table.row( '#'+value[actions.type.saveKeyField(key)] );
-					var tdata = row.data();
-					if( typeof(tdata) !== "undefined" && tdata !== null ){
-						for (var pkey in value) {
-							if(tdata.hasOwnProperty(pkey)){
-								tdata[pkey] = value[pkey];
+					if(actions.isShownOf(value,postData)) {
+						row = table.row( '#'+value[actions.type.saveKeyField(key)] );
+						var tdata = row.data();
+						if( typeof(tdata) !== "undefined" && tdata !== null ){
+							for (var pkey in value) {
+								if(tdata.hasOwnProperty(pkey)){
+									tdata[pkey] = value[pkey];
+								}
 							}
+							row.data(tdata).draw();
+							$.each($(row.node()).find('td'), function( index, td) {
+					        	$(td).css('color', '');
+					        });
 						}
-						row.data(tdata).draw();
-						$.each($(row.node()).find('td'), function( index, td) {
-				        	$(td).css('color', '');
-				        });
-					}
-					else{
-						value['DT_RowId'] = value[actions.type.saveKeyField(key)];
-						table.row.add(value).draw( false );
+						else{
+							value['DT_RowId'] = value[actions.type.saveKeyField(key)];
+							table.row.add(value).draw( false );
+						}
 					}
 		        });
 				actions.afterGotSavedData(data,table,key);
