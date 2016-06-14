@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class EquipmentDataValue extends DynamicModel 
 { 
-	protected $table = 'equipment_data_value'; 
+	protected $table = 'EQUIPMENT_DATA_VALUE'; 
 } 

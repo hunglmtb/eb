@@ -267,7 +267,7 @@ table.dataTable {
 	width: 50%;
 	float: left;
 	height: 100%;
-	line-height: 100%;
+	/* line-height: 100%; */
 }
 
 .extraFirstColumn {

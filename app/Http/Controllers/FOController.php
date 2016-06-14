@@ -19,4 +19,13 @@ class FOController extends EBController {
 		);
 		return view ( 'front.comment',['filters'=>$filterGroups]);
 	}
+	
+	public function equipment(){
+		$filterGroups = array('productionFilterGroup'=> [],
+				'dateFilterGroup'=> array(['id'=>'date_begin','name'=>'Date']),
+				'frequenceFilterGroup'		=> ['EquipmentGroup','CodeEquipmentType']
+		);
+		return view ( 'front.equipment',['filters'=>$filterGroups]);
+	}
+	
 }

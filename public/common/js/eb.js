@@ -240,8 +240,8 @@ var actions = {
  		ecollection = actions.extraDataSet[ecolumn][ecollectionColumn];
  		return ecollection;
 	},
-	isEditable : function (row,rowData,rights){
-		var rs = row.DATA_METHOD==1||row.DATA_METHOD=='1';
+	isEditable : function (column,rowData,rights){
+		var rs = column.DATA_METHOD==1||column.DATA_METHOD=='1';
 		if (rs) {
 			if(rowData.RECORD_STATUS=="A"){
 				rs =$.inArray("ADMIN_APPROVE", rights);
@@ -512,6 +512,12 @@ var actions = {
 		return cell;
 	},
 	createdFirstCellColumn : function (td, cellData, rowData, row, col) {},
+	getGrepValue : function (data,value,row) {
+						return data;
+	},
+	notUniqueValue : function(uom,rowData){
+		return true;
+	},
 	initTableOption : function (tab,data,options,renderFirsColumn,createdFirstCellColumn){
 		var exclude = [0];
 		if(typeof(data.uoms) == "undefined"||data.uoms==null){
@@ -523,19 +529,19 @@ var actions = {
 		if(typeof(uoms) !== "undefined"&&uoms!=null){
 			$.each(uoms, function( index, value ) {
 				exclude.push(uoms[index]["targets"]);
-				if(value!=null&&value.hasOwnProperty('render')) return;
-				
 				var collection = value['data'];
-				uoms[index]["render"] = function ( data, type, row ) {
-								                var result = $.grep(collection, function(e){ 
-									                return e['ID'] == data;
-									                });
-												if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined" &&result[0].hasOwnProperty('NAME')){
-			                						return value['COLUMN_NAME']=="ALLOC_TYPE"?result[0]['NAME']:result[0]['NAME'];
-												}
-												return data;
-									                
-	                					};
+				if(value==null||!value.hasOwnProperty('render')) {
+					uoms[index]["render"] = function ( data, type, row ) {
+						var result = $.grep(collection, function(e){
+							id = actions.getGrepValue(data,value,row);
+							return e['ID'] == id;
+						});
+						if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined" &&result[0].hasOwnProperty('NAME')){
+							return value['COLUMN_NAME']=="ALLOC_TYPE"?result[0]['NAME']:result[0]['NAME'];
+						}
+						return data;
+					};
+				}
 	            $.each(collection, function( i, vl ) {
 	            	vl['value']=vl['ID'];
 	            	vl['text']=vl['NAME'];
@@ -543,7 +549,7 @@ var actions = {
 	            uoms[index]["createdCell"] = function (td, cellData, rowData, row, col) {
 	            	columnName = data.properties[col].data;
 	 				$(td).addClass( columnName );
-	            	if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
+	            	if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)&&actions.notUniqueValue(uoms[index],rowData)){
 		 				$(td).addClass( "editInline" );
 		 				$(td).editable({
 			        	    type: 'select',

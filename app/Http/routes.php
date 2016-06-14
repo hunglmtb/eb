@@ -131,6 +131,9 @@ Route::get('fo/comment',			['uses' =>'FOController@comment','middleware' => 'che
 Route::post('comment/load',			['uses' =>	'CommentController@load','middleware' => 'saveWorkspace']);
 Route::post('comment/save', 		'CommentController@save');
 
+Route::get('fo/equipment',			['uses' =>'FOController@equipment','middleware' => 'checkRight:FOP_EQUIP']);
+Route::post('equipment/load',		['uses' =>	'EquipmentController@load','middleware' => 'saveWorkspace']);
+Route::post('equipment/save', 		'EquipmentController@save');
 //----------admin
 Route::get('am/users', 'AdminController@_index');
 Route::post('am/loadData', 'AdminController@getData');

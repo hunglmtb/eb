@@ -25,7 +25,10 @@ use App\Models\BaAddress;
 use App\Models\Tank;
 use App\Models\CodeSafetySeverity;
 use App\Models\CodeCommentStatus;
-
+use App\Models\CodeEqpOfflineReason;
+use App\Models\CodeEqpFuelConsType;
+use App\Models\CodeVolUom;
+use App\Models\CodeEqpGhgRelType;
 
 class CodeController extends EBController {
 	 
@@ -461,6 +464,27 @@ class CodeController extends EBController {
     			case 'STATUS' :
     				$selectData = ['id'=>'CodeCommentStatus','targets'=>$i,'COLUMN_NAME'=>$columnName];
     				$selectData['data'] = CodeCommentStatus::where('ACTIVE',1)->orderBy('ORDER')->orderBy('ID')->get();
+    				$rs[] = $selectData;
+    				break;
+    			case 'OFFLINE_REASON_CODE' :
+    				$selectData = ['id'=>'CodeEqpOfflineReason','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = CodeEqpOfflineReason::where('ACTIVE',1)->orderBy('ORDER')->orderBy('ID')->get();
+    				$rs[] = $selectData;
+    				break;
+	    		case 'EQP_FUEL_CONS_TYPE' :
+	    			$selectData = ['id'=>'CodeEqpFuelConsType','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = CodeEqpFuelConsType::where('ACTIVE',1)->orderBy('ORDER')->orderBy('ID')->get();
+	    			$rs[] = $selectData;
+	    			break;
+    			case 'EQP_GHG_REL_TYPE' :
+    				$selectData = ['id'=>'CodeEqpGhgRelType','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = CodeEqpGhgRelType::where('ACTIVE',1)->orderBy('ORDER')->orderBy('ID')->get();
+    				$rs[] = $selectData;
+    				break;
+    			case 'EQP_GHG_UOM' :
+    			case 'EQP_CONS_UOM' :
+    				$selectData = ['id'=>'CodeVolUom','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = CodeVolUom::all();
     				$rs[] = $selectData;
     				break;
     		}
