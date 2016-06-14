@@ -6,9 +6,7 @@ $cur_diagram_id = 0;
 
 @extends('core.bsdiagram')
 
-@section('title')
-<div class="title">DIAGRAM TEST - TEST DIAGRAM</div>
-@stop @section('content')
+@section('content')
 
 <script type="text/javascript">
 
@@ -1106,7 +1104,7 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 				<tr>
 					<td>Object type</td>
 					<td width="250"><select style="width: 240px;" id="cboObjType"
-						size="1" name="cboObjType"> @foreach($intObjectType as $iot)
+						size="1" name="cboObjType" onchange="diagram.change('cboObjType')"> @foreach($intObjectType as $iot)
 							<option value="{!!$iot->CODE!!}">{!!$iot->NAME!!}</option>
 							@endforeach
 					</select></td>

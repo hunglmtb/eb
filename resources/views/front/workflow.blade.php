@@ -6,9 +6,7 @@ $cur_diagram_id = 0;
 
 @extends('core.bsdiagram')
 
-@section('title')
-<div class="title">DIAGRAM TEST - TEST DIAGRAM</div>
-@stop @section('content')
+@section('content')
 
 <script type="text/javascript">
 
