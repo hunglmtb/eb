@@ -471,7 +471,7 @@ menu["visual"]=[
 		{menutext:"Network Model",desc:"",url:"diagram"},
 		{menutext:"Data View",desc:"",url:"../view"},
 		{menutext:"Report",desc:"",url:"workreport"},
-		{menutext:"Advanced Graph",desc:"",url:"../graph/advgraph.php"},
+		{menutext:"Advanced Graph",desc:"",url:"graph"},
 		{menutext:"Workflow",desc:"",url:"workflow"},
 		{menutext:"Task Manager",desc:"",url:"../taskman/?com=task"}
 	];

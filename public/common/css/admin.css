@@ -115,10 +115,10 @@ input[type="button"]:focus, button:focus {
 }
 
 .title {
-	font-size: x-large;
+	font-size: 16pt;
 	color: rgb(96, 156, 185);
 	font-family: Arial;
-	padding: 5px 10px 10px 0px;
+	padding: 5px 10px 8px 0px;
 }
 
 #table5 {
@@ -251,6 +251,7 @@ input[type="button"]:focus, button:focus {
 	height: 58px;
 	width: 1320px;
 	margin-top: -12px;
+	border: 1px solid #bbbbbb;
 }
 
 .row1 {

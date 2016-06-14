@@ -114,11 +114,11 @@ class DVController extends Controller {
 		return response ( $tmp->XML_CODE );
 	}
 	public function deletediagram(Request $request) {
-		\DB::enableQueryLog ();
+		//\DB::enableQueryLog ();
 		NetWork::where ( [ 
 				'ID' => $request->ID 
 		] )->delete ();
-		\Log::info ( \DB::getQueryLog () );
+		//\Log::info ( \DB::getQueryLog () );
 		$tmp = NetWork::where ( [ 
 				'NETWORK_TYPE' => 2 
 		] )->get ( [ 
@@ -138,9 +138,9 @@ class DVController extends Controller {
 		$obj ['XML_CODE'] = urldecode ( $data ['KEY'] );
 		$obj ['NETWORK_TYPE'] = 2;
 		
-		\DB::enableQueryLog ();
+		//\DB::enableQueryLog ();
 		$result = NetWork::updateOrCreate ( $condition, $obj );
-		\Log::info ( \DB::getQueryLog () );
+		//\Log::info ( \DB::getQueryLog () );
 		
 		return response ()->json ( $result->ID );
 	}
@@ -195,7 +195,7 @@ class DVController extends Controller {
 		$intTagMapping = IntTagMapping::getTableName ();
 		$intObjectType = IntObjectType::getTableName ();
 		
-		\DB::enableQueryLog ();
+		//\DB::enableQueryLog ();
 		$vTags = DB::table ( $intTagMapping . ' AS a' )->join ( $intObjectType . ' AS b', 'a.OBJECT_TYPE', '=', 'b.ID' )->where ( [ 
 				'b.CODE' => $objectType 
 		] )->where ( function ($q) use ($objType_id) {
@@ -208,7 +208,7 @@ class DVController extends Controller {
 				'a.TAG_ID',
 				'a.TAG_ID AS CHECK' 
 		] );
-		\Log::info ( \DB::getQueryLog () );
+		//\Log::info ( \DB::getQueryLog () );
 		
 		if (count ( $vTags ) > 0) {
 			foreach ( $vTags as $t ) {
@@ -283,7 +283,7 @@ class DVController extends Controller {
 					$table = strtolower ( $table );
 					$table = str_replace ( ' ', '', ucwords ( str_replace ( '_', ' ', $table ) ) );
 					$model = 'App\\Models\\' . $table;
-					\DB::enableQueryLog ();
+					//\DB::enableQueryLog ();
 					$conditions = explode ( ',', $flow_phases );
 					$tmps = $model::where ( [ 
 							'EU_ID' => $object_id 
@@ -291,7 +291,7 @@ class DVController extends Controller {
 							$field . ' AS FIELD_VALUE',
 							'FLOW_PHASE' 
 					] );
-					\Log::info ( \DB::getQueryLog () );
+					//\Log::info ( \DB::getQueryLog () );
 					$arr = array ();
 					foreach ( $tmps as $tmp ) {
 						$value = $tmp->FIELD_VALUE;
@@ -361,11 +361,11 @@ class DVController extends Controller {
 							}
 						}
 						
-						\DB::enableQueryLog ();
+						//\DB::enableQueryLog ();
 						$values = $model::where ( $condition )->whereDate ( 'OCCUR_DATE', '=', Carbon::parse ( $occur_date )->format ( 'Y-m-d' ) )->SELECT ( [ 
 								$field . ' AS FIELD_VALUE' 
 						] )->first ();
-						\Log::info ( \DB::getQueryLog () );
+						//\Log::info ( \DB::getQueryLog () );
 						
 						if (count ( $values ) > 0) {
 							$value = $values->FIELD_VALUE;
@@ -622,13 +622,13 @@ class DVController extends Controller {
 			$objwf ['ID'] = $data ['ID'];
 			$objwf ['STATUS'] = 1;
 			
-			\DB::enableQueryLog ();
+			//\DB::enableQueryLog ();
 			$tmWorkflow = TmWorkflow::updateOrCreate ( $condition, $objwf );
-			\Log::info ( \DB::getQueryLog () );
+			//\Log::info ( \DB::getQueryLog () );
 			
-			\DB::enableQueryLog ();
+			//\DB::enableQueryLog ();
 			TmWorkflowTask::where(['WF_ID'=>$data ['ID']])->delete();
-			\Log::info ( \DB::getQueryLog () );
+			//\Log::info ( \DB::getQueryLog () );
 			
 			$dom_xml = simplexml_load_string ( $data ['KEY'] );
 			$cells = $dom_xml->xpath ( '//mxCell[@vertex = 1]/parent::*' );
@@ -680,9 +680,9 @@ class DVController extends Controller {
 						'ID' => $objwf_task['ID'] 
 				);
 				
-				\DB::enableQueryLog ();
+				//\DB::enableQueryLog ();
 				TmWorkflowTask::updateOrCreate ( $conTask, $objwf_task );
-				\Log::info ( \DB::getQueryLog () );
+				//\Log::info ( \DB::getQueryLog () );
 			}
  		} catch ( \Exception $e ) {
  			\Log::info ( $e->getMessage() );
@@ -851,9 +851,10 @@ class DVController extends Controller {
 						'ID' => $objwf_task['ID']
 				);
 					
-				\DB::enableQueryLog ();
+				//\DB::enableQueryLog ();
 				$tmp = TmWorkflowTask::updateOrCreate ( $conTask, $objwf_task);
-				\Log::info ( \DB::getQueryLog () );
+				//\Log::info ( \DB::getQueryLog () );
+				
 			}
 		}
 		

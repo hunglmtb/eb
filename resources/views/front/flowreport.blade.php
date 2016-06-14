@@ -4,9 +4,10 @@ $host = ENV('DB_HOST');
 ?>
 @extends('core.bsdiagram')
 @section('title')
-<div class="title">ENERGY BUILDER - REPORTS</div>
+<div class="title">REPORTS</div>
 @stop @section('content')
 
+<link rel="stylesheet" href="/common/css/admin.css">
 <script type="text/javascript">
 
 $(function(){
@@ -20,7 +21,7 @@ $(function(){
 	$('#pageheader').css('display', 'none');
 	$('#cboReports').change();
 
-	_report.host = <?php echo $host;?>
+	_report.host = <?php echo "'".$host."'";?>
 });
 
 var _report = {
@@ -206,8 +207,7 @@ var _report = {
 
 <body style="margin: 0; overflow-x: hidden">
 	<div id="pageheader" style="height: 100px;"></div>
-	<div id="wraper" style="padding: 20px">
-		<font size="5">REPORTS</font>
+	<div id="wraper">
 		<div
 			style="padding: 10px; background: #eee; border: 1px solid #bbb; width: 531px">
 			<strong>Choose report&nbsp;&nbsp;</strong> <select size="1"

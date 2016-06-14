@@ -4,7 +4,7 @@ $subMenus = [
 		array('title' => 'NETWORK MODELS', 'link' => 'diagram'),
 		array('title' => 'DATA VIEWS', 'link' => 'roles'),
 		array('title' => 'REPORT', 'link' => 'workreport'),
-		array('title' => 'ADVANCED GRAPH', 'link' => 'validatedata'),
+		array('title' => 'ADVANCED GRAPH', 'link' => 'graph'),
 		array('title' => 'TASK MANAGER', 'link' => 'approvedata'),
 		array('title' => 'WORKFLOW', 'link' => 'workflow')
 ];
@@ -23,7 +23,12 @@ $subMenus = [
 @section('main')
 
 <div id="content">
-		@yield('content')
+	<div class="title">
+		@yield('title')
+	</div>
+	@yield('group')		
+
+	@yield('content')
 </div>
 @yield('adaptData')
 

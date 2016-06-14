@@ -7,13 +7,10 @@ $.ajaxSetup({
 	}
 });
 
-
-
 $(function(){
 	var listControl = <?php echo json_encode($listControls);?>;
 	
-	adminControl.init(listControl);
-
+	adminControl.init(listControl);	
 }); 
 
 var adminControl = {
@@ -56,15 +53,19 @@ var adminControl = {
 			} 
 		}
 
+		if(typeof _graph !== 'undefined' && _graph.loadObjType == 1){		
+			cbo += _graph.loadObjecType();
+		}
+		
 		$('#control').html(cbo);
 
-		$( "input[type='text']" ).datepicker({
+		$( "#begin_date , #end_date" ).datepicker({
 			changeMonth:true,
 			changeYear:true,
 			dateFormat:"mm/dd/yy"
 		}); 
 
-		$("select").change(function() {   
+		$("#ProductionUnit, #Area").change(function() {   
 			var id = this.id;
 			var table = ""
 			var cboSet = ""; 
@@ -84,6 +85,16 @@ var adminControl = {
 				adminControl.cboOnchange(cboSet, value, table);
 			}
 		});
+
+		$("#Facility, #cboObjectType, #Product").change(function() {  
+			if(typeof _graph !== 'undefined' && _graph.loadObjType == 1){	 
+				_graph.loadObjects();
+			}
+		});
+
+		if(typeof _graph !== 'undefined' && _graph.loadObjType == 1){		
+			_graph.setValueDefault();
+		}
 	},
 	reloadCbo : function(id, data){
 		$('#'+id).empty();
@@ -97,6 +108,8 @@ var adminControl = {
 		}
 
 		$('#'+id).html(cbo);
+		$("#"+id).prop("disabled", false); 
+		$("#"+id).change();
 	},
 
 	cboOnchange : function(cboSet, value, table){
@@ -104,7 +117,7 @@ var adminControl = {
 			'ID' :value,
 			'TABLE' : table
 		};
-
+		$("#"+cboSet).prop("disabled", true); 
 		$.ajax({
 	    	url: '/am/selectedID',
 	    	type: "post",
