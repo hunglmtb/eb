@@ -25,21 +25,21 @@
 
 		<ul>
 
-			<li><a href="/dc2/safety">Safety</a>
+			<li><a href="/fo/safety">Safety</a>
 
 			</li>
 
-			<li><a href="/dc2/comment">Comments</a>
+			<li><a href="/fo/comment">Comments</a>
 
 			</li>
 
-			<li><a href="/dc2/equipment">Equipment</a>
+			<li><a href="/fo/equipment">Equipment</a>
 
 			</li>
-			<li><a href="/dc2/chemical">Chemical</a>
+			<li><a href="/fo/chemical">Chemical</a>
 
 			</li>
-			<li><a href="/dc2/personnel">Personnel</a>
+			<li><a href="/fo/personnel">Personnel</a>
 
 			</li>
 

@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class CodeCommentStatus extends DynamicModel 
 { 
-	protected $table = 'code_comment_status'; 
+	protected $table = 'CODE_COMMENT_STATUS'; 
 } 

@@ -54,7 +54,7 @@ $( document ).ready(function() {
  @endforeach
 
 <div class="action_filter">
-	@if(!auth()->user()->containRight('DATA_READONLY'))
+	@if(!auth()->user()->hasRight('DATA_READONLY'))
 		<input type="button" value="Save" name="B3" id = "buttonSave" onClick="actions.doSave(true)" style="width: 85px;foat:left; height: 26px">
 	@endif
 	<input type="button" value="Load data" id="buttonLoadData" name="B33"

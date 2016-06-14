@@ -15,7 +15,7 @@ class CheckRight {
 	{
 		// Perform action
 		$user = auth()->user();
-		if ($user&&$user->hasRight($right)) {
+		if ($user&&$user->containRight($right)) {
 			return $next($request);		
 		}
 		return response('Unauthorized:You has not right to access', 401);

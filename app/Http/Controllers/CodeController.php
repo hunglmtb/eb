@@ -23,6 +23,9 @@ use App\Models\CodeTicketType;
 use App\Models\PdTransitCarrier;
 use App\Models\BaAddress;
 use App\Models\Tank;
+use App\Models\CodeSafetySeverity;
+use App\Models\CodeCommentStatus;
+
 
 class CodeController extends EBController {
 	 
@@ -92,8 +95,9 @@ class CodeController extends EBController {
     	
     	$properties = $this->getOriginProperties($dcTable);
     	$firstProperty = $this->getFirstProperty($dcTable);
-    	$properties->prepend($firstProperty);
-    	
+    	if ($firstProperty) {
+	    	$properties->prepend($firstProperty);
+    	}
     	$uoms = $this->getUoms($properties,$facility_id);
     	$locked = $this->isLocked($dcTable,$occur_date,$facility_id);
     	
@@ -447,6 +451,16 @@ class CodeController extends EBController {
     			case 'BA_ID' :
     				$selectData = ['id'=>'BaAddress','targets'=>$i,'COLUMN_NAME'=>$columnName];
     				$selectData['data'] = BaAddress::all();
+    				$rs[] = $selectData;
+    				break;
+    			case 'SEVERITY_ID' :
+    				$selectData = ['id'=>'CodeSafetySeverity','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = CodeSafetySeverity::where('ACTIVE',1)->orderBy('ORDER')->orderBy('ID')->get();
+    				$rs[] = $selectData;
+    				break;
+    			case 'STATUS' :
+    				$selectData = ['id'=>'CodeCommentStatus','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = CodeCommentStatus::where('ACTIVE',1)->orderBy('ORDER')->orderBy('ID')->get();
     				$rs[] = $selectData;
     				break;
     		}

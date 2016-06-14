@@ -26,20 +26,20 @@ class wfShowController extends Controller {
 			$user_name = auth()->user()->username;
 		}
 		
-		//\DB::enableQueryLog ();
 		$tmworkflowtask = collect(TmWorkflowTask::whereIn('ISRUN', [2,3])
 			 ->where ( function ($q) use ($user_name) {
 				$q->where('USER', 'like', '%,'.$user_name.',%');
 				$q->orWhere('USER', 'like', $user_name.',%');
 			} ) 
 			->get(['WF_ID']))->toArray();
-			//\Log::info ( \DB::getQueryLog () );
-			
-		//\DB::enableQueryLog ();			
+		
 		$tmworkflow = TmWorkflow::where(['ISRUN'=>'YES'])
 		->whereIn('ID', $tmworkflowtask)
 		->get(['ID', 'NAME']);
-		//\Log::info ( \DB::getQueryLog () );
+		
+		$tmworkflow = TmWorkflow::where(['ISRUN'=>'YES'])
+		->whereIn('ID', $tmworkflowtask)
+		->get(['ID', 'NAME']);
 		
 		return $tmworkflow;
 	}
@@ -80,13 +80,13 @@ class wfShowController extends Controller {
 		if((auth()->user() != null)){
 			$user_name = auth()->user()->username;
 		}
-		
-		//\DB::enableQueryLog ();			
+					
 		$tmworkflow = collect(TmWorkflow::where(['ISRUN'=>'yes'])
 		->get(['ID']))->toArray();
-		//\Log::info (\DB::getQueryLog () );
-		
-		//\DB::enableQueryLog ();
+			
+		$tmworkflow = collect(TmWorkflow::where(['ISRUN'=>'yes'])
+		->get(['ID']))->toArray();
+
 		$tmworkflowtask = TmWorkflowTask::whereIn('ISRUN', [2,3])
 			->whereIn('WF_ID', $tmworkflow)
 			->where ( function ($q) use ($user_name) {
@@ -96,7 +96,7 @@ class wfShowController extends Controller {
 				$q->orWhere('USER', '=', $user_name);
 			} )
 			->get(['WF_ID']);
-		//\Log::info (\DB::getQueryLog () );
+
 		
 		return response ()->json ( count($tmworkflowtask) );
 	}

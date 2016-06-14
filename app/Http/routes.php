@@ -38,7 +38,7 @@ Route::put('postactive/{id}', 'BlogController@updateActive');
 Route::resource('blog', 'BlogController');
 
 // Comment
-Route::resource('comment', 'CommentController', [
+Route::resource('comment', 'CommentSampleController', [
 	'except' => ['create', 'show']
 ]);
 
@@ -86,11 +86,12 @@ Route::post('password/reset', 'Auth\PasswordController@postReset');
 //-----EB
 Route::post('code/list', 'CodeController@getCodes');
 
-Route::get('dc/flow', 'ProductManagementController@flow');
+Route::get('dc/flow',['uses' =>'ProductManagementController@flow','middleware' => 'checkRight:FDC_FLOW']);
 Route::post('code/load',['uses' =>'FlowController@load','middleware' => 'saveWorkspace']);
 Route::post('code/save', 'FlowController@save');
 
 Route::get('dc/eu', 'ProductManagementController@eu');
+Route::get('dc/eu',['uses' =>'ProductManagementController@eu','middleware' => 'checkRight:FDC_EU']);
 Route::post('eu/load',['uses' =>'EuController@load','middleware' => 'saveWorkspace']);
 Route::post('eu/save', 'EuController@save');
 
@@ -99,32 +100,36 @@ Route::post('storage/load',['uses' =>'StorageController@load','middleware' => 's
 Route::post('storage/save', 'StorageController@save');
 
 Route::get('dc/eutest', 'ProductManagementController@eutest');
+Route::get('dc/eutest',['uses' =>'ProductManagementController@eutest','middleware' => 'checkRight:FDC_EU_TEST']);
 Route::post('eutest/load',['uses' =>'EuTestController@load','middleware' => 'saveWorkspace']);
 Route::post('eutest/save', 'EuTestController@save');
 
-Route::get('dc/quality', 'ProductManagementController@quality');
+Route::get('dc/quality',['uses' =>'ProductManagementController@quality','middleware' => 'checkRight:FDC_QUALITY']);
 Route::post('quality/load',['uses' =>'QualityController@load','middleware' => 'saveWorkspace']);
 Route::post('quality/save', 'QualityController@save');
 Route::post('quality/loadsrc', 'QualityController@loadsrc');
 Route::post('quality/edit', 'QualityController@edit');
 Route::post('quality/edit/saving', 'QualityController@editSaving');
 
-Route::get('dc/deferment', 'ProductManagementController@deferment');
+Route::get('dc/deferment',['uses' =>'ProductManagementController@deferment','middleware' => 'checkRight:FDC_DEFER']);
 Route::post('deferment/load',['uses' =>	'DefermentController@load','middleware' => 'saveWorkspace']);
 Route::post('deferment/save', 			'DefermentController@save');
 Route::post('deferment/loadsrc', 		'DefermentController@loadsrc');
 Route::post('deferment/edit', 			'DefermentController@edit');
 Route::post('deferment/edit/saving', 	'DefermentController@editSaving');
 
-Route::get('dc/ticket', 		'ProductManagementController@ticket');
+Route::get('dc/ticket',			['uses' =>'ProductManagementController@ticket','middleware' => 'checkRight:FDC_TICKET']);
 Route::post('ticket/load',		['uses' =>	'TicketController@load','middleware' => 'saveWorkspace']);
 Route::post('ticket/save', 		'TicketController@save');
 
 //---------
-Route::post('fo/loadSafety', 'FOController@loadSafety');
-Route::get('fo/safety', 'FOController@safety');
-Route::post('fo/saveSafety', 'FOController@saveSafety');
+Route::get('fo/safety',			['uses' =>'FOController@safety','middleware' => 'checkRight:FOP_SAFETY']);
+Route::post('safety/load',		['uses' =>	'SafetyController@load','middleware' => 'saveWorkspace']);
+Route::post('safety/save', 		'SafetyController@save');
 
+Route::get('fo/comment',			['uses' =>'FOController@comment','middleware' => 'checkRight:FOP_COMMENT']);
+Route::post('comment/load',			['uses' =>	'CommentController@load','middleware' => 'saveWorkspace']);
+Route::post('comment/save', 		'CommentController@save');
 
 //----------admin
 Route::get('am/users', 'AdminController@_index');
