@@ -438,7 +438,7 @@ var actions = {
 								var rendered = data2;
 								if(data2!=null&&data2!=''){
 									rendered = parseFloat(data2).toFixed(2);
-									if(isNaN(rendered) || isFinite(data2)) return '';
+									if(isNaN(rendered)) return '';
 								}
 								return rendered;
 							};

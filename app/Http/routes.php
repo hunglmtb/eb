@@ -139,6 +139,10 @@ Route::get('fo/chemical',			['uses' =>'FOController@chemical','middleware' => 'c
 Route::post('chemical/load',		['uses' =>	'ChemicalController@load','middleware' => 'saveWorkspace']);
 Route::post('chemical/save', 		'ChemicalController@save');
 
+Route::get('fo/personnel',			['uses' =>'FOController@personnel','middleware' => 'checkRight:FOP_PERSONNEL']);
+Route::post('personnel/load',		['uses' =>	'PersonnelController@load','middleware' => 'saveWorkspace']);
+Route::post('personnel/save', 		'PersonnelController@save');
+
 //----------admin
 Route::get('am/users', 'AdminController@_index');
 Route::post('am/loadData', 'AdminController@getData');

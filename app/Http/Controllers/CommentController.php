@@ -11,12 +11,6 @@ class CommentController extends CodeController {
 	
     public function getDataSet($postData,$safetyTable,$facility_id,$occur_date,$properties){
 
-/*     	$sSQL="select b.* 
-    	from comment b 
-    	where b.facility_id='$facility_id' 
-    	and b.comment_type='$comment_type' 
-    	and b.created_date=STR_TO_DATE('$created_date', '%m/%d/%Y')"; */
-    	 
     	$comment_type = $postData['CodeCommentType'];
     	$comment = Comment::getTableName();
     	//      	\DB::enableQueryLog();

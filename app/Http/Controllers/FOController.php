@@ -36,4 +36,10 @@ class FOController extends EBController {
 		return view ( 'front.chemical',['filters'=>$filterGroups]);
 	}
 	
+	public function personnel(){
+		$filterGroups = array('productionFilterGroup'=> [],
+				'dateFilterGroup'=> array(['id'=>'date_begin','name'=>'Date']),
+		);
+		return view ( 'front.personnel',['filters'=>$filterGroups]);
+	}
 }
