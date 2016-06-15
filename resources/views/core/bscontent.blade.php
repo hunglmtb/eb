@@ -60,7 +60,7 @@ if (!isset($active)) $active =1;
 	 		$('#container_'+tab).css('width',$('#table_'+tab).width()+18);
 		}
  		var tbbody = $('#table_'+tab);
- 		tbbody.tableHeadFixer({"left" : 1,head: false,});
+ 		if(data.dataSet!=null&&(data.dataSet.length>0)) tbbody.tableHeadFixer({"left" : 1,head: false,});
 
 		var hdt;	
  		var tblh = $('#container_'+tab ).find('table').eq(0);

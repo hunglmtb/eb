@@ -24,7 +24,7 @@ WELL TEST DATA CAPTURE
 										return 'ID';
 									},
 					};
-	addingOptions.keepColumns = ['SAMPLE_DATE','TEST_DATE','EFFECTIVE_DATE','PRODUCT_TYPE','SRC_ID','SRC_TYPE'];
+// 	addingOptions.keepColumns = ['SAMPLE_DATE','TEST_DATE','EFFECTIVE_DATE','PRODUCT_TYPE','SRC_ID','SRC_TYPE'];
 	
 </script>
 @stop

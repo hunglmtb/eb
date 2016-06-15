@@ -237,7 +237,10 @@ var actions = {
 	getExtraDataSetColumn :function(data,cindex,rowData){
 		ecolumn = actions.extraDataSetColumns[data.properties[cindex].data];
  		ecollectionColumn = rowData[ecolumn];
- 		ecollection = actions.extraDataSet[ecolumn][ecollectionColumn];
+ 		if(ecollectionColumn!=null&&ecollectionColumn!=''&&typeof(actions.extraDataSet[ecolumn]) !== "undefined"){
+ 			ecollection = actions.extraDataSet[ecolumn][ecollectionColumn];
+ 		}
+ 		else ecollection = null;
  		return ecollection;
 	},
 	isEditable : function (column,rowData,rights){
@@ -449,15 +452,16 @@ var actions = {
 		case "number":
 			cell["render"] = function ( data2, type2, row ) {
 								var rendered = data2;
-								if(data2!=null){
+								if(data2!=null&&data2!=''){
 									rendered = parseFloat(data2).toFixed(2);
+									if(isNaN(rendered) || isFinite(data2)) return '';
 								}
 								return rendered;
 							};
 	    	break;
 		case "date":
 			cell["render"] = function ( data2, type2, row ) {
-								if (data2==null) { 
+								if (data2==null||data2=='') { 
 									return "";
 								}
 								if (data2.constructor.name == "Date") { 
@@ -468,7 +472,7 @@ var actions = {
 	    	break;
 		case "datetimepicker":
 			cell["render"] = function ( data2, type2, row ) {
-								if (data2==null) { 
+								if (data2==null||data2=='') { 
 									return "";
 								}
 								if (data2.constructor.name == "Date") { 
@@ -479,7 +483,7 @@ var actions = {
 	    	break;
 		case "timepicker":
 			cell["render"] = function ( data2, type2, row ) {
-								if (data2==null) { 
+								if (data2==null||data2=='') { 
 									return "";
 								}
 								if (data2.constructor.name == "Date") { 
