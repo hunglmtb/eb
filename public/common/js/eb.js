@@ -325,7 +325,7 @@ var actions = {
 			editable['onblur'] = 'submit';
 			editable['type'] = 'datetime';
 			editable['format'] = 'hh:ii:ss';
-			editable['viewformat'] = 'HH:ii:ss P';
+			editable['viewformat'] = 'HH:ii P';
 			editable['datetimepicker'] 	= 	{
 								          		minuteStep :5,
 								          		showMeridian : true,
@@ -471,9 +471,9 @@ var actions = {
 									return "";
 								}
 								if (data2.constructor.name == "Date") { 
-									return moment(data2).format("hh:mm:ss A");
+									return moment(data2).format("hh:mm A");
 								}
-								return moment(data2,"hh:mm:ss").format("hh:mm:ss A");
+								return moment(data2,"hh:mm:ss").format("hh:mm A");
 							};
 	    	break;
 		case "checkbox":
