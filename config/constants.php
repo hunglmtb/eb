@@ -60,6 +60,9 @@ return [
 																		'name'			=>'CodeEquipmentType',
 																		'id'			=>'CodeEquipmentType',
 																		'default'		=>['ID'=>0,'NAME'=>'All']),
+										'CodeInjectPoint'		=>	array('filterName'	=>'Object Type',
+																		'name'			=>'CodeInjectPoint',
+																		'id'			=>'CodeInjectPoint'),
 										],
 		// etc
 ];

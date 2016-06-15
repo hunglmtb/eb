@@ -18,6 +18,7 @@ class CheckRight {
 		if ($user&&$user->containRight($right)) {
 			return $next($request);		
 		}
-		return response('Unauthorized:You has not right to access', 401);
+		if ($request->ajax()) return response('Unauthorized:You has not right to access', 401);
+		else  return view ( 'core.unauthorized');
 	}
 }

@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class KeystoreStorage extends DynamicModel 
 { 
-	protected $table = 'keystore_storage'; 
+	protected $table = 'KEYSTORE_STORAGE'; 
 } 

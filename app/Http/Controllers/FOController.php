@@ -28,4 +28,12 @@ class FOController extends EBController {
 		return view ( 'front.equipment',['filters'=>$filterGroups]);
 	}
 	
+	public function chemical(){
+		$filterGroups = array('productionFilterGroup'=> [],
+				'dateFilterGroup'=> array(['id'=>'date_begin','name'=>'Date']),
+				'frequenceFilterGroup'		=> ['CodeInjectPoint']
+		);
+		return view ( 'front.chemical',['filters'=>$filterGroups]);
+	}
+	
 }

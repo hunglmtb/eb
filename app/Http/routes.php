@@ -134,6 +134,11 @@ Route::post('comment/save', 		'CommentController@save');
 Route::get('fo/equipment',			['uses' =>'FOController@equipment','middleware' => 'checkRight:FOP_EQUIP']);
 Route::post('equipment/load',		['uses' =>	'EquipmentController@load','middleware' => 'saveWorkspace']);
 Route::post('equipment/save', 		'EquipmentController@save');
+
+Route::get('fo/chemical',			['uses' =>'FOController@chemical','middleware' => 'checkRight:FOP_CHEMICAL']);
+Route::post('chemical/load',		['uses' =>	'ChemicalController@load','middleware' => 'saveWorkspace']);
+Route::post('chemical/save', 		'ChemicalController@save');
+
 //----------admin
 Route::get('am/users', 'AdminController@_index');
 Route::post('am/loadData', 'AdminController@getData');
