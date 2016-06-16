@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class CodeEqpFuelConsType extends DynamicModel 
 { 
-	protected $table = 'code_eqp_fuel_cons_type'; 
+	protected $table = 'CODE_EQP_FUEL_CONS_TYPE'; 
 } 

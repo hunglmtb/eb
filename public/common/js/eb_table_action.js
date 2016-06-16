@@ -90,6 +90,9 @@ var intVal = function ( i ) {
 							ofId = data.dataSet[dependence].ofId;
 							cellData=dataSet[0]['ID'];
 							rowData[dependence] = cellData;
+							if(typeof(actions.extraDataSet[sourceColumn]) == "undefined"){
+								actions.extraDataSet[sourceColumn] = [];
+							}
 							actions.extraDataSet[sourceColumn][ofId] = dataSet;
 		 					dependencetd = $('#'+DT_RowId+" ."+dependence);
 		 	 				actions.applyEditable(tab,'select',dependencetd, cellData, rowData, dependence,dataSet);

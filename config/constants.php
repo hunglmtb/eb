@@ -52,6 +52,17 @@ return [
 																		'default'		=>['ID'=>0,'NAME'=>'All']),
 										'CodeCommentType'		=>	array('filterName'	=>'Comment Type',
 																		'name'			=>'CodeCommentType'),
+										'EquipmentGroup'		=>	array('filterName'	=>'Equipment Group',
+																		'name'			=>'EquipmentGroup',
+																		'id'			=>'EquipmentGroup',
+																		'default'		=>['ID'=>0,'NAME'=>'All']),
+										'CodeEquipmentType'		=>	array('filterName'	=>'Equipment Type',
+																		'name'			=>'CodeEquipmentType',
+																		'id'			=>'CodeEquipmentType',
+																		'default'		=>['ID'=>0,'NAME'=>'All']),
+										'CodeInjectPoint'		=>	array('filterName'	=>'Object Type',
+																		'name'			=>'CodeInjectPoint',
+																		'id'			=>'CodeInjectPoint'),
 										],
 		// etc
 ];

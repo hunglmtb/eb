@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class CodeEqpGhgRelType extends DynamicModel 
 { 
-	protected $table = 'code_eqp_ghg_rel_type'; 
+	protected $table = 'CODE_EQP_GHG_REL_TYPE'; 
 } 

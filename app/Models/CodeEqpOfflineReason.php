@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class CodeEqpOfflineReason extends DynamicModel 
 { 
-	protected $table = 'code_eqp_offline_reason'; 
+	protected $table = 'CODE_EQP_OFFLINE_REASON'; 
 } 

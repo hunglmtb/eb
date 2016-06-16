@@ -237,11 +237,14 @@ var actions = {
 	getExtraDataSetColumn :function(data,cindex,rowData){
 		ecolumn = actions.extraDataSetColumns[data.properties[cindex].data];
  		ecollectionColumn = rowData[ecolumn];
- 		ecollection = actions.extraDataSet[ecolumn][ecollectionColumn];
+ 		if(ecollectionColumn!=null&&ecollectionColumn!=''&&typeof(actions.extraDataSet[ecolumn]) !== "undefined"){
+ 			ecollection = actions.extraDataSet[ecolumn][ecollectionColumn];
+ 		}
+ 		else ecollection = null;
  		return ecollection;
 	},
-	isEditable : function (row,rowData,rights){
-		var rs = row.DATA_METHOD==1||row.DATA_METHOD=='1';
+	isEditable : function (column,rowData,rights){
+		var rs = column.DATA_METHOD==1||column.DATA_METHOD=='1';
 		if (rs) {
 			if(rowData.RECORD_STATUS=="A"){
 				rs =$.inArray("ADMIN_APPROVE", rights);
@@ -322,7 +325,7 @@ var actions = {
 			editable['onblur'] = 'submit';
 			editable['type'] = 'datetime';
 			editable['format'] = 'hh:ii:ss';
-			editable['viewformat'] = 'hh:ii:ss';
+			editable['viewformat'] = 'HH:ii P';
 			editable['datetimepicker'] 	= 	{
 								          		minuteStep :5,
 								          		showMeridian : true,
@@ -374,7 +377,7 @@ var actions = {
 						                });
 //    	var columnName = table.settings()[0].aoColumns[col].data;
     	if (newValue!=null&&newValue.constructor.name == "Date") {
-    		newValue = moment.utc(newValue).format("YYYY-MM-DD HH:mm:ss");
+    		newValue = moment(newValue).format("YYYY-MM-DD HH:mm:ss");
 		}
     	if (result.length == 0) {
         	var editedData = {};
@@ -392,22 +395,6 @@ var actions = {
     		result[0][columnName] = newValue;
     	}
     	return rowData;
-	},
-	formatDate : function(columnName,newValue,table){
-		//TODO update funtion
-		properties = table.api().columns();
-		dateValue = moment.utc(newValue).format("YYYY-MM-DD HH:mm:ss");
-		var result = $.grep(properties, function(e){ 
-          	 return e.data == columnName;
-           });
-		if (result.length > 0) {
-    		result[0][columnName] = newValue;
-    		type = typetoclass(result[0].INPUT_TYPE);
-    		if(type=="date"){
-    			dateValue = dateValue.startOf('day');
-    		}
-		}
-		return dateValue;
 	},
 	getCellType : function(data,type,cindex){
 		type = actions.extraDataSetColumns.hasOwnProperty(data.properties[cindex].data)?'select':type;
@@ -449,15 +436,16 @@ var actions = {
 		case "number":
 			cell["render"] = function ( data2, type2, row ) {
 								var rendered = data2;
-								if(data2!=null){
+								if(data2!=null&&data2!=''){
 									rendered = parseFloat(data2).toFixed(2);
+									if(isNaN(rendered)) return '';
 								}
 								return rendered;
 							};
 	    	break;
 		case "date":
 			cell["render"] = function ( data2, type2, row ) {
-								if (data2==null) { 
+								if (data2==null||data2=='') { 
 									return "";
 								}
 								if (data2.constructor.name == "Date") { 
@@ -468,24 +456,24 @@ var actions = {
 	    	break;
 		case "datetimepicker":
 			cell["render"] = function ( data2, type2, row ) {
-								if (data2==null) { 
+								if (data2==null||data2=='') { 
 									return "";
 								}
 								if (data2.constructor.name == "Date") { 
-									return moment(data2).format("MM/DD/YYYY HH:mm");
+									return moment.utc(data2).format("MM/DD/YYYY HH:mm");
 								}
-								return moment(data2,"YYYY-MM-DD HH:mm").format("MM/DD/YYYY HH:mm");
+								return moment.utc(data2,"YYYY-MM-DD HH:mm").format("MM/DD/YYYY HH:mm");
 							};
 	    	break;
 		case "timepicker":
 			cell["render"] = function ( data2, type2, row ) {
-								if (data2==null) { 
+								if (data2==null||data2=='') { 
 									return "";
 								}
 								if (data2.constructor.name == "Date") { 
-									return moment(data2).format("HH:mm:ss");
+									return moment(data2).format("hh:mm A");
 								}
-								return moment(data2,"HH:mm:ss").format("HH:mm:ss");
+								return moment(data2,"hh:mm:ss").format("hh:mm A");
 							};
 	    	break;
 		case "checkbox":
@@ -512,6 +500,15 @@ var actions = {
 		return cell;
 	},
 	createdFirstCellColumn : function (td, cellData, rowData, row, col) {},
+	getGrepValue : function (data,value,row) {
+						return data;
+	},
+	notUniqueValue : function(uom,rowData){
+		return true;
+	},
+	isShownOf : function(value,postData){
+		return true;
+	},
 	initTableOption : function (tab,data,options,renderFirsColumn,createdFirstCellColumn){
 		var exclude = [0];
 		if(typeof(data.uoms) == "undefined"||data.uoms==null){
@@ -523,19 +520,19 @@ var actions = {
 		if(typeof(uoms) !== "undefined"&&uoms!=null){
 			$.each(uoms, function( index, value ) {
 				exclude.push(uoms[index]["targets"]);
-				if(value!=null&&value.hasOwnProperty('render')) return;
-				
 				var collection = value['data'];
-				uoms[index]["render"] = function ( data, type, row ) {
-								                var result = $.grep(collection, function(e){ 
-									                return e['ID'] == data;
-									                });
-												if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined" &&result[0].hasOwnProperty('NAME')){
-			                						return value['COLUMN_NAME']=="ALLOC_TYPE"?result[0]['NAME']:result[0]['NAME'];
-												}
-												return data;
-									                
-	                					};
+				if(value==null||!value.hasOwnProperty('render')) {
+					uoms[index]["render"] = function ( data, type, row ) {
+						var result = $.grep(collection, function(e){
+							id = actions.getGrepValue(data,value,row);
+							return e['ID'] == id;
+						});
+						if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined" &&result[0].hasOwnProperty('NAME')){
+							return value['COLUMN_NAME']=="ALLOC_TYPE"?result[0]['NAME']:result[0]['NAME'];
+						}
+						return data;
+					};
+				}
 	            $.each(collection, function( i, vl ) {
 	            	vl['value']=vl['ID'];
 	            	vl['text']=vl['NAME'];
@@ -543,7 +540,7 @@ var actions = {
 	            uoms[index]["createdCell"] = function (td, cellData, rowData, row, col) {
 	            	columnName = data.properties[col].data;
 	 				$(td).addClass( columnName );
-	            	if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
+	            	if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)&&actions.notUniqueValue(uoms[index],rowData)){
 		 				$(td).addClass( "editInline" );
 		 				$(td).editable({
 			        	    type: 'select',

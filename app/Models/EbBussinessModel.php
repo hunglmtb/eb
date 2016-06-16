@@ -147,6 +147,10 @@ class EbBussinessModel extends DynamicModel {
 	public function afterSaving($postData) {
 	}
 	
+	public function updateDependRecords($occur_date,$values,$postData) {
+		return null;
+	}
+	
 	public function updateAudit($attributes,$values,$postData) {
 		if ($this->disableUpdateAudit)  return;
 		$current = Carbon::now();
