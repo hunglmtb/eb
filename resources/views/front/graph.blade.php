@@ -88,6 +88,8 @@ $(function(){
 
 	$('#txtObjectName').val('Flow');
 	$("#chartObjectContainer").sortable();
+
+	$(".phase_type").hide();
 });
 
 var _graph = {
@@ -103,8 +105,8 @@ var _graph = {
 		cbo += ' <div class="filter">';
 		cbo += ' 	<div><b> Object type </b></div>';
 		cbo += ' 	<select id = "cboObjectType" onchange="_graph.cboObjectTypeOnChange()">';	
-		cbo += ' 		<option selected value="FLOW/FLOW/FL_DAY/Flow">Flow</option>';
-		cbo += ' 		<option value="ENERGY_UNIT/ENERGY_UNIT/EU_DAY/Energy Unit">Energy Unit</option>';
+		cbo += ' 		<option selected value="FLOW/FLOW/FL_DATA/Flow">Flow</option>';
+		cbo += ' 		<option value="ENERGY_UNIT/ENERGY_UNIT/EU_DATA/Energy Unit">Energy Unit</option>';
 		cbo += ' 		<option value="TANK/TANK/TANK/Tank">Tank</option>';
 		cbo += ' 		<option value="STORAGE/STORAGE/STORAGE/Storage">Storage</option>';
 		cbo += ' 		<option value="ENERGY_UNIT/EU_TEST/EU_TEST/Energy Unit">Well Test</option>';
@@ -179,10 +181,10 @@ var _graph = {
 		$("#cboObjectNameTable").val($("#cboObjectNameTable").find('option:visible:first').attr("value"));
 		$("#cboObjectNameProps").val($("#cboObjectNameProps").find('option:visible:first').attr("value"));
 		
-		//_graph.loadObjects();
+		_graph.loadObjects();
 	},
 	ObjectNameTableChange : function(){
-		if($("#cboObjectNameTable").val()=="DAY_ALLOC" && $("#cboObjectType").val().indexOf("ENERGY_UNIT/") > -1)
+		if($("#cboObjectNameTable").val()=="DATA_ALLOC" && $("#cboObjectType").val().indexOf("ENERGY_UNIT/") > -1)
 			$(".alloc_type").show();
 		else 
 			$(".alloc_type").hide();
@@ -218,7 +220,7 @@ var _graph = {
 			if($("span[object_value='"+x+"']").length==0)
 			{
 				var sel="<select class='x_chart_type' style='width:100px'><option value='line'>Line</option><option value='spline'>Curved line</option><option value='column'>Column</option><option value='area'>Area</option><option value='areaspline'>Curved Area</option></select>";
-				var s="<li class='x_item' object_value='"+x+"'>"+sel+" <span>"+$("#cboObjectName option:selected").text()+"("+$("#cboObjectType option:selected").text()+"."+$("#cboObjectNameTable option:selected").text()+($("#cboEUFlowPhase").is(":visible")?"."+$("#cboEUFlowPhase option:selected").text():"")+"."+$("#cboObjectNameProps option:selected").text()+")</span> "+'<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="../img/x.png"><br></li>';
+				var s="<li class='x_item' object_value='"+x+"'>"+sel+" <span>"+$("#cboObjectName option:selected").text()+"("+$("#cboObjectType option:selected").text()+"."+$("#cboObjectNameTable option:selected").text()+($("#cboEUFlowPhase").is(":visible")?"."+$("#cboEUFlowPhase option:selected").text():"")+"."+$("#cboObjectNameProps option:selected").text()+")</span> "+'<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="/img/x.png"><br></li>';
 				$("#chartObjectContainer").append(s);
 			}
 			else
@@ -233,8 +235,14 @@ var _graph = {
 		document.getElementById("frameChart").contentWindow.document.write("<font family='Open Sans'>Generating chart...</font>");
 		
 		var title = encodeURIComponent($("#chartTitle").val());
+		if(title == "") title = null;
+		
 		var minvalue = $("#txt_min").val();
+		if(minvalue == "") minvalue = null;
+		
 		var maxvalue = $("#txt_max").val();
+		if(maxvalue == "") maxvalue = null;
+		
 		var date_begin = $("#begin_date").val().replace(/\//g, '-');
 		var date_end = $("#end_date").val().replace(/\//g, '-');
 		var input = encodeURIComponent(_graph.getChartConfig());	
@@ -257,6 +265,127 @@ var _graph = {
 	        s += (s==""?"":",")+$(this).attr("object_value")+":"+$(this).children("select").val()+":"+$(this).children("span").text();
 	    });
 		return s;
+	},
+	loadCharts : function()
+	{
+		$('#listCharts').html("Loading...")
+		$( "#listCharts" ).dialog({
+			height: 400,
+			width: 600,
+			modal: true,
+			title: "Charts list",
+		});
+		
+		param = {
+		};
+		
+		sendAjaxNotMessage('/listCharts', param, function(data){
+			_graph.showListChart(data);
+		});
+	},
+	showListChart : function(_data){
+		var data = _data.adv_chart;
+		var str = "";
+		$('#listCharts').html(str);
+		/* for(var i =0; i < data.length; i++){
+			str += "<span class='chart_info' id='chart_"+data[i]['ID']+"' min_value='"+data[i]['MIN_VALUE']+"' max_value='"+data[i]['MAX_VALUE']+"' chart_config='"+data[i]['CONFIG']+"' style='display:block;line-height:20px;margin:2px;'><a href='javascript:_graph.openChart("+data[i]['ID']+")'>"+data[i]['TITLE']+"</a> <img valign='middle' onclick='_graph.deleteChart("+data[i]['ID']+")' class='xclose' src='../img/x.png'></span>";
+		}  */
+
+
+		str += "<table width='100%' class='list table table-hover' cellpadding='5' cellspacing='0'>";
+		str += "<tr>";
+		str += "<td>#</td>";
+		str += "<td><b>Chart title</b></td>";
+		str += "<td><b>delete</b></td>";
+		str += "</tr>";
+		
+		for(var i =0; i < data.length; i++){
+		
+			str += " <tr >";
+			str += " <td>"+(i+1)+"</td>";
+			str += " <td class='chart_info' id='chart_"+data[i]['ID']+"' min_value='"+checkValue(data[i]['MIN_VALUE'],'')+"' max_value='"+checkValue(data[i]['MAX_VALUE'],'')+"' chart_config='"+data[i]['CONFIG']+"' style='cursor:pointer;' onclick='_graph.openChart("+data[i]['ID']+");'><a href='#'>"+data[i]['TITLE']+"</a></td>";
+			str += " <td align='center'><a href='#' class='action_del' onclick = '_graph.deleteChart("+data[i]['ID']+");'><img alt='Delete' title='Delete' src='/images/delete.png'></a></td>";
+			str += " </tr>";
+		}
+		str += "</table>";
+
+
+		
+		$('#listCharts').html(str);
+	},
+
+	deleteChart : function(id)
+	{
+		if(!confirm("Do you want to delete this chart?")) return;
+		param = {
+				'ID' : id
+		};
+		sendAjaxNotMessage('/deleteChart', param, function(data){
+			_graph.showListChart(data);
+		});
+	},
+	openChart : function(id)
+	{
+		_graph.currentChartID=id;
+		$("#chartTitle").val($("#chart_"+id).text());
+		$("#txt_max").val(checkValue($("#chart_"+id).attr("max_value"),''));
+		$("#txt_min").val(checkValue($("#chart_"+id).attr("min_value"),''));
+		$("#chartObjectContainer").empty();
+		var config=$("#chart_"+id).attr("chart_config");
+		var cfs=config.split(',');
+		var i=0;
+		for(i=0;i<cfs.length;i++)
+		{
+			var vals=cfs[i].split(':');
+			if(vals.length>=6)
+			{
+				var ct="<select class='x_chart_type' style='width:100px'><option value='line'>Line</option><option value='spline'>Curved line</option><option value='column'>Column</option><option value='area'>Area</option><option value='areaspline'>Curved Area</option></select>";
+				ct=ct.replace("value='"+vals[vals.length-2]+"'","value='"+vals[vals.length-2]+"' selected");
+				var x="",j;
+				for(j=0;j<vals.length-2;j++) x+=(x==""?"":":")+vals[j];
+				var s="<li class='x_item' object_value='"+x+"'>"+ct+" <span>"+vals[vals.length-1]+"</span> "+'<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="../img/x.png"><br></li>';
+				$("#chartObjectContainer").append(s);
+			}
+		}
+		$('#listCharts').dialog("close");
+		_graph.draw();
+	},
+	saveChart : function(isAddNew)
+	{
+		var config = _graph.getChartConfig();
+		if(config == ""){alert("Chart's settings is not ready");return;}
+		var title = $("#chartTitle").val();
+		
+		if(title == ""){
+			alert("Please input chart's title");
+			$("#chartTitle").focus();
+			return;
+		}
+		if(isAddNew == true)
+		{
+			title = prompt("Please input chart's title",title);
+			title = title.trim();
+			if(title == "") return;
+		}
+
+		param = {
+				'id' : (isAddNew?-1:_graph.currentChartID),
+				'title' : title,
+				'maxvalue' : $("#txt_max").val(),
+				'minvalue' : $("#txt_min").val(),
+				'config' : config
+		};
+		sendAjaxNotMessage('/saveChart', param, function(data){
+			if(data.substr(0,3)=="ok:")
+			{
+				alert("Chart saved successfully");
+				_graph.currentChartID=data.substr(3);
+				$("#chartTitle").val(title);
+			}
+			else{
+				alert(data);
+			}
+		});
 	}
 }
 
@@ -280,18 +409,6 @@ function iframeOnload()
 	if(timeoutLoading!=null)
 		clearTimeout(timeoutLoading);
 	timeoutLoading=null;
-}
-
-var currentChartID=0;
-function newChart()
-{
-	if($("#chartObjectContainer").children().length>0)
-	{
-		if(!confirm("Current chart will be clear. Do you want to continue?")) return;
-	}
-	currentChartID=0;
-	$("#chartObjectContainer").empty();
-	$("#chartTitle").val("");
 }
 </script>
 <body style="margin: 0; min-width: 1000px;">
@@ -323,15 +440,15 @@ function newChart()
 							</td>
 							<td width="120"><select style="width: 100%; height: 22"
 								id="cboObjectNameTable" size="1" name="cboObjectNameTable" onchange="_graph.ObjectNameTableChange();">
-									<option class="eutest_table" value="DAY_STD_VALUE">STD Value</option>
-									<option class="eutest_table" value="DAY_VALUE">Day Value</option>
-									<option class="eutest_table" value="DAY_FDC_VALUE">FDC Value</option>
-									<option selected class="object_table" value="DAY_VALUE">Day	Value</option>
-									<option class="object_table" value="DAY_FDC_VALUE">FDC</option>
-									<option class="object_table" value="DAY_THEOR">Theoretical</option>
-									<option class="object_table" value="DAY_ALLOC">Allocation</option>
-									<option class="object_table" value="DAY_PLAN">Plan</option>
-									<option class="object_table" value="DAY_FORECAST">Forecast</option>
+									<option class="eutest_table" value="DATA_STD_VALUE">STD Value</option>
+									<option class="eutest_table" value="DATA_VALUE">Day Value</option>
+									<option class="eutest_table" value="DATA_FDC_VALUE">FDC Value</option>
+									<option selected class="object_table" value="DATA_VALUE">Day	Value</option>
+									<option class="object_table" value="DATA_FDC_VALUE">FDC</option>
+									<option class="object_table" value="DATA_THEOR">Theoretical</option>
+									<option class="object_table" value="DATA_ALLOC">Allocation</option>
+									<option class="object_table" value="DATA_PLAN">Plan</option>
+									<option class="object_table" value="DATA_FORECAST">Forecast</option>
 							</select></td>
 							<td><select style="width: 100%; height: 22"
 								id="cboObjectNameProps" size="1" name="cboObjectNameProps">
@@ -355,7 +472,7 @@ function newChart()
 						<td></td>
 						</tr>
 						<tr>
-							<td > <select	style="width: 100%; height: 22" id="cboEUFlowPhase" size="1" name="cboEUFlowPhase"></select></td>
+							<td > <select class="phase_type"	style="width: 100%; height: 22" id="cboEUFlowPhase" size="1" name="cboEUFlowPhase"></select></td>
 							<td >
 								<span class="alloc_type">
 									<select style="width: 143px;" id="cboAllocType" size="1" name="cboAllocType">

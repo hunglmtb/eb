@@ -314,7 +314,7 @@ var _workFlow = {
 				_workFlow.loadCbo(value, 'NETWORK_ID', 'AllocJob', 'cbo_jobs');
 			});
 
-			if(task[0].task_config == '{}') return;
+			if(task[0].task_config == 'undefined' && task[0].task_config == '{}') return;
 			
 			var param = JSON.parse(task[0].task_config);
 
@@ -780,14 +780,14 @@ var _workFlow = {
 			setTimeout(function () {
 				$('#choice_task').val(data.task_code);			
 				$('#choice_task').change();
-		    }, 1000);
+		    }, 3000);
 
 		    if(data.task_code == "NODE_CONDITION"){
 		    	var task_config = JSON.parse(data.task_config);
 		    	setTimeout(function () {
 		    		$('#choose_formula_group').val(task_config['formula_group']);	
 					$('#choose_formula_group').change();
-			    }, 1000);
+			    }, 3000);
 		    	
 		    	$('#choose_formula').val(task_config['formula_id']);
 		    	$('#cbo_datetype').val(task_config['type']);
@@ -1161,8 +1161,6 @@ function runWorkFlow(sId)
 function loadSavedDiagram(sId,sName){
 	
 	setCurrentDiagramId(sId);
-    
-
 	param = {
 		'ID' : sId
 	} 
@@ -1170,7 +1168,7 @@ function loadSavedDiagram(sId,sName){
  	sendAjax('/getXMLCodeWF', param, function(data){
  		setCurrentDiagramName(data.result.NAME);
  		setCurrentDiagramIntro(data.result.INTRO);
- 		setCurrentDiagramIsrun(data.result.ISRUN);
+ 		//setCurrentDiagramIsrun(data.result.ISRUN);
 		loadDiagramFromXML(data.result.DATA);
 		_workFlow.hideBoxDiagrams();
 	}); 
@@ -1249,11 +1247,7 @@ function doButtonSaveWorkflow(isSaveAs){
 	currentDiagramName=$('#txt_name').val();
 	currentDiagramId=$('#txt_id').val();
 	currentDiagramIntro=$('#txt_intro').val();
-	if($('#opt_yes').is(':checked')){
-		currentDiagramStatus='yes';
-	}else{
-		currentDiagramStatus='no';
-	}
+	
 	if(currentDiagramName=="" || !currentDiagramName){
 		return false;
 	}
@@ -1299,11 +1293,16 @@ function doButtonSaveWorkflow(isSaveAs){
 		return false;
 	}			
 	var id = (isSaveAs)?null:currentDiagramId;
+	var add = 0;
+	if(isSaveAs){
+		add = 1
+	}
+	
 	param = {
 		'ID' : id,
 		'NAME' : currentDiagramName,
 		'INTRO' : currentDiagramIntro,
-		'ISRUN' : currentDiagramStatus,
+		'ADD' : add,
 		'KEY' : currentXML
 	}
 
@@ -2139,16 +2138,6 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 			<label class='col-md-2 control-label'>Description:</label>
 			<div class="col-md-10">
 				<textarea class='form-control' rows=3 id='txt_intro'></textarea>
-			</div>
-		</div>
-		<div class="form-group">
-			<label class='col-md-2 control-label'>Config Run:</label>
-			<div class="col-md-10">
-				<label> <input type='radio' name='opt_status' id='opt_yes'
-					value='yes'>Run now
-				</label> <label> <input type='radio' name='opt_status' id='opt_no'
-					value='no'> Stop
-				</label>
 			</div>
 		</div>
 	</div>

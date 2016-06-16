@@ -57,7 +57,7 @@ $.ajaxSetup({
 	<a style="color:#33b5e8;text-decoration:none" href="/auth/logout">logout</a> &nbsp;&nbsp;
 	
 	<img atl="Workflow" src='/img/gear.png' height=16 onclick="showWorkflow()" style="float:right;margin:0px 2px;cursor:pointer">
-	<div id="wf_notify_box" onclick="showWorkflow()" style="position:absolute;right:-5px;top:-5px;width:16px;height:16px;font-family:Arial;background:red;border:2px solid white;border-radius:12px;font-size:6pt;font-weight:bold;color:white;cursor:pointer;text-align:center;line-height:12px;letter-spacing: -1px;text-indent:-1px;box-sizing: border-box;">
+	<div id="wf_notify_box" onclick="showWorkflow()" style="display:none;position:absolute;right:-5px;top:-5px;width:16px;height:16px;font-family:Arial;background:red;border:2px solid white;border-radius:12px;font-size:6pt;font-weight:bold;color:white;cursor:pointer;text-align:center;line-height:12px;letter-spacing: -1px;text-indent:-1px;box-sizing: border-box;">
 	<span id="wf_notify">
 	<?php
 		/* $sql="SELECT count(*) FROM tm_workflow_task WHERE (isrun in (2,3) AND (user LIKE '%,$current_username,%' or user LIKE '$current_username,%')) AND wf_id in (SELECT id FROM tm_workflow WHERE isrun='yes')";
@@ -90,7 +90,7 @@ $.ajaxSetup({
 	
 		$("#iframeWorkflow").attr("src","data:text/html;charset=utf-8," + escape(''));
 		show_wf_loading();
-		$("#iframeWorkflow").attr("src","loadWfShow");
+		$("#iframeWorkflow").attr("src","/loadWfShow");
 	}
 	var help="";
 	function showHelp(){

@@ -132,7 +132,7 @@ function loadSavedDiagram(sId){
 	} 
 
  	sendAjax('/getXMLCodeWF', param, function(xmlcode){
- 		if(xmlcode != null){
+ 		if(checkValue(xmlcode.result['DATA'],-1) != -1){
  			loadDiagramFromXML(xmlcode.result['DATA']);
  		}
  		

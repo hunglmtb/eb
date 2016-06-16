@@ -129,6 +129,12 @@ var diagram = {
 
 			$('#'+id).html(cbo);
 			$("#"+id).prop("disabled", false);  
+
+			if(id == "cboObjs"){
+				if(currentObjectMapping.getAttribute('object_id') > 0){
+					$("#cboObjs").val(currentObjectMapping.getAttribute('object_id'));
+				}
+			}
 		},
 
 		loadSurveillanceSetting : function(data){
@@ -1353,7 +1359,7 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 				"Cancel": function(){
 					$("#objectMapping").dialog("close");
 				}
-			}
+			}			
 		});
 	}
 	function mappingObject()

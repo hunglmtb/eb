@@ -30,6 +30,8 @@ class wfShowController extends Controller {
 			 ->where ( function ($q) use ($user_name) {
 				$q->where('USER', 'like', '%,'.$user_name.',%');
 				$q->orWhere('USER', 'like', $user_name.',%');
+				$q->orWhere('USER', 'like', '%,'.$user_name);
+				$q->orWhere('USER', '=', $user_name);
 			} ) 
 			->get(['WF_ID']))->toArray();
 		

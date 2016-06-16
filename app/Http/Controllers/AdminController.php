@@ -1099,11 +1099,11 @@ class AdminController extends Controller {
 		foreach ($loadUserLog as $v){
 	
 			if(!is_null($v->LOGIN_TIME)){
-				$v->LOGIN_TIME = date('m-d-Y', strtotime($v->LOGIN_TIME));
+				$v->LOGIN_TIME = $v->LOGIN_TIME;
 			}
 			
 			if(!is_null($v->LOGOUT_TIME)){
-				$v->LOGOUT_TIME = date('m-d-Y', strtotime($v->LOGOUT_TIME));
+				$v->LOGOUT_TIME = $v->LOGOUT_TIME;
 			}
 	
 			array_push($result, $v);

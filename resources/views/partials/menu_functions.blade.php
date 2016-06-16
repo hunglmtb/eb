@@ -139,14 +139,12 @@
 		<li><a href="#"><span>Data Vizualization</span></a>
 
 		<ul>
-
-			<li class="subfirst"><a href="../diagram">Network Model</a></li>
-
-			<li><a href="graph">Data Plotting</a></li>
-
-			<li><a href="view">Data View</a></li>
-
-			<li class="sublast"><a href="../report">Report</a></li>
+			<li class="subfirst"><a href="/diagram">Network Model</a></li>
+			<li><a href="/graph">Advanced Graph</a></li>
+			<li><a href="/dataview">Data View</a></li>
+			<li ><a href="/workreport">Report</a></li>
+			<li ><a href="/">Task Manager (Scheduler)</a></li>
+			<li class="sublast"><a href="/workflow">Workflow (BPM)</a></li>
 		</ul>
 		</li>
 		<li class="sublast"><a href="#"><span>Product Delivery</span></a>
