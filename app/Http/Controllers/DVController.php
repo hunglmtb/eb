@@ -266,9 +266,9 @@ class DVController extends Controller {
 				$table = $phase1 [0];
 				$field = $phase1 [1];
 				if (! $field)
-					$field = "EU_DAY_GRS_VOL";
+					$field = "EU_DATA_GRS_VOL";
 				if (! $table)
-					$table = "ENERGY_UNIT_DAY_VALUE";
+					$table = "ENERGY_UNIT_DATA_VALUE";
 				
 				if (count ( $phase0 ) > 0) {
 					$flow_phases = "-1";
@@ -606,28 +606,26 @@ class DVController extends Controller {
 		] );
 	}
 	public function workflowSave(Request $request) {
+		$data = $request->all ();
 		
 		DB::beginTransaction ();
-		try { 
-			$data = $request->all ();
-			
+		try { 			
 			$condition = array (
 					'ID' => $data ['ID'] 
 			);
 			
 			$objwf ['NAME'] = $data ['NAME'];
 			$objwf ['INTRO'] = $data ['INTRO'];
-			$objwf ['ISRUN'] = $data ['ISRUN'];
+			
+			if($data ['ADD'] == 1){
+				$objwf ['ISRUN'] = 'no';
+			}
 			$objwf ['DATA'] = $data ['KEY'];
 			$objwf ['ID'] = $data ['ID'];
 			$objwf ['STATUS'] = 1;
 			
 			//\DB::enableQueryLog ();
 			$tmWorkflow = TmWorkflow::updateOrCreate ( $condition, $objwf );
-			//\Log::info ( \DB::getQueryLog () );
-			
-			//\DB::enableQueryLog ();
-			TmWorkflowTask::where(['WF_ID'=>$data ['ID']])->delete();
 			//\Log::info ( \DB::getQueryLog () );
 			
 			$dom_xml = simplexml_load_string ( $data ['KEY'] );
@@ -639,7 +637,7 @@ class DVController extends Controller {
 				
 				$objwf_task ['ID'] = ( int ) $task ['task_id'];
 				
-				$id_tasknew [] = $tmWorkflow->ID;
+				$id_tasknew [] = $objwf_task ['ID'];
 				
 				$objwf_task ['WF_ID'] = $tmWorkflow->ID;
 				if (isset ( $task ['isbegin'] )) {
@@ -684,6 +682,16 @@ class DVController extends Controller {
 				TmWorkflowTask::updateOrCreate ( $conTask, $objwf_task );
 				//\Log::info ( \DB::getQueryLog () );
 			}
+			
+			$ids_task = $this->getIdTaskByWf($data ['ID']);	
+			$m=count($ids_task);
+			for($i=0;$i<$m;$i++){
+				if(!in_array($ids_task[$i]['ID'],$id_tasknew)){
+					//$objwf_task->Delete($ids_task[$i]);
+					TmWorkflowTask::where(['ID'=>$ids_task[$i]['ID']])->delete();
+				}
+			}
+			
  		} catch ( \Exception $e ) {
  			\Log::info ( $e->getMessage() );
 			DB::rollback ();
@@ -692,6 +700,12 @@ class DVController extends Controller {
 		DB::commit ();
 		
 		return response ()->json ( $tmWorkflow->ID );
+	}
+	
+	private  function getIdTaskByWf($wfid){		
+		$ar = collect(TmWorkflowTask::where(['WF_ID'=>$wfid])->get(['ID']))->toArray();
+		
+		return $ar;
 	}
 	
 	public function loadConfigTask(Request $request) {
@@ -899,7 +913,9 @@ class DVController extends Controller {
 	
 		TmWorkflow::where(['ID'=>$data['ID']])->update(['ISRUN'=>'yes']);
 		
-		$tmWorkflowTask = collect(TmWorkflowTask::where(['WF_ID'=>$data['ID'], 'ISBEGIN'=>1])->first()->toArray());		
+		\DB::enableQueryLog ();
+		$tmWorkflowTask = TmWorkflowTask::where(['WF_ID'=>$data['ID'], 'ISBEGIN'=>1])->first();		
+		\Log::info ( \DB::getQueryLog () );
 		
 		if(count($tmWorkflowTask) > 0){				
 			TmWorkflowTask::where(['WF_ID'=>$data['ID']])

@@ -11,6 +11,8 @@ $(function(){
 	var listControl = <?php echo json_encode($listControls);?>;
 	
 	adminControl.init(listControl);	
+
+	$('#cboObjectType').change();
 }); 
 
 var adminControl = {
@@ -88,7 +90,7 @@ var adminControl = {
 
 		$("#Facility, #cboObjectType, #Product").change(function() {  
 			if(typeof _graph !== 'undefined' && _graph.loadObjType == 1){	 
-				_graph.loadObjects();
+				_graph.cboObjectTypeOnChange();
 			}
 		});
 

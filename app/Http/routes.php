@@ -210,4 +210,6 @@ Route::get('graph', 'graphController@_index');
 Route::post('loadVizObjects', 'graphController@loadVizObjects');
 Route::post('loadEUPhase', 'graphController@loadEUPhase');
 Route::get('loadchart/{param}/{minvalue}/{maxvalue}/{date_begin}/{date_end}/{input}', 'graphController@loadChart');
-
+Route::post('listCharts', 'graphController@getListCharts');
+Route::post('deleteChart', 'graphController@deleteChart');
+Route::post('saveChart', 'graphController@saveChart');

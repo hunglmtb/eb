@@ -21,7 +21,7 @@ $(function(){
 	$('#pageheader').css('display', 'none');
 	$('#cboReports').change();
 
-	_report.host = <?php echo "'".$host."'";?>
+	_report.host = <?php echo $host;?>
 });
 
 var _report = {
