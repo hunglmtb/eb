@@ -14,13 +14,18 @@ PERSONNEL DATA
 	actions.loadUrl = "/personnel/load";
 	actions.saveUrl = "/personnel/save";
 	actions.type = {
-					idName:['EQUIPMENT_ID','EQP_FUEL_CONS_TYPE','EQP_GHG_REL_TYPE'],
-					keyField:'EQUIPMENT_ID',
+					idName:['ID'],
+					keyField:'DT_RowId',
 					saveKeyField : function (model){
-						return 'EQUIPMENT_ID';
+						return 'ID';
 					},
 				};
+
+	actions.extraDataSetColumns = {'BA_ID':'TITLE'};
 	
+	source['TITLE']	={	dependenceColumnName	:	['BA_ID'],
+						url						: 	'/personnel/loadsrc'
+					};
 	/* actions.getGrepValue = function (data,uom,rowData) {
 		if(uom.COLUMN_NAME == 'EQP_FUEL_CONS_TYPE' && rowData.FUEL_TYPE!=null) return rowData.FUEL_TYPE;
 		if(uom.COLUMN_NAME == 'EQP_GHG_REL_TYPE' && rowData.GHG_REL_TYPE!=null) return rowData.GHG_REL_TYPE;

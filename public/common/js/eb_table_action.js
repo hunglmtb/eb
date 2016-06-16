@@ -7,7 +7,13 @@ var intVal = function ( i ) {
 	var index = 1000;
 	var addingOptions ={keepColumns:[]};
 	var source = {
-					initRequest	:	function(){}
+					initRequest	:	 function(tab,columnName,newValue,collection){
+						postData = actions.loadedData[tab];
+						srcData = {	name : columnName,
+									value : newValue,
+									};
+						return srcData;
+					}
 				};
 	actions.afterDataTable = function (table,tab){
 		$("#toolbar_"+tab).html('<button>Add</button>');

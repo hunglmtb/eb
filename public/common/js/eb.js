@@ -460,7 +460,7 @@ var actions = {
 									return "";
 								}
 								if (data2.constructor.name == "Date") { 
-									return moment.utc(data2).format("MM/DD/YYYY HH:mm");
+									return moment(data2).format("MM/DD/YYYY HH:mm");
 								}
 								return moment.utc(data2,"YYYY-MM-DD HH:mm").format("MM/DD/YYYY HH:mm");
 							};
@@ -606,7 +606,6 @@ var actions = {
 				}
 			}
         });
-		
 		if(!autoWidth) $('#table_'+tab).css('width',(tblWdth)+'px');
 		
 		option = {data: data.dataSet,

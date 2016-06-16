@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 class DefermentController extends CodeController {
     
 	protected $extraDataSetColumns;
+	
 	public function __construct() {
 		parent::__construct();
 		$this->extraDataSetColumns = [	'DEFER_GROUP_TYPE'	=>	[	'column'	=>'DEFER_TARGET',
@@ -24,13 +25,6 @@ class DefermentController extends CodeController {
 									];
 		
 		$this->keyColumns = [$this->idColumn,$this->phaseColumn];
-		/* $this->fdcModel = "DefermentData";
-		$this->idColumn = config("constants.defermentId"); */
-		/* $this->phaseColumn = config("constants.flFlowPhase");
-	
-		$this->valueModel = "FlowDataValue";
-		$this->theorModel = "FlowDataTheor"; */
-// 		$this->isApplyFormulaAfterSaving = true;
 	}
 	
 	public function getFirstProperty($dcTable){
@@ -47,13 +41,8 @@ class DefermentController extends CodeController {
     	$extraDataSet = [];
     	$dataSet = null;
     	$codeDeferGroupType = CodeDeferGroupType::getTableName();
-    	/* $uoms = $properties['uoms'];
-	    $sourceTypekey = array_search('CodeQltySrcType', array_column($uoms, 'id'));
-	    $sourceTypes = $uoms[$sourceTypekey]['data'];
-	    $objectType = null;  */
 	    
 	    $where = ['FACILITY_ID' => $facility_id];
-	    
     	$dataSet = $mdl::leftJoin($codeDeferGroupType,"$dcTable.DEFER_GROUP_TYPE",'=',"$codeDeferGroupType.ID")
 							    	->where($where)
 							    	->whereDate("$dcTable.BEGIN_TIME", '>=', $occur_date)
@@ -80,26 +69,10 @@ class DefermentController extends CodeController {
     	];
     }
     
-    
-    public function getExtraEntriesBy($sourceColumn,$extraDataSetColumn,$dataSet,$bunde){
-    	$extraDataSet = null;
-    	$subDataSets = $dataSet->groupBy($sourceColumn);
-    	if ($subDataSets&&count($subDataSets)>0) {
-    		$extraDataSet = [];
-    		foreach($subDataSets as $key => $subData ){
-    			$entry = $subData[0];
-    			$sourceColumnValue = $entry->$sourceColumn;
-    			if ($sourceColumn=='DEFER_GROUP_TYPE') {
-    				$bunde['DEFER_GROUP_CODE'] = $entry->DEFER_GROUP_CODE;
-    			}
-    			$data = $this->loadTargetEntries($sourceColumnValue,$sourceColumn,$extraDataSetColumn,$bunde);
-    			if ($data) {
-    				$extraDataSet[$sourceColumnValue] = $data;
-    			}
-    		}
-    		$extraDataSet=count($extraDataSet)>0?$extraDataSet:null;
+    public function putExtraBundle(&$bunde,$sourceColumn,$entry){
+    	if ($sourceColumn=='DEFER_GROUP_TYPE') {
+    		$bunde['DEFER_GROUP_CODE'] = $entry->DEFER_GROUP_CODE;
     	}
-    	return $extraDataSet;
     }
     
     public function loadTargetEntries($sourceColumnValue,$sourceColumn,$extraDataSetColumn,$bunde){
@@ -191,6 +164,7 @@ class DefermentController extends CodeController {
 	    
     	return response()->json($results);
     }
+    
     public function getDefermentDetails($id){
     	$defermentDetail =DefermentDetail::getTableName();
     	//     	$defermentGroupEu =DefermentGroupEu::getTableName();

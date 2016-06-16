@@ -57,7 +57,7 @@ if (!isset($active)) $active =1;
 		actions.updateView(postData);
 
 		if($( window ).width()>$('#table_'+tab).width()){
-	 		$('#container_'+tab).css('width',$('#table_'+tab).width()+18);
+	 		$('#container_'+tab).css('width',$('#table_'+tab).width());
 		}
  		var tbbody = $('#table_'+tab);
  		if(data.dataSet!=null&&(data.dataSet.length>0)) tbbody.tableHeadFixer({"left" : 1,head: false,});

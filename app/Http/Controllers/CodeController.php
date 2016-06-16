@@ -29,6 +29,9 @@ use App\Models\CodeEqpOfflineReason;
 use App\Models\CodeEqpFuelConsType;
 use App\Models\CodeVolUom;
 use App\Models\CodeEqpGhgRelType;
+use App\Models\CodePersonnelType;
+use App\Models\CodePersonnelTitle;
+use App\Models\Personnel;
 
 class CodeController extends EBController {
 	 
@@ -101,7 +104,7 @@ class CodeController extends EBController {
     	if ($firstProperty) {
 	    	$properties->prepend($firstProperty);
     	}
-    	$uoms = $this->getUoms($properties,$facility_id);
+    	$uoms = $this->getUoms($properties,$facility_id,$dcTable);
     	$locked = $this->isLocked($dcTable,$occur_date,$facility_id);
     	
     	$results = ['properties'	=>$properties,
@@ -346,7 +349,7 @@ class CodeController extends EBController {
 	}
 	
     
-    public function getUoms($properties = null,$facility_id)
+    public function getUoms($properties = null,$facility_id,$dcTable=null)
     {
     	$uoms = [];
     	$model = null;
@@ -458,9 +461,11 @@ class CodeController extends EBController {
     				$rs[] = $selectData;
     				break;
     			case 'BA_ID' :
-    				$selectData = ['id'=>'BaAddress','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				$selectData['data'] = BaAddress::all();
-    				$rs[] = $selectData;
+    				if ($dcTable!=Personnel::getTableName()) {
+	    				$selectData = ['id'=>'BaAddress','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    				$selectData['data'] = BaAddress::all();
+	    				$rs[] = $selectData;
+    				}
     				break;
     			case 'SEVERITY_ID' :
     				$selectData = ['id'=>'CodeSafetySeverity','targets'=>$i,'COLUMN_NAME'=>$columnName];
@@ -493,6 +498,16 @@ class CodeController extends EBController {
     				$selectData['data'] = CodeVolUom::all();
     				$rs[] = $selectData;
     				break;
+    			case 'TYPE' :
+    				$selectData = ['id'=>'CodePersonnelType','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = CodePersonnelType::all();
+    				$rs[] = $selectData;
+    				break;
+		    	case 'TITLE' :
+		    		$selectData = ['id'=>'CodePersonnelTitle','targets'=>$i,'COLUMN_NAME'=>$columnName];
+		    		$selectData['data'] = CodePersonnelTitle::all();
+		    		$rs[] = $selectData;
+		    		break;
     		}
     		$i++;
     	}
@@ -555,4 +570,25 @@ class CodeController extends EBController {
     	return $key===FALSE;
     }
     
+    public function getExtraEntriesBy($sourceColumn,$extraDataSetColumn,$dataSet,$bunde=[]){
+    	$extraDataSet = null;
+    	$subDataSets = $dataSet->groupBy($sourceColumn);
+    	if ($subDataSets&&count($subDataSets)>0) {
+    		$extraDataSet = [];
+    		foreach($subDataSets as $key => $subData ){
+    			$entry = $subData[0];
+    			$sourceColumnValue = $entry->$sourceColumn;
+    			$this->putExtraBundle($bunde,$sourceColumn,$entry);
+    			$data = $this->loadTargetEntries($sourceColumnValue,$sourceColumn,$extraDataSetColumn,$bunde);
+    			if ($data) {
+    				$extraDataSet[$sourceColumnValue] = $data;
+    			}
+    		}
+    		$extraDataSet=count($extraDataSet)>0?$extraDataSet:null;
+    	}
+    	return $extraDataSet;
+    }
+    
+    public function putExtraBundle(&$bunde,$sourceColumn,$entry){
+    }
 }
