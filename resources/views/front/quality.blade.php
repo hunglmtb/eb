@@ -81,10 +81,10 @@ QUALITY DATA CAPTURE
 	    	 		 									bInfo 		: false,
 	    	 		 									scrollY		:	"320px",
 	    	 		 									footerCallback : function ( row, data3, start, end, display ) {
-	    									            var api = this.api();
-	    									            columns = [1,2,3];
-	    									            renderSumRow(api,columns);
-	    									        }
+					    									            var api = this.api();
+					    									            columns = [1,2,3];
+					    									            renderSumRow(api,columns);
+	    									        	}
 	    	 		 								}
 	    					};
 	    			subData = data['MOLE_FACTION'];
@@ -99,7 +99,14 @@ QUALITY DATA CAPTURE
 	    									footerCallback : function ( row, data3, start, end, display ) {
 	    														var api = this.api();
 	    											            columns = [1];
-	    											            renderSumRow(api,columns);
+	    											            $.each(columns, function( i, column ) {
+	    											                total = 0;
+	    											                $.each(api.columns(column).data()[0], function( index, value ) {
+	    											                	total += intVal(value);
+	    											        		});
+	    											                // Update footer
+	    											                $( api.columns(column).footer() ).html(total.toFixed(3));
+	    											        	});
 	    										       		}
 	    	        					}
 	    			};

@@ -92,9 +92,17 @@ class CodeController extends EBController {
      	
  		$results = $this->getProperties($dcTable,$facility_id,$occur_date);
       	$data = $this->getDataSet($postData,$dcTable,$facility_id,$occur_date,$results);
+      	$secondaryData = $this->getSecondaryData($postData,$dcTable,$facility_id,$occur_date,$results);
+        $results['secondaryData'] = $secondaryData;
         $results['postData'] = $postData;
-        $results = array_merge($results, $data);
+        if ($data&&is_array($data)) {
+	        $results = array_merge($results, $data);
+        }
     	return response()->json($results);
+    }
+    
+    public function getSecondaryData($postData,$dcTable,$facility_id,$occur_date,$results){
+    	return null;
     }
     
     public function getProperties($dcTable,$facility_id,$occur_date){
@@ -306,7 +314,8 @@ class CodeController extends EBController {
      	}
 //      	\Log::info(\DB::getQueryLog());
     
-     	$results = ['updatedData'=>$updatedData,'postData'=>$postData];
+     	$results = ['updatedData'=>$updatedData,
+     				'postData'=>$postData];
      	if (array_key_exists('lockeds', $resultTransaction)) {
 	     	$results['lockeds'] = $resultTransaction['lockeds'];
      	}

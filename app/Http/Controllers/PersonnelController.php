@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Http\Request;
 use App\Models\Personnel;
 use App\Models\CodePersonnelTitle;
 use App\Models\CodeBaType;
-use Illuminate\Http\Request;
+use App\Models\PersonnelSumDay;
+use App\Models\CodePersonnelType;
 
 class PersonnelController extends CodeController {
 	
@@ -21,61 +23,90 @@ class PersonnelController extends CodeController {
 		return  ['data'=>'ID','title'=>'','width'=>50];
 	}
 	
-    public function getDataSet($postData,$safetyTable,$facility_id,$occur_date,$properties){
-
+    public function getDataSet($postData,$table,$facility_id,$occur_date,$properties){
+    	if($table!=PersonnelSumDay::getTableName()){
+	//     	$personnel = Personnel::getTableName();
+	    	$codePersonnelTitle = CodePersonnelTitle::getTableName();
+	    	$extraDataSet = [];
+	    	//      	\DB::enableQueryLog();
+	    	$dataSet = Personnel::join($codePersonnelTitle,"$codePersonnelTitle.ID", '=', "$table.TITLE")
+	    					->where("FACILITY_ID","=",$facility_id)
+					    	->where("OCCUR_DATE","=",$occur_date)
+					    	->select(
+					    			"$table.ID as DT_RowId",
+					    			"$table.*",
+					    			"$codePersonnelTitle.CODE"
+					    			)
+	 		    			->orderBy("ID")
+			    			->get();
+	    	//  		\Log::info(\DB::getQueryLog());
+			    			
+	    	if ($dataSet&&$dataSet->count()>0) {
+	    		foreach($this->extraDataSetColumns as $column => $extraDataSetColumn){
+	    			$extraDataSet[$column] = $this->getExtraEntriesBy($column,$extraDataSetColumn,$dataSet);
+	    		}
+	    	}
+	    	
+	    	return ['dataSet'=>$dataSet,
+	    			'extraDataSet'=>$extraDataSet,
+	    	];
+    	}
+    	return null;
+    }
+    
+    public function getSecondaryData($postData,$dcTable,$facility_id,$occur_date,$results){
+    	$personnelSumDay = PersonnelSumDay::getTableName();
+    	$personnelSumDayProperties = $this->getOriginProperties($personnelSumDay);
+    	$secondaryEntries = $this->getSecondaryDataSet($postData,$personnelSumDay,$facility_id,$occur_date,$personnelSumDayProperties);
+    	$uoms = $this->getUoms($personnelSumDayProperties,$facility_id,$personnelSumDay);
+    	
+    	$secondaryData = [	'dataSet'		=>$secondaryEntries,
+			    			'properties'	=>$personnelSumDayProperties,
+			    			'uoms'			=>$uoms,
+			    			'postData'		=>['tabTable'=>'PersonnelSumDay'],
+    	];
+    	return $secondaryData;
+    }
+    
+    public function getSecondaryDataSet($postData,$table,$facility_id,$occur_date,$properties){
+    	
     	$personnel = Personnel::getTableName();
     	$codePersonnelTitle = CodePersonnelTitle::getTableName();
-    	$extraDataSet = [];
-    	//      	\DB::enableQueryLog();
-    	$dataSet = Personnel::join($codePersonnelTitle,"$codePersonnelTitle.ID", '=', "$personnel.TITLE")
-    					->where("FACILITY_ID","=",$facility_id)
-				    	->where("OCCUR_DATE","=",$occur_date)
-				    	->select(
-				    			"$personnel.ID as DT_RowId",
-				    			"$personnel.*",
-				    			"$codePersonnelTitle.CODE"
-				    			)
- 		    			->orderBy("ID")
-		    			->get();
-    	//  		\Log::info(\DB::getQueryLog());
-		    			
-    	if ($dataSet&&$dataSet->count()>0) {
-    		foreach($this->extraDataSetColumns as $column => $extraDataSetColumn){
-    			$extraDataSet[$column] = $this->getExtraEntriesBy($column,$extraDataSetColumn,$dataSet);
-    		}
-    	}
+    	$codePersonnelType = CodePersonnelType::getTableName();
+    	$personnelSumDay = PersonnelSumDay::getTableName();
+//     	\DB::enableQueryLog();
+    	$query = Personnel::where("$personnel.FACILITY_ID", '=', $facility_id)
+    						->where("$personnel.OCCUR_DATE", '=', $occur_date)
+    						->whereRaw(\DB::raw("$personnel.TYPE = $codePersonnelType.ID"))
+    						->whereRaw(\DB::raw("$personnel.TITLE = $codePersonnelTitle.ID"))
+    						->select(\DB::raw('count(*)'));
     	
-    	/* $sSQL="select concat(a.`TYPE`,'_',a.TITLE) ID, 
-    	a.*,s.NOTE,
-    	(select count(1) 
-	    	from PERSONNEL x 
-	    	where x.`TYPE`=a.`TYPE` 
-	    	and x.TITLE=a.TITLE 
-	    	and x.FACILITY_ID=$facility_id 
-	    	and x.OCCUR_DATE=STR_TO_DATE('$occur_date','%m/%d/%Y')
-    	) X_NUMBER,
-    	b.NAME TYPE_NAME,
-    	c.NAME TITLE_NAME 
-    	from (select t1.ID `TITLE`,
-    			t2.ID `TYPE` 
-    			from code_personnel_title t1, 
-    			code_personnel_type t2
-    	) a 
-    	left join PERSONNEL_SUM_DAY s 
-    	on s.TYPE=a.TYPE 
-    	and s.TITLE=a.TITLE 
-    	and s.FACILITY_ID=$facility_id 
-    	and s.OCCUR_DATE=STR_TO_DATE('$occur_date','%m/%d/%Y'), 
-    	CODE_PERSONNEL_TYPE b, 
-    	CODE_PERSONNEL_TITLE c 
-    	where a.TYPE=b.ID 
-    	and a.TITLE=c.ID 
-    	order by a.`TYPE`, 
-    	a.`TITLE`"; */
+    	$entryCount = $query->toSql();
+    	$binding = $query->getBindings();
     	 
-    	return ['dataSet'=>$dataSet,
-    			'extraDataSet'=>$extraDataSet
-    	];
+    	$dataSet = CodePersonnelTitle::join($codePersonnelType,"$codePersonnelType.ID",'=',"$codePersonnelType.ID")
+							    	->select(
+							    			\DB::raw("CONCAT($codePersonnelType.ID,$codePersonnelTitle.ID) as DT_RowId"),
+							    			"$codePersonnelType.ID as TYPE",
+							    			"$codePersonnelTitle.ID as TITLE",
+							    			"$codePersonnelType.NAME as TYPE_NAME",
+							    			"$codePersonnelTitle.NAME as TITLE_NAME",
+							    			"$personnelSumDay.NOTE",
+							    			\DB::raw("($entryCount) as NUMBER")
+							    			)
+					    			->addBinding($binding)
+					    			->leftJoin($personnelSumDay, function($join) use ($personnelSumDay,$codePersonnelType,$codePersonnelTitle,$facility_id,$occur_date){
+					    				$join->on("$personnelSumDay.TYPE", '=', "$codePersonnelType.ID");
+					    				$join->on("$personnelSumDay.TITLE", '=', "$codePersonnelTitle.ID");
+					    				$join->where('FACILITY_ID','=',$facility_id);
+					    				$join->where('OCCUR_DATE','=',$occur_date);
+					    			})
+					    			->orderBy("$codePersonnelType.ID")
+					    			->orderBy("$codePersonnelTitle.ID")
+					    			->get();
+// 		\Log::info(\DB::getQueryLog());
+					    			
+    	return $dataSet;
     }
     
 

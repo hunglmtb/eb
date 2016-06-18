@@ -10,42 +10,135 @@ PERSONNEL DATA
 
 @section('adaptData')
 @parent
+<style type="text/css">
+#containerSecondaryContent{
+	width: 30%;
+	float: right;
+}
+#tabs_contents{
+	width: 70%;
+	float: left;
+}
+</style>
 <script>
 	actions.loadUrl = "/personnel/load";
 	actions.saveUrl = "/personnel/save";
 	actions.type = {
-					idName:['ID'],
+					idName:['ID', 'TYPE', 'TITLE'],
 					keyField:'DT_RowId',
 					saveKeyField : function (model){
 						return 'ID';
 					},
 				};
+	actions.getExistRowId = function(value,key){
+		if(key=='PersonnelSumDay') return ''+value.TYPE+value.TITLE;
+		return value[actions.type.saveKeyField(key)];
+	}
 
+	render2rdTable = function(data){
+		options = {
+				tableOption :{
+									searching	: false,
+									scrollY		: "450px",
+										drawCallback : drawCallback,
+										footerCallback : footerCallback
+								},
+					invisible:['TYPE','TYPE_NAME']
+			};
+		actions.initTableOption('PersonnelSumDay',data.secondaryData,options,null,actions.createdFirstCellColumn);
+	}
+
+	actions.addingNewRowSuccess = function(data,table,tab,isAddingNewRow){
+		if(tab=='Personnel'){
+			srcData = data.postData;
+			srcData['{{config("constants.tabTable")}}'] = 'PersonnelSumDay';
+			$.ajax({
+				url: '/personnel/load',
+				type: "post",
+				data: srcData,
+				success:function(data){
+					render2rdTable(data);
+					console.log ( "success addingNewRowSuccess "+data );
+				},
+				error: function(data) {
+					console.log ( "error addingNewRowSuccess "+data );
+				}
+			});
+		}
+	}
+	
+	
 	actions.extraDataSetColumns = {'BA_ID':'TITLE'};
 	
 	source['TITLE']	={	dependenceColumnName	:	['BA_ID'],
 						url						: 	'/personnel/loadsrc'
 					};
-	/* actions.getGrepValue = function (data,uom,rowData) {
-		if(uom.COLUMN_NAME == 'EQP_FUEL_CONS_TYPE' && rowData.FUEL_TYPE!=null) return rowData.FUEL_TYPE;
-		if(uom.COLUMN_NAME == 'EQP_GHG_REL_TYPE' && rowData.GHG_REL_TYPE!=null) return rowData.GHG_REL_TYPE;
-		return data;
-	};
 
-	actions.notUniqueValue = function(uom,rowData){
-		if(uom.COLUMN_NAME == 'EQP_FUEL_CONS_TYPE' && rowData.FUEL_TYPE!=null) {
-			rowData.EQP_FUEL_CONS_TYPE = rowData.FUEL_TYPE;
-			return false;
-		}
-		if(uom.COLUMN_NAME == 'EQP_GHG_REL_TYPE' && rowData.GHG_REL_TYPE!=null){
-			rowData.EQP_GHG_REL_TYPE = rowData.GHG_REL_TYPE;
-			return false;
-		 }
-		return true;
+	drawCallback = function ( settings ) { 
+        	var table = $('#table_PersonnelSumDay').dataTable();
+            var api = this.api();
+            var rows = api.rows( {page:'current'} ).nodes();
+            var last=null;
+ 
+            groups = api.data();
+            
+            groups.each( function ( group, i ) {
+                if ( last !== group.TYPE ) {
+                    $(rows).eq( i ).before(
+                        '<tr class="group"><td colspan="2">'+group.TYPE_NAME+'</td></tr>'
+                    );
+ 
+                    last = group.TYPE;
+                }
+            } );
+        };
+
+        footerCallback = function ( row, data3, start, end, display ) {
+		      var api = this.api();
+	          var last=null;
+	          totals = {};
+	          groups = api.data();
+		      groups.each( function ( group, i ) {
+	              if ( typeof(totals[group.TITLE_NAME]) == "undefined") {
+	          		totals[group.TITLE_NAME] = 0;
+	              }
+	              if ( last !== group.TITLE) {
+	              	totals[group.TITLE_NAME] += intVal(group.NUMBER);
+	                  last = group.TITLE;
+	              }
+	          } );
+		      // Update footer
+		      totalsHtml = '<tr><td>TOTAL</td>TOTAL</tr>';
+		      for (var key in totals) {
+		    	  totalsHtml += '<tr><td>'+key+'</td>'+
+			      				'<td colspan="">'+totals[key]+
+			      				'</td></tr>';
+			  }
+	          $( api.columns(1).footer() ).html(totalsHtml); 
+		};
+        
+	superLoadSuccess = actions.loadSuccess;
+	actions.loadSuccess =  function(data){
+		superLoadSuccess(data);
+		render2rdTable(data);
 	}
-
-	actions.isShownOf = function (value,postData) {
-		return moment(value.OCCUR_DATE).isSame(postData.date_begin,'day');
-	}; */
 </script>
 @stop
+
+@section('secondaryContent')
+@parent
+<div id="containerSecondaryContent" style="overflow-x:hidden">
+	<div id="container_PersonnelSumDay" style="overflow-x:hidden">
+		<table border="0" cellpadding="3" id="table_PersonnelSumDay" class="fixedtable nowrap display">
+		<tfoot>
+								<tr>
+									<td style="text-align:left"></td>
+									<td style="text-align:left"></td>
+									<td style="text-align:left" colspan="1"></td>
+								</tr>
+							</tfoot>
+		</table>
+	</div>
+</div>
+@stop
+
