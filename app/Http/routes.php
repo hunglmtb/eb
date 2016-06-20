@@ -136,6 +136,7 @@ Route::post('chemical/save', 		'ChemicalController@save');
 Route::get('fo/personnel',			['uses' =>'FOController@personnel','middleware' => 'checkRight:FOP_PERSONNEL']);
 Route::post('personnel/load',		['uses' =>	'PersonnelController@load','middleware' => 'saveWorkspace']);
 Route::post('personnel/save', 		'PersonnelController@save');
+Route::post('personnel/loadsrc', 	'PersonnelController@loadsrc');
 
 //----------admin
 Route::get('am/users', 'AdminController@_index');

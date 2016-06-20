@@ -7,7 +7,13 @@ var intVal = function ( i ) {
 	var index = 1000;
 	var addingOptions ={keepColumns:[]};
 	var source = {
-					initRequest	:	function(){}
+					initRequest	:	 function(tab,columnName,newValue,collection){
+						postData = actions.loadedData[tab];
+						srcData = {	name : columnName,
+									value : newValue,
+									};
+						return srcData;
+					}
 				};
 	actions.afterDataTable = function (table,tab){
 		$("#toolbar_"+tab).html('<button>Add</button>');
@@ -46,15 +52,17 @@ var intVal = function ( i ) {
 
 	actions.afterGotSavedData = function (data,table,tab){
     	var editedData = actions.editedData[tab];
+    	isAddingNewRow = false;
     	 $.each(editedData, function( i, rowData ) {
     		 	var id = rowData['DT_RowId'];
     		 	if ((typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1)) {
     		 		table.row($('#'+id)).remove().draw(false);
     		 		var tbbody = $('#table_'+tab);
     		 		tbbody.tableHeadFixer({"left" : 1,head: false,});
-// 					$('#'+id).remove();
+    		 		isAddingNewRow  = true;
 			    }
           });
+    	actions.addingNewRowSuccess(data,table,tab,isAddingNewRow);
 	};
 	actions.createdFirstCellColumn  = function (td, cellData, rowData, row, col) {
 		var table =$(this).dataTable();

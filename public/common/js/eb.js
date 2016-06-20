@@ -89,7 +89,8 @@ var actions = {
 	loadError : function(data){
 					alert(JSON.stringify(data.responseText));
 				},
-	shouldLoad : function(data){return false;},
+	shouldLoad 			: function(data){return false;},
+	addingNewRowSuccess	: function(data,table,tab,isAddingNewRow){},
 	afterGotSavedData : function(data,table,key){},
 	dominoColumns : function(columnName,newValue,tab,rowData,collection,td){},
 	loadNeighbor: function (){
@@ -460,7 +461,7 @@ var actions = {
 									return "";
 								}
 								if (data2.constructor.name == "Date") { 
-									return moment.utc(data2).format("MM/DD/YYYY HH:mm");
+									return moment(data2).format("MM/DD/YYYY HH:mm");
 								}
 								return moment.utc(data2,"YYYY-MM-DD HH:mm").format("MM/DD/YYYY HH:mm");
 							};
@@ -510,13 +511,17 @@ var actions = {
 		return true;
 	},
 	initTableOption : function (tab,data,options,renderFirsColumn,createdFirstCellColumn){
-		var exclude = [0];
 		if(typeof(data.uoms) == "undefined"||data.uoms==null){
 			data.uoms = [];
 		}
 		var uoms = data.uoms;
 		var invisible = options!=null&&(typeof(options.invisible) !== "undefined"&&options.invisible!=null)?options.invisible:null;
-		
+		var exclude = [0];
+		if(typeof(renderFirsColumn) == "function"){
+			exclude = [0];
+		}
+		else exclude = [];
+
 		if(typeof(uoms) !== "undefined"&&uoms!=null){
 			$.each(uoms, function( index, value ) {
 				exclude.push(uoms[index]["targets"]);
@@ -553,6 +558,9 @@ var actions = {
 			        	});
 		 			}
 	   			}
+	            if(invisible!=null&&$.inArray(data.properties[index].data, invisible)>=0){
+	            	uoms[index]['visible']=false;
+				}
 			});
 		}
 
@@ -570,11 +578,13 @@ var actions = {
     		uoms.push(cell);
         });
 		
-		var phase = {"targets": 0,
+		if(typeof(renderFirsColumn) == "function"){
+			var phase = {"targets": 0,
 					"render": renderFirsColumn,
-		  			};
-		if(createdFirstCellColumn!=null) phase["createdCell"] = createdFirstCellColumn;
-		uoms.push(phase);
+			};
+			if(createdFirstCellColumn!=null) phase["createdCell"] = createdFirstCellColumn;
+			uoms.push(phase);
+		}
 		
 		var autoWidth = false;
 		if( options!=null&&
@@ -606,7 +616,6 @@ var actions = {
 				}
 			}
         });
-		
 		if(!autoWidth) $('#table_'+tab).css('width',(tblWdth)+'px');
 		
 		option = {data: data.dataSet,
@@ -650,6 +659,9 @@ var actions = {
 		
 		var tbl = $('#table_'+tab).DataTable(option);
 		return tbl;
+	},
+	getExistRowId		: function(value,key){
+		return value[actions.type.saveKeyField(key)];
 	}
 }
 

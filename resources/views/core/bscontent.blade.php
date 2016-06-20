@@ -12,14 +12,17 @@ if (!isset($active)) $active =1;
 					<li id="{{$key}}"><a href="#tabs-{{$key}}"><font size="2">{{$table['name']}}</font></a></li>
 		 		@endforeach
 			</ul>
-			@foreach($tables as $key => $table )
-				<div id="tabs-{{$key}}">
-					<div id="container_{{$key}}" style="overflow-x:hidden">
-						<table border="0" cellpadding="3" id="table_{{$key}}" class="fixedtable nowrap display">
-						</table>
+			<div id="tabs_contents">
+				@foreach($tables as $key => $table )
+					<div id="tabs-{{$key}}">
+						<div id="container_{{$key}}" style="overflow-x:hidden">
+							<table border="0" cellpadding="3" id="table_{{$key}}" class="fixedtable nowrap display">
+							</table>
+						</div>
 					</div>
-				</div>
-	 		@endforeach
+		 		@endforeach
+			</div>
+	 		@yield('secondaryContent')
 		</div>
 		@section('script')
 			@parent
@@ -57,7 +60,7 @@ if (!isset($active)) $active =1;
 		actions.updateView(postData);
 
 		if($( window ).width()>$('#table_'+tab).width()){
-	 		$('#container_'+tab).css('width',$('#table_'+tab).width()+18);
+	 		$('#container_'+tab).css('width',$('#table_'+tab).width());
 		}
  		var tbbody = $('#table_'+tab);
  		if(data.dataSet!=null&&(data.dataSet.length>0)) tbbody.tableHeadFixer({"left" : 1,head: false,});
@@ -98,7 +101,7 @@ if (!isset($active)) $active =1;
 				table = $('#table_'+key).DataTable();
 				$.each(data.updatedData[key], function( index, value) {
 					if(actions.isShownOf(value,postData)) {
-						row = table.row( '#'+value[actions.type.saveKeyField(key)] );
+						row = table.row( '#'+actions.getExistRowId(value,key));
 						var tdata = row.data();
 						if( typeof(tdata) !== "undefined" && tdata !== null ){
 							for (var pkey in value) {
@@ -112,7 +115,7 @@ if (!isset($active)) $active =1;
 					        });
 						}
 						else{
-							value['DT_RowId'] = value[actions.type.saveKeyField(key)];
+							value['DT_RowId'] = actions.getExistRowId(value,key);
 							table.row.add(value).draw( false );
 						}
 					}
