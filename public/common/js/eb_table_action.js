@@ -20,7 +20,11 @@ var intVal = function ( i ) {
 		$("#toolbar_"+tab).addClass('toolbarAction');
 		$("#toolbar_"+tab+ " button").on( 'click', function () {
 				var columns = table.settings()[0].aoColumns;
-				var addingRow = jQuery.extend({}, table.rows(0).data()[0]);
+				var sample = table.rows(0).data()[0];
+				var addingRow = {};
+				if(sample!=null){
+					addingRow = jQuery.extend({}, sample);
+				}
 				addingRow['DT_RowId'] = 'NEW_RECORD_DT_RowId_'+(index++);
 				addingRow['ID'] = addingRow['DT_RowId'];
 // 				var addingRow = {};
@@ -29,7 +33,12 @@ var intVal = function ( i ) {
 						 addingRow[vl.data] = '';
 					}
 					else{
- 						actions.putModifiedData(tab,vl.data,addingRow[vl.data],addingRow);
+						if(sample==null){
+							 addingRow[vl.data] = '';
+						}
+						else{
+							actions.putModifiedData(tab,vl.data,addingRow[vl.data],addingRow);
+						}
 					}
 		        });
 				$.each(editBox.hidenFields, function( i, vl ) {
