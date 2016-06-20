@@ -421,4 +421,74 @@ class graphController extends Controller {
 		
 		return response ()->json ( "ok:$id" );
 	}
+	
+	//=============
+	public function _indexViewConfig() {
+		return view ( 'front.viewconfig');
+	}
+	
+	public function loadPlotObjects(Request $request){
+		$data = $request->all ();	
+		
+		$tmp = $this->loadPlotObjectname($data);
+		//\Log::info ( \DB::getQueryLog () );
+	
+		return response ()->json ( ['result' => $tmp] );
+	}
+	
+	private function loadPlotObjectname($data){
+	
+		$facility_id = $data['facility_id'];
+		$product_type = $data['product_type'];
+		$object_type = $data['object_type'];
+	
+		$table_name=$obj_types[0];
+		$entity = strtolower(str_replace('_', ' ', $table_name));
+		$entity = ucwords($entity);
+		$entity = str_replace(' ', '', $entity);
+	
+		$tmp = [];
+		$model = 'App\\Models\\' . $entity;
+		//\DB::enableQueryLog ();
+		switch ($table_name){
+			case "TANK":
+			case "STORAGE":
+				$tmp = $model::where(['FACILITY_ID'=>$facility_id])
+				->where ( function ($q) use ($product_type) {
+					if ($product_type != 0) {
+						$q->where ( [
+								'PRODUCT' => $product_type
+						] );
+					}
+				})->get(['ID', 'NAME']);
+				break;
+					
+			case "FLOW":
+				$tmp = $model::where(['FACILITY_ID'=>$facility_id])
+				->where ( function ($q) use ($product_type) {
+					if ($product_type != 0) {
+						$q->where ( [
+								'PHASE_ID' => $product_type
+						] );
+					}
+				})->get(['ID', 'NAME']);
+				break;
+					
+			case "ENERGY_UNIT":
+				$tableName = $model::getTableName ();
+				$euPhaseConfig = EuPhaseConfig::getTableName ();
+				$tmp = DB::table($tableName.' AS a')
+				->where(['FACILITY_ID'=>$facility_id])
+				->whereNotExists(function($query) use ($euPhaseConfig, $product_type){
+					$query->select(DB::raw('A.ID'))
+					->from($euPhaseConfig.' AS b')
+					->whereRaw('b.EU_ID = a.ID')
+					->where(['b.FLOW_PHASE'=>$product_type]);
+				})->get(['ID', 'NAME']);
+				break;
+		}
+		//\Log::info ( \DB::getQueryLog () );
+	
+		return $tmp;
+	}
 }

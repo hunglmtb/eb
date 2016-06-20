@@ -12,14 +12,16 @@ $(function(){
 	
 	adminControl.init(listControl);	
 
-	$('#cboObjectType').change();
+	if($('#cboObjectType') > 0){
+		$('#cboObjectType').change();
+	}
 }); 
 
 var adminControl = {
 	initData : function(data){
 		var _data = data.result;
 		var strID = '';
-		var cbo = '';
+		var cbo = '';		
 		for(var v in _data){
 			var value = _data[v];
 			var label = "";
@@ -57,6 +59,10 @@ var adminControl = {
 
 		if(typeof _graph !== 'undefined' && _graph.loadObjType == 1){		
 			cbo += _graph.loadObjecType();
+		}
+
+		if( typeof _viewconfig !== 'undefined' && _viewconfig.loadTimelineType == 1){
+			cbo += _viewconfig.loadObjecType();
 		}
 		
 		$('#control').html(cbo);

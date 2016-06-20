@@ -523,7 +523,7 @@ menu["config"]=[
 		{menutext:"Tables Data",desc:"",url:"../config"},
 		{menutext:"Tags Mapping",desc:"",url:"../config/tagsmapping.php"},
 		{menutext:"Formula Editor",desc:"",url:"../formula"},
-		{menutext:"View Config",desc:"",url:"../graph/viewconfig.php"},
+		{menutext:"View Config",desc:"",url:"/viewconfig"},
 	];
 menu["interface"]=[
 		{menutext:"IMPORT DATA",desc:"Import Tags Spreadsheet",url:"../interface/import.php"},
