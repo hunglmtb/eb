@@ -148,7 +148,6 @@
 		</ul>
 		</li>
 		<li class="sublast"><a href="#"><span>Product Delivery</span></a>
-
 		<ul>
 
 			<li class="subfirst"><a href="pd/?func=cargonomination">Cargo Nomination</a></li>
@@ -161,6 +160,16 @@
 			<li><a href="pd/?func=voyagepipeline">Voyage Pipeline</a></li>
 			<li><a href="pd/?func=storagedisplay">Storage Display</a></li>
 			<li class="sublast"><a href="configpd/">Config</a></li>
+		</ul>
+		</li>
+		
+		<li><a href="#"><span>System Configuration</span></a>
+		<ul>
+			<li class="subfirst"><a href="/viewconfig">View Config</a></li>
+			<li><a href="/eb/formula/">Formula Editor</a></li>
+			<li><a href="/eb/cf/">Fields config</a></li>
+			<li><a href="/eb/config/">Table Data</a></li>
+			<li class="sublast"><a href="/eb/config/tagsmapping.php">Tags Mapping</a></li>
 		</ul>
 		</li>
 	</ul>

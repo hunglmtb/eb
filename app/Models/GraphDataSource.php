@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class GraphDataSource extends DynamicModel 
 { 
-	protected $table = 'graph_data_source'; 
+	protected $table = 'GRAPH_DATA_SOURCE'; 
 } 

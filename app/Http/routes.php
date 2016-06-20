@@ -1,10 +1,4 @@
 <?php
-// Home
-/* Route::get('/', [
-	'uses' => 'EBHomeController@index', 
-	'as' => 'home'
-]);  */
-// Home
 Route::get('/', [
 		'uses' => 'HomeController@index',
 		'as' => 'home'
@@ -226,3 +220,11 @@ Route::get('loadchart/{param}/{minvalue}/{maxvalue}/{date_begin}/{date_end}/{inp
 Route::post('listCharts', 'graphController@getListCharts');
 Route::post('deleteChart', 'graphController@deleteChart');
 Route::post('saveChart', 'graphController@saveChart');
+
+Route::get('viewconfig', 'ViewConfigController@_indexViewConfig');
+Route::post('loadPlotObjects', 'ViewConfigController@loadPlotObjects');
+Route::post('getTableFields', 'ViewConfigController@getTableFields');
+Route::post('getListPlotItems', 'ViewConfigController@getListPlotItems');
+Route::post('deletePlotItems', 'ViewConfigController@deletePlotItems');
+Route::post('savePlotItems', 'ViewConfigController@savePlotItems');
+Route::post('genView', 'ViewConfigController@genView');
