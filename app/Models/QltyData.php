@@ -34,8 +34,6 @@ class QltyData extends EbBussinessModel
 	}
 	
 	public static function getQualityRow($object_id,$object_type_code,$occur_date){
-// 		$sSQL="select a.* from qlty_data a, code_qlty_src_type b where a.SRC_ID='$object_id' and a.SRC_TYPE=b.ID and b.CODE='$object_type_code' and a.EFFECTIVE_DATE<=STR_TO_DATE('$occur_date', '%m/%d/%Y') order by a.EFFECTIVE_DATE desc limit 1";
-		
 		return static :: whereHas('CodeQltySrcType',function ($query) use ($object_type_code) {
 													$query->where("CODE",$object_type_code );
 											})
@@ -43,6 +41,32 @@ class QltyData extends EbBussinessModel
 					->whereDate('EFFECTIVE_DATE','<=',$occur_date)
 					->orderBy('EFFECTIVE_DATE','desc')
 					->first();
+	}
+	
+	public static function getQualityOil($object_id,$object_type_code,$occur_date){
+		$row = static ::getQualityRow($object_id,$object_type_code,$occur_date);
+		
+		if($row){
+			$dataID=$row->ID;
+			//     			\DB::enableQueryLog();
+			$querys = [
+			'OIL_F' =>QltyDataDetail::whereHas('QltyProductElementType' , function ($query) {$query->where("CODE",'OIL_SHRK_F' );})->where('QLTY_DATA_ID',$dataID)->select(\DB::raw("max(VALUE)")),
+			'GAS_R' =>QltyDataDetail::whereHas('QltyProductElementType' , function ($query) {$query->where("CODE",'FLSH_GAS_R' );})->where('QLTY_DATA_ID',$dataID)->select(\DB::raw("max(VALUE)")),
+			];
+		
+			$qr = \DB::table(null);
+			foreach($querys as $key => $query ){
+				$qr = $qr->selectSub($query->getQuery(),$key);
+			}
+			$qdltDatas = $qr->first();
+			if ($qdltDatas==null) {
+				$qdltDatas=$row;
+			}
+			else $qdltDatas['ENGY_RATE'] = $row->ENGY_RATE;
+			// 				\Log::info(\DB::getQueryLog());
+			return $qdltDatas;
+		}
+		return null;
 	}
 	
 	public function delete()

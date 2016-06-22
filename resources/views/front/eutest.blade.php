@@ -18,13 +18,13 @@ WELL TEST DATA CAPTURE
 	actions.loadUrl = "/eutest/load";
 	actions.saveUrl = "/eutest/save";
 	actions.type = {
-					idName:['ID'],
+					idName:['ID','EU_ID','BEGIN_TIME','END_TIME','EFFECTIVE_DATE'],
 					keyField:'ID',
 					saveKeyField : function (model){
 										return 'ID';
 									},
 					};
-// 	addingOptions.keepColumns = ['SAMPLE_DATE','TEST_DATE','EFFECTIVE_DATE','PRODUCT_TYPE','SRC_ID','SRC_TYPE'];
+//  	addingOptions.keepColumns = ['SAMPLE_DATE','TEST_DATE','EFFECTIVE_DATE','PRODUCT_TYPE','SRC_ID','SRC_TYPE'];
 	
 </script>
 @stop

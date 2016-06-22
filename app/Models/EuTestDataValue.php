@@ -1,13 +1,14 @@
 <?php 
 namespace App\Models; 
-use App\Models\FeatureEuTestModel; 
+use App\Models\EuTestDataStdValue;
+use App\Models\FeatureEuTestModel;
+use App\Models\QltyData;
 
  class EuTestDataValue extends FeatureEuTestModel 
 { 
 	protected $table = 'EU_TEST_DATA_VALUE'; 
 	
 	protected $primaryKey = 'ID';
-	protected $dates = ['EFFECTIVE_DATE','END_TIME','BEGIN_TIME'];
 	
 	protected $fillable  = ['EU_ID', 
 							'BEGIN_TIME', 
@@ -46,4 +47,25 @@ use App\Models\FeatureEuTestModel;
 							'EU_TEST_LIQ_2_MASS', 
 							'EU_TEST_LIQ_3_MASS'];
 	
+	public function  getFdcValues($attributes){
+		$fdcValues = EuTestDataStdValue::where($attributes)->first();
+		return $fdcValues;
+	}
+	
+	public function updateValuesFromSourceEntry($object_id, $occur_date, $sourceEntry,$rat) {
+		$quality=QltyData::getQualityOil($object_id,"ENERGY_UNIT",$occur_date);
+		$_r = $quality&&is_numeric($quality->OIL_F)?$rat*$quality->OIL_F:$rat;
+		$this->EU_TEST_LIQ_HC_VOL= $sourceEntry->EU_TEST_LIQ_HC_VOL*$_r;
+		$_add = $quality&&is_numeric($quality->GAS_R)?$sourceEntry->EU_TEST_LIQ_HC_VOL*$quality->GAS_R:0;
+		$this->EU_TEST_GAS_HC_VOL		= 	$sourceEntry->EU_TEST_GAS_HC_VOL*$rat	+	$_add;
+		$this->EU_TEST_WTR_VOL			= 	$sourceEntry->EU_TEST_WTR_VOL*$rat;
+		$this->EU_TEST_GAS_LIFT_VOL		= 	$sourceEntry->EU_TEST_GAS_LIFT_VOL*$rat;
+		
+		if($quality&&isset($quality->ENGY_RATE)&&is_numeric($quality->ENGY_RATE)){
+			$this->EU_TEST_GAS_LIFT_ENGY	= 	$this->EU_TEST_GAS_LIFT_VOL*$quality->ENGY_RATE;
+			$this->EU_TEST_ENGY_QTY			= 	$this->EU_TEST_GAS_HC_VOL*$quality->ENGY_RATE;
+		}
+		
+		$this->save();
+	}
 } 

@@ -183,14 +183,14 @@ class CodeController extends EBController {
      	$facility_id = $postData['Facility'];
      	$occur_date = $postData['date_begin'];
      	$occur_date = Carbon::parse($occur_date);
-     	$objectIds = array_key_exists('objectIds', $postData)?$postData['objectIds']:[];
+//      	$objectIds = array_key_exists('objectIds', $postData)?$postData['objectIds']:[];
      	
      	$affectedIds = [];
      	$this->preSave($editedData,$affectedIds,$postData);
      	try
      	{
-     		$resultTransaction = \DB::transaction(function () use ($postData,$editedData,$objectIds,$affectedIds,
-													     		 $occur_date,$facility_id){
+     		$resultTransaction = \DB::transaction(function () use ($postData,$editedData,$affectedIds,
+													     		 $occur_date,$facility_id/* ,$objectIds */){
      			$this->deleteData($postData);
      			
      			if(!$editedData) return [];
@@ -233,8 +233,7 @@ class CodeController extends EBController {
 		     		$editedData[$mdlName] = $mdlData;
      			}
 // 		     	\Log::info(\DB::getQueryLog());
-		     	
-		     	$objectIds = array_unique($objectIds);
+// 		     	$objectIds = array_unique($objectIds);
 		     	//doFormula in config table
 		     	$affectColumns = [];
 		     	foreach($editedData as $mdlName => $mdlData ){
@@ -335,8 +334,8 @@ class CodeController extends EBController {
     
 	protected function preSave(&$editedData, &$affectedIds, $postData) {
 		if ($editedData&&array_key_exists ($this->fdcModel, $editedData )) {
-			$this->preSaveModel ( $editedData, $affectedIds, $this->valueModel);
-			$this->preSaveModel ( $editedData, $affectedIds, $this->theorModel);
+			$this->preSaveModel ( $editedData, $affectedIds, $this->valueModel,$this->fdcModel);
+			$this->preSaveModel ( $editedData, $affectedIds, $this->theorModel,$this->fdcModel);
 		}
 	}
 	
@@ -551,12 +550,12 @@ class CodeController extends EBController {
     }
     
     
-    public function preSaveModel(&$editedData,&$affectedIds,$model) {
+    public function preSaveModel(&$editedData,&$affectedIds,$model,$sourceModel) {
     	if ($model) {
-	    	$fdcModel = $this->fdcModel;
+	    	$fdcModel = $sourceModel;
 	    	if (array_key_exists($fdcModel, $editedData)) {
 	    		$idColumn = $this->idColumn;
-	    		$phaseColumn = $this->phaseColumn;
+// 	    		$phaseColumn = $this->phaseColumn;
 	    
 	    		if (!array_key_exists($model, $editedData)){
 	    			$editedData[$model] = [];

@@ -6,9 +6,8 @@ use App\Models\FeatureEuTestModel;
 { 
 	protected $table = 'EU_TEST_DATA_FDC_VALUE'; 
 	protected $primaryKey = 'ID';
-	protected $dates = ['EFFECTIVE_DATE','END_TIME','BEGIN_TIME'];
 	
-	protected $fillable  = ['EU_ID',
+	public $fillable  = ['EU_ID',
 							 'BEGIN_TIME',
 							 'END_TIME',
 							 'TEST_HRS',
@@ -62,4 +61,8 @@ use App\Models\FeatureEuTestModel;
 							 'CTV',
 							 'TEMP_UOM',
 							 'PRESS_UOM'];
+	public function afterSaving($postData) {
+		
+	}
+	
 } 

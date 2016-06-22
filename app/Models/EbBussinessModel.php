@@ -17,6 +17,7 @@ class EbBussinessModel extends DynamicModel {
 	protected $excludeColumns = [];
 	public  static $ignorePostData = false;
 	protected $oldValues = null;
+	protected $isAuto = false;
 	
 	public static function getKeyColumns(&$newData,$occur_date,$postData)
 	{
@@ -107,20 +108,20 @@ class EbBussinessModel extends DynamicModel {
 		}
 		
 		$values = static::calculateBeforeUpdateOrCreate ( $attributes, $values );
-		$instance = static::firstOrNew($attributes);
-	//  		\DB::enableQueryLog();
-//  		\Log::info(\DB::getQueryLog());
-		$oldValues = [];
-		foreach ( $values as $column => $value ) {
-			$oldValues[$column]= $instance->$column;
-			if (!$instance->isFillable($column)) {
-				unset($values[$column]);
+		$instance = null;
+		if ($values&&is_array($values)&&count($values)>0) {
+			$instance = static::firstOrNew($attributes);
+			$instance->isAuto = array_key_exists("auto", $values)&&$values["auto"];
+			$oldValues = [];
+			foreach ( $values as $column => $value ) {
+				$oldValues[$column]= $instance->$column;
+				if (!$instance->isFillable($column)) {
+					unset($values[$column]);
+				}
 			}
+			$instance->fill($values)->save();
+			$instance->oldValues = $oldValues;
 		}
-		
-		$instance->fill($values)->save();
-		$instance->oldValues = $oldValues;
-		
 		return $instance; 
 	}
 	
