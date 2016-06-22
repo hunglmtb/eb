@@ -244,10 +244,11 @@ class DVController extends Controller {
 		$data = $request->all ();
 		$flow_phase = $data ['flow_phase'];
 		$vparam = $data ['vparam'];
-		$occur_date = $data ['occur_date'];
+		$occur_date = Carbon::createFromFormat('m/d/Y',$data ['occur_date'])->format('Y-m-d');
 		$ret = "";
-		$date_begin = Carbon::parse ( $occur_date )->format ( 'Y-m-d 00:00:00' );
-		$date_end = Carbon::parse ( $occur_date )->format ( 'Y-m-d 23:59:59' );
+		
+		$date_begin = $occur_date;
+		$date_end = $occur_date;
 		
 		foreach ( $vparam as $v ) {
 			$cell_id = $v ['ID'];
@@ -283,15 +284,15 @@ class DVController extends Controller {
 					$table = strtolower ( $table );
 					$table = str_replace ( ' ', '', ucwords ( str_replace ( '_', ' ', $table ) ) );
 					$model = 'App\\Models\\' . $table;
-					//\DB::enableQueryLog ();
+					\DB::enableQueryLog ();
 					$conditions = explode ( ',', $flow_phases );
 					$tmps = $model::where ( [ 
 							'EU_ID' => $object_id 
-					] )->whereDate ( 'OCCUR_DATE', '=', Carbon::parse ( $occur_date ) )->whereIn ( 'FLOW_PHASE', $conditions )->get ( [ 
+					] )->whereDate ( 'OCCUR_DATE', '=', $occur_date)->whereIn ( 'FLOW_PHASE', $conditions )->get ( [ 
 							$field . ' AS FIELD_VALUE',
 							'FLOW_PHASE' 
 					] );
-					//\Log::info ( \DB::getQueryLog () );
+					\Log::info ( \DB::getQueryLog () );
 					$arr = array ();
 					foreach ( $tmps as $tmp ) {
 						$value = $tmp->FIELD_VALUE;
@@ -361,11 +362,11 @@ class DVController extends Controller {
 							}
 						}
 						
-						//\DB::enableQueryLog ();
-						$values = $model::where ( $condition )->whereDate ( 'OCCUR_DATE', '=', Carbon::parse ( $occur_date )->format ( 'Y-m-d' ) )->SELECT ( [ 
+						\DB::enableQueryLog ();
+						$values = $model::where ( $condition )->whereDate ( 'OCCUR_DATE', '=', $occur_date)->SELECT ( [ 
 								$field . ' AS FIELD_VALUE' 
 						] )->first ();
-						//\Log::info ( \DB::getQueryLog () );
+						\Log::info ( \DB::getQueryLog () );
 						
 						if (count ( $values ) > 0) {
 							$value = $values->FIELD_VALUE;

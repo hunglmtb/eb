@@ -228,3 +228,7 @@ Route::post('getListPlotItems', 'ViewConfigController@getListPlotItems');
 Route::post('deletePlotItems', 'ViewConfigController@deletePlotItems');
 Route::post('savePlotItems', 'ViewConfigController@savePlotItems');
 Route::post('genView', 'ViewConfigController@genView');
+
+Route::get('runallocation', 'AllocationController@_index');
+Route::post('getJobsRunAlloc', 'AllocationController@getJobsRunAlloc');
+Route::post('run_runner', 'AllocationController@run_runner');

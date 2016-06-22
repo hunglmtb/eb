@@ -45,15 +45,15 @@
 
 		</ul></li>
 
-		<li><a href="#">Allocation</a>
+		<li><a href="#"><span>Allocation</span></a>
 
 		<ul>
 
-			<li><a href="ce/?act=allocset">Production Allocation</a>
+			<li><a href="/runallocation">run allocation</a></li>
+			<li><a href="/configallocation">config allocation</a></li>
 
-			</li>
-
-		</ul></li>
+		</ul>
+		</li>
 		<li style="display:none"><a href="#"><span>Allocation</span></a>
 
 		<ul>

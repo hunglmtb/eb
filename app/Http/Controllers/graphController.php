@@ -416,7 +416,7 @@ class graphController extends Controller {
 			AdvChart::where(['ID'=>$id])->update(['TITLE'=>$title, 'CONFIG'=>$config, 'MAX_VALUE'=>$maxvalue, 'MIN_VALUE'=>$minvalue]);
 		}else{
 			$adv_chart = AdvChart::insert(['TITLE'=>$title, 'CONFIG'=>$config, 'MAX_VALUE'=>$maxvalue, 'MIN_VALUE'=>$minvalue, 'CREATE_BY'=>$user_name, 'CREATE_DATE'=>$time]);
-			$id = $adv_chart->ID;
+			$id = $adv_chart['ID'];
 		}
 		
 		return response ()->json ( "ok:$id" );

@@ -476,8 +476,8 @@ menu["visual"]=[
 		{menutext:"Task Manager",desc:"",url:"../taskman/?com=task"}
 	];
 menu["allocation"]=[
-		{menutext:"Run Allocation",desc:"",url:"../ce/?act=allocrun"},
-		{menutext:"Config Allocation",desc:"",url:"../ce/?act=allocset"}
+		{menutext:"Run Allocation",desc:"",url:"runallocation"},
+		{menutext:"Config Allocation",desc:"",url:"configallocation"}
 	];
 menu["forecast"]=[
 		{menutext:"WELL FORECAST",desc:"",url:"../matlab/forecast.php"},

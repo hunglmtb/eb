@@ -1,18 +1,13 @@
 <?php
 if (!isset($currentSubmenu)) $currentSubmenu ='';
 $subMenus = [
-		array('title' => 'FIELDS CONFIG', 'link' => 'diagram'),
-		array('title' => 'TABLES DATA', 'link' => 'roles'),
-		array('title' => 'PD TABLES', 'link' => 'workreport'),
-		array('title' => 'TAGS MAPPING', 'link' => 'graph'),
-		array('title' => 'FORMULA EDITOR', 'link' => 'approvedata'),
-		array('title' => 'VIEW CONFIG', 'link' => 'viewconfig')
+		array('title' => 'RUN ALLOCATION', 'link' => 'run_allocation'),
+		array('title' => 'CONFIG ALLOCATION', 'link' => 'config_allocation')
 ];
 ?>
 @extends('core.bstemplate',['subMenus' => array('pairs' => $subMenus, 'currentSubMenu' => $currentSubmenu)])
 @section('script')
 	<link rel="stylesheet" href="/common/css/common.css"/>
-	<script src="/common/js/jquery-2.1.3.js"></script>
 @stop	
 @section('main')
 
