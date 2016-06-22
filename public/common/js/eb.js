@@ -405,7 +405,7 @@ var actions = {
 	},
 	getTimeValueBy : function(newValue,columnName,tab){
 		if(columnName=='EFFECTIVE_DATE'||columnName=='OCCUR_DATE'){
-			return moment.utc(newValue).format(configuration.time.DATETIME_FORMAT_UTC);
+			return moment.utc(newValue).format(configuration.time.DATE_FORMAT_UTC);
 //			return moment.utc(newValue).format("YYYY-MM-DD HH:mm:ss");
 		}
 		return moment(newValue).format(configuration.time.DATETIME_FORMAT_UTC);

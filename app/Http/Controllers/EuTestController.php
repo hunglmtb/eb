@@ -19,7 +19,7 @@ class EuTestController extends CodeController {
 	}
 	
     public function getFirstProperty($dcTable){
-		return  ['data'=>$dcTable,'title'=>'','width'=>50];
+		return  ['data'=>'ID','title'=>'','width'=>50];
 	}
 	
 	
@@ -37,7 +37,7 @@ class EuTestController extends CodeController {
     	$dataSet = $mdl::where($euWheres)
 				    	->whereBetween('EFFECTIVE_DATE', [$occur_date,$date_end])
 				    	->select(
-								"ID as $dcTable",
+// 								"ID",
 				    			"ID as DT_RowId",
 // 				    			"EU_ID as OBJ_ID",
 // 				    			"EFFECTIVE_DATE as T_EFFECTIVE_DATE",
