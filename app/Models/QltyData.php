@@ -62,7 +62,7 @@ class QltyData extends EbBussinessModel
 			if ($qdltDatas==null) {
 				$qdltDatas=$row;
 			}
-			else $qdltDatas['ENGY_RATE'] = $row->ENGY_RATE;
+			else $qdltDatas->ENGY_RATE = $row->ENGY_RATE;
 			// 				\Log::info(\DB::getQueryLog());
 			return $qdltDatas;
 		}

@@ -25,6 +25,7 @@ WELL TEST DATA CAPTURE
 									},
 					};
 //  	addingOptions.keepColumns = ['SAMPLE_DATE','TEST_DATE','EFFECTIVE_DATE','PRODUCT_TYPE','SRC_ID','SRC_TYPE'];
+		addingOptions.keepColumns = ['BEGIN_TIME','END_TIME','EFFECTIVE_DATE'];
 	
 </script>
 @stop
