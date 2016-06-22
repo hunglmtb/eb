@@ -50,7 +50,7 @@ $(function () {
             }
         },
         series: [
-				<?php echo $series;?>
+				<?php echo preg_replace('/_@/', ' ',$series);?> 
              ],
         yAxis: [{ // Primary yAxis
 			min: <?php echo $min1;?>,

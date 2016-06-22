@@ -296,8 +296,10 @@ class graphController extends Controller {
 			}else{
 				$strData .="{";
 			}
-			$strData .= "type: '".$chart_type."',"."\r\n";
-			//$strData .= "name: '".$chart_name."',"."\r\n";
+			$strData .= "type: '".$chart_type."',\n";
+			$strData .= "name: '".preg_replace('/\s+/', '_@', $chart_name)."',\n";
+			
+			//$strData .= "name: '".$chart_name."',";
 			$strData .= "data: [";
 			foreach ($tmp as $row)
 			{
