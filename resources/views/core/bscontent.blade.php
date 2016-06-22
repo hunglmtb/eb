@@ -123,7 +123,6 @@ if (!isset($active)) $active =1;
 				actions.afterGotSavedData(data,table,key);
 			}
 		}
-
 		actions.editedData = {};
 		actions.deleteData = {};
 		alert(JSON.stringify(data.updatedData));

@@ -378,7 +378,7 @@ var actions = {
 						                });
 //    	var columnName = table.settings()[0].aoColumns[col].data;
     	if (newValue!=null&&newValue.constructor.name == "Date") {
-    		newValue = moment(newValue).format("YYYY-MM-DD HH:mm:ss");
+    		newValue = actions.getTimeValueBy(newValue,columnName,tab);
 		}
     	if (result.length == 0) {
         	var editedData = {};
@@ -396,6 +396,12 @@ var actions = {
     		result[0][columnName] = newValue;
     	}
     	return rowData;
+	},
+	getTimeValueBy : function(newValue,columnName,tab){
+		if(columnName=='EFFECTIVE_DATE'||columnName=='OCCUR_DATE'){
+			return moment.utc(newValue).format("YYYY-MM-DD HH:mm:ss");
+		}
+		return moment(newValue).format("YYYY-MM-DD HH:mm:ss");
 	},
 	getCellType : function(data,type,cindex){
 		type = actions.extraDataSetColumns.hasOwnProperty(data.properties[cindex].data)?'select':type;

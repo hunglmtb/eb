@@ -94,7 +94,8 @@ class EbBussinessModel extends DynamicModel {
 	}
 	
 	public static function updateOrCreateWithCalculating(array $attributes, array $values = []) {
-		if (array_key_exists("isAdding", $values)&&$values["isAdding"]) {
+		$auto = array_key_exists("auto", $values)&&$values["auto"];
+		if (array_key_exists("isAdding", $values)&&$values["isAdding"]&&!$auto) {
 			$instance = new static((array) $values);
 	        $instance->exists = false;
 	        foreach ( $values as $column => $value ) {
@@ -111,7 +112,7 @@ class EbBussinessModel extends DynamicModel {
 		$instance = null;
 		if ($values&&is_array($values)&&count($values)>0) {
 			$instance = static::firstOrNew($attributes);
-			$instance->isAuto = array_key_exists("auto", $values)&&$values["auto"];
+			$instance->isAuto = $auto;
 			$oldValues = [];
 			foreach ( $values as $column => $value ) {
 				$oldValues[$column]= $instance->$column;

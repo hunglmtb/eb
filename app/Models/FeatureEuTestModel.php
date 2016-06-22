@@ -15,11 +15,12 @@ class FeatureEuTestModel extends EbBussinessModel
 	protected $excludeColumns = ['EU_ID','OCCUR_DATE']; */ 
 	
 	public static function getKeyColumns(&$newData,$occur_date,$postData){
-		$attributes = parent:: getKeyColumns($newData,$occur_date,$postData);
-		$attributes['EU_ID'] = $newData['EU_ID'];
+		$attributes = [];
+		$attributes['EFFECTIVE_DATE'] = $newData['EFFECTIVE_DATE'];
 		if ( array_key_exists ( 'isAdding', $newData ) && array_key_exists ( 'EnergyUnit', $postData )) {
 			$newData['EU_ID'] = $postData['EnergyUnit'];
 		}
+		else $attributes['EU_ID'] = $newData['EU_ID'];
 		return $attributes;
 	}
 	
