@@ -144,7 +144,8 @@ input[type="button"]:focus, button:focus {
 
 .editInline {
 	/* background: chocolate; */
-	
+	background-clip: content-box;
+	background-color: rgba(0, 0, 0, 0.05);
 }
 
 .editable-clear-x {
@@ -278,6 +279,10 @@ table.dataTable {
 
 .checkboxCell {
 	margin-left: 15px;
+}
+
+.dataTables_filter{
+    margin-top: 5px;
 }
 
 /* .editable-container.editable-inline {

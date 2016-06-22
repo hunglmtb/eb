@@ -624,10 +624,10 @@ var actions = {
 		          "columnDefs": uoms,
 		          "scrollX": true,
 		         "autoWidth": autoWidth,
-		       	"scrollY":        "270px",
+		       	"scrollY":        "300px",
 //		                "scrollCollapse": true,
 				"paging":         false,
-				"dom": '<"#toolbar_'+tab+'">frtip',
+				"dom": 'rt<"#toolbar_'+tab+'">p<"bottom"f><"clear">',
 				/* initComplete: function () {
 					var cls = this.api().columns();
 		            cls.every( function () {
