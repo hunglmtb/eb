@@ -84,6 +84,33 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 		return  UserWorkspace::updateOrCreate($columns, $newData);
 	}
 	
+	public function getConfiguration()
+	{
+		$timeFormat =  [
+				'DATE_FORMAT'				=>		'MM/DD/YYYY',
+				'TIME_FORMAT'				=>		'hh:mm A',
+				'DATETIME_FORMAT'			=>		'MM/DD/YYYY HH:mm',
+				'DATE_FORMAT_UTC'			=>		'YYYY-MM-DD',
+				'TIME_FORMAT_UTC'			=>		'hh:mm:ss',
+				'DATETIME_FORMAT_UTC'		=>		'YYYY-MM-DD HH:mm:ss',
+				'DATE_FORMAT_CARBON'		=>		'm/d/Y',
+		];
+		
+		$picker =  [
+				'DATE_FORMAT'			=>		'mm/dd/yyyy',
+				'TIME_FORMAT'			=>		'HH:ii P',
+				'DATETIME_FORMAT'		=>		'mm/dd/yyyy hh:ii',
+				'DATE_FORMAT_UTC'		=>		'mm/dd/yyyy',
+				'TIME_FORMAT_UTC'		=>		'hh:ii:ss',
+				'DATETIME_FORMAT_UTC'	=>		'mm/dd/yyyy hh:ii',
+				'DATE_FORMAT_JQUERY'	=>		'mm/dd/yy',
+		];
+		return [
+				'time'		=>	$timeFormat,
+				'picker'	=>	$picker,
+		];
+	}
+	
 	
 	
 

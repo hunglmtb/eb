@@ -58,15 +58,18 @@ class Helper {
 		switch ($id) {
     			case 'date_begin':
     			case 'date_end':
+    				$configuration = auth()->user()->getConfiguration();
+    				$format = $configuration['time']['DATE_FORMAT_CARBON'];//'m/d/Y';
     				if ($value) {
-						$value=$value->format('m/d/Y');
+						$value=$value->format($format);
     				}
-					$htmlFilter.= "<div class='date_input'><div><b>$name</b></div><input style='width:85%' type='text' id = '$id' name='$sName' size='15' value='$value'></div>";
+    				$jsFormat = $configuration['picker']['DATE_FORMAT_JQUERY'];//'mm/dd/yy';
+    				$htmlFilter.= "<div class='date_input'><div><b>$name</b></div><input style='width:85%' type='text' id = '$id' name='$sName' size='15' value='$value'></div>";
 					$htmlFilter.= '<script>
 											$( "#'.$id.'" ).datepicker({
 												changeMonth:true,
 												changeYear:true,
-												dateFormat:"mm/dd/yy"
+												dateFormat:"'.$jsFormat.'"
 											});
 										</script>';
     				break;
