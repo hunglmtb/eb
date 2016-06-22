@@ -296,8 +296,10 @@ class graphController extends Controller {
 			}else{
 				$strData .="{";
 			}
-			$strData .= "type: '".$chart_type."',"."\r\n";
-			//$strData .= "name: '".$chart_name."',"."\r\n";
+			$strData .= "type: '".$chart_type."',\n";
+			$strData .= "name: '".preg_replace('/\s+/', '_@', $chart_name)."',\n";
+			
+			//$strData .= "name: '".$chart_name."',";
 			$strData .= "data: [";
 			foreach ($tmp as $row)
 			{
@@ -416,7 +418,7 @@ class graphController extends Controller {
 			AdvChart::where(['ID'=>$id])->update(['TITLE'=>$title, 'CONFIG'=>$config, 'MAX_VALUE'=>$maxvalue, 'MIN_VALUE'=>$minvalue]);
 		}else{
 			$adv_chart = AdvChart::insert(['TITLE'=>$title, 'CONFIG'=>$config, 'MAX_VALUE'=>$maxvalue, 'MIN_VALUE'=>$minvalue, 'CREATE_BY'=>$user_name, 'CREATE_DATE'=>$time]);
-			$id = $adv_chart->ID;
+			$id = $adv_chart['ID'];
 		}
 		
 		return response ()->json ( "ok:$id" );

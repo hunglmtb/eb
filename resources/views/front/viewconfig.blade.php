@@ -57,6 +57,7 @@ $(function(){
 });
 
 var _viewconfig = {
+		loadObjType : 1,
 
 		loadTimelineType : 1,
 
@@ -124,7 +125,7 @@ var _viewconfig = {
 				_viewconfig.lastObjectType = objectType;
 				if($("#cboObjectName").val().indexOf("ENERGY_UNIT") > -1)
 				{
-					_graph.loadEUPhase();
+					_viewconfig.loadEUPhase();
 				}
 			});
 		},

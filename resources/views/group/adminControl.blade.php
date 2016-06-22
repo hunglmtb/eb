@@ -12,7 +12,7 @@ $(function(){
 	
 	adminControl.init(listControl);	
 
-	if($('#cboObjectType') > 0){
+	if($('#cboObjectType').length > 0){
 		$('#cboObjectType').change();
 	}
 }); 
