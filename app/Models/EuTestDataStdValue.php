@@ -55,25 +55,22 @@ use App\Exceptions\DataInputException;
 	
 	public function updateValuesFromSourceEntry($object_id, $occur_date, $sourceEntry,$rat) {
 		
-		/* $T_obs = $_REQUEST["FDC_OBS_TEMP$x_id"];
-		$P_obs = $_REQUEST["FDC_OBS_PRESS$x_id"];
-		$API_obs = $_REQUEST["FDC_OBS_API$x_id"];
-		$_Bg1=calculateBg(1,$T_obs,$P_obs,$API_obs,$occur_date,$object_id,'ENERGY_UNIT');
-		$_Bg2=calculateBg(2,$T_obs,$P_obs,$API_obs,$occur_date,$object_id,'ENERGY_UNIT');
-		
-		$T_GL = $_REQUEST["FDC_GASLIFT_TEMP$x_id"];
-		$P_GL = $_REQUEST["FDC_GASLIFT_PRESS$x_id"];
-		$_BgGL=calculateBg(2,$T_GL,$P_GL,0,$occur_date,$object_id,'ENERGY_UNIT'); */
-		
-		$T_obs = $sourceEntry ["OBS_TEMP"];
+		/* $T_obs = $sourceEntry ["OBS_TEMP"];
 		$P_obs = $sourceEntry ["OBS_PRESS"];
 		$API_obs = $sourceEntry ["OBS_API"];
 		$_Bg1 = \FormulaHelpers::calculateBg ( 1, $T_obs, $P_obs, $API_obs, $occur_date, $object_id, 'ENERGY_UNIT' );
+		$_Bg1 = $_Bg1!=null?$_Bg1:1;
 		$_Bg2 = \FormulaHelpers::calculateBg ( 2, $T_obs, $P_obs, $API_obs, $occur_date, $object_id, 'ENERGY_UNIT' );
+		$_Bg2 = $_Bg2==null|| $_Bg2==0?1:$_Bg2;
 		
 		$T_GL = $sourceEntry["GASLIFT_TEMP"];
 		$P_GL = $sourceEntry["GASLIFT_PRESS"];
 		$_BgGL = \FormulaHelpers::calculateBg ( 2, $T_GL, $P_GL, 0, $occur_date, $object_id, 'ENERGY_UNIT' );
+		$_BgGL = $_BgGL==null|| $_BgGL==0?1:$_BgGL; */
+		
+		$_Bg1 = 1;
+		$_Bg2 = 1;
+		$_BgGL = 1;
 		
 		$this->EU_TEST_LIQ_HC_VOL= $_Bg1!=null?$sourceEntry->EU_TEST_LIQ_HC_VOL*$_Bg1:null;
 		

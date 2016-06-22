@@ -44,7 +44,7 @@ class FeatureEuTestModel extends EbBussinessModel
 			$rat = 24/$hours;
 		
 			if ($this->isAuto) {
-				$commonFields = array_intersect_key($sourceEntry->fillable, $this->fillable);
+				$commonFields = array_intersect($sourceEntry->fillable, $this->fillable);
 				foreach ($commonFields as $field){
 					$this->$field	= 	$sourceEntry->$field;
 				}
