@@ -7,7 +7,7 @@ if (!isset($active)) $active =1;
 @section('content')
 	@if(isset($tables))
 			<div id="tabs">
-			<ul>
+			<ul  id="ebTabHeader">
 				@foreach($tables as $key => $table )
 					<li id="{{$key}}"><a href="#tabs-{{$key}}"><font size="2">{{$table['name']}}</font></a></li>
 		 		@endforeach

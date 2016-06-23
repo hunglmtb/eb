@@ -31,32 +31,34 @@ $( document ).ready(function() {
     $( "#date_end" ).change(onChangeFunction);
 });
 </script>
-@foreach( $filterGroups as $key => $filters )
-		@if($key=='productionFilterGroup')
-		<div class = "product_filter">
-			@foreach( $filters as $filter )
-				{{ Helper::buildFilter(array_merge($filter, $mapping[$filter['id']])) }}
-			@endforeach
-		</div>
-		@elseif($key=='dateFilterGroup')
-		<div class = "date_filter">
-			@foreach( $filters as $filter )
-				{{ Helper::selectDate($filter)}}
-			@endforeach
-		</div>
-		@elseif($key=='frequenceFilterGroup')
-		<div class = "product_filter">
-			@foreach( $filters as $filter )
-				{{ Helper::filter(array_merge($filter, $mapping[$filter['id']])) }}
-			@endforeach
-		</div>
-		@endif
- @endforeach
+<div id="ebFilters" style="height:auto">
+	@foreach( $filterGroups as $key => $filters )
+			@if($key=='productionFilterGroup')
+			<div class = "product_filter">
+				@foreach( $filters as $filter )
+					{{ Helper::buildFilter(array_merge($filter, $mapping[$filter['id']])) }}
+				@endforeach
+			</div>
+			@elseif($key=='dateFilterGroup')
+			<div class = "date_filter">
+				@foreach( $filters as $filter )
+					{{ Helper::selectDate($filter)}}
+				@endforeach
+			</div>
+			@elseif($key=='frequenceFilterGroup')
+			<div class = "product_filter">
+				@foreach( $filters as $filter )
+					{{ Helper::filter(array_merge($filter, $mapping[$filter['id']])) }}
+				@endforeach
+			</div>
+			@endif
+	@endforeach
 
-<div class="action_filter">
-	@if(!auth()->user()->hasRight('DATA_READONLY'))
-		<input type="button" value="Save" name="B3" id = "buttonSave" onClick="actions.doSave(true)" style="width: 85px;foat:left; height: 26px">
-	@endif
-	<input type="button" value="Load data" id="buttonLoadData" name="B33"
-		onClick="actions.doLoad(true)" style="width: 85px; height: 26px;foat:left;">
+	<div class="action_filter">
+		@if(!auth()->user()->hasRight('DATA_READONLY'))
+			<input type="button" value="Save" name="B3" id = "buttonSave" onClick="actions.doSave(true)" style="width: 85px;foat:left; height: 26px">
+		@endif
+		<input type="button" value="Load data" id="buttonLoadData" name="B33"
+			onClick="actions.doLoad(true)" style="width: 85px; height: 26px;foat:left;">
+	</div>
 </div>

@@ -464,7 +464,7 @@ var actions = {
 									return "";
 								}
 								if (data2.constructor.name == "Date") { 
-									return moment(data2).format(configuration.time.DATE_FORMAT);
+									return moment.utc(data2).format(configuration.time.DATE_FORMAT);
 //									return moment(data2).format("MM/DD/YYYY");
 									
 								}
@@ -639,13 +639,18 @@ var actions = {
         });
 		if(!autoWidth) $('#table_'+tab).css('width',(tblWdth)+'px');
 		
+//		hhh = $(document).height() - $('#table3').outerHeight()- $('#functionName').outerHeight()- $('#ebFilters').outerHeight()- $('#ebFooter').outerHeight() - $('#tabs').outerHeight();
+		hhh = $(document).height() - $('#ebTabHeader').offset().top - $('#ebTabHeader').outerHeight() - $('#ebFooter').outerHeight() - 120;
+		tHeight = ""+hhh+'px';
 		option = {data: data.dataSet,
 		          columns: data.properties,
 		          destroy: true,
 		          "columnDefs": uoms,
 		          "scrollX": true,
 		         "autoWidth": autoWidth,
-		       	"scrollY":        "300px",
+//		       	"scrollY":        "37vh",
+//		         "scrollY":        "250px",
+		       	scrollY:        tHeight,
 //		                "scrollCollapse": true,
 				"paging":         false,
 				"dom": 'rt<"#toolbar_'+tab+'">p<"bottom"f><"clear">',

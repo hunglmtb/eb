@@ -4,7 +4,7 @@ if (!isset($currentSubmenu)) $currentSubmenu ='';
 @extends('core.bstemplate',['subMenus' => array('pairs' => $subMenus, 'currentSubMenu' => $currentSubmenu)])
 @section('main')
 <div class="rootMain {{$currentSubmenu}}">
-	<div style="padding:10px 10px 10px 0px;font-size:16pt;">@yield('funtionName')</div>
+	<div id="functionName" style="padding:10px 10px 10px 0px;font-size:16pt;">@yield('funtionName')</div>
 	@include('group.production')
 	<br>
 	@yield('content')
