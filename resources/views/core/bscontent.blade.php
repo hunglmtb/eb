@@ -7,7 +7,7 @@ if (!isset($active)) $active =1;
 @section('content')
 	@if(isset($tables))
 			<div id="tabs">
-			<ul>
+			<ul  id="ebTabHeader">
 				@foreach($tables as $key => $table )
 					<li id="{{$key}}"><a href="#tabs-{{$key}}"><font size="2">{{$table['name']}}</font></a></li>
 		 		@endforeach
@@ -123,7 +123,6 @@ if (!isset($active)) $active =1;
 				actions.afterGotSavedData(data,table,key);
 			}
 		}
-
 		actions.editedData = {};
 		actions.deleteData = {};
 		alert(JSON.stringify(data.updatedData));

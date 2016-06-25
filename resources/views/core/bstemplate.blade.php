@@ -19,6 +19,9 @@
 <script src="/common/js/jquery-2.1.3.js"></script>
 <script type="text/javascript" src="/common/js/jquery.dataTables.js"></script> 
 <script type="text/javascript" src="/common/js/dataTables.fixedColumns.min.js"></script>
+<script type='text/javascript'>
+var configuration =  <?php echo json_encode(auth()->user()->getConfiguration()); ?>;
+</script>
 <script type="text/javascript" src="/common/js/utils.js"></script>
 <script src="/common/js/jquery-ui.js"></script>
 @yield('script')

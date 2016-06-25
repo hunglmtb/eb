@@ -742,7 +742,7 @@ class FormulaHelpers {
     		if($row)
     		{
     			$dataID=$row->ID;
-    			\DB::enableQueryLog();
+//     			\DB::enableQueryLog();
     			$querys = [
     					'C1' =>QltyDataDetail::whereHas('QltyProductElementType',function ($query) {$query->where("CODE",'C1' );})->where('QLTY_DATA_ID',$dataID)->select(\DB::raw("max(MOLE_FACTION)")),
     					'C2' =>QltyDataDetail::whereHas('QltyProductElementType' , function ($query) {$query->where("CODE",'C2' );})->where('QLTY_DATA_ID',$dataID)->select(\DB::raw("max(MOLE_FACTION)")),
@@ -767,7 +767,7 @@ class FormulaHelpers {
     			$qdltDatas = $qr->first();
 //      			\Log::info("qdltDatas C1 ".$qdltDatas->C1);
     								
-				\Log::info(\DB::getQueryLog());
+// 				\Log::info(\DB::getQueryLog());
 				
     			if($row)
     			{

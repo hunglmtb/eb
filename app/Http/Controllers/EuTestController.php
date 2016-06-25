@@ -9,17 +9,17 @@ class EuTestController extends CodeController {
 	public function __construct() {
 		parent::__construct();
 		$this->isApplyFormulaAfterSaving = true;
-		$this->fdcModel = "EnergyUnitDataFdcValue";
-		$this->idColumn = config("constants.euId");
-		$this->phaseColumn = config("constants.euFlowPhase");
+		$this->fdcModel = "EuTestDataFdcValue";
+		$this->idColumn = 'ID';
+// 		$this->phaseColumn = config("constants.euFlowPhase");
 		
-		$this->valueModel = "EnergyUnitDataValue";
-		$this->theorModel = "EnergyUnitDataTheor";
-		$this->keyColumns = [$this->idColumn,$this->phaseColumn];
+		$this->valueModel = "EuTestDataStdValue";
+		$this->theorModel = "EuTestDataValue";
+		$this->keyColumns = [$this->idColumn,'EU_ID','EFFECTIVE_DATE'];
 	}
 	
     public function getFirstProperty($dcTable){
-		return  ['data'=>$dcTable,'title'=>'','width'=>50];
+		return  ['data'=>'ID','title'=>'','width'=>50];
 	}
 	
 	
@@ -37,11 +37,10 @@ class EuTestController extends CodeController {
     	$dataSet = $mdl::where($euWheres)
 				    	->whereBetween('EFFECTIVE_DATE', [$occur_date,$date_end])
 				    	->select(
-								"ID as $dcTable",
-				    			"ID",
+// 								"ID",
 				    			"ID as DT_RowId",
-				    			"EU_ID as OBJ_ID",
-				    			"EFFECTIVE_DATE as T_EFFECTIVE_DATE",
+// 				    			"EU_ID as OBJ_ID",
+// 				    			"EFFECTIVE_DATE as T_EFFECTIVE_DATE",
 				    			"$dcTable.*") 
   		    			->orderBy('EFFECTIVE_DATE')
   		    			->get();
@@ -50,6 +49,17 @@ class EuTestController extends CodeController {
     	return ['dataSet'=>$dataSet,
 //     			'objectIds'=>$objectIds
     	];
+    }
+    
+    protected function preSave(&$editedData, &$affectedIds, $postData) {
+    	if ($editedData) {
+    		if (array_key_exists ($this->fdcModel, $editedData )) {
+    			$this->preSaveModel ( $editedData, $affectedIds, $this->valueModel,$this->fdcModel);
+    		}
+    		if (array_key_exists ($this->valueModel, $editedData )) {
+    			$this->preSaveModel( $editedData, $affectedIds, $this->theorModel,$this->valueModel);
+    		}
+    	}
     }
     
 }

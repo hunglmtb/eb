@@ -84,6 +84,33 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 		return  UserWorkspace::updateOrCreate($columns, $newData);
 	}
 	
+	public function getConfiguration()
+	{
+		$timeFormat =  [
+				'DATE_FORMAT'				=>		'MM/DD/YYYY',
+				'TIME_FORMAT'				=>		'hh:mm A',
+				'DATETIME_FORMAT'			=>		'MM/DD/YYYY HH:mm',
+				'DATE_FORMAT_UTC'			=>		'YYYY-MM-DD',
+				'TIME_FORMAT_UTC'			=>		'hh:mm:ss',
+				'DATETIME_FORMAT_UTC'		=>		'YYYY-MM-DD HH:mm:ss',
+				'DATE_FORMAT_CARBON'		=>		'm/d/Y',
+		];
+		
+		$picker =  [
+				'DATE_FORMAT'			=>		'mm/dd/yyyy',
+				'TIME_FORMAT'			=>		'HH:ii P',
+				'DATETIME_FORMAT'		=>		'mm/dd/yyyy hh:ii',
+				'DATE_FORMAT_UTC'		=>		'mm/dd/yyyy',
+				'TIME_FORMAT_UTC'		=>		'hh:ii:ss',
+				'DATETIME_FORMAT_UTC'	=>		'mm/dd/yyyy hh:ii',
+				'DATE_FORMAT_JQUERY'	=>		'mm/dd/yy',
+		];
+		return [
+				'time'		=>	$timeFormat,
+				'picker'	=>	$picker,
+		];
+	}
+	
 	
 	
 
@@ -104,15 +131,6 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 	 */
 	public function role()
 	{
-		/* $userRole = $this->UserRole();
-		$roles = $userRole->pluck('CODE'); */
-		/* $sSQL="select distinct c.CODE 
-		from user_user_role a, 
-		user_role_right b, 
-		user_right c 
-		where a.user_id=$current_user_id 
-		and a.role_id=b.role_id and 
-		b.right_id=c.id"; */
 		$user_user_role = UserUserRole::getTableName();
 		$user_role_right = UserRoleRight::getTableName();
 		$user_right = UserRight::getTableName();
@@ -126,29 +144,6 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 		$rs = $rows?$rows->map(function ($item, $key) {
 				    			return $item->CODE;
 					})->toArray():[];
-		/* $rs = [];
-		$row= UserUserRole::with(['UserRoleRight' => function ($query) {
-															$query->with('UserRight');
-													}]
-							)->where('USER_ID',$this->ID);
-		
-							
-		$roles = $row->get();
-		
-		foreach ($roles as $role){
-			$rs[] = $role->UserRoleRight->UserRight->CODE;
-		} */
-		//\Log::info(var_dump($this));
-		// $UserUserRole = \DB::table('UserUserRole')->where('role_id', $this->id)->first();
-		/* $uk = $this->with('UserUserRole.UserRole')->get();
-		$uk = $this->UserUserRole()->get(); */
-		/* $uur = $uk->first();
-		$ur = $uur->UserRole()->get(['CODE']); */
-// 		$ur = $uur->UserRole()->first();
-// 		$role = $ur->CODE;
-// 		\Log::error('hehe------------ROLE----------'.$role .' HEHE' );
-//         \Log::info(\DB::getQueryLog());  
-		
 		return $rs;
 	}
 	

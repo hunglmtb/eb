@@ -305,15 +305,19 @@ var actions = {
     	    editable['onblur'] = 'cancel';
 			if (type=='date') {
 				editable['onblur'] = 'submit';
-				editable['format'] = 'mm/dd/yyyy';
-				editable['viewformat'] = 'mm/dd/yyyy';
+				editable['format'] = configuration.picker.DATE_FORMAT_UTC;
+//				editable['format'] = 'mm/dd/yyyy';
+				editable['viewformat'] = configuration.picker.DATE_FORMAT;
+//				editable['viewformat'] = 'mm/dd/yyyy';
 			}
 	    	break;
 		case "datetimepicker":
 			editable['onblur'] = 'submit';
 			editable['type'] = 'datetime';
-			editable['format'] = 'mm/dd/yyyy hh:ii';
-			editable['viewformat'] = 'mm/dd/yyyy hh:ii';
+			editable['format'] = configuration.picker.DATETIME_FORMAT_UTC;
+//			editable['format'] = 'mm/dd/yyyy hh:ii';
+			editable['viewformat'] = configuration.picker.DATETIME_FORMAT;
+//			editable['viewformat'] = 'mm/dd/yyyy hh:ii';
 			editable['datetimepicker'] 	= 	{
 								          		weekStart: 1,
 								          		minuteStep :5,
@@ -325,8 +329,10 @@ var actions = {
 		case "timepicker":
 			editable['onblur'] = 'submit';
 			editable['type'] = 'datetime';
-			editable['format'] = 'hh:ii:ss';
-			editable['viewformat'] = 'HH:ii P';
+			editable['format'] = configuration.picker.TIME_FORMAT_UTC;
+//			editable['format'] = 'hh:ii:ss';
+			editable['viewformat'] = configuration.picker.TIME_FORMAT;
+//			editable['viewformat'] = 'HH:ii P';
 			editable['datetimepicker'] 	= 	{
 								          		minuteStep :5,
 								          		showMeridian : true,
@@ -378,7 +384,7 @@ var actions = {
 						                });
 //    	var columnName = table.settings()[0].aoColumns[col].data;
     	if (newValue!=null&&newValue.constructor.name == "Date") {
-    		newValue = moment(newValue).format("YYYY-MM-DD HH:mm:ss");
+    		newValue = actions.getTimeValueBy(newValue,columnName,tab);
 		}
     	if (result.length == 0) {
         	var editedData = {};
@@ -396,6 +402,14 @@ var actions = {
     		result[0][columnName] = newValue;
     	}
     	return rowData;
+	},
+	getTimeValueBy : function(newValue,columnName,tab){
+		if(columnName=='EFFECTIVE_DATE'||columnName=='OCCUR_DATE'){
+			return moment.utc(newValue).format(configuration.time.DATE_FORMAT_UTC);
+//			return moment.utc(newValue).format("YYYY-MM-DD HH:mm:ss");
+		}
+		return moment(newValue).format(configuration.time.DATETIME_FORMAT_UTC);
+//		return moment(newValue).format("YYYY-MM-DD HH:mm:ss");
 	},
 	getCellType : function(data,type,cindex){
 		type = actions.extraDataSetColumns.hasOwnProperty(data.properties[cindex].data)?'select':type;
@@ -450,9 +464,12 @@ var actions = {
 									return "";
 								}
 								if (data2.constructor.name == "Date") { 
-									return moment(data2).format("MM/DD/YYYY");
+									return moment.utc(data2).format(configuration.time.DATE_FORMAT);
+//									return moment(data2).format("MM/DD/YYYY");
+									
 								}
-								return moment(data2,"YYYY-MM-DD").format("MM/DD/YYYY");
+								return moment(data2,configuration.time.DATE_FORMAT_UTC).format(configuration.time.DATE_FORMAT);
+//								return moment(data2,"YYYY-MM-DD").format("MM/DD/YYYY");
 							};
 	    	break;
 		case "datetimepicker":
@@ -461,9 +478,11 @@ var actions = {
 									return "";
 								}
 								if (data2.constructor.name == "Date") { 
-									return moment(data2).format("MM/DD/YYYY HH:mm");
+									return moment(data2).format(configuration.time.DATETIME_FORMAT);
+//									return moment(data2).format("MM/DD/YYYY HH:mm");
 								}
-								return moment.utc(data2,"YYYY-MM-DD HH:mm").format("MM/DD/YYYY HH:mm");
+								return moment.utc(data2,configuration.time.DATETIME_FORMAT_UTC).format(configuration.time.DATETIME_FORMAT);
+//								return moment.utc(data2,"YYYY-MM-DD HH:mm").format("MM/DD/YYYY HH:mm");
 							};
 	    	break;
 		case "timepicker":
@@ -472,9 +491,11 @@ var actions = {
 									return "";
 								}
 								if (data2.constructor.name == "Date") { 
-									return moment(data2).format("hh:mm A");
+									return moment(data2).format(configuration.time.TIME_FORMAT);
+//									return moment(data2).format("hh:mm A");
 								}
-								return moment(data2,"hh:mm:ss").format("hh:mm A");
+								return moment(data2,configuration.time.TIME_FORMAT_UTC).format(configuration.time.TIME_FORMAT);
+//								return moment(data2,"hh:mm:ss").format("hh:mm A");
 							};
 	    	break;
 		case "checkbox":
@@ -618,13 +639,18 @@ var actions = {
         });
 		if(!autoWidth) $('#table_'+tab).css('width',(tblWdth)+'px');
 		
+//		hhh = $(document).height() - $('#table3').outerHeight()- $('#functionName').outerHeight()- $('#ebFilters').outerHeight()- $('#ebFooter').outerHeight() - $('#tabs').outerHeight();
+		hhh = $(document).height() - $('#ebTabHeader').offset().top - $('#ebTabHeader').outerHeight() - $('#ebFooter').outerHeight() - 120;
+		tHeight = ""+hhh+'px';
 		option = {data: data.dataSet,
 		          columns: data.properties,
 		          destroy: true,
 		          "columnDefs": uoms,
 		          "scrollX": true,
 		         "autoWidth": autoWidth,
-		       	"scrollY":        "300px",
+//		       	"scrollY":        "37vh",
+//		         "scrollY":        "250px",
+		       	scrollY:        tHeight,
 //		                "scrollCollapse": true,
 				"paging":         false,
 				"dom": 'rt<"#toolbar_'+tab+'">p<"bottom"f><"clear">',
