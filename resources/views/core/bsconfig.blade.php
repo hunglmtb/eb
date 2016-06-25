@@ -1,11 +1,11 @@
 <?php
 if (!isset($currentSubmenu)) $currentSubmenu ='';
 $subMenus = [
-		array('title' => 'FIELDS CONFIG', 'link' => 'diagram'),
-		array('title' => 'TABLES DATA', 'link' => 'roles'),
-		array('title' => 'PD TABLES', 'link' => 'workreport'),
-		array('title' => 'TAGS MAPPING', 'link' => 'graph'),
-		array('title' => 'FORMULA EDITOR', 'link' => 'approvedata'),
+		array('title' => 'FIELDS CONFIG', 'link' => 'fieldsconfig'),
+		array('title' => 'TABLES DATA', 'link' => ''),
+		array('title' => 'PD TABLES', 'link' => ''),
+		array('title' => 'TAGS MAPPING', 'link' => ''),
+		array('title' => 'FORMULA EDITOR', 'link' => ''),
 		array('title' => 'VIEW CONFIG', 'link' => 'viewconfig')
 ];
 ?>

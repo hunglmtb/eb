@@ -49,8 +49,8 @@
 
 		<ul>
 
-			<li><a href="/runallocation">run allocation</a></li>
-			<li><a href="/configallocation">config allocation</a></li>
+			<li><a href="/allocrun">Run allocation</a></li>
+			<li><a href="/allocset">Config allocation</a></li>
 
 		</ul>
 		</li>
@@ -167,7 +167,7 @@
 		<ul>
 			<li class="subfirst"><a href="/viewconfig">View Config</a></li>
 			<li><a href="/eb/formula/">Formula Editor</a></li>
-			<li><a href="/eb/cf/">Fields config</a></li>
+			<li><a href="/fieldsconfig">Fields config</a></li>
 			<li><a href="/eb/config/">Table Data</a></li>
 			<li class="sublast"><a href="/eb/config/tagsmapping.php">Tags Mapping</a></li>
 		</ul>

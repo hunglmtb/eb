@@ -54,6 +54,7 @@ $(function(){
 	})
 
 	$("#chartObjectContainer").sortable();
+	
 });
 
 var _viewconfig = {

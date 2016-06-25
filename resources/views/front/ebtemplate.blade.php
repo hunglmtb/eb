@@ -476,8 +476,8 @@ menu["visual"]=[
 		{menutext:"Task Manager",desc:"",url:"../taskman/?com=task"}
 	];
 menu["allocation"]=[
-		{menutext:"Run Allocation",desc:"",url:"runallocation"},
-		{menutext:"Config Allocation",desc:"",url:"configallocation"}
+		{menutext:"Run Allocation",desc:"",url:"/allocrun"},
+		{menutext:"Config Allocation",desc:"",url:"/allocset"}
 	];
 menu["forecast"]=[
 		{menutext:"WELL FORECAST",desc:"",url:"../matlab/forecast.php"},
@@ -519,7 +519,7 @@ menu["admin"]=[
 		{menutext:"HELP EDITOR",desc:"",url:"../help/"}
 	];
 menu["config"]=[
-		{menutext:"Fields Config",desc:"",url:"../cf"},
+		{menutext:"Fields Config",desc:"",url:"/fieldsconfig"},
 		{menutext:"Tables Data",desc:"",url:"../config"},
 		{menutext:"Tags Mapping",desc:"",url:"../config/tagsmapping.php"},
 		{menutext:"Formula Editor",desc:"",url:"../formula"},

@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu = 'runallocation ';
+$currentSubmenu = 'allocrun';
 ?>
 
 @extends('core.bsallocation')
