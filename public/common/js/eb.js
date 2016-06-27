@@ -14,13 +14,29 @@ var enableSelect = function(dependentIds, value) {
 	}
 };
 
-var registerOnChange = function(id, dependentIds) {
+var registerOnChange = function(id, dependentIds,more) {
 	$('#'+id).change(function(e){
 		enableSelect(dependentIds,'disabled');
+		if (more!=null&&more.length>0) {
+			bundle = {};
+			$.each(more, function( i, value ) {
+				bundle[value] = {};
+//				bundle[value]['value'] = $("#"+value).val();
+				bundle[value]['name'] = $("#"+value).find(":selected").attr( "name");
+				bundle[value]['id'] = $("#"+value).val();
+			});
+		}
+		/*extra = {};
+		extra[id] = bundle;*/
+
 		$.ajax({
 			url: '/code/list',
 			type: "post",
-			data: {type:id,dependences:dependentIds,value:$(this).val()},
+			data: {type:id,
+				dependences:dependentIds,
+				value:$(this).val(),
+				extra:bundle
+			},
 			success: function(results){
 				for (var i = 0; i < dependentIds.length; i++) {
 					$('#'+dependentIds[i]).html('');   // clear the existing options

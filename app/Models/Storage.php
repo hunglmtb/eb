@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Models;
-use App\Models\DynamicModel;
+use App\Models\FeatureTankModel;
 
-class Storage extends DynamicModel
+class Storage extends FeatureTankModel
 {
-	protected $table = 'storage';
+	protected $table = 'STORAGE';
 }

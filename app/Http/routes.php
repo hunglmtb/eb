@@ -190,7 +190,7 @@ Route::post('onChangeObj', 'DVController@onChangeObj');
 Route::post('getSurveillanceSetting', 'DVController@getSurveillanceSetting');
 Route::post('getValueSurveillance', 'DVController@getValueSurveillance');
 Route::post('uploadImg', 'DVController@uploadImg');
-Route::get('tagsMapping', 'DVController@_indexTagsMapping');
+Route::get('tagsMapping', 'SystemConfigController@tagsmapping');
 Route::get('workflow', 'DVController@_indexWorkFlow');
 Route::post('getListWorkFlow', 'DVController@getListWorkFlow');
 Route::post('getXMLCodeWF', 'DVController@getXMLCodeWF');

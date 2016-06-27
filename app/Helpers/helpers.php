@@ -31,7 +31,9 @@ class Helper {
 	
 		$currentId = array_key_exists('currentId', $option)?$option['currentId']:'';
 		foreach($collection as $item ){
-			$htmlFilter .= '<option value="'.($item->ID).'"'.($currentId==$item->ID?'selected':'').'>'.($item->NAME).'</option>';
+			$htmlFilter .= '<option name="'.(isset($item->CODE)?$item->CODE:"")
+						.'" value="'.($item->ID).'"'.($currentId==$item->ID?'selected':'')
+						.'>'.($item->NAME).'</option>';
 				
 		}
 		
@@ -39,7 +41,25 @@ class Helper {
 	
 		$htmlFilter .= '</select></div>';
 		if ($id&&array_key_exists('dependences', $option)&&count($option['dependences'])>0) {
-			$htmlFilter.= "<script>registerOnChange('$id',['".implode("','", $option['dependences'])."'])</script>";
+			$dependences = [];
+			$more = [];
+			$originDependences = $option['dependences'];
+			foreach($originDependences as $dependence ){
+// 				$dependences[] = $dependence;
+				if (is_string($dependence) ) {
+					$dependences[] = $dependence;
+				}
+				/* else if (isset($dependence['independent'])&&$dependence['independent']){
+//  					$dependences[] = $dependence['name'];
+// 					$more[] = $dependence['name'];
+				} */
+			}
+			
+			if (count($dependences)>0) {
+				$extra = array_key_exists('extra', $option)&&count($option['extra'])>0?$option['extra']:null;
+				$extra = is_array($extra)&&count($extra)>0?",['".implode("','", $extra)."']":'';
+				$htmlFilter.= "<script>registerOnChange('$id',['".implode("','", $dependences)."']$extra)</script>";
+			}
 		}
 	
 		echo $htmlFilter;

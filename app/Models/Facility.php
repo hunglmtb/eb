@@ -39,4 +39,20 @@ class Facility extends UomModel
 		}
 		return $this->hasMany('App\Models\EnergyUnit', 'FACILITY_ID', 'ID');
 	}
+	
+	public function ObjectName($option=null)
+	{
+		if ($option!=null&&is_array($option)) {
+			$extra = $option['IntObjectType'];
+			$mdlName = $extra['name'];
+			$tableName = strtolower ( $mdlName );
+			$mdlName = \Helper::camelize ( $tableName, '_' );
+			$mdl = 'App\Models\\' . $mdlName;
+			// 			$eCollection = $mdl::getEntries ( $currentFacility->ID );
+			return $mdl::getEntries($this->ID);
+// 			return $mdl::where('FACILITY_ID', $this->ID)->select($fields);
+		}
+		return null;
+	}
+	
 }

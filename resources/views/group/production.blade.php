@@ -1,15 +1,24 @@
 
 <?php
+$facility = array('filterName'	=>'Facility',
+				'name'			=>'facility',
+				'dependences'	=>$filters['productionFilterGroup']);
+
+if (isset($filters['extra'])) {
+	$facility['extra'] = $filters['extra'];
+}
+
 $mapping = ['LoProductionUnit'		=> 	array('filterName'	=>'Production Unit',
 											'name'			=>'productionUnit',
-											'dependences'	=> array_merge(['LoArea','Facility'],$filters['productionFilterGroup'])),
-			'LoArea'					=>	array('filterName'	=>'Area',
+											'dependences'	=> array_merge(['LoArea','Facility'],$filters['productionFilterGroup']),
+//  											'extra'			=>$filters['extra'],
+										),
+			'LoArea'				=>	array('filterName'	=>'Area',
 											'name'			=>'area',
 											'dependences'	=> array_merge(['Facility'],$filters['productionFilterGroup'])),
-			'Facility'				=>	array('filterName'	=>'Facility',
-											'name'			=>'facility',
-											'dependences'	=>$filters['productionFilterGroup'])
+			'Facility'				=>	$facility
 			];
+
 $subMapping = config("constants.subProductFilterMapping");
 $mapping = array_merge($mapping,$subMapping);
 

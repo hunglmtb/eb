@@ -51,24 +51,30 @@ class CodeController extends EBController {
 	
 	public function getCodes(Request $request)
     {
-		$options = $request->only('type','value', 'dependences');
+		$options = $request->only('type','value', 'dependences','extra');
+		$bunde = $options['extra'];
+		$type = $options['type'];
 		
-		$mdl = 'App\Models\\'.$options['type'];
+		$mdl = 'App\Models\\'.$type;
 		$unit = $mdl::find($options['value']);
-// 		->value('email');all(['ID', 'NAME']);
 		$results = [];
 		
 		foreach($options['dependences'] as $model ){
+			$modelName = $model;
 			if ($unit!=null) {
-				$eCollection = $unit->$model(['ID', 'NAME'])->getResults();
+// 				$eCollection = $unit->$model(['ID', 'NAME'])->getResults();
+// 				$option = isset($bunde[$model])?$bunde[$model]:null;
+				$rs = ProductionGroupComposer::initExtraDependence($results,$model,$unit,$bunde);
+				$eCollection = $rs['collection'];
+				$modelName = $rs['model'];
 			}
 			else  break;
 			if (count ( $eCollection ) > 0) {
 				$unit = ProductionGroupComposer::getCurrentSelect ( $eCollection );
-				$filterArray = ProductionGroupComposer::getFilterArray ( $model, $eCollection, $unit );
-				if (array_key_exists($model,  config("constants.subProductFilterMapping"))&&
-						array_key_exists('default',  config("constants.subProductFilterMapping")[$model])) {
-					$eCollection[] = config("constants.subProductFilterMapping")[$model]['default'];
+				$filterArray = ProductionGroupComposer::getFilterArray ( $modelName, $eCollection, $unit );
+				if (array_key_exists($modelName,  config("constants.subProductFilterMapping"))&&
+						array_key_exists('default',  config("constants.subProductFilterMapping")[$modelName])) {
+					$eCollection[] = config("constants.subProductFilterMapping")[$modelName]['default'];
 				}
 				$results [] = $filterArray;
 			}
