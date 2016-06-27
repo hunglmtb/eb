@@ -361,22 +361,10 @@ function addRunner() {
 	}
 	
 	sendAjaxNotMessage('/addrunner', param, function(data){
-		$("#edit_close").trigger("click");
-		//loadRunnersList(current_job_id, current_job_name);
-	});
-	
-	/*postRequest("index.php?act=addrunner", {
-		"job_id" : current_job_id,
-		"order" : $('#txtRunnerOrder').val(),
-		"alloc_type" : $("#cboRunnerAllocType").val(),
-		"theor_phase" : $("#cboTheorPhase").val(),
-		"theor_value_type" : $("#cboTheorValueType").val(),
-		"obj_from" : vRunnerFrom,
-		"obj_to" : toObject
-	}, function(data) {
+		cancelAddRunner();
 		$("#edit_close").trigger("click");
 		loadRunnersList(current_job_id, current_job_name);
-	});*/
+	});
 }
 
 var vRunnerFrom, vRunnerTo;

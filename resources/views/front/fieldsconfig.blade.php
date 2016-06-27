@@ -245,7 +245,8 @@ var _fieldconfig = {
 				'us_data' : $("#us_data").is(':checked') ? 1 : 0,
 				'us_gr' : $("#us_gr").is(':checked') ? 1 : 0,
 				'us_sr' : $("#us_sr").is(':checked') ? 1 : 0,
-				'is_mandatory' : $("#is_mandatory").is(':checked') ? 1 : 0
+				'is_mandatory' : $("#is_mandatory").is(':checked') ? 1 : 0,
+				'friendly_name' : $("#friendly_name").val()
 			}
 			
 			sendAjax('/saveprop', param, function(data){

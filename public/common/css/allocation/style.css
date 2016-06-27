@@ -21,7 +21,7 @@
 .brc_out {border-radius:4px;border:1px solid #888888;background:#eeeeee;padding:6px 0px 6px 0px;margin:2px;}
 .brc_x {cursor:pointer;border-radius:4px;border:1px solid #888888;background:#bbbbbb;margin:1px;padding:4px 8px 4px 8px}
 #MySplitter {
-	height: 300px;
+	/* height: 300px; */
 	width: 100%;
 	border: 0px solid #bbbbbb;
 	/* No padding allowed */
@@ -36,7 +36,6 @@
 	box-sizing: border-box;
 }
 #BottomPane {
-	background: gray;
 	min-height: 100px;
 	overflow: auto;
 	border-style:solid;

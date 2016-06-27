@@ -254,3 +254,11 @@ Route::post('chckChange', 'FieldsConfigController@chckChange');
 Route::post('getprop', 'FieldsConfigController@getprop');
 Route::post('saveprop', 'FieldsConfigController@saveprop');
 
+Route::get('formula', 'FormulaController@_index');
+Route::post('editgroupname', 'FormulaController@editGroupName');
+Route::post('addgroupname', 'FormulaController@addGroupName');
+Route::post('deletegroup', 'FormulaController@deleteGroup');
+Route::post('getformulaslist', 'FormulaController@getformulaslist');
+Route::post('getvarlist', 'FormulaController@getVarList');
+
+

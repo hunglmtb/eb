@@ -10,8 +10,9 @@ $currentSubmenu = 'allocset';
 <div id="controlSearch">
 
 	<div>
-		<b>Allocation group</b>
+		<b>&nbsp;</b>
 	</div>
+	<b>Allocation group</b>
 	<select id="cboNetworks" onchange="_configallocation.bodyJobsList();">
 		@foreach($result as $re)
 		<option value="{!!$re['ID']!!}">{!!$re['NAME']!!}</option> @endforeach

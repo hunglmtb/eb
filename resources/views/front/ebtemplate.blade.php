@@ -522,7 +522,7 @@ menu["config"]=[
 		{menutext:"Fields Config",desc:"",url:"/fieldsconfig"},
 		{menutext:"Tables Data",desc:"",url:"../config"},
 		{menutext:"Tags Mapping",desc:"",url:"../config/tagsmapping.php"},
-		{menutext:"Formula Editor",desc:"",url:"../formula"},
+		{menutext:"Formula Editor",desc:"",url:"/formula"},
 		{menutext:"View Config",desc:"",url:"/viewconfig"},
 	];
 menu["interface"]=[
