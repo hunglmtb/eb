@@ -194,8 +194,12 @@ class CodeController extends EBController {
 //      	$record_freq = $postData['CodeReadingFrequency'];
 //      	$phase_type = $postData['CodeFlowPhase'];
      	$facility_id = $postData['Facility'];
-     	$occur_date = $postData['date_begin'];
-     	$occur_date = Carbon::parse($occur_date);
+     	
+     	$occur_date = null;
+     	if (array_key_exists('date_begin',  $postData)){
+     		$occur_date = $postData['date_begin'];
+     		$occur_date = Carbon::parse($occur_date);
+     	}
 //      	$objectIds = array_key_exists('objectIds', $postData)?$postData['objectIds']:[];
      	
      	$affectedIds = [];

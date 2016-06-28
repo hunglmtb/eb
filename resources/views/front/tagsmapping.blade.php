@@ -15,7 +15,7 @@ TAG MAPPING CONFIG
 	actions.loadUrl = "/tagsMapping/load";
 	actions.saveUrl = "/tagsMapping/save";
 	actions.type = {
-					idName:['ID'],
+					idName:['ID','OBJECT_TYPE'],
 					keyField:'ID',
 					saveKeyField : function (model){
 						return 'ID';
