@@ -38,7 +38,7 @@ class ProductionGroupComposer
     public function compose(View $view)
     {
     	$fgs = $view->filters;
-    	$filterGroups = array();
+    	$filterGroups = array('enableButton'	=> isset($fgs['enableButton'])?$fgs['enableButton']:true);
     	$workspace = $this->user->workspace();
     	
     	if (array_key_exists('dateFilterGroup', $fgs)) {

@@ -9,6 +9,7 @@ class ForecastPlanningController extends EBController {
 								'frequenceFilterGroup'=> ['ExtensionPhaseType','ExtensionValueType','ExtensionDataSource'],
 								'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
 																['id'=>'date_end','name'=>'To date']),
+								'enableButton'		=> false
 						);
 		return view ( 'fp.forecast',['filters'=>$filterGroups]);
 	}
