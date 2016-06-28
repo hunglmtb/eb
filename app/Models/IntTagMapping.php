@@ -5,6 +5,6 @@ use App\Models\DynamicModel;
 
 class IntTagMapping extends DynamicModel
 {
-	protected $table = 'int_tag_mapping';
+	protected $table = 'INT_TAG_MAPPING';
 	
 }

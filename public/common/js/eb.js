@@ -252,12 +252,28 @@ var actions = {
 		}
 	},
 	getExtraDataSetColumn :function(data,cindex,rowData){
-		ecolumn = actions.extraDataSetColumns[data.properties[cindex].data];
+		sourceColumn = data.properties[cindex].data;
+		ecolumn = actions.extraDataSetColumns[sourceColumn];
  		ecollectionColumn = rowData[ecolumn];
- 		if(ecollectionColumn!=null&&ecollectionColumn!=''&&typeof(actions.extraDataSet[ecolumn]) !== "undefined"){
- 			ecollection = actions.extraDataSet[ecolumn][ecollectionColumn];
- 		}
- 		else ecollection = null;
+ 		ecollection = null;
+ 		
+ 		if(ecollectionColumn!=null&&
+ 				ecollectionColumn!=''&&
+ 				typeof(actions.extraDataSet[ecolumn]) !== "undefined"){
+ 			if(actions.extraDataSet[ecolumn].hasOwnProperty(sourceColumn)){
+ 				ecollection = actions.extraDataSet[ecolumn][sourceColumn];
+ 			}
+ 			else if(typeof(actions.extraDataSet[ecolumn][ecollectionColumn]) !== "undefined"){
+	 			ecollection = actions.extraDataSet[ecolumn][ecollectionColumn];
+	 		}
+		}
+ 		if(ecollection == null){
+ 			if($.isArray(actions.extraDataSet[ecolumn]))  ecollection = actions.extraDataSet[ecolumn];
+ 			else if(typeof(sourceColumn) !== "undefined" && sourceColumn==ecolumn){
+ 	 			ecollection = actions.extraDataSet[sourceColumn][ecolumn];
+ 	 		}
+ 		} 
+ 			
  		return ecollection;
 	},
 	isEditable : function (column,rowData,rights){
@@ -524,8 +540,16 @@ var actions = {
 			cell["render"] = function ( data2, type2, row ) {
  	        		collection = actions.getExtraDataSetColumn(data,cindex,row);
 		     		if(collection!=null){
-		     			var result = $.grep(collection, function(e){ 
-		     				return e['ID'] == data2;
+		     			var result = $.grep(collection, function(e){
+		     				if(typeof(e) !== "undefined"){
+		     					if(e.hasOwnProperty('ID')) {
+		     						return e['ID'] == data2;
+		     					}
+		     					else if(e.hasOwnProperty('value')) {
+		     						return e['value'] == data2;
+		     					}
+		     				}
+		    				return false;
 		     			});
 		     			if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined" &&result[0].hasOwnProperty('NAME')){
 		     				return result[0]['NAME'];

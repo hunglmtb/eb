@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class CodeBoolean extends DynamicModel 
 { 
-	protected $table = 'code_boolean'; 
+	protected $table = 'CODE_BOOLEAN'; 
 } 

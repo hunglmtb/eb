@@ -12,6 +12,6 @@ class SystemConfigController extends EBController {
 															],
 								'extra' 				=> ['IntObjectType']
 						);
-		return view ( 'front.eu',['filters'=>$filterGroups]);
+		return view ( 'front.tagsmapping',['filters'=>$filterGroups]);
 	}
 }

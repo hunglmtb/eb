@@ -32,6 +32,10 @@ use App\Models\CodeEqpGhgRelType;
 use App\Models\CodePersonnelType;
 use App\Models\CodePersonnelTitle;
 use App\Models\Personnel;
+use App\Models\CodeEventType;
+use App\Models\IntSystem;
+use App\Models\CodeReadingFrequency;
+use App\Models\CodeBoolean;
 
 class CodeController extends EBController {
 	 
@@ -93,8 +97,11 @@ class CodeController extends EBController {
      	$dcTable = $mdl::getTableName();
      	
      	$facility_id = $postData['Facility'];
-     	$occur_date = $postData['date_begin'];
-     	$occur_date = Carbon::parse($occur_date);
+     	$occur_date = null;
+     	if (array_key_exists('date_begin',  $postData)){
+	     	$occur_date = $postData['date_begin'];
+	     	$occur_date = Carbon::parse($occur_date);
+     	}
      	
  		$results = $this->getProperties($dcTable,$facility_id,$occur_date);
       	$data = $this->getDataSet($postData,$dcTable,$facility_id,$occur_date,$results);
@@ -434,6 +441,7 @@ class CodeController extends EBController {
 		    		$selectData = ['id'=>'CodeProductType','targets'=>$i,'COLUMN_NAME'=>$columnName];
 		    		$selectData['data'] = CodeProductType::all();
 		    		$rs[] = $selectData;
+		    		break;
 	    		case 'DEFER_REASON' :
 	    			$selectData = ['id'=>'CodeDeferReason','targets'=>$i,'COLUMN_NAME'=>$columnName];
 	    			$selectData['data'] = CodeDeferReason::all();
@@ -522,6 +530,26 @@ class CodeController extends EBController {
 		    		$selectData['data'] = CodePersonnelTitle::all();
 		    		$rs[] = $selectData;
 		    		break;
+	    		case 'SYSTEM_ID' :
+	    			$selectData = ['id'=>'IntSystem','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = IntSystem::all();
+	    			$rs[] = $selectData;
+	    			break;
+    			case 'FREQUENCY' :
+    				$selectData = ['id'=>'CodeReadingFrequency','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = CodeReadingFrequency::all();
+    				$rs[] = $selectData;
+    				break;
+    			case 'ALLOW_OVERRIDE' :
+    				$selectData = ['id'=>'CodeBoolean','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = CodeBoolean::all();
+    				$rs[] = $selectData;
+    				break;
+	    		case 'FLOW_PHASE' :
+	    			$selectData = ['id'=>'CodeFlowPhase','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = CodeFlowPhase::all();
+	    			$rs[] = $selectData;
+	    			break;
     		}
     		$i++;
     	}
