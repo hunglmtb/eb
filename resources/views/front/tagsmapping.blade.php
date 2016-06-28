@@ -29,11 +29,8 @@ TAG MAPPING CONFIG
 	source['TABLE_NAME']	=	{	dependenceColumnName	:	['COLUMN_NAME'],
  									url						: 	'/tagsMapping/loadsrc'
 								};
-	/* source['OBJECT_ID']	={	dependenceColumnName	:	['OBJECT_ID'],
-// 						url						: 	null
-		}; */
 
-		addingOptions.keepColumns = ['TABLE_NAME','COLUMN_NAME'];
+	addingOptions.keepColumns = ['TABLE_NAME','COLUMN_NAME'];
 
 	source.initRequest = function(tab,columnName,newValue,collection){
 		postData = actions.loadedData[tab];

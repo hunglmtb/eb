@@ -139,10 +139,14 @@ Route::post('personnel/save', 		'PersonnelController@save');
 Route::post('personnel/loadsrc', 	'PersonnelController@loadsrc');
 
 
-Route::get('tagsMapping', 'SystemConfigController@tagsmapping');
+Route::get('tagsMapping',			['uses' =>'SystemConfigController@tagsmapping','middleware' => 'checkRight:CONFIG_TAGS_MAPPING']);
 Route::post('tagsMapping/load',		['uses' =>	'TagsMappingController@load','middleware' => 'saveWorkspace']);
 Route::post('tagsMapping/save', 	'TagsMappingController@save');
 Route::post('tagsMapping/loadsrc', 	'TagsMappingController@loadsrc');
+
+Route::get('fp/forecast',			['uses' =>'ForecastPlanningController@forecast','middleware' => 'checkRight:FP_WELLFORECAST']);
+Route::post('forecast/load',	['uses' =>	'ForecastPlanningController@load','middleware' => 'saveWorkspace']);
+Route::post('forecast/save', 	'ForecastPlanningController@save');
 
 //----------admin
 Route::get('am/users', 'AdminController@_index');

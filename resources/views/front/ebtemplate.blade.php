@@ -480,10 +480,10 @@ menu["allocation"]=[
 		{menutext:"Config Allocation",desc:"",url:"configallocation"}
 	];
 menu["forecast"]=[
-		{menutext:"WELL FORECAST",desc:"",url:"../matlab/forecast.php"},
-		{menutext:"PREoS",desc:"",url:"../matlab/preos.php"},
-		{menutext:"MANUAL ALLOCATE<br>PLAN",desc:"",url:"../matlab/allocateplan.php"},
-		{menutext:"LOAD<br>PLAN/FORECAST",desc:"",url:"../matlab/loadplanforecast.php"},
+		{menutext:"WELL FORECAST",desc:"",url:"../fp/forecast"},
+		{menutext:"PREoS",desc:"",url:"../fp/preos"},
+		{menutext:"MANUAL ALLOCATE<br>PLAN",desc:"",url:"../fp/allocateplan"},
+		{menutext:"LOAD<br>PLAN/FORECAST",desc:"",url:"../fp/loadplanforecast"},
 	];
 <?php
 // if($current_username=="CP_User"){}
@@ -521,7 +521,7 @@ menu["admin"]=[
 menu["config"]=[
 		{menutext:"Fields Config",desc:"",url:"../cf"},
 		{menutext:"Tables Data",desc:"",url:"../config"},
-		{menutext:"Tags Mapping",desc:"",url:"../config/tagsmapping.php"},
+		{menutext:"Tags Mapping",desc:"",url:"../tagsMapping"},
 		{menutext:"Formula Editor",desc:"",url:"../formula"},
 		{menutext:"View Config",desc:"",url:"/viewconfig"},
 	];

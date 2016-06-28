@@ -17,8 +17,8 @@ var enableSelect = function(dependentIds, value) {
 var registerOnChange = function(id, dependentIds,more) {
 	$('#'+id).change(function(e){
 		enableSelect(dependentIds,'disabled');
+		bundle = {};
 		if (more!=null&&more.length>0) {
-			bundle = {};
 			$.each(more, function( i, value ) {
 				bundle[value] = {};
 //				bundle[value]['value'] = $("#"+value).val();

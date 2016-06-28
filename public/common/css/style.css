@@ -100,18 +100,18 @@ input[type="button"]:focus, button:focus {
 }
 
 .product_filter, .date_filter {
-	margin-right: 10px;
+	margin-right: 5px;
 	float: left;
 	margin-bottom: 5px;
 	background-color: #E6E6E6;
-	padding-right: 10px;
-	padding-left: 10px;
+	padding-right: 5px;
+	padding-left: 5px;
 }
 
 .filter, .date_input {
 	width: auto;
 	float: left;
-	padding: 3px;
+	padding: 1px;
 }
 
 .date_input {
