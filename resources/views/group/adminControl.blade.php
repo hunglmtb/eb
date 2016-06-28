@@ -12,9 +12,10 @@ $(function(){
 	
 	adminControl.init(listControl);	
 
-	if($('#cboObjectType').length > 0){
-		$('#cboObjectType').change();
-	}
+	//if($('#cboObjectType').length > 0){
+		//$('#cboObjectType').change();
+		//alert('aaaaaaaaaaaa' + $('#cboObjectType').val());
+	//}
 }); 
 
 var adminControl = {
@@ -61,7 +62,7 @@ var adminControl = {
 			cbo += _graph.loadObjecType();
 		}
 
-		if( typeof _viewconfig !== 'undefined' && _viewconfig.loadTimelineType == 1){
+		if( typeof _viewconfig !== 'undefined' && _viewconfig.loadObjType == 1){
 			cbo += _viewconfig.loadObjecType();
 		}
 		
@@ -102,6 +103,10 @@ var adminControl = {
 
 		if(typeof _graph !== 'undefined' && _graph.loadObjType == 1){		
 			_graph.setValueDefault();
+		}
+
+		if( typeof _viewconfig !== 'undefined' && _viewconfig.loadObjType == 1){
+			$('#cboObjectType').change();
 		}
 	},
 	reloadCbo : function(id, data){

@@ -285,6 +285,8 @@ table.dataTable {
     margin-top: 5px;
 }
 
+.current_job{background-color:#d8ebff;color:#378de5}
+
 /* .editable-container.editable-inline {
     width: 100%;
 }

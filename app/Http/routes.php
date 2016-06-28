@@ -238,6 +238,36 @@ Route::post('deletePlotItems', 'ViewConfigController@deletePlotItems');
 Route::post('savePlotItems', 'ViewConfigController@savePlotItems');
 Route::post('genView', 'ViewConfigController@genView');
 
-Route::get('runallocation', 'AllocationController@_index');
+Route::get('allocrun', 'AllocationController@_index');
 Route::post('getJobsRunAlloc', 'AllocationController@getJobsRunAlloc');
 Route::post('run_runner', 'AllocationController@run_runner');
+
+Route::get('allocset', 'AllocationController@_indexconfig');
+Route::post('addJob', 'AllocationController@addJob');
+Route::post('addrunner', 'AllocationController@addrunner');
+Route::post('getrunnerslist', 'AllocationController@getrunnerslist');
+Route::post('getconditionslist', 'AllocationController@getconditionslist');
+Route::post('deletejob', 'AllocationController@deletejob');
+Route::post('savecondition', 'AllocationController@savecondition');
+Route::post('deleterunner', 'AllocationController@deleterunner');
+Route::post('clonenetwork', 'AllocationController@clonenetwork');
+Route::get('jobdiagram/{job_id}', 'AllocationController@jobdiagram');
+Route::get('loadjobdiagram/{id}', 'AllocationController@loaddiagram');
+Route::post('editJob', 'AllocationController@editJob');
+Route::post('saveEditRunner', 'AllocationController@saveEditRunner');
+
+Route::get('fieldsconfig', 'FieldsConfigController@_index');
+Route::post('getColumn', 'FieldsConfigController@getColumn');
+Route::post('saveconfig', 'FieldsConfigController@saveconfig');
+Route::post('chckChange', 'FieldsConfigController@chckChange');
+Route::post('getprop', 'FieldsConfigController@getprop');
+Route::post('saveprop', 'FieldsConfigController@saveprop');
+
+Route::get('formula', 'FormulaController@_index');
+Route::post('editgroupname', 'FormulaController@editGroupName');
+Route::post('addgroupname', 'FormulaController@addGroupName');
+Route::post('deletegroup', 'FormulaController@deleteGroup');
+Route::post('getformulaslist', 'FormulaController@getformulaslist');
+Route::post('getvarlist', 'FormulaController@getVarList');
+
+

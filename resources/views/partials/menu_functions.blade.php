@@ -49,8 +49,8 @@
 
 		<ul>
 
-			<li><a href="/runallocation">run allocation</a></li>
-			<li><a href="/configallocation">config allocation</a></li>
+			<li><a href="/allocrun">Run allocation</a></li>
+			<li><a href="/allocset">Config allocation</a></li>
 
 		</ul>
 		</li>

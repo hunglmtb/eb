@@ -1,11 +1,11 @@
 <?php
 if (!isset($currentSubmenu)) $currentSubmenu ='';
 $subMenus = [
-		array('title' => 'FIELDS CONFIG', 'link' => 'diagram'),
-		array('title' => 'TABLES DATA', 'link' => 'roles'),
-		array('title' => 'PD TABLES', 'link' => 'workreport'),
-		array('title' => 'TAGS MAPPING', 'link' => 'graph'),
-		array('title' => 'FORMULA EDITOR', 'link' => 'approvedata'),
+		array('title' => 'FIELDS CONFIG', 'link' => 'fieldsconfig'),
+		array('title' => 'TABLES DATA', 'link' => ''),
+		array('title' => 'PD TABLES', 'link' => ''),
+		array('title' => 'TAGS MAPPING', 'link' => ''),
+		array('title' => 'FORMULA EDITOR', 'link' => 'formula'),
 		array('title' => 'VIEW CONFIG', 'link' => 'viewconfig')
 ];
 ?>
@@ -15,7 +15,6 @@ $subMenus = [
 	<script src="/common/js/jquery-2.1.3.js"></script>
 @stop	
 @section('main')
-
 <div id="content">
 	<div class="title">
 		@yield('title')
@@ -24,7 +23,6 @@ $subMenus = [
 
 	@yield('content')
 </div>
-@yield('adaptData')
 
 @stop
 
