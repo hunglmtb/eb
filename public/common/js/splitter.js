@@ -116,7 +116,7 @@
 		var splitter = $(this).css({position: "relative"});
 		var panes = $(">*", splitter[0]).css({
 			position: "absolute", 			// positioned inside splitter container
-			"z-index": "1",					// splitbar is positioned above
+			//"z-index": "1",					// splitbar is positioned above
 			"-moz-outline-style": "none"	// don't show dotted outline
 		});
 		var A = $(panes[0]);		// left  or top

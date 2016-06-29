@@ -6,10 +6,13 @@ use App\Models\FoGroup;
 use App\Models\FoVar;
 use App\Models\Facility;
 use App\Models\LoArea;
-
+use App\Models\CodeFlowPhase;
+use App\Models\CodeAllocType;
+use App\Models\LoProductionUnit;
 
 use Illuminate\Http\Request;
 use DB;
+use Carbon\Carbon;
 
 class FormulaController extends Controller {
 	
@@ -21,10 +24,16 @@ class FormulaController extends Controller {
 	public function _index() {
 		
 		$fo_group = $this->getFoGroup();
-		/* $code_plan_type = CodePlanType::all(['ID', 'NAME']);
-		$code_alloc_type = CodeAllocType::all(['ID', 'NAME']); */
+		$code_flow_phase = CodeFlowPhase::all(['ID', 'NAME']);
+		$code_alloc_type = CodeAllocType::all(['ID', 'NAME']);
+		$loProductionUnit = LoProductionUnit::all(['ID', 'NAME']);
 		
-		return view ( 'front.formula', ['fo_group'=>$fo_group]);
+		return view ( 'front.formula', ['fo_group'=>$fo_group, 
+										'code_flow_phase'=>$code_flow_phase, 
+										'code_alloc_type'=>$code_alloc_type,
+										'loProductionUnit'=>$loProductionUnit
+				
+		]);
 	}
 	
 	public function editGroupName(Request $request){
@@ -85,8 +94,9 @@ class FormulaController extends Controller {
 
 		$formula = Formula::where(['GROUP_ID'=>$data['group_id']])
 		->orderBy('ID')->select('*')->get();
-
-		/* $result = [];
+		$html="";
+		$result = [];
+		 $i = 0;
 		foreach ($formula as $row)
 		{
 			$r1 = [];
@@ -99,15 +109,17 @@ class FormulaController extends Controller {
 			$tablea = $model::getTableName ();
 			$facility = Facility::getTableName ();
 			$lo_area = LoArea::getTableName ();
+			//\DB::enableQueryLog ();
 			
-			$key = ','.$row->OBJECT_ID.',';
+			$key=explode(',',$row->OBJECT_ID);
 			$tmp = DB::table ( $tablea . ' AS a' )
 			->join ( $facility . ' AS b', 'b.ID', '=', 'a.FACILITY_ID' )
 			->join ( $lo_area . ' AS c', 'c.ID', '=', 'b.AREA_ID' )
-			->where('a.ID', 'like', $key ) // concat(',','$row[OBJECT_ID]',',') like concat('%,',a.ID,',%')
+			//->where(DB::Raw(','.$row->OBJECT_ID.','), 'like', DB::Raw('%,'.$x.',%'))
+			->whereIn('a.ID', $key)
 			->select('a.NAME AS OBJECT_NAME', 'a.FACILITY_ID', 'b.AREA_ID', 'c.PRODUCTION_UNIT_ID')
 			->get();
-			
+			//\Log::info ( \DB::getQueryLog () );
 			$sLO="";
 			$rowLO = [];
 			foreach ($tmp as $rowXO)
@@ -115,44 +127,27 @@ class FormulaController extends Controller {
 				$rowLO=$rowXO;
 				$sLO.=($sLO==""?"":"<br>").$rowLO->OBJECT_NAME;
 			}
-			$r1['PRODUCTION_UNIT_ID'] = $rowLO['PRODUCTION_UNIT_ID'];
-			$r1['PRODUCTION_UNIT_ID1'] =$rowLO['PRODUCTION_UNIT_ID'];
-			$r1['PRODUCTION_UNIT_ID2'] =$rowLO['PRODUCTION_UNIT_ID'];
-			array($row, $r1);
 			
-			/* 
+			if(!is_null($row->BEGIN_DATE))
+				$row['BEGIN_DATE'] = Carbon::createFromFormat('Y-m-d',$row->BEGIN_DATE)->format('m/d/Y');
+			if(!is_null($row->END_DATE))
+				$row['END_DATE'] = Carbon::createFromFormat('Y-m-d',$row->END_DATE)->format('m/d/Y');
+			
+			if(count($rowLO) > 0){
+				$row['PRODUCTION_UNIT_ID'] = $rowLO->PRODUCTION_UNIT_ID;
+				$row['AREA_ID'] = $rowLO->AREA_ID;
+				$row['FACILITY_ID'] = $rowLO->FACILITY_ID;
+				$row['sLO'] = $sLO;
+			}else{
+				$row['PRODUCTION_UNIT_ID'] = "";
+				$row['AREA_ID'] = "";
+				$row['FACILITY_ID'] = "";
+				$row['sLO'] = "";
+			}
+			array_push($result, $row);
+		} 
 		
-			$i++;
-			if($i % 2==0) $bgcolor="#eeeeee"; else $bgcolor="#f8f8f8";
-			echo "<tr bgcolor='$bgcolor' class='formula_item' rowid='$row[ID]' order='$row[ORDER]' new_order='".($row[ORDER]?$row[ORDER]:-1)."' id='Qrowformula_".$row[ID]."' style=\"cursor:pointer\" onclick=\"loadVarsList($row[ID],'$row[NAME]')\">
-			<td align='center'>$i</td><td>
-			<span id='Q_FormulaName_".$row[ID]."'>$row[NAME]</span>
-			<span style='display:none'>
-			<span id='Q_TableName_".$row[ID]."'>$row[TABLE_NAME]</span>
-			<span id='Q_ValueColumn_".$row[ID]."'>$row[VALUE_COLUMN]</span>
-			<span id='Q_IDColumn_".$row[ID]."'>$row[OBJ_ID_COLUMN]</span>
-			<span id='Q_ObjType_".$row[ID]."'>$row[OBJECT_TYPE]</span>
-			<span id='Q_ObjID_".$row[ID]."'>$row[OBJECT_ID]</span>
-			<span id='Q_FlowPhase_".$row[ID]."'>$row[FLOW_PHASE]</span>
-			<span id='Q_AllocType_".$row[ID]."'>$row[ALLOC_TYPE]</span>
-			<span id='Q_PUID_".$row[ID]."'>$rowLO[PRODUCTION_UNIT_ID]</span>
-			<span id='Q_AreaID_".$row[ID]."'>$rowLO[AREA_ID]</span>
-			<span id='Q_FAcilityID_".$row[ID]."'>$rowLO[FACILITY_ID]</span>
-			<span id='Q_DateColumn_".$row[ID]."'>$row[DATE_COLUMN]</span>
-			</span>
-			</td>
-			<td>$sLO</td>
-			<td>$row[TABLE_NAME]</td>
-			<td>$row[VALUE_COLUMN]</td>
-			<td><span id='Q_Formula_".$row[ID]."' style='word-wrap: break-word;'>$row[FORMULA]</span></td>
-			<td><span id='Q_BeginDate_".$row[ID]."'>$row[BEGIN_DATE]</span></td>
-			<td><span id='Q_EndDate_".$row[ID]."'>$row[END_DATE]</span></td>
-			<td><span id='Q_Comment_".$row[ID]."'>$row[COMMENT]</span></td>
-			</tr>
-			"; */
-		//} 
-		
-		return response ()->json ( $formula );
+		return response ()->json ( $result );
 	}
 	
 	public function getVarList(Request $request){
@@ -184,14 +179,232 @@ class FormulaController extends Controller {
 			->select('a.NAME AS OBJECT_NAME', 'a.FACILITY_ID', 'b.AREA_ID', 'c.PRODUCTION_UNIT_ID')
 			->first();
 			
-			$row['PRODUCTION_UNIT_ID'] = $rowLO->PRODUCTION_UNIT_ID;
-			$row['AREA_ID'] = $rowLO->AREA_ID;
-			$row['FACILITY_ID'] = $rowLO->FACILITY_ID;
-			$row['OBJECT_NAME'] = $rowLO->OBJECT_NAME;
+			if(count($rowLO) > 0){
+				$row['PRODUCTION_UNIT_ID'] = $rowLO->PRODUCTION_UNIT_ID;
+				$row['AREA_ID'] = $rowLO->AREA_ID;
+				$row['FACILITY_ID'] = $rowLO->FACILITY_ID;
+				$row['OBJECT_NAME'] = $rowLO->OBJECT_NAME;
+			}else{
+				$row['PRODUCTION_UNIT_ID'] = "";
+				$row['AREA_ID'] = "";
+				$row['FACILITY_ID'] = "";
+				$row['OBJECT_NAME'] = "";
+			}
 			
 			array_push($result, $row);
 		}
 		
 		return response ()->json ( $result );
+	}
+	
+	public function deleteformula(Request $request){
+		$data = $request->all ();
+				
+		Formula::where(['ID'=>$data['formula_id']])->delete();
+		
+		return response ()->json ( "ok");
+	}
+	
+	public function saveFormulaOrder(Request $request){
+		$data = $request->all ();
+		$orders=$data['orders'];
+		foreach($orders as $order){			
+			Formula::where(['ID'=>$order[0]])->update(['ORDER'=>$order[1]]);
+		}
+	
+		return response ()->json ( "ok");
+	}
+	
+	public function saveformula(Request $request){
+		$data = $request->all ();
+		
+		$objname = "";
+		if(count($data['cboObjName']) > 0){
+			foreach ($data['cboObjName'] as $selectedOption)
+			    $objname.= ($objname==""?"":",").$selectedOption;
+		}
+		
+		if($data['isvar'] == 0)
+		{
+			$formula_id=$data['formula_id'];
+			$saveAsNew = $data['asnew'];
+			
+			if($formula_id<=0 || $saveAsNew==1)
+			{
+				$param = [];
+				$param['NAME'] = $data['txtFormulaName'];
+				$param['COMMENT' ] =  $data['txtComment'];
+				$param['GROUP_ID'] = $data['group_id'];
+				$param['OBJECT_TYPE'] = $data['cboObjType'];
+				$param['OBJECT_ID'] = $objname;
+				$param['TABLE_NAME'] = $data['txtTableName'];
+				$param['VALUE_COLUMN'] = $data['txtValueColumn'];
+				$param['OBJ_ID_COLUMN'] = $data['txtIDColumn'];
+				$param['DATE_COLUMN'] = $data['txtDateColumn'];
+				$param['FLOW_PHASE'] = $data['cboFlowPhase'];
+				$param['ALLOC_TYPE'] = $data['cboAllocType'];
+				$param['FORMULA'] = $data['txtFormula'];
+				
+				if(!empty($data['txtBeginDate']))
+					$param['BEGIN_DATE'] = Carbon::createFromFormat('m/d/Y',$data['txtBeginDate'])->format('Y-m-d');
+				
+				if(!empty($data['txtEndDate']))
+					$param['END_DATE'] = Carbon::createFromFormat('m/d/Y',$data['txtEndDate'])->format('Y-m-d');
+				
+				$condition = array (
+						'ID' => -1
+				);
+				
+				$ins = Formula::updateOrCreate ( $condition, $param );
+				$new_formula_id=$ins->ID;
+	
+				if($formula_id>0 && $new_formula_id>0)
+				{
+					$tmp = [];
+					$tmp = FoVar::where(['FORMULA_ID'=>$formula_id])
+					->select('NAME','STATIC_VALUE','ORDER', 'FORMULA_ID', 'OBJECT_TYPE', 'OBJECT_ID', 'TABLE_NAME', 'VALUE_COLUMN', 'OBJ_ID_COLUMN', 'DATE_COLUMN', 'FLOW_PHASE', 'ALLOC_TYPE', 'COMMENT')
+					->first();
+					$tmp['FORMULA_ID'] = $new_formula_id;
+					$tmp = json_decode(json_encode($tmp), true);
+					
+					$condition = array (
+							'ID' => -1
+					);
+					$tmp = FoVar::updateOrCreate ( $condition, $tmp );
+				}
+			}
+			else
+			{
+				if($objname)
+					$str = $objname;
+				else 
+					$str = "";
+				$p = [
+					'NAME'=>$data['txtFormulaName'],
+					'COMMENT' => $data['txtComment'],
+					'GROUP_ID'=>$data['group_id'],
+					'OBJECT_TYPE'=>$data['cboObjType'],
+					'OBJECT_ID' =>$str,
+					'TABLE_NAME'=>$data['txtTableName'],
+					'VALUE_COLUMN'=>$data['txtValueColumn'],
+					'OBJ_ID_COLUMN'=>$data['txtIDColumn'],
+					'DATE_COLUMN'=>$data['txtDateColumn'],
+					'FLOW_PHASE'=>$data['cboFlowPhase'],
+					'ALLOC_TYPE'=>$data['cboAllocType'],
+					'FORMULA'=>$data['txtFormula'],
+					'BEGIN_DATE'=>Carbon::createFromFormat('m/d/Y',$data['txtBeginDate'])->format('Y-m-d'),
+					'END_DATE'=>Carbon::createFromFormat('m/d/Y',$data['txtEndDate'])->format('Y-m-d')
+				];
+				
+				Formula::where(['ID'=>$formula_id])->update($p);
+			}
+		}
+		else if($data['isvar']==1)
+		{
+			$var_id=$data['var_id'];
+			$saveAsNew=$data['asnew'];
+			if($objname)
+				$str = $objname;
+			else
+				$str = "";
+			
+			if($var_id<=0 || $saveAsNew==1)
+			{			
+				
+					
+				$pra = [
+					'NAME' => $data['txtFormulaName'],
+					'STATIC_VALUE' => $data['txtStaticValue'],
+					'ORDER' => $data['txtOrder'],
+					'FORMULA_ID' => $data['formula_id'],
+					'OBJECT_TYPE' => $data['cboObjType'],
+					'OBJECT_ID'  => $str,
+					'TABLE_NAME' => $data['txtTableName'],
+					'VALUE_COLUMN' => $data['txtValueColumn'],
+					'OBJ_ID_COLUMN' => $data['txtIDColumn'],
+					'DATE_COLUMN' => $data['txtDateColumn'],
+					'FLOW_PHASE' => $data['cboFlowPhase'],
+					'ALLOC_TYPE' => $data['cboAllocType'],
+					'COMMENT' => $data['txtComment']
+				];
+				
+				FoVar::insert($pra);
+			}
+			else
+			{
+				$pra1 = [
+					'NAME' => $data['txtFormulaName'],
+					'STATIC_VALUE' => $data['txtStaticValue'],
+					'ORDER' => $data['txtOrder'],
+					'FORMULA_ID' => $data['formula_id'],
+					'OBJECT_TYPE' => $data['cboObjType'],
+					'OBJECT_ID'  => $str,
+					'TABLE_NAME' => $data['txtTableName'],
+					'VALUE_COLUMN' => $data['txtValueColumn'],
+					'OBJ_ID_COLUMN' => $data['txtIDColumn'],
+					'DATE_COLUMN' => $data['txtDateColumn'],
+					'FLOW_PHASE' => $data['cboFlowPhase'],
+					'ALLOC_TYPE' => $data['cboAllocType'],
+					'COMMENT' => $data['txtComment']
+				];
+				
+				FoVar::where(['ID'=>$var_id])->update($pra1);
+			}
+		}
+		
+		return response ()->json ( "ok");
+	}
+	
+	public function testformula(Request $request){
+		$data = $request->all ();
+		$str = "";
+		$fid=$data['fid'];
+		$occur_date=$data['occur_date'];
+		if(!$occur_date)
+		{
+			$result = FoVar::where(['formula_id'=>$fid])->orderBy('ORDER')->select('*')->get();			
+			$need_occur_date=false;
+			
+			foreach ($result as $row)
+			{
+				if (strpos($row->STATIC_VALUE,'@OCCUR_DATE') !== false) {
+					$need_occur_date=true;
+					break;
+				}
+			}
+			if($need_occur_date)
+			{
+				$str = "need_occur_date";
+				return response ()->json ( $str);
+			}
+		}
+		
+		if(!$occur_date) $occur_date=date("m/d/Y");
+		
+		$param = Formula::find($fid);
+		
+		$v = \FormulaHelpers::evalFormula($param, $occur_date);
+		
+		//echo $v;
+		return response ()->json ( $v);
+	}
+	
+	public function deletevar(Request $request){
+		$data = $request->all ();
+		
+		FoVar::where(['ID'=>$data['var_id']])->delete();
+
+		return response ()->json ( "ok");
+	}
+	
+	public function savevarsorder(Request $request){
+		$data = $request->all ();
+		$orders = $data['orders'];
+		
+		foreach($orders as $order){			
+			FoVar::where(['ID'=>$order[0]])->update(['ORDER'=>$order[1]]);
+		}
+		
+		return response ()->json ( "ok");
 	}
 }

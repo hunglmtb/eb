@@ -260,5 +260,10 @@ Route::post('addgroupname', 'FormulaController@addGroupName');
 Route::post('deletegroup', 'FormulaController@deleteGroup');
 Route::post('getformulaslist', 'FormulaController@getformulaslist');
 Route::post('getvarlist', 'FormulaController@getVarList');
-
+Route::post('deleteformula', 'FormulaController@deleteformula');
+Route::post('saveformulaorder', 'FormulaController@saveFormulaOrder');
+Route::post('saveformula', 'FormulaController@saveformula');
+Route::post('testformula', 'FormulaController@testformula');
+Route::post('deletevar', 'FormulaController@deletevar');
+Route::post('savevarsorder', 'FormulaController@saveVarsOrder');
 
