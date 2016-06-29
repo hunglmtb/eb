@@ -6,6 +6,7 @@ use Illuminate\View\View;
 use App\Repositories\UserRepository as UserRepository;
 use App\Models\LoProductionUnit;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class ProductionGroupComposer
 {
@@ -37,7 +38,7 @@ class ProductionGroupComposer
     public function compose(View $view)
     {
     	$fgs = $view->filters;
-    	$filterGroups = array();
+    	$filterGroups = array('enableButton'	=> isset($fgs['enableButton'])?$fgs['enableButton']:true);
     	$workspace = $this->user->workspace();
     	
     	if (array_key_exists('dateFilterGroup', $fgs)) {
@@ -107,14 +108,34 @@ class ProductionGroupComposer
 					    		ProductionGroupComposer::getFilterArray('Facility',$facilities,$currentFacility)
     							];
 	    
-	    foreach($extras as $model ){
-	    	$eCollection = $currentFacility->$model()->getResults();
-	    	$extraFilter = ProductionGroupComposer::getCurrentSelect($eCollection);
-		    $productionFilterGroup[] = ProductionGroupComposer::getFilterArray($model,$eCollection,$extraFilter);
-	    
+	    foreach($extras as $source => $model ){
+	    	$option = $this->getExtraOptions($productionFilterGroup,$model,$source);
+	    	$rs = ProductionGroupComposer::initExtraDependence($productionFilterGroup,$model,$currentFacility,$option);
+	    	$eCollection = $rs['collection'];
+	    	$modelName = $rs['model'];
+	    	$extraFilter = ProductionGroupComposer::getCurrentSelect ( $eCollection );
+	    	$productionFilterGroup [$modelName] = ProductionGroupComposer::getFilterArray ( $modelName, $eCollection, $extraFilter );
 	    }
 	    return $productionFilterGroup;
     }
+    
+	public function getExtraOptions($productionFilterGroup, $model, $source = null) {
+		if (is_string ( $source )) {
+			$extraSource = $productionFilterGroup [$source];
+			// $currentId = $extraSource['currentId'];
+			$entry = ProductionGroupComposer::getCurrentSelect($extraSource ['collection']);
+			$eModel = $entry->CODE;
+			$tableName = strtolower ( $eModel );
+			$mdlName = \Helper::camelize ( $tableName, '_' );
+// 			$mdl = 'App\Models\\' . $mdlName;
+// 			$eCollection = $mdl::getEntries ( $currentFacility->ID );
+			return [$source =>['name'=>$mdlName,
+					'id'=>$entry->ID
+			]];
+		}
+		return null;
+	}
+    
     
     public function initFrequenceFilterGroup($extras=null)
     {
@@ -128,7 +149,7 @@ class ProductionGroupComposer
     
     public static function getCurrentSelect($collection,$id=null)
     {
-    	if ($collection!=null) {
+    	if ($collection!=null&& $collection instanceof Collection) {
     		$units = $collection->keyBy('ID');
     		$unit = $units->get($id);
     		 
@@ -147,9 +168,39 @@ class ProductionGroupComposer
     	}
     	$option['id'] = $id;
     	$option['collection'] = $collection;
-    	$option['currentId'] =  $currentUnit!=null?$currentUnit->ID:'';
+    	$option['currentId'] =  $currentUnit&&isset($currentUnit->ID)?$currentUnit->ID:'';
     	return $option; 
     }
     
+    
+    public static function initExtraDependence($productionFilterGroup, $model, $currentFacility,$option = null) {
+    	$modelName = $model;
+		if (is_string ( $model )) {
+			$entry = $currentFacility->$model($option);
+			if ($entry) {
+				if ($entry instanceof Collection) $eCollection = $entry;
+				else  $eCollection = $entry->getResults ();
+			}
+			else $eCollection = [];
+		} else {
+			$modelName = $model ['name'];
+			if ($model ['independent']) {
+				$mdl = 'App\Models\\' . $modelName;
+				$eCollection = $mdl::getAll();
+			}
+			/* else {
+				$extraSource = $productionFilterGroup [$model ['source']];
+				// $currentId = $extraSource['currentId'];
+				$eModel = $extraSource ['collection'] [0]->CODE;
+				$tableName = strtolower ( $eModel );
+				$mdlName = \Helper::camelize ( $tableName, '_' );
+				$mdl = 'App\Models\\' . $mdlName;
+				$eCollection = $mdl::getEntries ( $currentFacility->ID );
+			} */
+		}
+		return ['collection' => $eCollection,
+				'model' => $modelName
+		];
+	}
     
 }

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 use App\Models\EbBussinessModel;
-use App\Models\EuPhaseConfig;
 
 class FeatureTankModel extends EbBussinessModel
 {
@@ -83,5 +82,15 @@ class FeatureTankModel extends EbBussinessModel
 	
 	public static function updateDependenceFields($object_id,$values){
 		return $values;
+	}
+	
+	
+	public static function getEntries($facility_id=null,$product_type = 0){
+		$wheres = ['FACILITY_ID'=>$facility_id];
+		if ($product_type>0) {
+			$wheres['PRODUCT'] = $product_type;
+		}
+		$entries = static ::where($wheres)->select('ID','NAME')->get();
+		return $entries;
 	}
 }

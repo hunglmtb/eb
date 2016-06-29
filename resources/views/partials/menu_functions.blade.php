@@ -166,10 +166,11 @@
 		<li><a href="#"><span>System Configuration</span></a>
 		<ul>
 			<li class="subfirst"><a href="/viewconfig">View Config</a></li>
-			<li><a href="/formula/">Formula Editor</a></li>
-			<li><a href="/fieldsconfig">Fields config</a></li>
-			<li><a href="/eb/config/">Table Data</a></li>
-			<li class="sublast"><a href="/eb/config/tagsmapping.php">Tags Mapping</a></li>
+			<li><a href="/formula">Formula Editor</a></li>
+			<li><a href="/fieldconfig">Fields config</a></li>
+			<li><a href="/tablepd">PD Tables</a></li>
+			<li><a href="/tabledata">Table Data</a></li>
+			<li class="sublast"><a href="/tagsMapping">Tags Mapping</a></li>
 		</ul>
 		</li>
 	</ul>

@@ -5,6 +5,7 @@ use App\Models\DynamicModel;
 
 class IntMapTable extends DynamicModel
 {
-	protected $table = 'int_map_table';
+	protected $primaryKey = 'ID';
+	protected $table = 'INT_MAP_TABLE';
 	
 }

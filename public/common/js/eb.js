@@ -14,13 +14,29 @@ var enableSelect = function(dependentIds, value) {
 	}
 };
 
-var registerOnChange = function(id, dependentIds) {
+var registerOnChange = function(id, dependentIds,more) {
 	$('#'+id).change(function(e){
 		enableSelect(dependentIds,'disabled');
+		bundle = {};
+		if (more!=null&&more.length>0) {
+			$.each(more, function( i, value ) {
+				bundle[value] = {};
+//				bundle[value]['value'] = $("#"+value).val();
+				bundle[value]['name'] = $("#"+value).find(":selected").attr( "name");
+				bundle[value]['id'] = $("#"+value).val();
+			});
+		}
+		/*extra = {};
+		extra[id] = bundle;*/
+
 		$.ajax({
 			url: '/code/list',
 			type: "post",
-			data: {type:id,dependences:dependentIds,value:$(this).val()},
+			data: {type:id,
+				dependences:dependentIds,
+				value:$(this).val(),
+				extra:bundle
+			},
 			success: function(results){
 				for (var i = 0; i < dependentIds.length; i++) {
 					$('#'+dependentIds[i]).html('');   // clear the existing options
@@ -236,12 +252,28 @@ var actions = {
 		}
 	},
 	getExtraDataSetColumn :function(data,cindex,rowData){
-		ecolumn = actions.extraDataSetColumns[data.properties[cindex].data];
+		sourceColumn = data.properties[cindex].data;
+		ecolumn = actions.extraDataSetColumns[sourceColumn];
  		ecollectionColumn = rowData[ecolumn];
- 		if(ecollectionColumn!=null&&ecollectionColumn!=''&&typeof(actions.extraDataSet[ecolumn]) !== "undefined"){
- 			ecollection = actions.extraDataSet[ecolumn][ecollectionColumn];
- 		}
- 		else ecollection = null;
+ 		ecollection = null;
+ 		
+ 		if(ecollectionColumn!=null&&
+ 				ecollectionColumn!=''&&
+ 				typeof(actions.extraDataSet[ecolumn]) !== "undefined"){
+ 			if(actions.extraDataSet[ecolumn].hasOwnProperty(sourceColumn)){
+ 				ecollection = actions.extraDataSet[ecolumn][sourceColumn];
+ 			}
+ 			else if(typeof(actions.extraDataSet[ecolumn][ecollectionColumn]) !== "undefined"){
+	 			ecollection = actions.extraDataSet[ecolumn][ecollectionColumn];
+	 		}
+		}
+ 		if(ecollection == null){
+ 			if($.isArray(actions.extraDataSet[ecolumn]))  ecollection = actions.extraDataSet[ecolumn];
+ 			else if(typeof(sourceColumn) !== "undefined" && sourceColumn==ecolumn){
+ 	 			ecollection = actions.extraDataSet[sourceColumn][ecolumn];
+ 	 		}
+ 		} 
+ 			
  		return ecollection;
 	},
 	isEditable : function (column,rowData,rights){
@@ -418,26 +450,26 @@ var actions = {
 	getCellProperty : function(data,tab,type,cindex){
 		var cell = {"targets"	: cindex};
 		type = actions.getCellType(data,type,cindex);
+		const columnName = data.properties[cindex].data;
 		if (type!='checkbox') {
 			cell["createdCell"] = function (td, cellData, rowData, row, col) {
-					columnName = data.properties[col].data;
-	 				$(td).addClass( columnName );
+					colName = data.properties[col].data;
+	 				$(td).addClass( colName );
 		 			if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
 		 				$(td).addClass( "editInline" );
-		 				columnName = data.properties[col].data;
-		 				$(td).addClass( columnName );
+		 				colName = data.properties[col].data;
+//		 				$(td).addClass( colName );
 		 	        	var table = $('#table_'+tab).DataTable();
 		 	        	collection = null;
 		 	        	if(type=='select'){
 		 	        		collection = actions.getExtraDataSetColumn(data,cindex,rowData);
 		 	        	}
-		 				actions.applyEditable(tab,type,td, cellData, rowData, columnName,collection);
+		 				actions.applyEditable(tab,type,td, cellData, rowData, colName,collection);
 		 			}
 			    };
 		}
 		switch(type){
 		case "text":
-			columnName = data.properties[cindex].data;
 			if(columnName=='UOM'){
 				cell["render"] = function ( data2, type2, row ) {
 					var rendered = data2;
@@ -450,12 +482,16 @@ var actions = {
 	    	break;
 		case "number":
 			cell["render"] = function ( data2, type2, row ) {
-								var rendered = data2;
-								if(data2!=null&&data2!=''){
-									rendered = parseFloat(data2).toFixed(2);
-									if(isNaN(rendered)) return '';
+								value = actions.getNumberRender(columnName,data,data2, type2, row);
+								if(value==null){
+									var rendered = data2;
+									if(data2!=null&&data2!=''){
+										rendered = parseFloat(data2).toFixed(2);
+										if(isNaN(rendered)) return '';
+									}
+									return rendered;
 								}
-								return rendered;
+								return value;
 							};
 	    	break;
 		case "date":
@@ -508,8 +544,16 @@ var actions = {
 			cell["render"] = function ( data2, type2, row ) {
  	        		collection = actions.getExtraDataSetColumn(data,cindex,row);
 		     		if(collection!=null){
-		     			var result = $.grep(collection, function(e){ 
-		     				return e['ID'] == data2;
+		     			var result = $.grep(collection, function(e){
+		     				if(typeof(e) !== "undefined"){
+		     					if(e.hasOwnProperty('ID')) {
+		     						return e['ID'] == data2;
+		     					}
+		     					else if(e.hasOwnProperty('value')) {
+		     						return e['value'] == data2;
+		     					}
+		     				}
+		    				return false;
 		     			});
 		     			if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined" &&result[0].hasOwnProperty('NAME')){
 		     				return result[0]['NAME'];
@@ -530,6 +574,14 @@ var actions = {
 	},
 	isShownOf : function(value,postData){
 		return true;
+	},
+	getNumberRender: function(columnName,data,data2, type2, row){
+		return null;
+	},
+	getTableOption: function(data){
+		return {tableOption :{searching: true},
+				invisible:[]};
+		
 	},
 	initTableOption : function (tab,data,options,renderFirsColumn,createdFirstCellColumn){
 		if(typeof(data.uoms) == "undefined"||data.uoms==null){
@@ -640,7 +692,8 @@ var actions = {
 		if(!autoWidth) $('#table_'+tab).css('width',(tblWdth)+'px');
 		
 //		hhh = $(document).height() - $('#table3').outerHeight()- $('#functionName').outerHeight()- $('#ebFilters').outerHeight()- $('#ebFooter').outerHeight() - $('#tabs').outerHeight();
-		hhh = $(document).height() - $('#ebTabHeader').offset().top - $('#ebTabHeader').outerHeight() - $('#ebFooter').outerHeight() - 120;
+		headerOffset = $('#ebTabHeader').offset();
+		hhh = $(document).height() - (headerOffset?(headerOffset.top):0) - $('#ebTabHeader').outerHeight() - $('#ebFooter').outerHeight() - 120;
 		tHeight = ""+hhh+'px';
 		option = {data: data.dataSet,
 		          columns: data.properties,

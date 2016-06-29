@@ -32,6 +32,10 @@ use App\Models\CodeEqpGhgRelType;
 use App\Models\CodePersonnelType;
 use App\Models\CodePersonnelTitle;
 use App\Models\Personnel;
+use App\Models\CodeEventType;
+use App\Models\IntSystem;
+use App\Models\CodeReadingFrequency;
+use App\Models\CodeBoolean;
 
 class CodeController extends EBController {
 	 
@@ -51,28 +55,41 @@ class CodeController extends EBController {
 	
 	public function getCodes(Request $request)
     {
-		$options = $request->only('type','value', 'dependences');
+		$options = $request->only('type','value', 'dependences','extra');
+		$bunde = $options['extra'];
+		$type = $options['type'];
 		
-		$mdl = 'App\Models\\'.$options['type'];
+		$mdl = 'App\Models\\'.$type;
 		$unit = $mdl::find($options['value']);
-// 		->value('email');all(['ID', 'NAME']);
 		$results = [];
 		
 		foreach($options['dependences'] as $model ){
+			$modelName = $model;
 			if ($unit!=null) {
-				$eCollection = $unit->$model(['ID', 'NAME'])->getResults();
+// 				$eCollection = $unit->$model(['ID', 'NAME'])->getResults();
+// 				$option = isset($bunde[$model])?$bunde[$model]:null;
+				$rs = ProductionGroupComposer::initExtraDependence($results,$model,$unit,$bunde);
+				$eCollection = $rs['collection'];
+				$modelName = $rs['model'];
 			}
 			else  break;
-			if (count ( $eCollection ) > 0) {
-				$unit = ProductionGroupComposer::getCurrentSelect ( $eCollection );
-				$filterArray = ProductionGroupComposer::getFilterArray ( $model, $eCollection, $unit );
+// 			if (count ( $eCollection ) > 0) {
 				if (array_key_exists($model,  config("constants.subProductFilterMapping"))&&
 						array_key_exists('default',  config("constants.subProductFilterMapping")[$model])) {
 					$eCollection[] = config("constants.subProductFilterMapping")[$model]['default'];
 				}
+				$unit = ProductionGroupComposer::getCurrentSelect ( $eCollection );
+				$filterArray = ProductionGroupComposer::getFilterArray ( $modelName, $eCollection, $unit );
 				$results [] = $filterArray;
-			}
-			else break;
+			/* }
+			else {
+				if (array_key_exists($model,  config("constants.subProductFilterMapping"))&&
+						array_key_exists('default',  config("constants.subProductFilterMapping")[$model])) {
+							$results [] = $filterArray;
+							$eCollection[] = config("constants.subProductFilterMapping")[$model]['default'];
+						}
+				break;
+			} */
 		}
 		
 		return response($results, 200) // 200 Status Code: Standard response for successful HTTP request
@@ -82,13 +99,14 @@ class CodeController extends EBController {
     public function load(Request $request){
 //     	sleep(2);
     	$postData = $request->all();
-    	$mdlName = $postData[config("constants.tabTable")];
-    	$mdl = "App\Models\\$mdlName";
-     	$dcTable = $mdl::getTableName();
+     	$dcTable = $this->getWorkingTable($postData); 
      	
      	$facility_id = $postData['Facility'];
-     	$occur_date = $postData['date_begin'];
-     	$occur_date = Carbon::parse($occur_date);
+     	$occur_date = null;
+     	if (array_key_exists('date_begin',  $postData)){
+	     	$occur_date = $postData['date_begin'];
+	     	$occur_date = Carbon::parse($occur_date);
+     	}
      	
  		$results = $this->getProperties($dcTable,$facility_id,$occur_date);
       	$data = $this->getDataSet($postData,$dcTable,$facility_id,$occur_date,$results);
@@ -99,6 +117,12 @@ class CodeController extends EBController {
 	        $results = array_merge($results, $data);
         }
     	return response()->json($results);
+    }
+    
+    public function getWorkingTable($postData){
+    	$mdlName = $postData[config("constants.tabTable")];
+    	$mdl = "App\Models\\$mdlName";
+    	return $mdl::getTableName();
     }
     
     public function getSecondaryData($postData,$dcTable,$facility_id,$occur_date,$results){
@@ -181,8 +205,12 @@ class CodeController extends EBController {
 //      	$record_freq = $postData['CodeReadingFrequency'];
 //      	$phase_type = $postData['CodeFlowPhase'];
      	$facility_id = $postData['Facility'];
-     	$occur_date = $postData['date_begin'];
-     	$occur_date = Carbon::parse($occur_date);
+     	
+     	$occur_date = null;
+     	if (array_key_exists('date_begin',  $postData)){
+     		$occur_date = $postData['date_begin'];
+     		$occur_date = Carbon::parse($occur_date);
+     	}
 //      	$objectIds = array_key_exists('objectIds', $postData)?$postData['objectIds']:[];
      	
      	$affectedIds = [];
@@ -428,6 +456,7 @@ class CodeController extends EBController {
 		    		$selectData = ['id'=>'CodeProductType','targets'=>$i,'COLUMN_NAME'=>$columnName];
 		    		$selectData['data'] = CodeProductType::all();
 		    		$rs[] = $selectData;
+		    		break;
 	    		case 'DEFER_REASON' :
 	    			$selectData = ['id'=>'CodeDeferReason','targets'=>$i,'COLUMN_NAME'=>$columnName];
 	    			$selectData['data'] = CodeDeferReason::all();
@@ -516,6 +545,26 @@ class CodeController extends EBController {
 		    		$selectData['data'] = CodePersonnelTitle::all();
 		    		$rs[] = $selectData;
 		    		break;
+	    		case 'SYSTEM_ID' :
+	    			$selectData = ['id'=>'IntSystem','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = IntSystem::all();
+	    			$rs[] = $selectData;
+	    			break;
+    			case 'FREQUENCY' :
+    				$selectData = ['id'=>'CodeReadingFrequency','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = CodeReadingFrequency::all();
+    				$rs[] = $selectData;
+    				break;
+    			case 'ALLOW_OVERRIDE' :
+    				$selectData = ['id'=>'CodeBoolean','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = CodeBoolean::all();
+    				$rs[] = $selectData;
+    				break;
+	    		case 'FLOW_PHASE' :
+	    			$selectData = ['id'=>'CodeFlowPhase','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = CodeFlowPhase::all();
+	    			$rs[] = $selectData;
+	    			break;
     		}
     		$i++;
     	}

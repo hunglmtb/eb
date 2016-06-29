@@ -1,15 +1,27 @@
-
 <?php
+if (!isset($filters['extra'])) {
+	$filters['extra'] = [];
+}
+
+$enableButton = isset($filterGroups['enableButton'])?$filterGroups['enableButton']:true;
+
 $mapping = ['LoProductionUnit'		=> 	array('filterName'	=>'Production Unit',
 											'name'			=>'productionUnit',
-											'dependences'	=> array_merge(['LoArea','Facility'],$filters['productionFilterGroup'])),
-			'LoArea'					=>	array('filterName'	=>'Area',
+											'dependences'	=> array_merge(['LoArea','Facility'],$filters['productionFilterGroup']),
+  											'extra'			=>$filters['extra'],
+										),
+			'LoArea'				=>	array('filterName'	=>'Area',
 											'name'			=>'area',
-											'dependences'	=> array_merge(['Facility'],$filters['productionFilterGroup'])),
+											'dependences'	=> array_merge(['Facility'],$filters['productionFilterGroup']),
+  											'extra'			=>$filters['extra'],
+										),
 			'Facility'				=>	array('filterName'	=>'Facility',
 											'name'			=>'facility',
-											'dependences'	=>$filters['productionFilterGroup'])
+											'dependences'	=>$filters['productionFilterGroup'],
+  											'extra'			=>$filters['extra'],
+										)
 			];
+
 $subMapping = config("constants.subProductFilterMapping");
 $mapping = array_merge($mapping,$subMapping);
 
@@ -53,12 +65,13 @@ $( document ).ready(function() {
 			</div>
 			@endif
 	@endforeach
-
-	<div class="action_filter">
-		@if(!auth()->user()->hasRight('DATA_READONLY'))
-			<input type="button" value="Save" name="B3" id = "buttonSave" onClick="actions.doSave(true)" style="width: 85px;foat:left; height: 26px">
-		@endif
-		<input type="button" value="Load data" id="buttonLoadData" name="B33"
-			onClick="actions.doLoad(true)" style="width: 85px; height: 26px;foat:left;">
-	</div>
+	@if($enableButton)
+		<div class="action_filter">
+			@if(!auth()->user()->hasRight('DATA_READONLY'))
+				<input type="button" value="Save" name="B3" id = "buttonSave" onClick="actions.doSave(true)" style="width: 85px;foat:left; height: 26px">
+			@endif
+			<input type="button" value="Load data" id="buttonLoadData" name="B33"
+				onClick="actions.doLoad(true)" style="width: 85px; height: 26px;foat:left;">
+		</div>
+	@endif
 </div>

@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Models;
-use App\Models\DynamicModel;
+use App\Models\FeatureTankModel;
 
-class Tank extends DynamicModel
+class Tank extends FeatureTankModel
 {
 	protected $table = 'TANK';
 	
@@ -16,4 +16,5 @@ class Tank extends DynamicModel
 	{
 		return $this->belongsTo('App\Models\Facility', 'FACILITY_ID', 'ID');
 	}	
+	
 }
