@@ -271,20 +271,20 @@ var _formula = {
 				str += "	<td><span id='Q_FormulaName_"+data[i].ID+"'>"+checkValue(data[i].NAME,"")+"</span>";
 
 				str += "	<span style='display:none'>";
-				str += "		<span id='Q_TableName_"+data[i].ID+"'>"+data[i].TABLE_NAME+"</span>";
-				str += "		<span id='Q_ValueColumn_"+data[i].ID+"'>"+data[i].VALUE_COLUMN+"</span>";
-				str += "		<span id='Q_IDColumn_"+data[i].ID+"'>"+data[i].OBJ_ID_COLUMN+"</span>";
-				str += "		<span id='Q_ObjType_"+data[i].ID+"'>"+data[i].OBJECT_TYPE+"</span>";
-				str += "		<span id='Q_ObjID_"+data[i].ID+"'>"+data[i].OBJECT_ID+"</span>";
-				str += "		<span id='Q_FlowPhase_"+data[i].ID+"'>"+data[i].FLOW_PHASE+"</span>";
-				str += "		<span id='Q_AllocType_"+data[i].ID+"'>"+data[i].ALLOC_TYPE+"</span>";
-				str += "		<span id='Q_PUID_"+data[i].ID+"'>"+data[i].PRODUCTION_UNIT_ID+"</span>";
-				str += "		<span id='Q_AreaID_"+data[i].ID+"'>"+data[i].AREA_ID+"</span>";
-				str += "		<span id='Q_FAcilityID_"+data[i].ID+"'>"+data[i].FACILITY_ID+"</span>";
-				str += "		<span id='Q_DateColumn_"+data[i].ID+"'>"+data[i].DATE_COLUMN+"</span>";
+				str += "		<span id='Q_TableName_"+data[i].ID+"'>"+checkValue(data[i].TABLE_NAME,"")+"</span>";
+				str += "		<span id='Q_ValueColumn_"+data[i].ID+"'>"+checkValue(data[i].VALUE_COLUMN,"")+"</span>";
+				str += "		<span id='Q_IDColumn_"+data[i].ID+"'>"+checkValue(data[i].OBJ_ID_COLUMN,"")+"</span>";
+				str += "		<span id='Q_ObjType_"+data[i].ID+"'>"+checkValue(data[i].OBJECT_TYPE,"")+"</span>";
+				str += "		<span id='Q_ObjID_"+data[i].ID+"'>"+checkValue(data[i].OBJECT_ID,"")+"</span>";
+				str += "		<span id='Q_FlowPhase_"+data[i].ID+"'>"+checkValue(data[i].FLOW_PHASE,"")+"</span>";
+				str += "		<span id='Q_AllocType_"+data[i].ID+"'>"+checkValue(data[i].ALLOC_TYPE,"")+"</span>";
+				str += "		<span id='Q_PUID_"+data[i].ID+"'>"+checkValue(data[i].PRODUCTION_UNIT_ID,"")+"</span>";
+				str += "		<span id='Q_AreaID_"+data[i].ID+"'>"+checkValue(data[i].AREA_ID,"")+"</span>";
+				str += "		<span id='Q_FAcilityID_"+data[i].ID+"'>"+checkValue(data[i].FACILITY_ID,"")+"</span>";
+				str += "		<span id='Q_DateColumn_"+data[i].ID+"'>"+checkValue(data[i].DATE_COLUMN,"")+"</span>";
 				str += "	</span>";
 				str += "	</td>";
-				str += "	<td>"+data[i].sLO+"</td>";
+				str += "	<td>"+checkValue(data[i].sLO,"")+"</td>";
 				str += "	<td>"+checkValue(data[i].TABLE_NAME,"")+"</td>";
 				str += "	<td>"+checkValue(data[i].VALUE_COLUMN,"")+"</td>";
 				str += "	<td><span id='Q_Formula_"+data[i].ID+"' style='word-wrap: break-word;'>"+checkValue(data[i].FORMULA,"")+"</span></td>";
@@ -333,18 +333,18 @@ var _formula = {
 				str += "<span id='V_FormulaName_"+data[i].ID+"'>"+checkValue(data[i].NAME,"")+"</span>";
 				str += "<span style='display:none'>";
 				str += "<span id='V_Order_"+data[i].ID+"'>"+data[i].ORDER+"</span>";
-				str += "<span id='V_StaticValue_"+data[i].ID+"'>"+data[i].STATIC_VALUE+"</span>";
-				str += "<span id='V_TableName_"+data[i].ID+"'>"+data[i].TABLE_NAME+"</span>";
-				str += "<span id='V_ValueColumn_"+data[i].ID+"'>"+data[i].VALUE_COLUMN+"</span>";
-				str += "<span id='V_IDColumn_"+data[i].ID+"'>"+data[i].OBJ_ID_COLUMN+"</span>";
-				str += "<span id='V_ObjType_"+data[i].ID+"'>"+data[i].OBJECT_TYPE+"</span>";
-				str += "<span id='V_ObjID_"+data[i].ID+"'>"+data[i].OBJECT_ID+"</span>";
-				str += "<span id='V_FlowPhase_"+data[i].ID+"'>"+data[i].FLOW_PHASE+"</span>";
-				str += "<span id='V_AllocType_"+data[i].ID+"'>"+data[i].ALLOC_TYPE+"</span>";
-				str += "<span id='V_PUID_"+data[i].ID+"'>"+data[i].PRODUCTION_UNIT_ID+"</span>";
-				str += "<span id='V_AreaID_"+data[i].ID+"'>"+data[i].AREA_ID+"</span>";
-				str += "<span id='V_FAcilityID_"+data[i].ID+"'>"+data[i].FACILITY_ID+"</span>";
-				str += "<span id='V_DateColumn_"+data[i].ID+"'>"+data[i].DATE_COLUMN+"</span>";
+				str += "<span id='V_StaticValue_"+data[i].ID+"'>"+checkValue(data[i].STATIC_VALUE,"")+"</span>";
+				str += "<span id='V_TableName_"+data[i].ID+"'>"+checkValue(data[i].TABLE_NAME,"")+"</span>";
+				str += "<span id='V_ValueColumn_"+data[i].ID+"'>"+checkValue(data[i].VALUE_COLUMN,"")+"</span>";
+				str += "<span id='V_IDColumn_"+data[i].ID+"'>"+checkValue(data[i].OBJ_ID_COLUMN,"")+"</span>";
+				str += "<span id='V_ObjType_"+data[i].ID+"'>"+checkValue(data[i].OBJECT_TYPE,"")+"</span>";
+				str += "<span id='V_ObjID_"+data[i].ID+"'>"+checkValue(data[i].OBJECT_ID,"")+"</span>";
+				str += "<span id='V_FlowPhase_"+data[i].ID+"'>"+checkValue(data[i].FLOW_PHASE,"")+"</span>";
+				str += "<span id='V_AllocType_"+data[i].ID+"'>"+checkValue(data[i].ALLOC_TYPE,"")+"</span>";
+				str += "<span id='V_PUID_"+data[i].ID+"'>"+checkValue(data[i].PRODUCTION_UNIT_ID,"")+"</span>";
+				str += "<span id='V_AreaID_"+data[i].ID+"'>"+checkValue(data[i].AREA_ID,"")+"</span>";
+				str += "<span id='V_FAcilityID_"+data[i].ID+"'>"+checkValue(data[i].FACILITY_ID,"")+"</span>";
+				str += "<span id='V_DateColumn_"+data[i].ID+"'>"+checkValue(data[i].DATE_COLUMN,"")+"</span>";
 				str += "</span>";
 				str += "</td>";
 				str += "<td>"+checkValue(data[i].STATIC_VALUE,"")+"</td>";
@@ -485,13 +485,6 @@ var _formula = {
 
 			$('#'+id).html(cbo);
 			$('#'+id).change();
-
-			if(id == "cboUserFacility"){
-				if(checkValue(_formula.curFacilityID, -1) != -1) return;
-				var value = _formula.curFacilityID;
-				var arg = value.split(",");
-				alert(arg.length + "  ----  " + value);
-			}
 		},
 
 		cboOnchange : function(cboSet, value, table){
