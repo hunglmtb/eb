@@ -73,16 +73,23 @@ class CodeController extends EBController {
 				$modelName = $rs['model'];
 			}
 			else  break;
-			if (count ( $eCollection ) > 0) {
+// 			if (count ( $eCollection ) > 0) {
+				if (array_key_exists($model,  config("constants.subProductFilterMapping"))&&
+						array_key_exists('default',  config("constants.subProductFilterMapping")[$model])) {
+					$eCollection[] = config("constants.subProductFilterMapping")[$model]['default'];
+				}
 				$unit = ProductionGroupComposer::getCurrentSelect ( $eCollection );
 				$filterArray = ProductionGroupComposer::getFilterArray ( $modelName, $eCollection, $unit );
-				if (array_key_exists($modelName,  config("constants.subProductFilterMapping"))&&
-						array_key_exists('default',  config("constants.subProductFilterMapping")[$modelName])) {
-					$eCollection[] = config("constants.subProductFilterMapping")[$modelName]['default'];
-				}
 				$results [] = $filterArray;
-			}
-			else break;
+			/* }
+			else {
+				if (array_key_exists($model,  config("constants.subProductFilterMapping"))&&
+						array_key_exists('default',  config("constants.subProductFilterMapping")[$model])) {
+							$results [] = $filterArray;
+							$eCollection[] = config("constants.subProductFilterMapping")[$model]['default'];
+						}
+				break;
+			} */
 		}
 		
 		return response($results, 200) // 200 Status Code: Standard response for successful HTTP request
@@ -92,9 +99,7 @@ class CodeController extends EBController {
     public function load(Request $request){
 //     	sleep(2);
     	$postData = $request->all();
-    	$mdlName = $postData[config("constants.tabTable")];
-    	$mdl = "App\Models\\$mdlName";
-     	$dcTable = $mdl::getTableName();
+     	$dcTable = $this->getWorkingTable($postData); 
      	
      	$facility_id = $postData['Facility'];
      	$occur_date = null;
@@ -112,6 +117,12 @@ class CodeController extends EBController {
 	        $results = array_merge($results, $data);
         }
     	return response()->json($results);
+    }
+    
+    public function getWorkingTable($postData){
+    	$mdlName = $postData[config("constants.tabTable")];
+    	$mdl = "App\Models\\$mdlName";
+    	return $mdl::getTableName();
     }
     
     public function getSecondaryData($postData,$dcTable,$facility_id,$occur_date,$results){

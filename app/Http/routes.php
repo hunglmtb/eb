@@ -145,8 +145,8 @@ Route::post('tagsMapping/save', 	'TagsMappingController@save');
 Route::post('tagsMapping/loadsrc', 	'TagsMappingController@loadsrc');
 
 Route::get('fp/forecast',			['uses' =>'ForecastPlanningController@forecast','middleware' => 'checkRight:FP_WELLFORECAST']);
-Route::post('forecast/load',	['uses' =>	'ForecastPlanningController@load','middleware' => 'saveWorkspace']);
-Route::post('forecast/save', 	'ForecastPlanningController@save');
+Route::post('forecast/load',	['uses' =>	'EnergyUnitForecastController@load','middleware' => 'saveWorkspace']);
+Route::post('forecast/run', 	'EnergyUnitForecastController@run');
 
 //----------admin
 Route::get('am/users', 'AdminController@_index');

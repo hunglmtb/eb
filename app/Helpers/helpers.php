@@ -138,4 +138,12 @@ class Helper {
 	{
 		return str_replace($separator, '', ucwords($input, $separator));
 	}
+	
+	public static function getModelName($table)
+	{
+		$tableName = strtolower ( $table );
+		$mdlName = static::camelize ( $tableName, '_' );
+		$mdl = 'App\Models\\' . $mdlName;
+		return $mdl;
+	}
 }

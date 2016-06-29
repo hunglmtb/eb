@@ -1,6 +1,6 @@
 <?php
 	$currentSubmenu ='tagsMapping';
-	$tables = ['IntTagMapping'	=>['name'=>'tags mapping']];
+	$tables = ['IntTagMapping'	=>['name'=>'Tags Mapping']];
  	$active = 0;
 ?>
 

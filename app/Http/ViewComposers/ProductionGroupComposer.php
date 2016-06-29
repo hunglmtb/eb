@@ -149,7 +149,7 @@ class ProductionGroupComposer
     
     public static function getCurrentSelect($collection,$id=null)
     {
-    	if ($collection!=null) {
+    	if ($collection!=null&& $collection instanceof Collection) {
     		$units = $collection->keyBy('ID');
     		$unit = $units->get($id);
     		 
@@ -168,7 +168,7 @@ class ProductionGroupComposer
     	}
     	$option['id'] = $id;
     	$option['collection'] = $collection;
-    	$option['currentId'] =  $currentUnit!=null?$currentUnit->ID:'';
+    	$option['currentId'] =  $currentUnit&&isset($currentUnit->ID)?$currentUnit->ID:'';
     	return $option; 
     }
     
@@ -181,7 +181,7 @@ class ProductionGroupComposer
 				if ($entry instanceof Collection) $eCollection = $entry;
 				else  $eCollection = $entry->getResults ();
 			}
-			else $eCollection = null;
+			else $eCollection = [];
 		} else {
 			$modelName = $model ['name'];
 			if ($model ['independent']) {

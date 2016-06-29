@@ -80,12 +80,6 @@ class TagsMappingController extends CodeController {
     }
     
     
-    public function putExtraBundle(&$bunde,$sourceColumn,$entry){
-    	if ($sourceColumn=='DEFER_GROUP_TYPE') {
-    		$bunde['DEFER_GROUP_CODE'] = $entry->DEFER_GROUP_CODE;
-    	}
-    }
-    
     public function loadTargetEntries($sourceColumnValue,$sourceColumn,$extraDataSetColumn,$bunde){
     	$data = null;
     	switch ($sourceColumn) {

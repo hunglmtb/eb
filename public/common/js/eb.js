@@ -450,26 +450,26 @@ var actions = {
 	getCellProperty : function(data,tab,type,cindex){
 		var cell = {"targets"	: cindex};
 		type = actions.getCellType(data,type,cindex);
+		const columnName = data.properties[cindex].data;
 		if (type!='checkbox') {
 			cell["createdCell"] = function (td, cellData, rowData, row, col) {
-					columnName = data.properties[col].data;
-	 				$(td).addClass( columnName );
+					colName = data.properties[col].data;
+	 				$(td).addClass( colName );
 		 			if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
 		 				$(td).addClass( "editInline" );
-		 				columnName = data.properties[col].data;
-		 				$(td).addClass( columnName );
+		 				colName = data.properties[col].data;
+//		 				$(td).addClass( colName );
 		 	        	var table = $('#table_'+tab).DataTable();
 		 	        	collection = null;
 		 	        	if(type=='select'){
 		 	        		collection = actions.getExtraDataSetColumn(data,cindex,rowData);
 		 	        	}
-		 				actions.applyEditable(tab,type,td, cellData, rowData, columnName,collection);
+		 				actions.applyEditable(tab,type,td, cellData, rowData, colName,collection);
 		 			}
 			    };
 		}
 		switch(type){
 		case "text":
-			columnName = data.properties[cindex].data;
 			if(columnName=='UOM'){
 				cell["render"] = function ( data2, type2, row ) {
 					var rendered = data2;
@@ -482,12 +482,16 @@ var actions = {
 	    	break;
 		case "number":
 			cell["render"] = function ( data2, type2, row ) {
-								var rendered = data2;
-								if(data2!=null&&data2!=''){
-									rendered = parseFloat(data2).toFixed(2);
-									if(isNaN(rendered)) return '';
+								value = actions.getNumberRender(columnName,data,data2, type2, row);
+								if(value==null){
+									var rendered = data2;
+									if(data2!=null&&data2!=''){
+										rendered = parseFloat(data2).toFixed(2);
+										if(isNaN(rendered)) return '';
+									}
+									return rendered;
 								}
-								return rendered;
+								return value;
 							};
 	    	break;
 		case "date":
@@ -570,6 +574,14 @@ var actions = {
 	},
 	isShownOf : function(value,postData){
 		return true;
+	},
+	getNumberRender: function(columnName,data,data2, type2, row){
+		return null;
+	},
+	getTableOption: function(data){
+		return {tableOption :{searching: true},
+				invisible:[]};
+		
 	},
 	initTableOption : function (tab,data,options,renderFirsColumn,createdFirstCellColumn){
 		if(typeof(data.uoms) == "undefined"||data.uoms==null){
@@ -680,7 +692,8 @@ var actions = {
 		if(!autoWidth) $('#table_'+tab).css('width',(tblWdth)+'px');
 		
 //		hhh = $(document).height() - $('#table3').outerHeight()- $('#functionName').outerHeight()- $('#ebFilters').outerHeight()- $('#ebFooter').outerHeight() - $('#tabs').outerHeight();
-		hhh = $(document).height() - $('#ebTabHeader').offset().top - $('#ebTabHeader').outerHeight() - $('#ebFooter').outerHeight() - 120;
+		headerOffset = $('#ebTabHeader').offset();
+		hhh = $(document).height() - (headerOffset?(headerOffset.top):0) - $('#ebTabHeader').outerHeight() - $('#ebFooter').outerHeight() - 120;
 		tHeight = ""+hhh+'px';
 		option = {data: data.dataSet,
 		          columns: data.properties,

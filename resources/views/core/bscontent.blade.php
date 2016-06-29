@@ -52,8 +52,7 @@ if (!isset($active)) $active =1;
 		postData = data.postData;
 		var tab = postData['{{config("constants.tabTable")}}'];
 		actions.loadedData[tab] = postData;
-		options = {tableOption :{searching: true},
-					invisible:[]};
+		options = actions.getTableOption(data);
 		var tbl = actions.initTableOption(tab,data,options,actions.renderFirsColumn,actions.createdFirstCellColumn);
 
 		actions.afterDataTable(tbl,tab);
