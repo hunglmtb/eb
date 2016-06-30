@@ -7,7 +7,28 @@ use App\Models\DynamicModel;
 class Formula extends DynamicModel
 {
     protected $table = 'FORMULA';
-    protected $primaryKey = 'ID';
+    public $timestamps = false;
+	public $primaryKey  = 'ID';
+	
+	protected $fillable  = [    
+	    'ID',
+	    'NAME',
+	    'GROUP_ID',
+	    'OBJECT_TYPE',
+	    'OBJECT_ID',
+	    'OBJECT_NAME',
+	    'TABLE_NAME',
+	    'VALUE_COLUMN',
+	    'OBJ_ID_COLUMN',
+	    'DATE_COLUMN',
+	    'FLOW_PHASE',
+	    'ALLOC_TYPE',
+	    'FORMULA',
+	    'BEGIN_DATE',
+	    'END_DATE',
+	    'COMMENT',
+	    'ORDER'
+    ];
   
     public function FoVar($fields=null)
     {
