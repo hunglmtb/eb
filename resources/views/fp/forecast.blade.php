@@ -3,7 +3,9 @@
 	$tables = ['EnergyUnitDataFdcValue'	=>['name'=>'FDC VALUE'],
 	];
  	$active = 1;
-?>
+ 	$f_date_from 	= array('id'=>'f_date_from','name'=>'Forecast date from');
+ 	$f_date_to 		= array('id'=>'f_date_to','name'=>'to');
+ 	?>
 
 @extends('core.fp')
 @section('funtionName')
@@ -72,6 +74,72 @@ WELL FORECAST
 				invisible:[]};
 		
 	}
+
+	actions.validating = function (reLoadParams){
+		var a=$("#cboEquationType").val();
+		var b=$("#cboFreq").val();
+		var u=$("#t_u").val();
+		var l=$("#t_l").val();
+		var m=$("#t_m").val();
+		if(a==2)
+		{
+			var c1=$("#c1").val();
+			if(c1=="")
+			{
+				alert("Please input C1");
+				$("#c1").focus().select();
+				return false;
+			}
+			if(!(c1>0 && c1<1))
+			{
+				alert("C1 must be in range (0,1)");
+				$("#c1").focus().select();
+				return false;
+			}
+			var c2=$("#c2").val();
+			if(c2=="")
+			{
+				if(m==""|| l=="" || u=="")
+				{
+					alert("Please input value for Upper time, Lower time and Middle time");
+					return false;
+				}
+	/*
+				if(!(m>l && m<u))
+				{
+					alert("Middle time "+m+" must be in greater than Lower time "+l+" and lower than Upper time "+u);
+					$("#t_m").focus().select();
+					return false;
+				}
+	*/
+			}
+			else if(c2>=1 || c2<=0)
+			{
+				alert("C2 must be in range (0,1) or equal 0");
+				$("#c2").focus().select();
+				return false;
+			}
+			else if(c2>0 && c2<1)
+			{
+				m=0;l=0;u=0;
+			}
+		}
+		var date_from=$("#f_date_from").val();
+		var date_to=$("#f_date_to").val();
+		if(date_from=="")
+		{
+			alert("Please input Forecast date from");
+			$("#f_date_from").focus().select();
+			return false;
+		}
+		if(date_to=="")
+		{
+			alert("Please input Forecast date to");
+			$("#f_date_to").focus().select();
+			return false;
+		}
+		return true;
+	}
 	
 </script>
 @stop
@@ -89,13 +157,17 @@ WELL FORECAST
 	<tr><td align='right'>Middle time</td><td><input type="text" id="t_m" value="" style="width:50px"></td></tr>
 	<tr><td align='right'><b>d = </b></td><td><input type="text" id="c1" value="0.35" style="width:50px"></td></tr>
 	<tr><td align='right'><b>b = </b></td><td><input type="text" id="c2" value="0.4" style="width:50px"></td></tr>
-	<tr><td align='right'>Forecast date from</td><td><input class="datepicker" type="text" id="f_date_from" name="f_date_from" value="" style="width:100px"></td></tr>
-	<tr><td align='right'>to</td><td><input class="datepicker" type="text" id="f_date_to" name="f_date_to" value="" style="width:100px"></td></tr>
+	<tr><td align='right'></td><td>
+		{{ Helper::selectDate($f_date_from)}}
+		</td></tr>
+	<tr><td align='right'></td><td>
+		{{ Helper::selectDate($f_date_to)}}
+	</td></tr>
 	<tr><td>&nbsp;</td></tr>
 	<tr id="box_use_modify_data" style="display:none"><td align='right'>Modify input data</td><td><input onclick='chk_modify_data_click(this);' type="checkbox" name="chk_modify_data" id="chk_modify_data"></td></tr>
 	<tr><td align='right'>Update database</td><td><input type="checkbox" name="chk_update_db" id="chk_update_db"></td></tr>
 	<tr style="display:none"><td align='right'>Generate chart</td><td><input type="checkbox" name="chk_gen_chart" id="chk_gen_chart" checked></td></tr>
-	<tr><td colspan='2' align='center'><button onClick="runForecast()" style="width:100%;height:30px;margin:20px 0px">Run Forecast</button></td></tr>
+	<tr><td colspan='2' align='center'><button onClick="actions.doSave(true)" style="width:100%;height:30px;margin:20px 0px">Run Forecast</button></td></tr>
 	</table>
 </td>
 <td id="box_load_input_data" valign="top" style="padding:5px">

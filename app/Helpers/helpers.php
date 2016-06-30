@@ -78,6 +78,8 @@ class Helper {
 		switch ($id) {
     			case 'date_begin':
     			case 'date_end':
+    			case 'f_date_from':
+    			case 'f_date_to':
     				$configuration = auth()->user()->getConfiguration();
     				$format = $configuration['time']['DATE_FORMAT_CARBON'];//'m/d/Y';
     				if ($value) {

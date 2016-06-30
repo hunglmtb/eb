@@ -224,6 +224,4 @@ class EbBussinessModel extends DynamicModel {
 	public static function getCalculateFields() {
 		return null;
 	}
-		
-	
 }

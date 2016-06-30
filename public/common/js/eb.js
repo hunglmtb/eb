@@ -215,41 +215,44 @@ var actions = {
 			}
 		}
 	},
-	/*loadData : function (data, valueDefault, columnName, width){
-		alert("doSave"+this.url);
+	validating : function (reLoadParams){
 		return true;
-	},*/
+	},
 	doSave : function (reLoadParams){
 		if (this.saveUrl) {
-			console.log ( "doLoad url: "+this.saveUrl );
+			validated = actions.validating(reLoadParams);
 //			actions.readyToLoad = true;
-			showWaiting();
-			$.ajax({
-				url: this.saveUrl,
-				type: "post",
-				data: actions.loadSaveParams(reLoadParams),
-				success:function(data){
-					hideWaiting();
-					if (typeof(actions.saveSuccess) == "function") {
-						actions.saveSuccess(data);
+			if(validated){
+				console.log ( "doLoad url: "+this.saveUrl );
+				showWaiting();
+				$.ajax({
+					url: this.saveUrl,
+					type: "post",
+					data: actions.loadSaveParams(reLoadParams),
+					success:function(data){
+						hideWaiting();
+						if (typeof(actions.saveSuccess) == "function") {
+							actions.saveSuccess(data);
+						}
+						else{
+							alert("save success");
+						}
+					},
+					error: function(data) {
+						if (typeof(actions.loadError) == "function") {
+							actions.loadError(data);
+						}
+						hideWaiting();
 					}
-					else{
-						alert("save success");
-					}
-				},
-				error: function(data) {
-					if (typeof(actions.loadError) == "function") {
-						actions.loadError(data);
-					}
-					hideWaiting();
-				}
-			});
-			return true;
+				});
+				return true;
+			}
+			else console.log ( "not validated ");
 		}
 		else{
 			alert("save url not initial");
-			return false;
 		}
+		return false;
 	},
 	getExtraDataSetColumn :function(data,cindex,rowData){
 		sourceColumn = data.properties[cindex].data;
