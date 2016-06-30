@@ -48,21 +48,37 @@ WELL FORECAST
  					'c1':c1,
  					'c2':c2
 				};
+		if(!jQuery.isEmptyObject(actions.editedData)){
+			var table = $('#table_forecast').dataTable();
+			tbdata = table.api().data();
+			txt_modify_data = '';
+			$.each(tbdata, function( index, value ) {
+				txt_modify_data+= value.T+','+value.V+'\n';
+             });
+			tab['forecast'] = txt_modify_data;
+		}
 		return tab;
 	}
 
 	actions.getNumberRender = function (columnName,data,cellData, type2, row) {
+
 		if(columnName=='T') {
-			startDate = moment.utc(row.OCCUR_DATE);
-			endDate = moment.utc(cellData);
-			return startDate.diff(endDate, 'day');
+			if($.isNumeric(cellData)) tvalue =  cellData;
+			else{
+				startDate = moment.utc(row.OCCUR_DATE);
+				endDate = moment.utc(cellData);
+				tvalue = startDate.diff(endDate, 'day');
+			}
+			row.T = tvalue;
+			return tvalue;
 		}
 		if(columnName=='V') {
 			rendered = 0;
 			if(columnName!=null&&columnName!=''){
 				rendered = parseFloat(cellData).toFixed(0);
-				if(isNaN(rendered)) return 0;
+				if(isNaN(rendered)) return rendered = 0;
 			}
+			row.V = rendered;
 			return rendered;
 		}
 		return cellData;
@@ -70,7 +86,9 @@ WELL FORECAST
 
 	actions.renderFirsColumn = null;
 	actions.getTableOption	= function(data){
-		return {tableOption :{searching: false},
+		return {tableOption :	{searching: false,
+								ordering: false
+								},
 				invisible:[]};
 		
 	}
@@ -138,8 +156,27 @@ WELL FORECAST
 			$("#f_date_to").focus().select();
 			return false;
 		}
+		$("#result").css("display","none");
 		return true;
 	}
+
+	$("#result").css("display","none");
+
+	actions.saveSuccess =  function(data){
+		actions.editedData = {};
+		actions.deleteData = {};
+		$("#result_data").html(data.data);
+		$("#result_time").html(data.time);
+		$("#result_params").html(data.params);
+		$("#result_warning").html(data.warning);
+		$("#result_result").html(data.result);
+		$("#result_error").html(data.error);
+		$("#result").css("display","block");
+		
+		/* if(data.hasOwnProperty('lockeds')){
+			alert(JSON.stringify(data.lockeds));
+		} */
+ 	};
 	
 </script>
 @stop
@@ -178,6 +215,15 @@ WELL FORECAST
 </td>
 <td valign="top" style="background:#e0e0e0;padding:5px">
 <div id="boxOutputData" style="width:850px;height:400px;overflow:auto">
+	<div id="result">
+		<b>Forecast log:</b><br>
+		<b>Input data:</b> <div id="result_data"></div><br>
+		<b>Time forecast:</b> <div id="result_time"></div><br>
+		<b>Params:</b> <div id="result_params"></div><br>
+		<span id="result_warning" style='background:orange;color:black'><b>Warning: </b></span><br>
+		<b>Result:</b><br> <div id="result_result"></div><br>
+		<br><span id="result_error" style='background:red;color:white'><b></b></span>
+	</div>
 </div>
 </td>
 </tr>

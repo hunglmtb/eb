@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Models\EnergyUnitDataForecast;
 
 class EnergyUnitForecastController extends CodeController {
     
@@ -23,9 +24,9 @@ class EnergyUnitForecastController extends CodeController {
 	
 	public function getOriginProperties($dcTable){
 		$properties = collect([
-					(object)['data' =>	'OCCUR_DATE'	,'title' => 'Occur time'    	,	'width'=>40,'INPUT_TYPE'=>3,],
-					(object)['data' =>	'T'				,'title' => 'Time'    			,	'width'=>30,'INPUT_TYPE'=>2,	'DATA_METHOD'=>1,'FIELD_ORDER'=>2],
-					(object)['data' =>	'V'				,'title' => 'Value'    			,	'width'=>30,'INPUT_TYPE'=>2,	'DATA_METHOD'=>1,'FIELD_ORDER'=>3],
+					(object)['data' =>	'OCCUR_DATE'	,'title' => 'Occur time'    	,	'width'=>50,'INPUT_TYPE'=>3,],
+					(object)['data' =>	'T'				,'title' => 'Time'    			,	'width'=>25,'INPUT_TYPE'=>2,	'DATA_METHOD'=>1,'FIELD_ORDER'=>2],
+					(object)['data' =>	'V'				,'title' => 'Value'    			,	'width'=>25,'INPUT_TYPE'=>2,	'DATA_METHOD'=>1,'FIELD_ORDER'=>3],
 		]);
 		return $properties;
 	}
@@ -53,6 +54,7 @@ class EnergyUnitForecastController extends CodeController {
 					    ->whereDate("OCCUR_DATE", '>=', $occur_date)
 					    ->whereDate("OCCUR_DATE", '<=', $date_end)
 					    ->select(
+					    		"ID as DT_RowId",
 					    		"OCCUR_DATE",
 					    		\DB::raw("'$occur_date' as T "),
 					    		"EU_DATA_$value_type as V"
@@ -113,7 +115,7 @@ class EnergyUnitForecastController extends CodeController {
 						$t=trim($ls[0]);
 						$v=trim($ls[1]);
 						$data.=($data?"\r\n":"")."$t,$v";
-						if($lastT && $row[T]-$t!=1 && $continous)
+						if($lastT && ($t-$lastT)!=1 && $continous)
 						{
 							$continous=false;
 						}
@@ -160,11 +162,13 @@ class EnergyUnitForecastController extends CodeController {
 			}
 			$lastT=$i;
 		}
+		
+		$sqls = [];
 		$warning = '';
 		if(!$continous) $warning = "Timing is not continuous";
 		
 		file_put_contents("t$mkey.txt",$timeForecast);
-		echo "<b>Time forecast:</b> ".$timeForecast."<br>";
+// 		echo "<b>Time forecast:</b> ".$timeForecast."<br>";
 		
 		if($a==="0" || $a==="1")
 			$params="$a,$b,0,0,0,0,0";
@@ -198,7 +202,10 @@ class EnergyUnitForecastController extends CodeController {
 				{
 // 					echo "<b>Result:</b><br>";
 					$file = fopen("forecast_q$mkey.csv","r");
-						
+					
+					$configuration = auth()->user()->getConfiguration();
+					$format = $configuration['time']['DATE_FORMAT_CARBON'];//'m/d/Y';
+					
 					while(! feof($file))
 					{
 						$line=fgets($file);
@@ -216,13 +223,32 @@ class EnergyUnitForecastController extends CodeController {
 // 									$x_time=($x_time)*60*60*24+strtotime($date_begin);
 									$x_time=($x_time)*60*60*24+$date_begin->timestamp;
 // 									$x_date=date('Y-m-d',$x_time);
-    								$x_date		= 	Carbon::parse($x_time);
-									// 									echo " ($x_date) ";
-									$result.= " ($x_date) ";
-									/* if($cb_update_db==1)
+    								$x_date		= 	Carbon::createFromTimestamp($x_time);
+//     								$x_date		= 	$x_date->createFromTimestamp($x_time);
+    								// 									echo " ($x_date) ";
+									$rxDate=$x_date?$x_date->format($format):$x_date;
+    								$result.= " ($rxDate) ";
+									if($cb_update_db==1)
 									{
-										$table=$src."_DATA_FORECAST";
-										$field="$pre"."_DATA_$value_type";
+										$field="ENERGY_UNIT_DATA_$value_type";
+										$field=strtoupper($field);
+										
+										$attributes = [
+												'EU_ID'				=>$object_id,
+												'OCCUR_DATE'		=>$x_date,
+												"FLOW_PHASE" 		=>$phase_type
+												
+										];
+										$values = [
+												'EU_ID'				=>$object_id,
+												'OCCUR_DATE'		=>$x_date,
+												"FLOW_PHASE" 		=>$phase_type,
+												$field				=>$x_value
+										];
+										\DB::enableQueryLog();
+										EnergyUnitDataForecast::updateOrCreate($attributes,$values);
+										$sqls[] = \DB::getQueryLog();
+										/* $table=$src."_DATA_FORECAST";
 										$sql="select ID from $table a where a.$pre"."_ID=$object_id and OCCUR_DATE='$x_date' $phasecondition";
 										$id=getOneValue($sql);
 										if($id>0)
@@ -236,8 +262,8 @@ class EnergyUnitForecastController extends CodeController {
 											}
 											$sql=str_replace("''","null",$sql);
 											echo " sql: $sql";
-											mysql_query($sql) or err(mysql_error());
-									} */
+											mysql_query($sql) or err(mysql_error()); */
+									}
 								}
 							}
 						}
@@ -259,11 +285,13 @@ class EnergyUnitForecastController extends CodeController {
 		}
 		
 		$results = [
+				'data'			=>$data,
 				'warning'		=>$warning,
 				'params'		=>$params,
-				'timeForecast'	=>$timeForecast,
+				'time'			=>$timeForecast,
 				'result'		=>$result,
 				'error'			=>$error,
+				'sqls'			=>$sqls,
 		];
 		
 		$this->cleanFiles($mkey);
