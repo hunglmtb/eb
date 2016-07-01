@@ -35,7 +35,7 @@ class EnergyUnitForecastController extends CodeController {
     	return  null;
     }
 	
-    public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties=null){
+    public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	$date_end 		= 	$postData['date_end'];
     	$date_end		= 	Carbon::parse($date_end);
 		$id 			= 	$postData['EnergyUnit'];
@@ -124,7 +124,7 @@ class EnergyUnitForecastController extends CodeController {
 				}
 		}
 		else {
-			$qData 		= $this->getDataSet($postData,null,null,$date_begin);
+			$qData 		= $this->getDataSet($postData,null,null,$date_begin,null);
 			$dataSet 	= $qData['dataSet'];
 			foreach($dataSet as $row){
 				$occur_date = $row->OCCUR_DATE;

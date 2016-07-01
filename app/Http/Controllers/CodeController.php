@@ -184,7 +184,7 @@ class CodeController extends EBController {
     	return  ['data'=>$dcTable,'title'=>'Object name','width'=>230];
     }
     
-	public function getDataSet($postData, $dcTable, $facility_id, $occur_date,$properties=null) {
+	public function getDataSet($postData, $dcTable, $facility_id, $occur_date,$properties) {
 		return [];
 	}
     
