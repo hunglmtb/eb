@@ -129,9 +129,9 @@ class ProductionGroupComposer
 			$mdlName = \Helper::camelize ( $tableName, '_' );
 // 			$mdl = 'App\Models\\' . $mdlName;
 // 			$eCollection = $mdl::getEntries ( $currentFacility->ID );
-			return [$source =>['name'=>$mdlName,
-					'id'=>$entry->ID
-			]];
+			return [
+					$source =>['name'=>$mdlName,'id'=>$entry->ID]
+			];
 		}
 		return null;
 	}
@@ -141,7 +141,10 @@ class ProductionGroupComposer
     {
     	$frequenceFilterGroup =[];
     	foreach($extras as $model ){
-    		$frequenceFilterGroup[] = ProductionGroupComposer::getFilterArray($model);
+    		if (is_array($model)) {
+    			$frequenceFilterGroup[] = ProductionGroupComposer::getFilterArray($model['name'],null,null,$model);
+    		}
+    		else $frequenceFilterGroup[] = ProductionGroupComposer::getFilterArray($model);
     	}
     	return $frequenceFilterGroup;
     }
@@ -186,7 +189,8 @@ class ProductionGroupComposer
 			$modelName = $model ['name'];
 			if ($model ['independent']) {
 				$mdl = 'App\Models\\' . $modelName;
-				$eCollection = $mdl::getAll();
+				$getMethod = array_key_exists('getMethod', $model)?$model['getMethod']:'getAll';
+				$eCollection = $mdl::$getMethod();
 			}
 			/* else {
 				$extraSource = $productionFilterGroup [$model ['source']];

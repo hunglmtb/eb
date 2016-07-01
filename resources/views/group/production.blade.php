@@ -74,4 +74,5 @@ $( document ).ready(function() {
 				onClick="actions.doLoad(true)" style="width: 85px; height: 26px;foat:left;">
 		</div>
 	@endif
+	@yield('action_extra')
 </div>

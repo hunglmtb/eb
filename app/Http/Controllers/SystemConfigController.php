@@ -10,7 +10,7 @@ class SystemConfigController extends EBController {
 																'independent'=>true],
 																'IntObjectType'=>'ObjectName',
 															],
-								'extra' 				=> ['IntObjectType']
+								'extra' 				=> 	['IntObjectType']
 						);
 		return view ( 'front.tagsmapping',['filters'=>$filterGroups]);
 	}

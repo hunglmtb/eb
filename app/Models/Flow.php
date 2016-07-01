@@ -20,7 +20,7 @@ class Flow extends DynamicModel
 		if ($product_type>0) {
 			$wheres['PHASE_ID'] = $product_type;
 		}
-		$entries = static ::where($wheres)->select('ID','NAME')->get();
+		$entries = static ::where($wheres)->select('ID','NAME')->orderBy('NAME')->get();
 		return $entries;
 	}
 }

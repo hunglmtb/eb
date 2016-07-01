@@ -7,7 +7,11 @@ class Helper {
 	public static function filter($option=null) {
 		if ($option==null) return;
 		$model='App\\Models\\'.$option['id'];
-		$collection = $model::all(['ID', 'NAME']);
+		if ( array_key_exists('getMethod', $option)) {
+			$getMethod = $option['getMethod'];
+			$collection = $model::$getMethod();
+		}
+		else $collection = $model::all(['ID', 'NAME']);
 // 		$collection = $model::select(['ID', 'NAME'])->orderBy('NAME')->get();
 		$option['collection']=$collection;
 		Helper::buildFilter($option);

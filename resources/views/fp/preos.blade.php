@@ -1,5 +1,5 @@
 <?php
-	$currentSubmenu ='forecast';
+	$currentSubmenu ='preos';
 	/* $tables = ['EnergyUnitDataFdcValue'	=>['name'=>'FDC VALUE'],
 	]; */
  	$active = 1;
@@ -9,7 +9,13 @@
 
 @extends('core.fp')
 @section('funtionName')
-WELL FORECAST
+PENG-ROBINSON EQUATION OF STATE
+@stop
+
+@section('action_extra')
+<div class="action_filter">
+	<input type="button" value="Add" id="buttonAdd" name="buttonAdd" onClick="addObject()" style="width: 85px; height: 26px;foat:left;">
+</div>
 @stop
 
 @section('adaptData')
@@ -86,9 +92,8 @@ WELL FORECAST
 
 	actions.renderFirsColumn = null;
 	actions.getTableOption	= function(data){
-		return {tableOption :	{searching		: false,
-								ordering		: false,
-								scrollY			: '550px',
+		return {tableOption :	{searching: false,
+								ordering: false
 								},
 				invisible:[]};
 		
@@ -186,6 +191,23 @@ WELL FORECAST
 			alert(JSON.stringify(data.lockeds));
 		} */
  	};
+
+ 	function addObject()
+ 	{
+ 		var id=$("").val();
+ 		var s='<span style="display:block;margin:1px 0px" info="'+
+ 		$("#IntObjectType option:selected").attr('name')+
+ 		':'+
+ 		$("#ObjectName").val()+
+ 		':'+
+ 		$("#ObjectName option:selected").text()+
+ 		'">'+$("#IntObjectType option:selected").text()+
+ 		':'+
+ 		$("#ObjectName option:selected").text()+
+ 		' <img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="../img/x.png">';
+ 		
+ 		$("#selected_objects").append(s);
+ 	}
 	
 </script>
 @stop
@@ -195,25 +217,18 @@ WELL FORECAST
 <tr>
 <td valign="top" style="padding:5px">
 	<table>
-	<tr><td align='right'>Data frequency</td><td><select id="cboFreq"><option selected value="0">Day</option><option value="1">Month</option><option value="2">Year</option></select></td></tr>
-	<tr><td colspan='2' align='center'><button onClick="actions.doLoad(true)" style="width:100%;height:30px;margin-bottom:10px">Load data</button></td></tr>
-	<tr><td align='right'>Equation type</td><td><select id="cboEquationType"><option value="0">Exponential</option><option value="1">Harmonic</option><option selected value="2">Hyperbolic</option></select></td></tr>
-	<tr><td align='right'>Lower time</td><td><input type="text" id="t_l" value="" style="width:50px"></td></tr>
-	<tr><td align='right'>Upper time</td><td><input type="text" id="t_u" value="" style="width:50px"></td></tr>
-	<tr><td align='right'>Middle time</td><td><input type="text" id="t_m" value="" style="width:50px"></td></tr>
-	<tr><td align='right'><b>d = </b></td><td><input type="text" id="c1" value="0.35" style="width:50px"></td></tr>
-	<tr><td align='right'><b>b = </b></td><td><input type="text" id="c2" value="0.4" style="width:50px"></td></tr>
-	<tr><td align='right'></td><td>
-		{{ Helper::selectDate($f_date_from)}}
-		</td></tr>
-	<tr><td align='right'></td><td>
-		{{ Helper::selectDate($f_date_to)}}
-	</td></tr>
-	<tr><td>&nbsp;</td></tr>
-	<tr id="box_use_modify_data" style="display:none"><td align='right'>Modify input data</td><td><input onclick='chk_modify_data_click(this);' type="checkbox" name="chk_modify_data" id="chk_modify_data"></td></tr>
-	<tr><td align='right'>Update database</td><td><input type="checkbox" name="chk_update_db" id="chk_update_db"></td></tr>
-	<tr style="display:none"><td align='right'>Generate chart</td><td><input type="checkbox" name="chk_gen_chart" id="chk_gen_chart" checked></td></tr>
-	<tr><td colspan='2' align='center'><button onClick="actions.doSave(true)" style="width:100%;height:30px;margin:20px 0px">Run Forecast</button></td></tr>
+	<tr>
+		<td valign="top" style="background:#e0e0e0;padding:5px">
+			<div id="selected_objects" style="padding:5px">
+			</div>
+			<br>
+			<button onClick="loadInputData()" style="width:100%;height:30px;margin:0px 0px">Load PREoS input data</button>
+			<br>
+			<br>
+			<input type="checkbox" name="chk_update_db" id="chk_update_db"> Update database<br>
+			<button onClick="actions.doSave(true)" style="width:120px;height:30px;margin:20px 0px">Run PREoS</button>
+		</td>
+	</tr>
 	</table>
 </td>
 <td id="box_load_input_data" valign="top" style="padding:5px">
