@@ -148,4 +148,13 @@ class Helper {
 		$mdl = 'App\Models\\' . $mdlName;
 		return $mdl;
 	}
+	
+	public static function logger() {
+		$queries = \DB::getQueryLog();
+		$query = end($queries);
+		$prep = $query['query'];
+		foreach( $query['bindings'] as $binding ) : $prep = preg_replace("#\?#", $binding, $prep, 1);
+		endforeach;
+		return $prep;
+	}
 }

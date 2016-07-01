@@ -37,7 +37,7 @@ WELL FORECAST
 		var c2=$("#c2").val();
 		
 		var tab = {'{{config("constants.tabTable")}}':'forecast',
-					cb_update_db	:	$("#chk_update_db").val(),
+					cb_update_db	:	$("#chk_update_db").is(":checked"),
  					'a':a,
  					'b':b,
  					'f_from_date':date_from,
@@ -169,8 +169,16 @@ WELL FORECAST
 		$("#result_time").html(data.time);
 		$("#result_params").html(data.params);
 		$("#result_warning").html(data.warning);
-		$("#result_result").html(data.result);
 		$("#result_error").html(data.error);
+
+		resultHtml = '';
+		$.each(data.result, function( index, value ) {
+			resultHtml+= value.value+', '+value.date+'<br/>';
+			if(value.hasOwnProperty('sql')&&value.sql!=null) {
+				resultHtml+= 'sql: '+value.sql+'<br/>';
+			}
+         });
+		$("#result_result").html(resultHtml);
 		$("#result").css("display","block");
 		
 		/* if(data.hasOwnProperty('lockeds')){

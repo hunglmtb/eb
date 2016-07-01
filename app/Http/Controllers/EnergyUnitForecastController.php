@@ -71,7 +71,7 @@ class EnergyUnitForecastController extends CodeController {
     	$postData = $request->all();
     	$date_end 		= 	$postData['date_end'];
     	$date_end		= 	Carbon::parse($date_end);
-    	$id 			= 	$postData['EnergyUnit'];
+    	$object_id 			= 	$postData['EnergyUnit'];
     	 
     	$phase_type 	= 	$postData['ExtensionPhaseType'];
     	$value_type 	= 	$postData['ExtensionValueType'];
@@ -97,7 +97,7 @@ class EnergyUnitForecastController extends CodeController {
     	
     	$from_date 		= 	$date_begin;
     	
-		$mkey="_".date("Ymdhis_").rand(100,1000)."hung_test";
+		$mkey="_".date("Ymdhis_").rand(100,1000)/* ."hung_test" */;
 		
 		$data="";
 		$continous=true;
@@ -180,7 +180,7 @@ class EnergyUnitForecastController extends CodeController {
 		file_put_contents("prop$mkey.txt",$params);
 		
 		$error = "";
-		$result = "";
+		$results = [];
 		
 		if(!file_exists('pdforecast.exe'))
 		{
@@ -210,7 +210,9 @@ class EnergyUnitForecastController extends CodeController {
 					{
 						$line=fgets($file);
 // 						echo $line;
-						$result.= $line;
+// 						$result.= $line;
+						$result = ['value'=>$line];
+						
 						if($line)
 						{
 							$xs=explode(",",$line);
@@ -221,16 +223,18 @@ class EnergyUnitForecastController extends CodeController {
 								if($x_time>=$d1)
 								{
 // 									$x_time=($x_time)*60*60*24+strtotime($date_begin);
-									$x_time=($x_time)*60*60*24+$date_begin->timestamp;
+									$beginTimeStamp = $date_begin->timestamp;
+									$x_time=($x_time)*60*60*24+$beginTimeStamp;
 // 									$x_date=date('Y-m-d',$x_time);
     								$x_date		= 	Carbon::createFromTimestamp($x_time);
 //     								$x_date		= 	$x_date->createFromTimestamp($x_time);
     								// 									echo " ($x_date) ";
 									$rxDate=$x_date?$x_date->format($format):$x_date;
-    								$result.= " ($rxDate) ";
-									if($cb_update_db==1)
+//     								$result.= " ($rxDate) ";
+									$result['date']=$rxDate;
+    								if($cb_update_db=='true')
 									{
-										$field="ENERGY_UNIT_DATA_$value_type";
+										$field="EU_DATA_$value_type";
 										$field=strtoupper($field);
 										
 										$attributes = [
@@ -245,9 +249,10 @@ class EnergyUnitForecastController extends CodeController {
 												"FLOW_PHASE" 		=>$phase_type,
 												$field				=>$x_value
 										];
-										\DB::enableQueryLog();
+ 										\DB::enableQueryLog();
 										EnergyUnitDataForecast::updateOrCreate($attributes,$values);
-										$sqls[] = \DB::getQueryLog();
+										$result['sql']=\Helper::logger();
+// 										$sqls[] = \DB::getQueryLog();
 										/* $table=$src."_DATA_FORECAST";
 										$sql="select ID from $table a where a.$pre"."_ID=$object_id and OCCUR_DATE='$x_date' $phasecondition";
 										$id=getOneValue($sql);
@@ -267,8 +272,10 @@ class EnergyUnitForecastController extends CodeController {
 								}
 							}
 						}
+						$results[] = $result;
 // 						echo "<br>";
 					}
+					\DB::disableQueryLog();
 					fclose($file);
 				}
 				else
@@ -284,18 +291,17 @@ class EnergyUnitForecastController extends CodeController {
 			}
 		}
 		
-		$results = [
+		$finalResults = [
 				'data'			=>$data,
 				'warning'		=>$warning,
 				'params'		=>$params,
 				'time'			=>$timeForecast,
-				'result'		=>$result,
+				'result'		=>$results,
 				'error'			=>$error,
-				'sqls'			=>$sqls,
 		];
 		
 		$this->cleanFiles($mkey);
-    	return response()->json($results);
+    	return response()->json($finalResults);
     }
     
     
