@@ -38,10 +38,11 @@ PERSONNEL DATA
 	render2rdTable = function(data){
 		options = {
 				tableOption :{
-									searching	: false,
-									scrollY		: "450px",
-										drawCallback : drawCallback,
-										footerCallback : footerCallback
+									searching		: false,
+									ordering		: false,
+									scrollY			: "480px",
+ 									drawCallback 	: drawCallback,
+									footerCallback 	: footerCallback
 								},
 					invisible:['TYPE','TYPE_NAME']
 			};
@@ -80,15 +81,16 @@ PERSONNEL DATA
             var rows = api.rows( {page:'current'} ).nodes();
             var last=null;
  
-            groups = api.data();
+//             groups = api.data();
+            groups = api.column(4, {page:'current'}).data();
             
             groups.each( function ( group, i ) {
-                if ( last !== group.TYPE ) {
+                if ( last !== group ) {
                     $(rows).eq( i ).before(
-                        '<tr class="group"><td colspan="2">'+group.TYPE_NAME+'</td></tr>'
+                        '<tr class="group"><td colspan="2">'+group+'</td></tr>'
                     );
  
-                    last = group.TYPE;
+                    last = group;
                 }
             } );
         };
