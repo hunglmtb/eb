@@ -1,4 +1,5 @@
 var dialog_edit_condition;
+
 $(function() {
     dialog_edit_condition = $( "#dialog_edit_condition" ).dialog({
       autoOpen: false,

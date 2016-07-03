@@ -26,16 +26,21 @@ $currentSubmenu = 'allocset';
 </div>
 @stop
 @section('content')
-<script src="/common/js/splitter.js"></script>
-<script src="/common/js/allocset.js"></script>
-<script src="/common/js/condition.js"></script>
 <link rel="stylesheet" href="/common/css/admin.css">
 <link rel="stylesheet" href="/common/css/jquery-ui.css">
 <link rel="stylesheet" href="/common/css/allocation/style.css"/>
 <link rel="stylesheet" href="/common/css/allocation/reveal.css">
+<script src="/common/js/jquery.js"></script>
+<script src="/common/js/jquery-ui.js"></script>
+<script src="/common/js/splitter.js"></script>
+<script src="/common/js/allocset.js"></script>
 <script type="text/javascript">
-
-
+$().ready(function() {
+	$("#MySplitter").height($(window).height()-200);
+	$("#MySplitter").splitter({
+		type: "h", 
+	});
+});
 $(function(){
 	var ebtoken = $('meta[name="_token"]').attr('content');
 	$.ajaxSetup({
@@ -43,7 +48,44 @@ $(function(){
 			'X-XSRF-Token': ebtoken
 		}
 	})
+	
 	$("#tabs").tabs();
+	
+	var d = new Date();
+	$("#date_begin").val(
+			"" + zeroFill(1 + d.getMonth(), 2) + "/01/" + d.getFullYear());
+	$("#date_end").val(
+			"" + zeroFill(1 + d.getMonth(), 2) + "/" + zeroFill(d.getDate(), 2)
+					+ "/" + d.getFullYear());
+	$("#date_begin").datepicker({
+		changeMonth : true,
+		changeYear : true,
+		dateFormat : "mm/dd/yy"
+	});
+
+	$("#date_end").datepicker({
+		changeMonth : true,
+		changeYear : true,
+		dateFormat : "mm/dd/yy"
+	});
+	var objTypeName = [ "", "Flow", "EnergyUnit", "Tank", "Storage", "Tank" ];
+	$('#cboObjType').change(function(e) {
+		$('#cboFacility').change();
+	});
+
+	$('#cboFacility').change(function(e) {
+		param = {
+				'TABLE' : objTypeName[$("#cboObjType").val()],
+				'value': $(this).val(),
+				'keysearch' : "facility_id"
+		}
+		
+		$("#cboObjects").prop("disabled", true);  
+		sendAjaxNotMessage('/onChangeObj', param, function(data){
+			loadCbo(data);
+		});
+	});
+	
 	$('#cboNetworks').change();
 	
 });
