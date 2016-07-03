@@ -13,4 +13,10 @@ class ExtensionDataSource extends DynamicModel
 							(object)['ID' =>	'ALLOC'	,'NAME' => 'GAllocation'    ],
 						]);
 	}
+	
+	public static function getPreosObjectType(){
+		return  collect([
+							(object)['ID' =>	'FDC_VALUE'	,'NAME' => 'FDC'      	],
+						]);
+	}
 }

@@ -1,41 +1,43 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Http\ViewComposers\ProductionGroupComposer;
-use App\Models\CfgFieldProps;
-use App\Models\CodeAllocType;
-use App\Models\CodeFlowPhase;
-use App\Models\CodePressUom;
-use App\Models\Facility;
-use App\Models\StandardUom;
+
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\CodeTestingMethod;
-use App\Models\CodeTestingUsage;
-use App\Models\CodeQltySrcType;
-use App\Models\CodeProductType;
+
+use App\Http\ViewComposers\ProductionGroupComposer;
+use App\Models\BaAddress;
+use App\Models\CfgFieldProps;
+use App\Models\CodeAllocType;
+use App\Models\CodeBoolean;
+use App\Models\CodeCommentStatus;
+use App\Models\CodeDeferCategory;
+use App\Models\CodeDeferCode1;
+use App\Models\CodeDeferGroupType;
 use App\Models\CodeDeferReason;
 use App\Models\CodeDeferStatus;
-use App\Models\CodeDeferCategory;
-use App\Models\CodeDeferGroupType;
-use App\Models\CodeDeferCode1;
-use App\Models\CodeTicketType;
-use App\Models\PdTransitCarrier;
-use App\Models\BaAddress;
-use App\Models\Tank;
-use App\Models\CodeSafetySeverity;
-use App\Models\CodeCommentStatus;
-use App\Models\CodeEqpOfflineReason;
 use App\Models\CodeEqpFuelConsType;
-use App\Models\CodeVolUom;
 use App\Models\CodeEqpGhgRelType;
-use App\Models\CodePersonnelType;
-use App\Models\CodePersonnelTitle;
-use App\Models\Personnel;
+use App\Models\CodeEqpOfflineReason;
 use App\Models\CodeEventType;
-use App\Models\IntSystem;
+use App\Models\CodeFlowPhase;
+use App\Models\CodePersonnelTitle;
+use App\Models\CodePersonnelType;
+use App\Models\CodePressUom;
+use App\Models\CodeProductType;
+use App\Models\CodeQltySrcType;
 use App\Models\CodeReadingFrequency;
-use App\Models\CodeBoolean;
+use App\Models\CodeSafetySeverity;
+use App\Models\CodeTestingMethod;
+use App\Models\CodeTestingUsage;
+use App\Models\CodeTicketType;
+use App\Models\CodeVolUom;
+use App\Models\Facility;
+use App\Models\IntSystem;
+use App\Models\PdTransitCarrier;
+use App\Models\Personnel;
+use App\Models\StandardUom;
+use App\Models\Tank;
 
 class CodeController extends EBController {
 	 

@@ -12,6 +12,7 @@ class FeatureEuModel extends EbBussinessModel
 	protected $objectModel = 'EnergyUnit';
 	protected $excludeColumns = ['EU_ID','OCCUR_DATE','FLOW_PHASE'];
 	protected $disableUpdateAudit = false;
+	protected $dates = ['OCCUR_DATE'];
 	
 	public static function getKeyColumns(&$newData,$occur_date,$postData){
 		if (array_key_exists(config("constants.euId"), $newData)) {
@@ -50,5 +51,12 @@ class FeatureEuModel extends EbBussinessModel
 		$attributes = static::getKeyColumns($newData,$occur_date,null);
 		$values = array_merge($values,$newData);
 		return parent::updateOrCreate($attributes,$values);;
+	}
+	
+	
+	public function getVAttribute($value)
+	{
+		$value = $value?round($value):0;
+		return $value;
 	}
 }

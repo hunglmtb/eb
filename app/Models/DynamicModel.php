@@ -50,4 +50,9 @@ class DynamicModel extends Model {
 	{
 		return with(new static)->getTable();
 	}
+	
+	public static function getAll(){
+		$entries = static ::all();
+		return $entries;
+	}
 }

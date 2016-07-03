@@ -17,4 +17,11 @@ class ExtensionValueType extends DynamicModel
 							(object)['ID' =>	'GRS_PWR'	,'NAME' => 'Gross Power'     	],
 						]);
 	}
+	
+	public static function getPreosObjectType(){
+		return  collect([
+							(object)['ID' =>	'GRS_VOL'	,'NAME' => 'Gross Volume'    	],
+							(object)['ID' =>	'NET_VOL'	,'NAME' => 'Net Volume'      	],
+						]);
+	}
 }

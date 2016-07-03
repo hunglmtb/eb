@@ -7,7 +7,11 @@ class Helper {
 	public static function filter($option=null) {
 		if ($option==null) return;
 		$model='App\\Models\\'.$option['id'];
-		$collection = $model::all(['ID', 'NAME']);
+		if ( array_key_exists('getMethod', $option)) {
+			$getMethod = $option['getMethod'];
+			$collection = $model::$getMethod();
+		}
+		else $collection = $model::all(['ID', 'NAME']);
 // 		$collection = $model::select(['ID', 'NAME'])->orderBy('NAME')->get();
 		$option['collection']=$collection;
 		Helper::buildFilter($option);
@@ -78,6 +82,8 @@ class Helper {
 		switch ($id) {
     			case 'date_begin':
     			case 'date_end':
+    			case 'f_date_from':
+    			case 'f_date_to':
     				$configuration = auth()->user()->getConfiguration();
     				$format = $configuration['time']['DATE_FORMAT_CARBON'];//'m/d/Y';
     				if ($value) {
@@ -145,5 +151,14 @@ class Helper {
 		$mdlName = static::camelize ( $tableName, '_' );
 		$mdl = 'App\Models\\' . $mdlName;
 		return $mdl;
+	}
+	
+	public static function logger() {
+		$queries = \DB::getQueryLog();
+		$query = end($queries);
+		$prep = $query['query'];
+		foreach( $query['bindings'] as $binding ) : $prep = preg_replace("#\?#", $binding, $prep, 1);
+		endforeach;
+		return $prep;
 	}
 }

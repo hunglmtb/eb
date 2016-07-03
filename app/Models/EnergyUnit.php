@@ -2,6 +2,7 @@
 
 namespace App\Models;
 use App\Models\DynamicModel;
+use App\Models\EuPhaseConfig;
 
 class EnergyUnit extends DynamicModel
 {
@@ -31,10 +32,10 @@ class EnergyUnit extends DynamicModel
 		$query = static ::where($wheres)->select('ID','NAME');
 		
 		if ($product_type>0) {
-			//TODO update euphase configs
-// 			$sSQL="select ID,NAME from $table_name a where a.FACILITY_ID=$facility_id ".($product_type>0?" and exists(select 1 from eu_phase_config b where b.EU_ID=a.ID and b.FLOW_PHASE=$product_type)":"")."";
-// 			$query->whereHas('EuPhaseConfig');
-// 			$wheres['PHASE_ID'] = $product_type;
+			$eu_phase_config = EuPhaseConfig::getTableName();
+			$query->whereHas('EuPhaseConfig' , function ($query) use ($product_type){
+				$query->where("FLOW_PHASE",$product_type);
+			});
 		}
 		$entries = $query->get();
 		return $entries;

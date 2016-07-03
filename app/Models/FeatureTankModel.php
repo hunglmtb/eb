@@ -90,7 +90,7 @@ class FeatureTankModel extends EbBussinessModel
 		if ($product_type>0) {
 			$wheres['PRODUCT'] = $product_type;
 		}
-		$entries = static ::where($wheres)->select('ID','NAME')->get();
+		$entries = static ::where($wheres)->select('ID','NAME')->orderBy('NAME')->get();
 		return $entries;
 	}
 }

@@ -118,13 +118,9 @@ input[type="button"]:focus, button:focus {
 	width: 120px;
 }
 
-.date_input input {
-	margin-top: 5px;
-	width: 100%;
-}
-
-.filter select {
-	margin-top: 5px;
+.filter select , .date_input input {
+	margin-top: 2px;
+	font-size: 12px;
 	width: 100%;
 }
 
