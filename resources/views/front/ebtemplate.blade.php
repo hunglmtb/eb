@@ -304,19 +304,19 @@
 <?php
 if(true){
 ?>
-	<div class="hex_disabled" id="func6" code="delivery">		
+	<div class="hex hex-1" id="func6" code="delivery">		
 		<div class="inner">
-		<h4 style="color:gray">PRODUCT<br>DELIVERY</h4>
+		<h4>PRODUCT<br>DELIVERY</h4>
 		</div>		
-		<a href="#" onclick=""></a>
+		<a href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
 		<div class="corner-2"></div>		
 	</div>
-	<div class="hex_disabled" id="func7" code="greenhouse">		
+	<div class="hex hex-2" id="func7" code="greenhouse">		
 		<div class="inner">
-		<h4 style="color:gray">GREENHOUSE<br>GAS</h4>
+		<h4>GREENHOUSE<br>GAS</h4>
 		</div>		
-		<a href="#" onclick=""></a>
+		<a href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
 		<div class="corner-2"></div>		
 	</div>	
@@ -490,11 +490,11 @@ menu["forecast"]=[
 // else{
 ?>
 menu["delivery"]=[
-		{menutext:"CONTRACT ADMIN",desc:"",url:"../pd/?func=contract_admin"},
-		{menutext:"CARGO ADMIN",desc:"",url:"../pd/?func=cargo_admin"},
-		{menutext:"CARGO ACTION",desc:"",url:"../pd/?func=cargo_action"},
-		{menutext:"CARGO MANAGEMENT",desc:"",url:"../pd/?func=cargo_management"},
-		{menutext:"CARGO<br>MONITORING",desc:"",url:"../pd/?func=cargo_monitoring"},
+		{menutext:"CONTRACT ADMIN",desc:"",url:"../pd/contractdata.php"},
+		{menutext:"CARGO ADMIN",desc:"",url:"../pd/cargoentry.php"},
+		{menutext:"CARGO ACTION",desc:"",url:"../pd/cargovoyage.php"},
+		{menutext:"CARGO MANAGEMENT",desc:"",url:"../pd/cargodemurrage.php"},
+		{menutext:"CARGO<br>MONITORING",desc:"",url:"../pd/liftaccdailybalance.php"},
 //		{menutext:"VOYAGE GROUND",desc:"",url:"../pd/?func=voyageground"},
 //		{menutext:"VOYAGE PIPELINE",desc:"",url:"../pd/?func=voyagepipeline"}
 	];
