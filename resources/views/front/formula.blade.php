@@ -34,9 +34,15 @@ $currentSubmenu = 'formula';
 @section('content')
 <link rel="stylesheet" href="/common/css/admin.css">
 <link rel="stylesheet" href="/common/css/allocation/style.css"/>
+<script src="/common/js/jquery.js"></script>
 <script type="text/javascript" src="/common/js/splitter.js"></script>
 <script type="text/javascript">
-
+$().ready(function() {
+	$("#MySplitter").height($(window).height()-200);
+	$("#MySplitter").splitter({
+		type: "h", 
+	});
+});
 $(function(){
 	var ebtoken = $('meta[name="_token"]').attr('content');
 	$.ajaxSetup({
@@ -486,7 +492,6 @@ var _formula = {
 			$('#'+id).html(cbo);
 			$('#'+id).change();
 		},
-
 		cboOnchange : function(cboSet, value, table){
 			param = {
 				'ID' :value,

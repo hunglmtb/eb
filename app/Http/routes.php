@@ -279,3 +279,11 @@ Route::post('testformula', 'FormulaController@testformula');
 Route::post('deletevar', 'FormulaController@deletevar');
 Route::post('savevarsorder', 'FormulaController@saveVarsOrder');
 
+Route::get('dataview', 'DataViewController@_index');
+Route::post('getsql', 'DataViewController@getsql');
+Route::post('loaddataview', 'DataViewController@loaddata');
+Route::post('deletesql', 'DataViewController@deletesql');
+Route::post('checksql', 'DataViewController@checkSQL');
+Route::get('downloadExcel/{sql}', 'DataViewController@downloadExcel');
+Route::post('savesql', 'DataViewController@savesql');
+

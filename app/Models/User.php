@@ -196,6 +196,28 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 		];
 		$logUser->fill($values)->save();
 	}
+	
+	public function hasRole($roleCode)
+	{
+		if($this->ID)
+		{
+			$user_user_role = UserUserRole::getTableName();
+			$user_role = UserRole::getTableName();
+			
+			$rows= UserUserRole::join($user_role,"$user_user_role.ROLE_ID", '=', "$user_role.ID")			
+			->where([$user_role.".CODE"=>$roleCode, $user_user_role.".USER_ID"=>$this->ID])
+			->select($user_role.".CODE")
+			->distinct()
+			->get();
+			
+			if(count($rows) > 0){
+				return true;
+			}else{
+				return false;
+			}
+		}
+		return false;
+	}
 	/**
 	 * One to Many relation
 	 *

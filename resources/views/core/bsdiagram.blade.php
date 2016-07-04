@@ -2,7 +2,7 @@
 if (!isset($currentSubmenu)) $currentSubmenu ='';
 $subMenus = [
 		array('title' => 'NETWORK MODELS', 'link' => 'diagram'),
-		array('title' => 'DATA VIEWS', 'link' => 'roles'),
+		array('title' => 'DATA VIEWS', 'link' => 'dataview'),
 		array('title' => 'REPORT', 'link' => 'workreport'),
 		array('title' => 'ADVANCED GRAPH', 'link' => 'graph'),
 		array('title' => 'TASK MANAGER', 'link' => 'approvedata'),
