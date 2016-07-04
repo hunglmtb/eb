@@ -99,7 +99,6 @@ class CodeController extends EBController {
     }
     
     public function load(Request $request){
-//     	sleep(2);
     	$postData = $request->all();
      	$dcTable = $this->getWorkingTable($postData); 
      	
@@ -110,7 +109,7 @@ class CodeController extends EBController {
 	     	$occur_date = Carbon::parse($occur_date);
      	}
      	
- 		$results = $this->getProperties($dcTable,$facility_id,$occur_date);
+ 		$results = $this->getProperties($dcTable,$facility_id,$occur_date,$postData);
       	$data = $this->getDataSet($postData,$dcTable,$facility_id,$occur_date,$results);
       	$secondaryData = $this->getSecondaryData($postData,$dcTable,$facility_id,$occur_date,$results);
         $results['secondaryData'] = $secondaryData;
@@ -131,7 +130,7 @@ class CodeController extends EBController {
     	return null;
     }
     
-    public function getProperties($dcTable,$facility_id,$occur_date){
+    public function getProperties($dcTable,$facility_id,$occur_date,$postData){
     	
     	$properties = $this->getOriginProperties($dcTable);
     	$firstProperty = $this->getFirstProperty($dcTable);

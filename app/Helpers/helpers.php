@@ -59,7 +59,9 @@ class Helper {
 				} */
 			}
 			
-			if (count($dependences)>0) {
+			if (count($dependences)>0
+					&&(!array_key_exists('single', $option)
+							||!$option['single'])) {
 				$extra = array_key_exists('extra', $option)&&count($option['extra'])>0?$option['extra']:null;
 				$extra = is_array($extra)&&count($extra)>0?",['".implode("','", $extra)."']":'';
 				$htmlFilter.= "<script>registerOnChange('$id',['".implode("','", $dependences)."']$extra)</script>";
@@ -143,6 +145,11 @@ class Helper {
 	public static function camelize($input, $separator = '_')
 	{
 		return str_replace($separator, '', ucwords($input, $separator));
+	}
+	
+	public static function getRoundValue($value){
+		$value = $value?round($value):0;
+		return $value;
 	}
 	
 	public static function getModelName($table)

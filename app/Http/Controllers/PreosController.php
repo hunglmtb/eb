@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\EnergyUnitDataForecast;
+use App\Models\QltyData;
+use App\Models\CodeQltySrcType;
+use App\Models\QltyProductElementType;
+use App\Models\QltyDataDetail;
 
-class EnergyUnitForecastController extends CodeController {
-    
+class PreosController extends CodeController {
+	
 	public function getWorkingTable($postData){
 		$data_source 	= 	$postData['ExtensionDataSource'];
 		$src			=	'ENERGY_UNIT';
@@ -16,56 +20,170 @@ class EnergyUnitForecastController extends CodeController {
 	}
 	
 	public function getProperties($dcTable,$facility_id,$occur_date,$postData){
-		$properties = $this->getOriginProperties($dcTable);
-		$results = ['properties'	=>$properties,
-		];
+		
+		$objs	 		= 	$postData['ExtensionDataSource'];
+		$objectArray	=	[];
+		
+		foreach($objs as $obj){
+			$objectArray[]	=	(object)['data' 		=>	$objs['name'],
+										'title' 		=> 	$objs['name'],
+										'width'			=>	25,
+										'INPUT_TYPE'	=>	2,
+										'DATA_METHOD'	=>	1,
+			];
+		}
+		
+		$properties 	= collect($objectArray);
+		$results 		= ['properties'	=>$properties];
 		return $results;
 	}
 	
-	public function getOriginProperties($dcTable){
-		$properties = collect([
-					(object)['data' =>	'OCCUR_DATE'	,'title' => 'Occur time'    	,	'width'=>50,'INPUT_TYPE'=>3,],
-					(object)['data' =>	'T'				,'title' => 'Time'    			,	'width'=>25,'INPUT_TYPE'=>2,	'DATA_METHOD'=>1,'FIELD_ORDER'=>2],
-					(object)['data' =>	'V'				,'title' => 'Value'    			,	'width'=>25,'INPUT_TYPE'=>2,	'DATA_METHOD'=>1,'FIELD_ORDER'=>3],
-		]);
-		return $properties;
+	public function getElement($obj_name){
+		return array(
+						"Object"=>$obj_name,
+						"Pressure"=>"0",
+						"Temperature"=>"0",
+						"Volume"=>"0",
+						"CO2"=>"0",
+						"Nitrogen"=>"0",
+						"H2S"=>"0",
+						"Methane"=>"0",
+						"Ethane"=>"0",
+						"Propane"=>"0",
+						"i-Butane"=>"0",
+						"n-Butane"=>"0",
+						"i-Pentane"=>"0",
+						"n-Pentane"=>"0",
+						"22-Mbutane"=>"0",
+						"23-Mbutane"=>"0",
+						"3-Mpentane"=>"0",
+						"n-Hexane"=>"0",
+						"2-Mhexane"=>"0",
+						"3-Mhexane"=>"0",
+						"n-Heptane"=>"0",
+						"22-Mhexane"=>"0",
+						"2-Mheptane"=>"0",
+						"3-Mheptane"=>"0",
+						"n-Octane"=>"0",
+						"25-Mheptane"=>"0",
+						"n-Nonane"=>"0",
+						"n-Decane"=>"0",
+						"n-C11"=>"0",
+						"n-C12"=>"0",
+						"n-C13"=>"0",
+						"n-C14"=>"0",
+						"n-C15"=>"0",
+						"n-C16"=>"0",
+						"n-C17"=>"0",
+						"n-C18"=>"0",
+						"n-C19"=>"0",
+						"n-C20"=>"0",
+						"n-C21"=>"0",
+						"n-C22"=>"0",
+						"n-C23"=>"0",
+						"n-C24"=>"0",
+						"n-C25"=>"0",
+						"n-C26"=>"0",
+						"n-C27"=>"0",
+						"n-C28"=>"0",
+						"n-C29"=>"0",
+						"n-C30"=>"0",
+						"Cyclohexane"=>"0",
+						"Mcyclopentan"=>"0",
+						"11Mcycpentan"=>"0",
+						"1tr2ci4-MCC5"=>"0",
+						"1-tr2-MCC6"=>"0",
+						"1-ci2-MCC6"=>"0",
+						"Benzene"=>"0",
+						"Toluene"=>"0",
+						"o-Xylene"=>"0"
+				);
 	}
 	
-	public function getFirstProperty($dcTable){
-    	return  null;
-    }
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
-    	$date_end 		= 	$postData['date_end'];
-    	$date_end		= 	Carbon::parse($date_end);
-		$id 			= 	$postData['EnergyUnit'];
-		
+    	
 		$phase_type 	= 	$postData['ExtensionPhaseType'];
 		$value_type 	= 	$postData['ExtensionValueType'];
 		$data_source 	= 	$postData['ExtensionDataSource'];
-		$table			=	$this->getWorkingTable($postData);
-		$mdl 			= 	\Helper::getModelName($table);
-	   
-	    $where = [	"EU_ID" 			=> $id,
-	    			"FLOW_PHASE" 		=> $phase_type,];
-	    
-// 		\DB::enableQueryLog();
-	    $dataSet = $mdl::where($where)
-					    ->whereDate("OCCUR_DATE", '>=', $occur_date)
-					    ->whereDate("OCCUR_DATE", '<=', $date_end)
-					    ->select(
-					    		"ID as DT_RowId",
-					    		"OCCUR_DATE",
-					    		\DB::raw("'$occur_date' as T "),
-					    		"EU_DATA_$value_type as V"
-					    		)
-					   	->orderBy('OCCUR_DATE')
-					    ->get();
+		$objs 			= 	$postData['objs'];
+		
+		$objdata=array();
+		foreach($objs as $obj)
+			if($obj){
+				$ss				=	explode(":",$obj);
+				$obj_id			=	$ss[1];
+				$src			=	$ss[0];
+				$obj_name		=	$ss[2];
+				$pre			=	$src;
+				$pvalue			=	$src;
+				$ele			= 	$this->getElement($obj_name);
+				
+				$where = ["OCCUR_DATE" => $occur_date];
+				if($src=="ENERGY_UNIT"){
+					$pre="EU";
+					$pvalue=$pre;
+					$where['FLOW_PHASE'] = $phase_type;
+				}
+				else if($src=="FLOW") $pvalue="FL";
+				
+				$where["$pre"."_ID" ] = $obj_id;
+				
+				$qlty_src_type	=	CodeQltySrcType::where('CODE','=',$src)->first();
+				
+				$table			=	$this->getWorkingTable($postData);
+				$mdl 			= 	\Helper::getModelName($table);
+				$workingDataSet = $mdl::where($where)
+										->select(
+												"ID as DT_RowId",
+												"OBS_TEMP",
+												"OBS_PRESS",
+												"$pvalue"."_DATA_$value_type as OBJ_VALUE"
+												)
+										->orderBy('OCCUR_DATE')
+										->get();
+				
+				$qltyData 				=	QltyData::getTableName();
+    			$qltyProductElementType =	QltyProductElementType::getTableName();
+    			$qltyDataDetail 		=	QltyDataDetail::getTableName();
+    			 
+				$qlty_datas = QltyData::join($qltyDataDetail,"$qltyData.ID", '=', "$qltyDataDetail.QLTY_DATA_ID")
+								    	->join($qltyProductElementType,function ($query)
+								    			use ($qltyDataDetail,$phase_type,$qltyProductElementType) {
+										    		$query->on("$qltyDataDetail.ELEMENT_TYPE",'=',"$qltyProductElementType.ID")
+										    				->where("$qltyProductElementType.PRODUCT_TYPE",'=',$phase_type) ;
+									    	})
+								    	->whereHas('CodeQltySrcType',function ($query) use ($src) {
+											$query->where("CODE",$src )->skip(0)->take(1);
+										})
+										->where("$qltyData.SRC_ID",$obj_id)
+										->where("$qltyData.PRODUCT_TYPE",$phase_type)
+// 										->where('SRC_TYPE',$qlty_src_type)
+										->where('EFFECTIVE_DATE','=',$occur_date)
+										->select(
+												"$qltyProductElementType.NAME",
+												"$qltyDataDetail.MOLE_FACTION"
+												)
+										->get();
+										
+				foreach($workingDataSet as $objectData){
+					foreach($qlty_datas as $qlty){
+						if (array_key_exists($qlty->NAME,$ele)){
+							$ele[$qlty->NAME]=$qlty->MOLE_FACTION?$qlty->MOLE_FACTION:0;
+						}
+					}
+						
+					$ele["Pressure"]		=	\Helper::getRoundValue($objectData->OBS_PRESS);
+					$ele["Temperature"]		=	\Helper::getRoundValue($objectData->OBS_TEMP);
+					$ele["Volume"]			=	\Helper::getRoundValue($objectData->OBJ_VALUE);
+					$objdata[]=$ele;
+				}
+			}
+		
 // 		\Log::info(\DB::getQueryLog());
 					    					
-    	return ['dataSet'=>$dataSet];
+    	return ['dataSet'=>$objdata];
     }
-    
     
     public function run(Request $request){
     	$postData = $request->all();
