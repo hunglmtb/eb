@@ -7,6 +7,31 @@ $subMenus = [	array('title' => 'WELL FORECAST', 'link' => 'forecast'),
 ?>
 @extends('core.bscontent',['subMenus' => $subMenus])
 
+@section('adaptData')
+@parent
+<script>
+	actions.renderFirsColumn = null;
+	var showExtensionFields = function(data){};
+	var showResultFields	= function(data){};
+	
+	$("#result").css("display","none");
+	actions.saveSuccess =  function(data){
+		actions.editedData = {};
+		actions.deleteData = {};
+		if( typeof data.data === 'string' ) {
+			$("#result_data").html(data.data);
+		}
+		else if (Object.prototype.toString.call( data.data ) === '[object Array]' ) {
+			$("#result_data").html(data.data.join("<br/>"));
+		}
+		showExtensionFields(data);
+		$("#result_warning").html(data.warning);
+		$("#result_error").html(data.error);
+
+		showResultFields(data);
+ 	};
+</script>
+@stop
 
 @section('actionPanel')
 	<div id="selected_objects" style="padding:5px"></div>
@@ -26,10 +51,9 @@ $subMenus = [	array('title' => 'WELL FORECAST', 'link' => 'forecast'),
 
 @section('actionOutputView')
 	<div id="result">
-		<b>Forecast log:</b><br>
+		<b>@yield('logName')</b><br>
 		<b>Input data:</b> <div id="result_data"></div><br>
-		<b>Time forecast:</b> <div id="result_time"></div><br>
-		<b>Params:</b> <div id="result_params"></div><br>
+		@yield('extensionFields')
 		<span id="result_warning" style='background:orange;color:black'><b>Warning: </b></span><br>
 		<b>Result:</b><br> <div id="result_result"></div><br>
 		<br><span id="result_error" style='background:red;color:white'><b></b></span>

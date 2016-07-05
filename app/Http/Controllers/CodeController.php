@@ -50,7 +50,7 @@ class CodeController extends EBController {
 	protected $isApplyFormulaAfterSaving;
 	
 	
-	 public function __construct() {
+	public function __construct() {
 		parent::__construct();
 		$this->isApplyFormulaAfterSaving = false;
 	}

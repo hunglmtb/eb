@@ -1,13 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\CodeQltySrcType;
+use App\Models\QltyData;
+use App\Models\QltyDataDetail;
+use App\Models\QltyProductElementType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\EnergyUnitDataForecast;
-use App\Models\QltyData;
-use App\Models\CodeQltySrcType;
-use App\Models\QltyProductElementType;
-use App\Models\QltyDataDetail;
 
 class PreosController extends CodeController {
 	
@@ -124,15 +123,14 @@ class PreosController extends CodeController {
 				);
 	}
 	
-    public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
-    	if (!$properties) return [];
-    		
+	public function getInputDataSet($postData,$occur_date){
 		$phase_type 	= 	$postData['ExtensionPhaseType'];
 		$value_type 	= 	$postData['ExtensionValueType'];
 		$data_source 	= 	$postData['ExtensionDataSource'];
 		$objs 			= 	$this->getPostObjects($postData);
 		
 		$objdata=array();
+		$objinfo = [];
 		foreach($objs as $obj)
 			if($obj){
 				$ss				=	explode(":",$obj);
@@ -156,15 +154,14 @@ class PreosController extends CodeController {
 				$qlty_src_type	=	CodeQltySrcType::where('CODE','=',$src)->first();
 				
 				$mdl 			= 	$this->getObjectTable($src,$data_source);
-				$workingDataSet = 	$mdl::where($where)
+				$objectData 	= 	$mdl::where($where)
 										->select(
-// 												"ID as DT_RowId",
 												"OBS_TEMP",
 												"OBS_PRESS",
 												"$pvalue"."_DATA_$value_type as OBJ_VALUE"
 												)
 										->orderBy('OCCUR_DATE')
-										->get();
+										->first();
 				
 				$qltyData 				=	QltyData::getTableName();
     			$qltyProductElementType =	QltyProductElementType::getTableName();
@@ -189,7 +186,8 @@ class PreosController extends CodeController {
 												)
 										->get();
 										
-				foreach($workingDataSet as $objectData){
+// 				foreach($workingDataSet as $objectData){
+				if ($objectData) {
 					foreach($qlty_datas as $qlty){
 						if (array_key_exists($qlty->NAME,$ele)){
 							$ele[$qlty->NAME]=$qlty->MOLE_FACTION?$qlty->MOLE_FACTION:0;
@@ -199,12 +197,24 @@ class PreosController extends CodeController {
 					$ele["Pressure"]			=	\Helper::getRoundValue($objectData->OBS_PRESS);
 					$ele["Temperature"]			=	\Helper::getRoundValue($objectData->OBS_TEMP);
 					$ele["Volume"]				=	\Helper::getRoundValue($objectData->OBJ_VALUE);
-// 					$objdata["$obj_id"]=$ele;
+					$objdata["$src"."_$obj_id"]	=	$ele;
+					$objinfo[]=array("src"=>$src,"pre"=>$pre,"obj_id"=>$obj_id);
+						
 				}
-				$objdata["$src"."_$obj_id"]	=	$ele;
+// 				}
 			}
-		
-		if (count($objdata)>0) {
+		return ['data'	=>$objdata,
+				'info'	=>$objinfo,
+		];
+	}
+	
+    public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
+    	if (!$properties) return [];
+
+    	$objdata	=	$this->getInputDataSet($postData,$occur_date);
+    	$objdata	=	$objdata['data'];
+    	if (count($objdata)>0) {
+			$ele = array_values($objdata)[0];
 			$renderData = [];
 			foreach($ele as $key =>$value){
 				$values = ['NAME'=>$key];
@@ -216,245 +226,153 @@ class PreosController extends CodeController {
 		}
 		else $renderData = $objdata;
 		
-// 		\Log::info(\DB::getQueryLog());
-					    					
     	return ['dataSet'=>$renderData];
     }
     
     public function run(Request $request){
-    	$postData = $request->all();
-    	$date_end 		= 	$postData['date_end'];
-    	$date_end		= 	Carbon::parse($date_end);
-    	$object_id 		= 	$postData['EnergyUnit'];
-    	 
-    	$phase_type 	= 	$postData['ExtensionPhaseType'];
-    	$value_type 	= 	$postData['ExtensionValueType'];
-    	$data_source 	= 	$postData['ExtensionDataSource'];
-    	$table			=	$postData['EnergyUnit'];
-    	$mdl 			= 	\Helper::getModelName($table);
+    	$postData 		= 	$request->all();
+		$phase_type 	= 	$postData['ExtensionPhaseType'];
+		$cb_update_db	=	$postData['cb_update_db'];
+    	$occur_date 	= 	$postData['date_begin'];
+		$value_type 	= 	$postData['ExtensionValueType'];
+    	$occur_date 	= 	Carbon::parse($occur_date);
+    	$inputDataSet	=	$this->getInputDataSet($postData,$occur_date);
+    	$objdata		=	$inputDataSet['data'];
+    	$objinfo		=	$inputDataSet['info'];
     	
-    	$cb_update_db	=	$postData['cb_update_db'];
-    	$a				=	$postData['a'];
-    	$b				=	$postData['b'];
-    	$u				=	$postData['u'];
-    	$l				=	$postData['l'];
-    	$m				=	$postData['m'];
-    	$c1				=	$postData['c1'];
-    	$c2				=	$postData['c2'];
-    	
-    	$date_begin 	= 	$postData['date_begin'];
-    	$date_begin		= 	Carbon::parse($date_begin);
-    	$date_from 		= 	$postData['f_from_date'];
-    	$date_from		= 	Carbon::parse($date_from);
-    	$date_to 		= 	$postData['f_to_date'];
-    	$date_to		= 	Carbon::parse($date_to);
-    	
-    	$from_date 		= 	$date_begin;
-    	
-		$mkey="_".date("Ymdhis_").rand(100,1000)/* ."hung_test" */;
+		$mkey			=	"";
+// 		$mkey			=	"_".date("Ymdhis_").rand(100,1000)/* ."hung_test" */;
+		$preos = "";
+		$files = [
+				'gas'				=>	"$preos"."prvap.exe",
+				'oil'				=>	"$preos"."prliq.exe",
+				'data'				=>	"$preos"."data$mkey.txt",
+				'm_ij'				=>	"$preos"."m_ij$mkey.txt",
+				'prop'				=>	"$preos"."prop$mkey.txt",
+				'error'				=>	"$preos"."error$mkey.txt",
+				'PR_single_V'		=>	"$preos"."PR_single_V$mkey.csv",
+				'PR_single_L'		=>	"$preos"."PR_single_L$mkey.csv",
+		];
 		
+		$cc=count($objdata);
+		if($cc<=0) return response('empty input data', 401);//['error'=>"empty input data"];
+		
+		$ele = array_values($objdata)[0];
 		$data="";
-		$continous=true;
-		$lastT=null;
-		
-		if (array_key_exists('forecast', $postData)) {
-			$txt_modify_data=$postData['forecast'];
-			$ds=explode("\n",$txt_modify_data);
-			foreach($ds as $line)
-				if($line)
-				{
-					$ls=explode(",",$line);
-					if(count($ls)>=2)
-					{
-						$t=trim($ls[0]);
-						$v=trim($ls[1]);
-						$data.=($data?"\r\n":"")."$t,$v";
-						if($lastT && ($t-$lastT)!=1 && $continous)
-						{
-							$continous=false;
-						}
-						$lastT=$t;
-					}
+		$inputData = [];
+		foreach ($ele as $key => $value)
+		{
+			$ss=[];
+			foreach($objdata as $source =>$objValue){
+				if($objValue[$key]!==""){
+					$ss[]=$objValue[$key];
+					$inputData[] = $objValue[$key]." <- [$source][$key]";
 				}
-		}
-		else {
-			$qData 		= $this->getDataSet($postData,null,null,$date_begin,null);
-			$dataSet 	= $qData['dataSet'];
-			foreach($dataSet as $row){
-				$occur_date = $row->OCCUR_DATE;
-				$time = $occur_date->diffInDays($from_date);
-				$value = $row->V;
-				$data.=($data?"\r\n":"")."$time,$value";
-				if($lastT && ($time-$lastT)!=1 && $continous)
-				{
-					$continous=false;
-				}
-				$lastT=$time;
 			}
+			
+			if(count($ss)>0) $data.=($data?"\r\n":"").implode(",", $ss);
 		}
 		
-		file_put_contents("data$mkey.txt",$data);
+		file_put_contents($files['data'],$data);
 		
-		//$end = '2013-08-29';
-		//$start = '2013-08-25';
-		/* $d1 = strtotime($date_from) - strtotime($date_begin);
-		$d1 = floor($d1/(60*60*24));
-		$d2 = strtotime($date_to) - strtotime($date_begin);
-		$d2 = floor($d2/(60*60*24)); */
-		
-		$d1 = $date_from->timestamp - $date_begin->timestamp;
-		$d1 = floor($d1/(60*60*24));
-		$d2 = $date_to->timestamp - $date_begin->timestamp;
-		$d2 = floor($d2/(60*60*24));
-		
-		$timeForecast="";
-		for($i = $d1; $i < $d2 + 1; $i++){
-		    $timeForecast.=($timeForecast?"\r\n":"").$i;
-			if($lastT && $i-$lastT!=1 && $continous)
-			{
-				$continous=false;
-			}
-			$lastT=$i;
-		}
-		
-		$sqls = [];
-		$warning = '';
-		if(!$continous) $warning = "Timing is not continuous";
-		
-		file_put_contents("t$mkey.txt",$timeForecast);
-// 		echo "<b>Time forecast:</b> ".$timeForecast."<br>";
-		
-		if($a==="0" || $a==="1")
-			$params="$a,$b,0,0,0,0,0";
-		else if($c2>0)
-			$params="$a,$b,0,0,0,$c1,$c2";
-		else
-			$params="$a,$b,$l,$u,$m,$c1,0";
-		
-		file_put_contents("prop$mkey.txt",$params);
-		
-		$error = "";
+		$error = [];
 		$results = [];
-		
-		if(!file_exists('pdforecast.exe'))
-		{
-			$error = "Exec file not found";
-		}
-		else
-		{
-			if(file_exists("data$mkey.txt") && file_exists("t$mkey.txt") && file_exists("prop$mkey.txt"))
-			{
+		$sqls = [];
+		//Gas
+		$exe=$phase_type==2?$files['gas']:$files['oil'];
+		if(!file_exists($exe)) $error[] = "Exec $exe file not found";
+		else{
+			if(file_exists($files['data']) /* && file_exists($files['m_ij']) && file_exists($files['prop']) */){
 				set_time_limit(300);
-				exec("pdforecast.exe $mkey");
-				if(file_exists("error$mkey.txt"))
-				{
-					$error = file_get_contents("error$mkey.txt", true);
-// 					logError(file_get_contents("error$mkey.txt", true));
-				}
+				exec("$exe $mkey");
+				if(file_exists($files['error'])) $error[] = file_get_contents($files['error'], true);
 		
-				if(file_exists("forecast_q$mkey.csv"))
-				{
-// 					echo "<b>Result:</b><br>";
-					$file = fopen("forecast_q$mkey.csv","r");
-					
-					$configuration = auth()->user()->getConfiguration();
-					$format = $configuration['time']['DATE_FORMAT_CARBON'];//'m/d/Y';
-					
+				if(file_exists($files['PR_single_V'])) {
+					$fileName = $files['PR_single_V'];
+					$file = fopen($fileName,"r");
+					$lastline="";
+					$result = [];
 					while(! feof($file))
 					{
 						$line=fgets($file);
-// 						echo $line;
-// 						$result.= $line;
-						$result = ['value'=>$line];
-						
+						$result[] =$line;
 						if($line)
 						{
-							$xs=explode(",",$line);
-							if(count($xs>=2))
-							{
-								$x_time=trim($xs[0]);
-								$x_value=trim($xs[1]);
-								if($x_time>=$d1)
-								{
-// 									$x_time=($x_time)*60*60*24+strtotime($date_begin);
-									$beginTimeStamp = $date_begin->timestamp;
-									$x_time=($x_time)*60*60*24+$beginTimeStamp;
-// 									$x_date=date('Y-m-d',$x_time);
-    								$x_date		= 	Carbon::createFromTimestamp($x_time);
-//     								$x_date		= 	$x_date->createFromTimestamp($x_time);
-    								// 									echo " ($x_date) ";
-									$rxDate=$x_date?$x_date->format($format):$x_date;
-//     								$result.= " ($rxDate) ";
-									$result['date']=$rxDate;
-    								if($cb_update_db=='true')
-									{
-										$field="EU_DATA_$value_type";
-										$field=strtoupper($field);
-										
-										$attributes = [
-												'EU_ID'				=>$object_id,
-												'OCCUR_DATE'		=>$x_date,
-												"FLOW_PHASE" 		=>$phase_type
-												
-										];
-										$values = [
-												'EU_ID'				=>$object_id,
-												'OCCUR_DATE'		=>$x_date,
-												"FLOW_PHASE" 		=>$phase_type,
-												$field				=>$x_value
-										];
- 										\DB::enableQueryLog();
-										EnergyUnitDataForecast::updateOrCreate($attributes,$values);
-										$result['sql']=\Helper::logger();
-// 										$sqls[] = \DB::getQueryLog();
-										/* $table=$src."_DATA_FORECAST";
-										$sql="select ID from $table a where a.$pre"."_ID=$object_id and OCCUR_DATE='$x_date' $phasecondition";
-										$id=getOneValue($sql);
-										if($id>0)
-											$sql="update $table set $field='$x_value' where ID=$id";
-											else
-											{
-												if($src=="ENERGY_UNIT")
-													$sql="insert into $table($pre"."_ID,OCCUR_DATE,FLOW_PHASE,$field) values ($object_id,'$x_date',$phase_type,'$x_value')";
-													else
-														$sql="insert into $table($pre"."_ID,OCCUR_DATE,$field) values ($object_id,'$x_date','$x_value')";
-											}
-											$sql=str_replace("''","null",$sql);
-											echo " sql: $sql";
-											mysql_query($sql) or err(mysql_error()); */
-									}
-								}
-							}
+							if($line) $lastline=$line;
 						}
-						$results[] = $result;
-// 						echo "<br>";
 					}
-					\DB::disableQueryLog();
+					$results[$fileName] = $result;
 					fclose($file);
+					
+					$fileName = $files['PR_single_L'];
+					$file = fopen($fileName,"r");
+					$lastline="";
+					$result = [];
+					while(! feof($file))
+					{
+						$line=fgets($file);
+						$result[] =$line;
+						if($line)
+						{
+							if($line) $lastline=$line;
+						}
+					}
+					$results[$fileName] = $result;
+					fclose($file);
+					
+					if($lastline && $cb_update_db=='true')
+					{
+						$xs=explode(",",$lastline);
+						$i=0;
+						foreach($xs as $svol){
+							if ($i<count($objinfo)) {
+								$src= $objinfo[$i]["src"];
+								$pre= $objinfo[$i]["pre"];
+								$table=$src."_DATA_VALUE";
+								$field=$pre."_DATA_$value_type";
+								$field = strtoupper( $field );
+								
+								$attributes = ["OCCUR_DATE" => $occur_date];
+								if($src=="ENERGY_UNIT"){
+									$attributes['FLOW_PHASE'] = $phase_type;
+								}
+								$attributes["$pre"."_ID" ] = $objinfo[$i]["obj_id"];
+								$values = $attributes;
+								$values[$field] = $svol;
+								$mdl 			= 	\Helper::getModelName($table);
+								
+								\DB::enableQueryLog();
+								$mdl::updateOrCreate($attributes,$values);
+								$sqls[]=\Helper::logger();
+							}
+							$i++;
+						}
+						\DB::disableQueryLog();
+					}
 				}
-				else
-				{
-// 					logError("Result file not found");
-					$error.= "Result file not found";
+				else{
+					$error[]= "Result file not found";
 				}
 			}
-			else
-			{
-// 				logError("Input files not found");
-				$error.= "Input files not found";
-			}
+			else $error[]= "Input files not found";
 		}
 		
+		
+		
 		$finalResults = [
-				'data'			=>$data,
-				'warning'		=>$warning,
-				'params'		=>$params,
-				'time'			=>$timeForecast,
+				'data'			=>$inputData,
+				'warning'		=>'',
+// 				'params'		=>'',
+// 				'time'			=>'',
 				'result'		=>$results,
 				'error'			=>$error,
+				'key'			=>$mkey,
+				'exe'			=>$exe,
+				'sqls'			=>$sqls,
+				
 		];
 		
-		$this->cleanFiles($mkey);
+// 		$this->cleanFiles($mkey);
     	return response()->json($finalResults);
     }
     

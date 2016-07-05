@@ -468,6 +468,7 @@ var actions = {
 	 				$(td).addClass( colName );
 		 			if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
 		 				$(td).addClass( "editInline" );
+		 				$(td).addClass( "cell"+type );
 		 				colName = data.properties[col].data;
 //		 				$(td).addClass( colName );
 		 	        	var table = $('#table_'+tab).DataTable();

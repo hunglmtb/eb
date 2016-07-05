@@ -53,18 +53,10 @@ PENG-ROBINSON EQUATION OF STATE
  	
 	actions.initData = function(){
 
-		var tab = {'{{config("constants.tabTable")}}':'{{$key}}',
-					'objs':objs
+		var tab = {'{{config("constants.tabTable")}}'	:	'{{$key}}',
+					'objs'								:	objs,
+					cb_update_db						:	$("#chk_update_db").is(":checked"),
 				};
-		if(!jQuery.isEmptyObject(actions.editedData)){
-			var table = $('#table_forecast').dataTable();
-			tbdata = table.api().data();
-			txt_modify_data = '';
-			$.each(tbdata, function( index, value ) {
-				txt_modify_data+= value.T+','+value.V+'\n';
-             });
-			tab['forecast'] = txt_modify_data;
-		}
 		return tab;
 	}
 
@@ -82,22 +74,34 @@ PENG-ROBINSON EQUATION OF STATE
 		return true;
 	}
 
+	showExtensionFields = function(data){
+		$("#exe").html(data.exe);
+	};
 
-	//----------------------------------------------------------------------------------------
+	showResultFields = function(data){
+		resultHtml = '';
+		$.each(data.result, function( index, value ) {
+			resultHtml+= '<b>'+index+'</b><br/>'+value.join("<br/>")+'<br/>';
+         });
+		$.each(data.sqls, function( index, value ) {
+			resultHtml+= ''+value+'<br/>';
+         });
+		$("#result_result").html(resultHtml);
+		$("#result").css("display","block");
+	};
+
 	actions.getNumberRender = function (columnName,data,cellData, type2, row) {
 		return cellData;
 	}
 
-	actions.renderFirsColumn = null;
 	actions.getTableOption	= function(data){
-		return {tableOption :	{searching: false,
-								ordering: false
+		return {tableOption :	{searching		: false,
+								ordering		: false,
+								scrollY			: '350px',
 								},
 				invisible:[]};
 		
 	}
-
-	
 	
 	actions.validating = function (reLoadParams){
 		objs = "";
@@ -111,32 +115,13 @@ PENG-ROBINSON EQUATION OF STATE
 		$("#result").css("display","none");
 		return true;
 	}
-
-	$("#result").css("display","none");
-
-	actions.saveSuccess =  function(data){
-		actions.editedData = {};
-		actions.deleteData = {};
-		$("#result_data").html(data.data);
-		$("#result_time").html(data.time);
-		$("#result_params").html(data.params);
-		$("#result_warning").html(data.warning);
-		$("#result_error").html(data.error);
-
-		resultHtml = '';
-		$.each(data.result, function( index, value ) {
-			resultHtml+= value.value+', '+value.date+'<br/>';
-			if(value.hasOwnProperty('sql')&&value.sql!=null) {
-				resultHtml+= 'sql: '+value.sql+'<br/>';
-			}
-         });
-		$("#result_result").html(resultHtml);
-		$("#result").css("display","block");
-		
-		/* if(data.hasOwnProperty('lockeds')){
-			alert(JSON.stringify(data.lockeds));
-		} */
- 	};
-
 </script>
+@stop
+
+@section('logName')
+PREoS log:
+@stop
+
+@section('extensionFields')
+<b>Run</b> <div id="exe"></div><br>
 @stop

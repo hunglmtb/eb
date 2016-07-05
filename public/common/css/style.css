@@ -291,6 +291,9 @@ table.dataTable {
 #table_preos{
 	width: 150px;
 }
+.cellnumber {
+	text-align: right;
+}
 
 /* .editable-container.editable-inline {
     width: 100%;

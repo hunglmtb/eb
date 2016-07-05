@@ -85,14 +85,12 @@ WELL FORECAST
 		return cellData;
 	}
 
-	actions.renderFirsColumn = null;
 	actions.getTableOption	= function(data){
 		return {tableOption :	{searching		: false,
 								ordering		: false,
 								scrollY			: '550px',
 								},
 				invisible:[]};
-		
 	}
 
 	actions.validating = function (reLoadParams){
@@ -162,17 +160,12 @@ WELL FORECAST
 		return true;
 	}
 
-	$("#result").css("display","none");
-
-	actions.saveSuccess =  function(data){
-		actions.editedData = {};
-		actions.deleteData = {};
-		$("#result_data").html(data.data);
+	showExtensionFields = function(data){
 		$("#result_time").html(data.time);
 		$("#result_params").html(data.params);
-		$("#result_warning").html(data.warning);
-		$("#result_error").html(data.error);
+	};
 
+	showResultFields = function(data){
 		resultHtml = '';
 		$.each(data.result, function( index, value ) {
 			resultHtml+= value.value+', '+value.date+'<br/>';
@@ -182,13 +175,18 @@ WELL FORECAST
          });
 		$("#result_result").html(resultHtml);
 		$("#result").css("display","block");
-		
-		/* if(data.hasOwnProperty('lockeds')){
-			alert(JSON.stringify(data.lockeds));
-		} */
- 	};
+	};
 	
 </script>
+@stop
+
+@section('logName')
+Forecast log:
+@stop
+
+@section('extensionFields')
+<b>Time forecast:</b> <div id="result_time"></div><br>
+<b>Params:</b> <div id="result_params"></div><br>
 @stop
 
 @section('actionPanel')
