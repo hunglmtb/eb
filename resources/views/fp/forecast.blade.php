@@ -1,5 +1,6 @@
 <?php
-	$currentSubmenu ='forecast';
+	$currentSubmenu 	=	'forecast';
+	$key 				= 	'forecast';
 	/* $tables = ['EnergyUnitDataFdcValue'	=>['name'=>'FDC VALUE'],
 	]; */
  	$active = 1;
@@ -190,10 +191,7 @@ WELL FORECAST
 </script>
 @stop
 
-@section('content')
-<table cellspacing="5" cellpadding="0" style="background:#e0e0e0;margin-top:10px">
-<tr>
-<td valign="top" style="padding:5px">
+@section('actionPanel')
 	<table>
 	<tr><td align='right'>Data frequency</td><td><select id="cboFreq"><option selected value="0">Day</option><option value="1">Month</option><option value="2">Year</option></select></td></tr>
 	<tr><td colspan='2' align='center'><button onClick="actions.doLoad(true)" style="width:100%;height:30px;margin-bottom:10px">Load data</button></td></tr>
@@ -215,26 +213,4 @@ WELL FORECAST
 	<tr style="display:none"><td align='right'>Generate chart</td><td><input type="checkbox" name="chk_gen_chart" id="chk_gen_chart" checked></td></tr>
 	<tr><td colspan='2' align='center'><button onClick="actions.doSave(true)" style="width:100%;height:30px;margin:20px 0px">Run Forecast</button></td></tr>
 	</table>
-</td>
-<td id="box_load_input_data" valign="top" style="padding:5px">
-	<div id="container_forecast" style="overflow-x:hidden">
-			<table border="0" cellpadding="3" id="table_forecast" class="fixedtable nowrap display">
-			</table>
-		</div>
-</td>
-<td valign="top" style="background:#e0e0e0;padding:5px">
-<div id="boxOutputData" style="width:850px;height:400px;overflow:auto">
-	<div id="result">
-		<b>Forecast log:</b><br>
-		<b>Input data:</b> <div id="result_data"></div><br>
-		<b>Time forecast:</b> <div id="result_time"></div><br>
-		<b>Params:</b> <div id="result_params"></div><br>
-		<span id="result_warning" style='background:orange;color:black'><b>Warning: </b></span><br>
-		<b>Result:</b><br> <div id="result_result"></div><br>
-		<br><span id="result_error" style='background:red;color:white'><b></b></span>
-	</div>
-</div>
-</td>
-</tr>
-</table>
 @stop

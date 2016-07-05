@@ -12,35 +12,59 @@ use App\Models\QltyDataDetail;
 class PreosController extends CodeController {
 	
 	public function getWorkingTable($postData){
-		$data_source 	= 	$postData['ExtensionDataSource'];
-		$src			=	'ENERGY_UNIT';
+		return null;
+	}
+	
+	public function getObjectTable($src,$data_source){
 		$table			=	$src."_DATA_".$data_source;
 		$mdl 			= 	\Helper::getModelName($table);
-		return $mdl::getTableName();
+		return $mdl;
 	}
 	
 	public function getProperties($dcTable,$facility_id,$occur_date,$postData){
-		
-		$objs	 		= 	$postData['ExtensionDataSource'];
-		$objectArray	=	[];
-		
-		foreach($objs as $obj){
-			$objectArray[]	=	(object)['data' 		=>	$objs['name'],
-										'title' 		=> 	$objs['name'],
-										'width'			=>	25,
-										'INPUT_TYPE'	=>	2,
-										'DATA_METHOD'	=>	1,
+		$objs 			= 	$this->getPostObjects($postData);
+		if ($objs&&count($objs)>0) {
+			$objectArray	=	[(object)[
+											'data' 			=>	"NAME",
+											'title' 		=> 	"NAME",
+											'width'			=>	45,
+											'INPUT_TYPE'	=>	1,
+											'DATA_METHOD'	=>	2]
 			];
+			foreach($objs as $obj){
+				$ss				=	explode(":",$obj);
+				$obj_id			=	$ss[1];
+				$src			=	$ss[0];
+				$obj_name		=	$ss[2];
+				
+				$objectArray[]	=	(object)[
+											'data' 			=>	"$src"."_$obj_id",
+											'title' 		=> 	$obj_name,
+											'width'			=>	55,
+											'INPUT_TYPE'	=>	2,
+											'DATA_METHOD'	=>	2,
+				];
+			}
+			
+			$properties 	= collect($objectArray);
+			$results 		= ['properties'	=>$properties];
+			return $results;
 		}
-		
-		$properties 	= collect($objectArray);
-		$results 		= ['properties'	=>$properties];
-		return $results;
+		return null;
+	}
+	
+	public function getPostObjects($postData){
+		$objs 			= 	$postData['objs'];
+		if ($objs&&!empty($objs)) {
+			$objs			=	explode(";",$objs);
+		}
+		else $objs = null;
+		return $objs;
 	}
 	
 	public function getElement($obj_name){
 		return array(
-						"Object"=>$obj_name,
+// 						"Object"=>$obj_name,
 						"Pressure"=>"0",
 						"Temperature"=>"0",
 						"Volume"=>"0",
@@ -100,13 +124,13 @@ class PreosController extends CodeController {
 				);
 	}
 	
-	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
-    	
+    	if (!$properties) return [];
+    		
 		$phase_type 	= 	$postData['ExtensionPhaseType'];
 		$value_type 	= 	$postData['ExtensionValueType'];
 		$data_source 	= 	$postData['ExtensionDataSource'];
-		$objs 			= 	$postData['objs'];
+		$objs 			= 	$this->getPostObjects($postData);
 		
 		$objdata=array();
 		foreach($objs as $obj)
@@ -131,11 +155,10 @@ class PreosController extends CodeController {
 				
 				$qlty_src_type	=	CodeQltySrcType::where('CODE','=',$src)->first();
 				
-				$table			=	$this->getWorkingTable($postData);
-				$mdl 			= 	\Helper::getModelName($table);
-				$workingDataSet = $mdl::where($where)
+				$mdl 			= 	$this->getObjectTable($src,$data_source);
+				$workingDataSet = 	$mdl::where($where)
 										->select(
-												"ID as DT_RowId",
+// 												"ID as DT_RowId",
 												"OBS_TEMP",
 												"OBS_PRESS",
 												"$pvalue"."_DATA_$value_type as OBJ_VALUE"
@@ -173,23 +196,36 @@ class PreosController extends CodeController {
 						}
 					}
 						
-					$ele["Pressure"]		=	\Helper::getRoundValue($objectData->OBS_PRESS);
-					$ele["Temperature"]		=	\Helper::getRoundValue($objectData->OBS_TEMP);
-					$ele["Volume"]			=	\Helper::getRoundValue($objectData->OBJ_VALUE);
-					$objdata[]=$ele;
+					$ele["Pressure"]			=	\Helper::getRoundValue($objectData->OBS_PRESS);
+					$ele["Temperature"]			=	\Helper::getRoundValue($objectData->OBS_TEMP);
+					$ele["Volume"]				=	\Helper::getRoundValue($objectData->OBJ_VALUE);
+// 					$objdata["$obj_id"]=$ele;
 				}
+				$objdata["$src"."_$obj_id"]	=	$ele;
 			}
+		
+		if (count($objdata)>0) {
+			$renderData = [];
+			foreach($ele as $key =>$value){
+				$values = ['NAME'=>$key];
+				foreach($objdata as $source =>$objValue){
+					$values[$source] = $objValue[$key];
+				}
+				$renderData[] = $values;
+			}
+		}
+		else $renderData = $objdata;
 		
 // 		\Log::info(\DB::getQueryLog());
 					    					
-    	return ['dataSet'=>$objdata];
+    	return ['dataSet'=>$renderData];
     }
     
     public function run(Request $request){
     	$postData = $request->all();
     	$date_end 		= 	$postData['date_end'];
     	$date_end		= 	Carbon::parse($date_end);
-    	$object_id 			= 	$postData['EnergyUnit'];
+    	$object_id 		= 	$postData['EnergyUnit'];
     	 
     	$phase_type 	= 	$postData['ExtensionPhaseType'];
     	$value_type 	= 	$postData['ExtensionValueType'];

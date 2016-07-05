@@ -19,8 +19,8 @@ $subMenus = [	array('title' => 'WELL FORECAST', 'link' => 'forecast'),
 @stop
 
 @section('actionInputTable')
-	<div id="container_{{$key}" style="overflow-x:hidden">
-		<table border="0" cellpadding="3" id="table_{{$key}" class="fixedtable nowrap display"></table>
+	<div id="container_{{$key}}" style="overflow-x:hidden">
+		<table border="0" cellpadding="3" id="table_{{$key}}" class="fixedtable nowrap display"></table>
 	</div>
 @stop
 

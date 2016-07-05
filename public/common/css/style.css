@@ -283,6 +283,15 @@ table.dataTable {
 
 .current_job{background-color:#d8ebff;color:#378de5}
 
+#container_preos th {
+    white-space: normal;
+    /* padding: 1px 1px; */
+}
+
+#table_preos{
+	width: 150px;
+}
+
 /* .editable-container.editable-inline {
     width: 100%;
 }

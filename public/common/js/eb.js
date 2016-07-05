@@ -164,40 +164,45 @@ var actions = {
 	
 	doLoad : function (reLoadParams){
 		if (this.loadUrl) {
-			console.log ( "doLoad url: "+this.loadUrl );
-			actions.readyToLoad = true;
-			showWaiting();
-			actions.editedData = {};
-			$.ajax({
-				url: this.loadUrl,
-				type: "post",
-				data: actions.loadParams(reLoadParams),
-				success:function(data){
-					hideWaiting();
-					if(data!=null&&data.hasOwnProperty('objectIds')){
-						actions.objectIds = data.objectIds;
+			validated = actions.loadValidating(reLoadParams);
+			if(validated){
+				console.log ( "doLoad url: "+this.loadUrl );
+				actions.readyToLoad = true;
+				showWaiting();
+				actions.editedData = {};
+				$.ajax({
+					url: this.loadUrl,
+					type: "post",
+					data: actions.loadParams(reLoadParams),
+					success:function(data){
+						hideWaiting();
+						if(data!=null&&data.hasOwnProperty('objectIds')){
+							actions.objectIds = data.objectIds;
+						}
+						actions.editedData = {};
+						if (typeof(actions.loadSuccess) == "function") {
+							actions.loadSuccess(data);
+						}
+						else{
+							alert("load success");
+						}
+					},
+					error: function(data) {
+						hideWaiting();
+						if (typeof(actions.loadError) == "function") {
+							actions.loadError(data);
+						}
 					}
-					actions.editedData = {};
-					if (typeof(actions.loadSuccess) == "function") {
-						actions.loadSuccess(data);
-					}
-					else{
-						alert("load success");
-					}
-				},
-				error: function(data) {
-					hideWaiting();
-					if (typeof(actions.loadError) == "function") {
-						actions.loadError(data);
-					}
-				}
-			});
-			return true;
+				});
+				return true;
+			}
+			else console.log ( "not validated");
+
 		}
 		else{
 			alert("init load params");
-			return false;
 		}
+		return false;
 	},
 	updateView : function(postData){
 		var noData = jQuery.isEmptyObject(postData);
@@ -214,6 +219,9 @@ var actions = {
 				}
 			}
 		}
+	},
+	loadValidating : function (reLoadParams){
+		return true;
 	},
 	validating : function (reLoadParams){
 		return true;
@@ -739,6 +747,11 @@ var actions = {
 	 		}
 		}
 		
+	    /*isDestroyTable = typeof(options.destroy) !== "undefined"&&options.destroy;
+	    if (isDestroyTable) {
+	    	 $('#table_'+tab).DataTable(option);
+	    }*/
+
 		var tbl = $('#table_'+tab).DataTable(option);
 		return tbl;
 	},
