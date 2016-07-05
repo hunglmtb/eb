@@ -294,7 +294,9 @@ table.dataTable {
 .cellnumber {
 	text-align: right;
 }
-
+.editable-container{
+	/* float: right; */
+}
 /* .editable-container.editable-inline {
     width: 100%;
 }

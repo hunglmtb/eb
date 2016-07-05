@@ -396,6 +396,7 @@ var actions = {
     	$(td).on("shown", function(e, editable) {
     		  editable.input.$input.get(0).select();
     		  if(type=="timepicker") $(".table-condensed thead").css("visibility","hidden");
+    		  if(type=="number") $( editable.input.$input.get(0) ).closest( ".editable-container" ).css("float","right");
 //    		  if(type=="timepicker") $(".table-condensed th").text("");
     	});
 	},
