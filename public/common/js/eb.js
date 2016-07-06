@@ -706,7 +706,7 @@ var actions = {
 		
 //		hhh = $(document).height() - $('#table3').outerHeight()- $('#functionName').outerHeight()- $('#ebFilters').outerHeight()- $('#ebFooter').outerHeight() - $('#tabs').outerHeight();
 		headerOffset = $('#ebTabHeader').offset();
-		hhh = $(document).height() - (headerOffset?(headerOffset.top):0) - $('#ebTabHeader').outerHeight() - $('#ebFooter').outerHeight() - 120;
+		hhh = $(document).height() - (headerOffset?(headerOffset.top):0) - $('#ebTabHeader').outerHeight() - $('#ebFooter').outerHeight() - 100;
 		tHeight = ""+hhh+'px';
 		option = {data: data.dataSet,
 		          columns: data.properties,
@@ -719,7 +719,7 @@ var actions = {
 		       	scrollY:        tHeight,
 //		                "scrollCollapse": true,
 				"paging":         false,
-				"dom": 'rt<"#toolbar_'+tab+'">p<"bottom"f><"clear">',
+				"dom": 'rt<"#toolbar_'+tab+'">p<"bottom"i><"bottom"f><"clear">',
 				/* initComplete: function () {
 					var cls = this.api().columns();
 		            cls.every( function () {

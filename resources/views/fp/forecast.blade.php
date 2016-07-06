@@ -212,3 +212,5 @@ Forecast log:
 	<tr><td colspan='2' align='center'><button onClick="actions.doSave(true)" style="width:100%;height:30px;margin:20px 0px">Run Forecast</button></td></tr>
 	</table>
 @stop
+
+@include('core.runpanel')

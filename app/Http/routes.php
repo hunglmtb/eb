@@ -151,6 +151,11 @@ Route::post('forecast/run', 		'EnergyUnitForecastController@run');
 Route::get('fp/preos',			['uses' =>'ForecastPlanningController@preos','middleware' => 'checkRight:FP_PREOS']);
 Route::post('preos/load',		['uses' =>	'PreosController@load','middleware' => 'saveWorkspace']);
 Route::post('preos/run', 		'PreosController@run');
+
+Route::get('fp/allocateplan',		['uses' =>'ForecastPlanningController@allocateplan','middleware' => 'checkRight:FP_ALLOCATE_PLAN']);
+Route::post('allocateplan/load',	['uses' =>'AllocatePlanController@load','middleware' => 'saveWorkspace']);
+Route::post('allocateplan/save', 	'AllocatePlanController@save');
+
 //----------admin
 Route::get('am/users', 'AdminController@_index');
 Route::post('am/loadData', 'AdminController@getData');

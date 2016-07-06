@@ -32,4 +32,19 @@ class ForecastPlanningController extends EBController {
 		);
 		return view ( 'fp.preos',['filters'=>$filterGroups]);
 	}
+	
+	public function allocateplan(){
+		$filterGroups = array(	'productionFilterGroup'	=>[
+				['name'=>'IntObjectType',		'independent'=>true,'getMethod'=>'getPreosObjectType'],
+				['name'=>'ExtensionPhaseType',	'independent'=>true,'getMethod'=>'getPreosPhaseType'],
+				'IntObjectType'			=>'ObjectName',
+		],
+				'frequenceFilterGroup'	=> [],
+				'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
+						['id'=>'date_end','name'=>'To date']),
+// 				'enableButton'			=> 	false,
+				'extra' 				=> 	['IntObjectType','ExtensionPhaseType']
+		);
+		return view ( 'fp.allocateplan',['filters'=>$filterGroups]);
+	}
 }

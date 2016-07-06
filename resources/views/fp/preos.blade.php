@@ -1,11 +1,7 @@
 <?php
 	$currentSubmenu =	'preos';
 	$key 			= 	'preos';
-	/* $tables = ['EnergyUnitDataFdcValue'	=>['name'=>'FDC VALUE'],
-	]; */
  	$active = 1;
- 	$f_date_from 	= array('id'=>'f_date_from','name'=>'Forecast date from');
- 	$f_date_to 		= array('id'=>'f_date_to','name'=>'to');
  ?>
 
 @extends('core.fp')
@@ -125,3 +121,5 @@ PREoS log:
 @section('extensionFields')
 <b>Run</b> <div id="exe"></div><br>
 @stop
+
+@include('core.runpanel')

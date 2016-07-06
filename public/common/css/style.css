@@ -297,6 +297,21 @@ table.dataTable {
 .editable-container{
 	/* float: right; */
 }
+#tabs_contents .ui-tabs-panel {
+   padding-bottom: 0;
+}
+
+.dataTables_filter label {
+   margin-bottom: 0;
+}
+
+.dataTables_filter input {
+	margin-bottom: 4px;
+}
+.dataTables_wrapper .dataTables_info {
+    clear: none;
+    margin-left: 5px;
+}
 /* .editable-container.editable-inline {
     width: 100%;
 }
