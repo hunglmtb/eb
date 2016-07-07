@@ -312,6 +312,20 @@ table.dataTable {
     clear: none;
     margin-left: 5px;
 }
+
+#table_allocateplan {
+   width: 600px;
+   margin-left: 0px;
+   /* overflow: auto; */
+}
+#table_allocateplan thead th, #table_allocateplan_action thead th{
+	padding: 10px 18px;
+	white-space: nowrap;
+	border-bottom: 1px solid #111111;
+}
+#table_allocateplan_action, #container_allocateplan{
+	float:left;
+}
 /* .editable-container.editable-inline {
     width: 100%;
 }
