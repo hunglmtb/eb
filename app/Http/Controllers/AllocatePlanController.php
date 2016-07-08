@@ -37,7 +37,7 @@ class AllocatePlanController extends CodeController {
 		$source_type 	= 	$postData['IntObjectTypeName'];
 		$prefix 		= 	$this->getPreFix($source_type);
 		$properties = collect([
-					(object)['data' =>	'OCCUR_DATE','title' => 'Occur Date',	'width'	=>	100,'INPUT_TYPE'=>3,	'DATA_METHOD'=>2,'FIELD_ORDER'=>1],
+					(object)['data' =>	'OCCUR_DATE',		'title' => 'Occur Date',	'width'	=>	100,'INPUT_TYPE'=>3,	'DATA_METHOD'=>2,'FIELD_ORDER'=>1],
 					(object)['data' =>	$prefix."GRS_VOL"	,'title' => 'Gross Vol'	,	'width'	=>	125,'INPUT_TYPE'=>2,	'DATA_METHOD'=>1,'FIELD_ORDER'=>2],
 					(object)['data' =>	$prefix."GRS_MASS"	,'title' => 'Gross Mass',	'width'	=>	125,'INPUT_TYPE'=>2,	'DATA_METHOD'=>1,'FIELD_ORDER'=>3],
 					(object)['data' =>	$prefix."GRS_ENGY"	,'title' => 'Gross Energy',	'width'	=>	125,'INPUT_TYPE'=>2,	'DATA_METHOD'=>1,'FIELD_ORDER'=>4],
@@ -52,6 +52,51 @@ class AllocatePlanController extends CodeController {
 		$tableName		= 	strtolower ( $table );
 		$mdlName 		= 	\Helper::camelize ( $tableName, '_' );
 		return $mdlName;
+	}
+	
+	protected function deleteData($postData) {
+		if (array_key_exists ('deleteData', $postData )) {
+			$deleteData = $postData['deleteData'];
+			
+			$flow_phase 	= 	$postData['ExtensionPhaseType'];
+			$object_id 		= 	$postData['ObjectName'];
+			$source_type 	= 	$postData['IntObjectTypeName'];
+			$occur_date 	= 	$postData['date_begin'];
+			$occur_date 	= 	Carbon::parse($occur_date);
+			$date_from		=	$occur_date;
+			$date_to 		= 	$postData['date_end'];
+			$date_to 		= 	Carbon::parse($date_to);
+			
+			$obj_id_prefix	=	$source_type;
+			$field_prefix	=	$source_type;
+			$idField		= 	$source_type;
+			
+			foreach($deleteData as $mdlName => $mdlData ){
+				if ($mdlData) {
+					$modelName = $this->getModelName($mdlName,$postData);
+					$mdl = "App\Models\\".$modelName;
+					
+					$where = [];
+					if($source_type=="ENERGY_UNIT"){
+						$obj_id_prefix				="EU";
+						$idField 					= $obj_id_prefix;
+						$where["FLOW_PHASE" ] 		= $flow_phase;
+					}
+					else if($source_type=="FLOW") {
+						$obj_id_prefix="FL";
+					}
+					
+					if($source_type=="FLOW"||$source_type=="ENERGY_UNIT"){
+						$field_prefix=$obj_id_prefix."_DATA";
+					}
+					$where["$idField"."_ID" ] 	= $object_id;
+					
+					$mdl::where($where)
+						->whereBetween('OCCUR_DATE', [$date_from,$date_to])
+						->delete();
+				}
+			}
+		}
 	}
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
@@ -84,6 +129,7 @@ class AllocatePlanController extends CodeController {
 			$obj_id_prefix="FL";
 			$selects[] 		= "FLOW_ID";
 		}
+		else $selects[] 		= "$idField"."_ID";
 		
 		if($source_type=="FLOW"||$source_type=="ENERGY_UNIT"){
 			$field_prefix=$obj_id_prefix."_DATA";
