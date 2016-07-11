@@ -6,6 +6,7 @@ use App\Models\UserRole;
 use App\Models\UserRoleRight;
 use App\Models\UserUserRole;
 use App\Models\UserWorkspace;
+use App\Models\DateTimeFormat;
 
 use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
@@ -73,41 +74,73 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 		$columns = ['USER_ID'=>$this->ID];
 		$newData = ['USER_ID'=>$this->ID,'USER_NAME'=>$this->username];
 		if ($date_begin) {
- 			$date_begin = Carbon::parse($date_begin);
+//  			$date_begin = Carbon::parse($date_begin);
+ 			$date_begin = \Helper::parseDate($date_begin);
 			$newData['W_DATE_BEGIN']=$date_begin;
 		}
 		if ($facility_id) $newData['W_FACILITY_ID']=$facility_id;
 		if ($date_end) {
- 			$date_end = Carbon::parse($date_end);
-			$newData['W_DATE_END']=$date_end;
+//  			$date_end 	= Carbon::parse($date_end);
+ 			$date_end 	= \Helper::parseDate($date_end);
+ 			$newData['W_DATE_END']=$date_end;
 		}
 		return  UserWorkspace::updateOrCreate($columns, $newData);
 	}
 	
+	public function saveDateTimeFormat($dateformat,$timeformat){
+		$columns = ['USER_ID'=>$this->ID];
+		$newData = ['USER_ID'=>$this->ID,'USER_NAME'=>$this->username];
+		if ($dateformat) $newData['DATE_FORMAT']	=	$dateformat;
+		if ($timeformat) $newData['TIME_FORMAT']	=	$timeformat;
+		return  UserWorkspace::updateOrCreate($columns, $newData);
+	}
+	
+	public function configuration(){
+		$row	= 	$this->workspace()
+						->where('USER_ID','=',$this->ID)
+						->select('DATE_FORMAT','TIME_FORMAT')
+						->first();
+		$formatSetting = $row?['DATE_FORMAT'	=>	$row->DATE_FORMAT, 'TIME_FORMAT'	=>	$row->TIME_FORMAT]
+							:DateTimeFormat::$defaultFormat;
+		return $formatSetting;
+	}
+	
 	public function getConfiguration()
 	{
-		$timeFormat =  [
-				'DATE_FORMAT'				=>		'MM/DD/YYYY',
-				'TIME_FORMAT'				=>		'hh:mm A',
-				'DATETIME_FORMAT'			=>		'MM/DD/YYYY HH:mm',
+// 		$formatSetting 		= 	$this->configuration();//session('configuration');
+		$formatSetting 		= 	session('configuration');
+		$formatSetting 		= 	$formatSetting?$formatSetting:DateTimeFormat::$defaultFormat;
+		$dateFormat 		= 	$formatSetting['DATE_FORMAT'];
+		$timeFormat 		= 	$formatSetting['TIME_FORMAT'];
+		$lowerDateFormat	= 	strtolower($dateFormat);
+		$carbonFormat		= 	\Helper::convertDate2CarbonFormat($dateFormat);
+		$jqueryFormat		= 	\Helper::convertDate2JqueryFormat($dateFormat);
+		$pickerTimeFormat	= 	\Helper::convertTime2PickerFormat($timeFormat);
+		$timeFormatSet =  [
+				'DATE_FORMAT'				=>		$dateFormat,//'MM/DD/YYYY',
+				'TIME_FORMAT'				=>		$timeFormat,//'hh:mm A',
+				'DATETIME_FORMAT'			=>		"$dateFormat $timeFormat",// 'MM/DD/YYYY HH:mm',
 				'DATE_FORMAT_UTC'			=>		'YYYY-MM-DD',
 				'TIME_FORMAT_UTC'			=>		'hh:mm:ss',
 				'DATETIME_FORMAT_UTC'		=>		'YYYY-MM-DD HH:mm:ss',
-				'DATE_FORMAT_CARBON'		=>		'm/d/Y',
+				'DATE_FORMAT_CARBON'		=>		$carbonFormat//'m/d/Y',
 		];
 		
 		$picker =  [
-				'DATE_FORMAT'			=>		'mm/dd/yyyy',
-				'TIME_FORMAT'			=>		'HH:ii P',
-				'DATETIME_FORMAT'		=>		'mm/dd/yyyy hh:ii',
+				'DATE_FORMAT'			=>		$lowerDateFormat,//'mm/dd/yyyy',
+				'TIME_FORMAT'			=>		$pickerTimeFormat,//'HH:ii P',
+				'DATETIME_FORMAT'		=>		"$lowerDateFormat $pickerTimeFormat",/* strtolower($timeFormatSet['DATETIME_FORMAT']),// *///'mm/dd/yyyy hh:ii',
 				'DATE_FORMAT_UTC'		=>		'mm/dd/yyyy',
 				'TIME_FORMAT_UTC'		=>		'hh:ii:ss',
 				'DATETIME_FORMAT_UTC'	=>		'mm/dd/yyyy hh:ii',
-				'DATE_FORMAT_JQUERY'	=>		'mm/dd/yy',
+				'DATE_FORMAT_JQUERY'	=>		$jqueryFormat//'mm/dd/yy',
 		];
+		$sample = DateTimeFormat::getSample($formatSetting);
+		
 		return [
-				'time'		=>	$timeFormat,
+				'time'		=>	$timeFormatSet,
 				'picker'	=>	$picker,
+				'sample'	=>	$sample,
 		];
 	}
 	

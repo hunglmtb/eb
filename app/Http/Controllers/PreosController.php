@@ -235,7 +235,8 @@ class PreosController extends CodeController {
 		$cb_update_db	=	$postData['cb_update_db'];
     	$occur_date 	= 	$postData['date_begin'];
 		$value_type 	= 	$postData['ExtensionValueType'];
-    	$occur_date 	= 	Carbon::parse($occur_date);
+//     	$occur_date 	= 	Carbon::parse($occur_date);
+    	$occur_date		= 	\Helper::parseDate($occur_date);
     	$inputDataSet	=	$this->getInputDataSet($postData,$occur_date);
     	$objdata		=	$inputDataSet['data'];
     	$objinfo		=	$inputDataSet['info'];

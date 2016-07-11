@@ -2,6 +2,7 @@
 use App\Models\LockTable;
 use App\Models\AuditValidateTable;
 use App\Models\AuditApproveTable;
+use Carbon\Carbon;
 
 class Helper {
 	public static function filter($option=null) {
@@ -159,6 +160,53 @@ class Helper {
 		$mdl = 'App\Models\\' . $mdlName;
 		return $mdl;
 	}
+	
+	public static function convertDate2CarbonFormat($dateFormat)
+	{
+		$lowerDateFormat	= 	strtolower($dateFormat);
+		$elements			= 	explode('/', $lowerDateFormat);
+		$newElements		= 	[];
+		foreach ($elements as $element){
+// 			$newElements[] = substr($element, 0, strlen($element)/2);
+			if ($element[0]=='y') {
+				$newElements[] = 'Y';
+			}
+			else 
+				$newElements[] = $element[0];
+		}
+		$newFormat = implode('/', $newElements);
+		return $newFormat;
+	}
+	
+	public static function convertDate2JqueryFormat($dateFormat)
+	{
+		$lowerDateFormat	= 	strtolower($dateFormat);
+		$elements			= 	explode('/', $lowerDateFormat);
+		$newElements		= 	[];
+		foreach ($elements as $element){
+ 			$newElements[] = substr($element, 0, strlen($element)/2);
+		}
+		$newFormat = implode('/', $newElements);
+		return $newFormat;
+	}
+	
+	public static function convertTime2PickerFormat($timeFormat)
+	{
+		$newFormat	= \App\Models\DateTimeFormat::$timeFortmatPair;
+		return $newFormat[$timeFormat];
+	}
+	
+	public static function parseDate($dateString)
+	{
+		$formatSetting 		= 	session('configuration');
+		$formatSetting 		= 	$formatSetting?$formatSetting:DateTimeFormat::$defaultFormat;
+		$dateFormat 		= 	$formatSetting['DATE_FORMAT'];
+		$carbonFormat		= 	\Helper::convertDate2CarbonFormat($dateFormat);
+		$carbonDate 		= 	Carbon::createFromFormat($carbonFormat, $dateString);
+		
+		return $carbonDate;
+	}
+	
 	
 	public static function logger() {
 		$queries = \DB::getQueryLog();

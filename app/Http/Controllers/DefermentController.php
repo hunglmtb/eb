@@ -36,7 +36,8 @@ class DefermentController extends CodeController {
     	$mdlName = $postData[config("constants.tabTable")];
     	$mdl = "App\Models\\$mdlName";
     	$date_end = $postData['date_end'];
-    	$date_end = Carbon::parse($date_end);
+//     	$date_end = Carbon::parse($date_end);
+    	$date_end = \Helper::parseDate($date_end);
     	
     	$extraDataSet = [];
     	$dataSet = null;

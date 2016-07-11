@@ -37,8 +37,9 @@ class EnergyUnitForecastController extends CodeController {
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	$date_end 		= 	$postData['date_end'];
-    	$date_end		= 	Carbon::parse($date_end);
-		$id 			= 	$postData['EnergyUnit'];
+//     	$date_end		= 	Carbon::parse($date_end);
+		$date_end		= 	\Helper::parseDate($date_end);
+    	$id 			= 	$postData['EnergyUnit'];
 		
 		$phase_type 	= 	$postData['ExtensionPhaseType'];
 		$value_type 	= 	$postData['ExtensionValueType'];
@@ -70,7 +71,8 @@ class EnergyUnitForecastController extends CodeController {
     public function run(Request $request){
     	$postData = $request->all();
     	$date_end 		= 	$postData['date_end'];
-    	$date_end		= 	Carbon::parse($date_end);
+//     	$date_end		= 	Carbon::parse($date_end);
+		$date_end		= 	\Helper::parseDate($date_end);
     	$object_id 			= 	$postData['EnergyUnit'];
     	 
     	$phase_type 	= 	$postData['ExtensionPhaseType'];
@@ -89,12 +91,15 @@ class EnergyUnitForecastController extends CodeController {
     	$c2				=	$postData['c2'];
     	
     	$date_begin 	= 	$postData['date_begin'];
-    	$date_begin		= 	Carbon::parse($date_begin);
+//     	$date_begin		= 	Carbon::parse($date_begin);
+		$date_begin		= 	\Helper::parseDate($date_begin);
     	$date_from 		= 	$postData['f_from_date'];
-    	$date_from		= 	Carbon::parse($date_from);
+//     	$date_from		= 	Carbon::parse($date_from);
+		$date_from		= 	\Helper::parseDate($date_from);
     	$date_to 		= 	$postData['f_to_date'];
-    	$date_to		= 	Carbon::parse($date_to);
-    	
+//     	$date_to		= 	Carbon::parse($date_to);
+    	$date_to		= 	\Helper::parseDate($date_to);
+    	 
     	$from_date 		= 	$date_begin;
     	
 		$mkey="_".date("Ymdhis_").rand(100,1000)/* ."hung_test" */;

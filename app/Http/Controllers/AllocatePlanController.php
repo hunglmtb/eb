@@ -62,11 +62,13 @@ class AllocatePlanController extends CodeController {
 			$object_id 		= 	$postData['ObjectName'];
 			$source_type 	= 	$postData['IntObjectTypeName'];
 			$occur_date 	= 	$postData['date_begin'];
-			$occur_date 	= 	Carbon::parse($occur_date);
+// 			$occur_date 	= 	Carbon::parse($occur_date);
+    		$occur_date		= 	\Helper::parseDate($occur_date);
 			$date_from		=	$occur_date;
 			$date_to 		= 	$postData['date_end'];
-			$date_to 		= 	Carbon::parse($date_to);
-			
+			$date_to		= 	\Helper::parseDate($date_to);
+// 			$date_to 		= 	Carbon::parse($date_to);
+				
 			$obj_id_prefix	=	$source_type;
 			$field_prefix	=	$source_type;
 			$idField		= 	$source_type;

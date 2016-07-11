@@ -11,6 +11,7 @@ class Statut  {
 	public function setLoginStatut($login)
 	{
 		session()->put('statut', $login->user->role());
+ 		session()->put('configuration', $login->user->configuration());
 	}
 
 	/**
@@ -21,6 +22,7 @@ class Statut  {
 	public function setVisitorStatut()
 	{
 		session()->put('statut', 'visitor');
+ 		session()->put('configuration', null);
 	}
 
 	/**

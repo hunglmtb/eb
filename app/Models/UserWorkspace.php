@@ -8,7 +8,14 @@ class UserWorkspace extends DynamicModel
 	protected $table = 'USER_WORKSPACE';
 	protected $primaryKey = 'ID';
 	protected $dates = ['W_DATE_BEGIN','W_DATE_END'];
-	protected $fillable  = ['USER_ID', 'USER_NAME', 'W_DATE_BEGIN', 'W_FACILITY_ID', 'W_DATE_END', 'W_FLOW_PHASE'];
+	protected $fillable  = ['USER_ID', 
+							'USER_NAME', 
+							'W_DATE_BEGIN', 
+							'W_FACILITY_ID', 
+							'W_DATE_END', 
+							'W_FLOW_PHASE',
+							'DATE_FORMAT',
+							'TIME_FORMAT'];
 	
 	/**
 	 * One to Many relation

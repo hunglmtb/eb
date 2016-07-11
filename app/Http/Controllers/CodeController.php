@@ -106,7 +106,8 @@ class CodeController extends EBController {
      	$occur_date = null;
      	if (array_key_exists('date_begin',  $postData)){
 	     	$occur_date = $postData['date_begin'];
-	     	$occur_date = Carbon::parse($occur_date);
+// 	     	$occur_date = Carbon::parse($occur_date);
+	     	$occur_date = \Helper::parseDate($occur_date);
      	}
      	
  		$results = $this->getProperties($dcTable,$facility_id,$occur_date,$postData);
@@ -212,7 +213,8 @@ class CodeController extends EBController {
      	$occur_date = null;
      	if (array_key_exists('date_begin',  $postData)){
      		$occur_date = $postData['date_begin'];
-     		$occur_date = Carbon::parse($occur_date);
+//      		$occur_date = Carbon::parse($occur_date);
+ 			$occur_date 	= \Helper::parseDate($occur_date);
      	}
 //      	$objectIds = array_key_exists('objectIds', $postData)?$postData['objectIds']:[];
      	
