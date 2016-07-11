@@ -15,10 +15,10 @@ class DateTimeFormat extends DynamicModel
 			);
 	
 	public static $defaultFormat = ['DATE_FORMAT'=>'DD/MM/YYYY',
-									'TIME_FORMAT'=>'hh:mm'];
+									'TIME_FORMAT'=>'HH:mm'];
 	
 	public static $timeFortmatPair =	['hh:mm A'	=>	'HH:ii P',
-										'HH:mm'		=>	'hh:ii'
+										'HH:mm'		=>	'hh:ii',
 										];
 	
 	

@@ -100,8 +100,9 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 						->where('USER_ID','=',$this->ID)
 						->select('DATE_FORMAT','TIME_FORMAT')
 						->first();
-		$formatSetting = $row?['DATE_FORMAT'	=>	$row->DATE_FORMAT, 'TIME_FORMAT'	=>	$row->TIME_FORMAT]
-							:DateTimeFormat::$defaultFormat;
+		$formatSetting = [];
+		$formatSetting['DATE_FORMAT'] = $row&&$row->DATE_FORMAT?$row->DATE_FORMAT:	DateTimeFormat::$defaultFormat['DATE_FORMAT'];
+		$formatSetting['TIME_FORMAT'] = $row&&$row->TIME_FORMAT?$row->TIME_FORMAT:	DateTimeFormat::$defaultFormat['TIME_FORMAT'];
 		return $formatSetting;
 	}
 	
@@ -110,8 +111,8 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 // 		$formatSetting 		= 	$this->configuration();//session('configuration');
 		$formatSetting 		= 	session('configuration');
 		$formatSetting 		= 	$formatSetting?$formatSetting:DateTimeFormat::$defaultFormat;
-		$dateFormat 		= 	$formatSetting['DATE_FORMAT'];
-		$timeFormat 		= 	$formatSetting['TIME_FORMAT'];
+		$dateFormat 		= 	$formatSetting['DATE_FORMAT']?$formatSetting['DATE_FORMAT']:	DateTimeFormat::$defaultFormat['DATE_FORMAT'];
+		$timeFormat 		= 	$formatSetting['TIME_FORMAT']?$formatSetting['TIME_FORMAT']:	DateTimeFormat::$defaultFormat['TIME_FORMAT'];
 		$lowerDateFormat	= 	strtolower($dateFormat);
 		$carbonFormat		= 	\Helper::convertDate2CarbonFormat($dateFormat);
 		$jqueryFormat		= 	\Helper::convertDate2JqueryFormat($dateFormat);

@@ -163,37 +163,46 @@ class Helper {
 	
 	public static function convertDate2CarbonFormat($dateFormat)
 	{
-		$lowerDateFormat	= 	strtolower($dateFormat);
-		$elements			= 	explode('/', $lowerDateFormat);
-		$newElements		= 	[];
-		foreach ($elements as $element){
-// 			$newElements[] = substr($element, 0, strlen($element)/2);
-			if ($element[0]=='y') {
-				$newElements[] = 'Y';
+		if ($dateFormat) {
+			$lowerDateFormat	= 	strtolower($dateFormat);
+			$elements			= 	explode('/', $lowerDateFormat);
+			$newElements		= 	[];
+			foreach ($elements as $element){
+	// 			$newElements[] = substr($element, 0, strlen($element)/2);
+				if ($element[0]=='y') {
+					$newElements[] = 'Y';
+				}
+				else 
+					$newElements[] = $element[0];
 			}
-			else 
-				$newElements[] = $element[0];
+			$newFormat = implode('/', $newElements);
+			return $newFormat;
 		}
-		$newFormat = implode('/', $newElements);
-		return $newFormat;
+		else return null;
 	}
 	
 	public static function convertDate2JqueryFormat($dateFormat)
 	{
-		$lowerDateFormat	= 	strtolower($dateFormat);
-		$elements			= 	explode('/', $lowerDateFormat);
-		$newElements		= 	[];
-		foreach ($elements as $element){
- 			$newElements[] = substr($element, 0, strlen($element)/2);
+		if ($dateFormat) {
+			$lowerDateFormat	= 	strtolower($dateFormat);
+			$elements			= 	explode('/', $lowerDateFormat);
+			$newElements		= 	[];
+			foreach ($elements as $element){
+	 			$newElements[] = substr($element, 0, strlen($element)/2);
+			}
+			$newFormat = implode('/', $newElements);
+			return $newFormat;
 		}
-		$newFormat = implode('/', $newElements);
-		return $newFormat;
+		else return null;
 	}
 	
 	public static function convertTime2PickerFormat($timeFormat)
 	{
-		$newFormat	= \App\Models\DateTimeFormat::$timeFortmatPair;
-		return $newFormat[$timeFormat];
+		if ($timeFormat) {
+			$newFormat	= \App\Models\DateTimeFormat::$timeFortmatPair;
+			return $newFormat[$timeFormat];
+		}
+		else return null;
 	}
 	
 	public static function parseDate($dateString)
