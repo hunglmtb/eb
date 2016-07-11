@@ -520,7 +520,7 @@ menu["admin"]=[
 	];
 menu["config"]=[
 		{menutext:"Fields Config",desc:"",url:"/fieldsconfig"},
-		{menutext:"Tables Data",desc:"",url:"../config"},
+		{menutext:"Tables Data",desc:"",url:"../tabledata/index.php"},
 		{menutext:"Tags Mapping",desc:"",url:"../tagsMapping"},
 		{menutext:"Formula Editor",desc:"",url:"/formula"},
 		{menutext:"View Config",desc:"",url:"/viewconfig"},
