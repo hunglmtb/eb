@@ -97,7 +97,6 @@ var actions = {
 	initSaveData :false,
 	editedData : {},
 	deleteData : {},
-	insertingData : {},
 	objectIds : [],
 	extraDataSetColumns : {},
 	extraDataSet : {},
@@ -224,7 +223,9 @@ var actions = {
 		return true;
 	},
 	validating : function (reLoadParams){
-		return true;
+		isNoChange = (jQuery.isEmptyObject(actions.editedData))&&(jQuery.isEmptyObject(actions.deleteData));
+		if(isNoChange) alert("no change to commit");
+		return !isNoChange;
 	},
 	doSave : function (reLoadParams){
 		if (this.saveUrl) {

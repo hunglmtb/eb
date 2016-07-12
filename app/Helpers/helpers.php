@@ -212,7 +212,9 @@ class Helper {
 		$dateFormat 		= 	$formatSetting['DATE_FORMAT'];
 		$carbonFormat		= 	\Helper::convertDate2CarbonFormat($dateFormat);
 		$carbonDate 		= 	Carbon::createFromFormat($carbonFormat, $dateString);
-		
+		$carbonDate->hour 	= 0;
+		$carbonDate->minute = 0;
+		$carbonDate->second = 0;
 		return $carbonDate;
 	}
 	

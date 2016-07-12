@@ -127,7 +127,7 @@ MANUAL ALLOCATE PLAN
 		tab = '{{$key}}';
 		actions.deleteData[tab] = {source_type	: $("#IntObjectType option:selected").attr('name'),
 											clearTable	:true};
-		actions.updatedData = {tab	: []};
+		actions.editedData = {tab	: []};
 		actions.doSave(true);
 	}
 

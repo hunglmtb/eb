@@ -74,10 +74,12 @@ use Carbon\Carbon;
 					
 			if(array_key_exists('OCCUR_DATE', $attributes)){
 				$occur_date = $attributes['OCCUR_DATE'];
-				$occur_date = Carbon::parse($occur_date);
+				$occur_date = \Helper::parseDate($occur_date);
+				
+				/* $occur_date = Carbon::parse($occur_date);
 				$occur_date->hour = 0;
 				$occur_date->minute = 0;
-				$occur_date->second = 0;
+				$occur_date->second = 0; */
 				$attributes['OCCUR_DATE'] = $occur_date;
 			}
 									

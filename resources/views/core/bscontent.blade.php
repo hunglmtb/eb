@@ -124,7 +124,7 @@ if (!isset($active)) $active =1;
 				}
 			}
 		}
-		else if((postData.hasOwnProperty('deleteData'))){
+		else if(typeof(postData) !== "undefined" && (postData.hasOwnProperty('deleteData'))){
 			for (var key in postData.deleteData) {
 				table = $('#table_'+key).DataTable();
 				actions.afterGotSavedData(data,table,key);

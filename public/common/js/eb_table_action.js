@@ -15,6 +15,7 @@ var intVal = function ( i ) {
 						return srcData;
 					}
 				};
+	
 	actions.afterDataTable = function (table,tab){
 		$("#toolbar_"+tab).html('<button>Add</button>');
 		$("#toolbar_"+tab).addClass('toolbarAction');
@@ -64,15 +65,17 @@ var intVal = function ( i ) {
 	actions.afterGotSavedData = function (data,table,tab){
     	var editedData = actions.editedData[tab];
     	isAddingNewRow = false;
-    	 $.each(editedData, function( i, rowData ) {
-    		 	var id = rowData['DT_RowId'];
-    		 	if ((typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1)) {
-    		 		table.row($('#'+id)).remove().draw(false);
-    		 		var tbbody = $('#table_'+tab);
-    		 		tbbody.tableHeadFixer({"left" : 1,head: false,});
-    		 		isAddingNewRow  = true;
-			    }
-          });
+		if(typeof(editedData) !== "undefined"){
+			$.each(editedData, function( i, rowData ) {
+				var id = rowData['DT_RowId'];
+				if ((typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1)) {
+					table.row($('#'+id)).remove().draw(false);
+					var tbbody = $('#table_'+tab);
+					tbbody.tableHeadFixer({"left" : 1,head: false,});
+					isAddingNewRow  = true;
+				}
+			});
+		}
     	actions.addingNewRowSuccess(data,table,tab,isAddingNewRow);
 	};
 	actions.createdFirstCellColumn  = function (td, cellData, rowData, row, col) {
