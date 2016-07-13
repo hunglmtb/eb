@@ -25,10 +25,11 @@ class TicketController extends CodeController {
     	$mdlName = $postData[config("constants.tabTable")];
     	$mdl = "App\Models\\$mdlName";
     	
-    	$object_id = $postData['Tank'];
-    	$date_end = $postData['date_end'];
-    	$date_end = Carbon::parse($date_end);
-    	
+    	$object_id 		= $postData['Tank'];
+    	$date_end 		= $postData['date_end'];
+//     	$date_end 		= Carbon::parse($date_end);
+    	$date_end		= \Helper::parseDate($date_end);
+    	 
     	$tank = Tank::getTableName();
     	 
     	$wheres = ['TANK_ID' => $object_id];

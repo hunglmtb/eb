@@ -27,7 +27,11 @@ class FeatureTankModel extends EbBussinessModel
 			$newData[static::$idField] = $newData[config("constants.tankId")];
 			unset($newData[config("constants.tankId")]);
 		}
-		$newData[static::$dateField] = $occur_date;
+		if (array_key_exists(static::$dateField, $newData)) {
+			$occur_date = $newData[static::$dateField];
+		}
+		else $newData[static::$dateField] = $occur_date;
+		
 		$cls = [static::$idField => $newData[static::$idField],
 				static::$dateField=>$occur_date];
 		if (array_key_exists(config("constants.tankFlowPhase"), $newData)) {

@@ -47,14 +47,14 @@ Route::resource('contact', 'ContactController', [
 
 
 // User
-Route::get('user/sort/{role}', 'UserController@indexSort');
+/* Route::get('user/sort/{role}', 'UserController@indexSort');
 
 Route::get('user/roles', 'UserController@getRoles');
 Route::post('user/roles', 'UserController@postRoles');
 
 Route::put('userseen/{user}', 'UserController@updateSeen');
 
-Route::resource('user', 'UserController');
+Route::resource('user', 'UserController'); */
 
 // Authentication routes...
 Route::get('auth/login', 'HomeController@index');
@@ -151,6 +151,14 @@ Route::post('forecast/run', 		'EnergyUnitForecastController@run');
 Route::get('fp/preos',			['uses' =>'ForecastPlanningController@preos','middleware' => 'checkRight:FP_PREOS']);
 Route::post('preos/load',		['uses' =>	'PreosController@load','middleware' => 'saveWorkspace']);
 Route::post('preos/run', 		'PreosController@run');
+
+Route::get('fp/allocateplan',		['uses' =>'ForecastPlanningController@allocateplan','middleware' => 'checkRight:FP_ALLOCATE_PLAN']);
+Route::post('allocateplan/load',	['uses' =>'AllocatePlanController@load','middleware' => 'saveWorkspace']);
+Route::post('allocateplan/save', 	'AllocatePlanController@save');
+
+Route::get('me/setting',			['uses' =>'UserSettingController@index'/* ,'middleware' => 'checkRight:FP_ALLOCATE_PLAN' */]);
+Route::post('me/setting/save', 		'UserSettingController@saveSetting');
+
 //----------admin
 Route::get('am/users', 'AdminController@_index');
 Route::post('am/loadData', 'AdminController@getData');

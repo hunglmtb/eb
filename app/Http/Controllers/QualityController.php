@@ -35,7 +35,8 @@ class QualityController extends CodeController {
     	$mdl = "App\Models\\$mdlName";
     	$src_type_id = $postData['CodeQltySrcType'];
     	$date_end = $postData['date_end'];
-    	$date_end = Carbon::parse($date_end);
+//     	$date_end = Carbon::parse($date_end);
+    	$date_end		= 	\Helper::parseDate($date_end);
     	$filterBy = $postData['cboFilterBy'];
     	
     	$extraDataSet = [];

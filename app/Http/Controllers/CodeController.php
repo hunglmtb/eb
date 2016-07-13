@@ -50,7 +50,7 @@ class CodeController extends EBController {
 	protected $isApplyFormulaAfterSaving;
 	
 	
-	 public function __construct() {
+	public function __construct() {
 		parent::__construct();
 		$this->isApplyFormulaAfterSaving = false;
 	}
@@ -99,7 +99,6 @@ class CodeController extends EBController {
     }
     
     public function load(Request $request){
-//     	sleep(2);
     	$postData = $request->all();
      	$dcTable = $this->getWorkingTable($postData); 
      	
@@ -107,10 +106,11 @@ class CodeController extends EBController {
      	$occur_date = null;
      	if (array_key_exists('date_begin',  $postData)){
 	     	$occur_date = $postData['date_begin'];
-	     	$occur_date = Carbon::parse($occur_date);
+// 	     	$occur_date = Carbon::parse($occur_date);
+	     	$occur_date = \Helper::parseDate($occur_date);
      	}
      	
- 		$results = $this->getProperties($dcTable,$facility_id,$occur_date);
+ 		$results = $this->getProperties($dcTable,$facility_id,$occur_date,$postData);
       	$data = $this->getDataSet($postData,$dcTable,$facility_id,$occur_date,$results);
       	$secondaryData = $this->getSecondaryData($postData,$dcTable,$facility_id,$occur_date,$results);
         $results['secondaryData'] = $secondaryData;
@@ -131,7 +131,7 @@ class CodeController extends EBController {
     	return null;
     }
     
-    public function getProperties($dcTable,$facility_id,$occur_date){
+    public function getProperties($dcTable,$facility_id,$occur_date,$postData){
     	
     	$properties = $this->getOriginProperties($dcTable);
     	$firstProperty = $this->getFirstProperty($dcTable);
@@ -187,8 +187,10 @@ class CodeController extends EBController {
 	public function getDataSet($postData, $dcTable, $facility_id, $occur_date,$properties) {
 		return [];
 	}
-    
-    
+	
+	public function getModelName($mdlName,$postData) {
+		return $mdlName;
+	}
     
     public function save(Request $request){
 //     	sleep(2);
@@ -211,7 +213,8 @@ class CodeController extends EBController {
      	$occur_date = null;
      	if (array_key_exists('date_begin',  $postData)){
      		$occur_date = $postData['date_begin'];
-     		$occur_date = Carbon::parse($occur_date);
+//      		$occur_date = Carbon::parse($occur_date);
+ 			$occur_date 	= \Helper::parseDate($occur_date);
      	}
 //      	$objectIds = array_key_exists('objectIds', $postData)?$postData['objectIds']:[];
      	
@@ -231,16 +234,18 @@ class CodeController extends EBController {
      			
      			//      			\DB::enableQueryLog();
      			foreach($editedData as $mdlName => $mdlData ){
-		     		$mdl = "App\Models\\".$mdlName;
+     				$modelName = $this->getModelName($mdlName,$postData);
+ 		     		$mdl = "App\Models\\".$modelName;
 		     		if ($mdl::$ignorePostData) {
 		     			unset($editedData[$mdlName]);
 		     			continue;
 		     		}
 		     		$ids[$mdlName] = [];
 		     		$resultRecords[$mdlName] = [];
-		     		$locked = \Helper::checkLockedTable($mdlName,$occur_date,$facility_id);
+		     		$tableName = $mdl::getTableName();
+		     		$locked = \Helper::checkLockedTable($tableName,$occur_date,$facility_id);
 		     		if ($locked) {
-		     			$lockeds[$mdlName] = "Data of $mdlName with facility $facility_id was locked on $occur_date ";
+		     			$lockeds[$mdlName] = "Data of $modelName with facility $facility_id was locked on $occur_date ";
 		     			unset($editedData[$mdlName]);
 		     			continue;
 		     		}
@@ -267,7 +272,8 @@ class CodeController extends EBController {
 		     	//doFormula in config table
 		     	$affectColumns = [];
 		     	foreach($editedData as $mdlName => $mdlData ){
-		     		$cls  = \FormulaHelpers::doFormula($mdlName,'ID',$ids[$mdlName]);
+		     		$modelName = $this->getModelName($mdlName,$postData);
+		     		$cls  = \FormulaHelpers::doFormula($modelName,'ID',$ids[$mdlName]);
 		     		if (is_array($cls)&&count($cls)>0) {
 			     		$affectColumns[$mdlName] = $cls;
 		     		}
@@ -337,7 +343,8 @@ class CodeController extends EBController {
      	if (array_key_exists('ids', $resultTransaction)) {
 	     	foreach($resultTransaction['ids'] as $mdlName => $updatedIds ){
 	//      		$updatedData[$mdlName] = $mdl::findMany($objectIds);
-	     		$mdl = "App\Models\\".$mdlName;
+		     	$modelName = $this->getModelName($mdlName,$postData);
+	     		$mdl = "App\Models\\".$modelName;
 	     		$updatedData[$mdlName] = $mdl::findManyWithConfig($updatedIds);
 	     	}
      	}

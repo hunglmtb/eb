@@ -2,6 +2,7 @@
 use App\Models\LockTable;
 use App\Models\AuditValidateTable;
 use App\Models\AuditApproveTable;
+use Carbon\Carbon;
 
 class Helper {
 	public static function filter($option=null) {
@@ -59,7 +60,9 @@ class Helper {
 				} */
 			}
 			
-			if (count($dependences)>0) {
+			if (count($dependences)>0
+					&&(!array_key_exists('single', $option)
+							||!$option['single'])) {
 				$extra = array_key_exists('extra', $option)&&count($option['extra'])>0?$option['extra']:null;
 				$extra = is_array($extra)&&count($extra)>0?",['".implode("','", $extra)."']":'';
 				$htmlFilter.= "<script>registerOnChange('$id',['".implode("','", $dependences)."']$extra)</script>";
@@ -145,6 +148,11 @@ class Helper {
 		return str_replace($separator, '', ucwords($input, $separator));
 	}
 	
+	public static function getRoundValue($value){
+		$value = $value?round($value):0;
+		return $value;
+	}
+	
 	public static function getModelName($table)
 	{
 		$tableName = strtolower ( $table );
@@ -152,6 +160,64 @@ class Helper {
 		$mdl = 'App\Models\\' . $mdlName;
 		return $mdl;
 	}
+	
+	public static function convertDate2CarbonFormat($dateFormat)
+	{
+		if ($dateFormat) {
+			$lowerDateFormat	= 	strtolower($dateFormat);
+			$elements			= 	explode('/', $lowerDateFormat);
+			$newElements		= 	[];
+			foreach ($elements as $element){
+	// 			$newElements[] = substr($element, 0, strlen($element)/2);
+				if ($element[0]=='y') {
+					$newElements[] = 'Y';
+				}
+				else 
+					$newElements[] = $element[0];
+			}
+			$newFormat = implode('/', $newElements);
+			return $newFormat;
+		}
+		else return null;
+	}
+	
+	public static function convertDate2JqueryFormat($dateFormat)
+	{
+		if ($dateFormat) {
+			$lowerDateFormat	= 	strtolower($dateFormat);
+			$elements			= 	explode('/', $lowerDateFormat);
+			$newElements		= 	[];
+			foreach ($elements as $element){
+	 			$newElements[] = substr($element, 0, strlen($element)/2);
+			}
+			$newFormat = implode('/', $newElements);
+			return $newFormat;
+		}
+		else return null;
+	}
+	
+	public static function convertTime2PickerFormat($timeFormat)
+	{
+		if ($timeFormat) {
+			$newFormat	= \App\Models\DateTimeFormat::$timeFortmatPair;
+			return $newFormat[$timeFormat];
+		}
+		else return null;
+	}
+	
+	public static function parseDate($dateString)
+	{
+		$formatSetting 		= 	session('configuration');
+		$formatSetting 		= 	$formatSetting?$formatSetting:DateTimeFormat::$defaultFormat;
+		$dateFormat 		= 	$formatSetting['DATE_FORMAT'];
+		$carbonFormat		= 	\Helper::convertDate2CarbonFormat($dateFormat);
+		$carbonDate 		= 	Carbon::createFromFormat($carbonFormat, $dateString);
+		$carbonDate->hour 	= 0;
+		$carbonDate->minute = 0;
+		$carbonDate->second = 0;
+		return $carbonDate;
+	}
+	
 	
 	public static function logger() {
 		$queries = \DB::getQueryLog();

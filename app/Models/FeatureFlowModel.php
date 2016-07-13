@@ -18,7 +18,10 @@ class FeatureFlowModel extends EbBussinessModel
 			$newData[static::$idField] = $newData[config("constants.flowId")];
 			unset($newData[config("constants.flowId")]);
 		}
-		$newData[static::$dateField] = $occur_date;
+		if (array_key_exists(static::$dateField, $newData)) {
+			$occur_date = $newData[static::$dateField];
+		}
+		else $newData[static::$dateField] = $occur_date;
 		return [static::$idField => $newData[static::$idField],
 				static::$dateField=>$occur_date];
 	}

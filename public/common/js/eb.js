@@ -97,7 +97,6 @@ var actions = {
 	initSaveData :false,
 	editedData : {},
 	deleteData : {},
-	insertingData : {},
 	objectIds : [],
 	extraDataSetColumns : {},
 	extraDataSet : {},
@@ -164,40 +163,45 @@ var actions = {
 	
 	doLoad : function (reLoadParams){
 		if (this.loadUrl) {
-			console.log ( "doLoad url: "+this.loadUrl );
-			actions.readyToLoad = true;
-			showWaiting();
-			actions.editedData = {};
-			$.ajax({
-				url: this.loadUrl,
-				type: "post",
-				data: actions.loadParams(reLoadParams),
-				success:function(data){
-					hideWaiting();
-					if(data!=null&&data.hasOwnProperty('objectIds')){
-						actions.objectIds = data.objectIds;
+			validated = actions.loadValidating(reLoadParams);
+			if(validated){
+				console.log ( "doLoad url: "+this.loadUrl );
+				actions.readyToLoad = true;
+				showWaiting();
+				actions.editedData = {};
+				$.ajax({
+					url: this.loadUrl,
+					type: "post",
+					data: actions.loadParams(reLoadParams),
+					success:function(data){
+						hideWaiting();
+						if(data!=null&&data.hasOwnProperty('objectIds')){
+							actions.objectIds = data.objectIds;
+						}
+						actions.editedData = {};
+						if (typeof(actions.loadSuccess) == "function") {
+							actions.loadSuccess(data);
+						}
+						else{
+							alert("load success");
+						}
+					},
+					error: function(data) {
+						hideWaiting();
+						if (typeof(actions.loadError) == "function") {
+							actions.loadError(data);
+						}
 					}
-					actions.editedData = {};
-					if (typeof(actions.loadSuccess) == "function") {
-						actions.loadSuccess(data);
-					}
-					else{
-						alert("load success");
-					}
-				},
-				error: function(data) {
-					hideWaiting();
-					if (typeof(actions.loadError) == "function") {
-						actions.loadError(data);
-					}
-				}
-			});
-			return true;
+				});
+				return true;
+			}
+			else console.log ( "not validated");
+
 		}
 		else{
 			alert("init load params");
-			return false;
 		}
+		return false;
 	},
 	updateView : function(postData){
 		var noData = jQuery.isEmptyObject(postData);
@@ -215,8 +219,13 @@ var actions = {
 			}
 		}
 	},
-	validating : function (reLoadParams){
+	loadValidating : function (reLoadParams){
 		return true;
+	},
+	validating : function (reLoadParams){
+		isNoChange = (jQuery.isEmptyObject(actions.editedData))&&(jQuery.isEmptyObject(actions.deleteData));
+		if(isNoChange) alert("no change to commit");
+		return !isNoChange;
 	},
 	doSave : function (reLoadParams){
 		if (this.saveUrl) {
@@ -388,6 +397,7 @@ var actions = {
     	$(td).on("shown", function(e, editable) {
     		  editable.input.$input.get(0).select();
     		  if(type=="timepicker") $(".table-condensed thead").css("visibility","hidden");
+    		  if(type=="number") $( editable.input.$input.get(0) ).closest( ".editable-container" ).css("float","right");
 //    		  if(type=="timepicker") $(".table-condensed th").text("");
     	});
 	},
@@ -404,6 +414,12 @@ var actions = {
         	 /* var tabindex = $(this).attr('tabindex');
             $('[tabindex=' + (tabindex +1)+ ']').focus(); */
 	    };
+	},
+	getKeyFieldSet : function(){
+		if(typeof(actions.type.idName) == "function"){
+			return actions.type.idName();
+		}
+		return actions.type.idName;
 	},
 	putModifiedData : function(tab,columnName,newValue,rowData){
 		var table = $('#table_'+tab).dataTable();
@@ -423,7 +439,8 @@ var actions = {
 		}
     	if (result.length == 0) {
         	var editedData = {};
-        	 $.each(actions.type.idName, function( i, vl ) {
+        	idName = actions.getKeyFieldSet();
+        	 $.each(idName, function( i, vl ) {
 	        	editedData[vl] = rowData[vl];
              });
         	editedData[columnName] = newValue;
@@ -458,6 +475,7 @@ var actions = {
 			cell["createdCell"] = function (td, cellData, rowData, row, col) {
 					colName = data.properties[col].data;
 	 				$(td).addClass( colName );
+	 				$(td).addClass( "cell"+type );
 		 			if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
 		 				$(td).addClass( "editInline" );
 		 				colName = data.properties[col].data;
@@ -581,6 +599,40 @@ var actions = {
 	getNumberRender: function(columnName,data,data2, type2, row){
 		return null;
 	},
+	getExtendWidth: function(data,autoWidth,tab){
+		return 0;
+	},
+	getTableWidth: function(data,autoWidth,tab){
+		var  marginLeft = 0;
+		var  tblWdth = 0;
+		$.each(data.properties, function( ip, vlp ) {
+			if(autoWidth){
+				delete vlp['width'];
+			}
+			else{
+				if(ip==0){
+//  				vlp['className']= 'headcol';
+					marginLeft = vlp['width'];
+				}
+				var iw = (vlp['width']>1?vlp['width']:100);
+				tblWdth+=iw;
+				vlp['width']= iw+"px";
+				
+				if(ip!=0&&(vlp.title==null||vlp.title=='')) {
+					vlp.title=vlp.data;
+					vlp['width']= (iw*1.5)+"px";
+				}
+			}
+        });
+		extendWidth = actions.getExtendWidth(data,autoWidth,tab);
+		return tblWdth+extendWidth;
+	},
+	getTableHeight:function(tab){
+		headerOffset = $('#ebTabHeader').offset();
+		hhh = $(document).height() - (headerOffset?(headerOffset.top):0) - $('#ebTabHeader').outerHeight() - $('#ebFooter').outerHeight() - 100;
+		tHeight = ""+hhh+'px';
+		return tHeight;
+	},
 	getTableOption: function(data){
 		return {tableOption :{searching: true},
 				invisible:[]};
@@ -671,33 +723,10 @@ var actions = {
 			autoWidth = options.tableOption.autoWidth;
 		}
 		
-		var  marginLeft = 0;
-		var  tblWdth = 0;
-		$.each(data.properties, function( ip, vlp ) {
-			if(autoWidth){
-				delete vlp['width'];
-			}
-			else{
-				if(ip==0){
-//  				vlp['className']= 'headcol';
-					marginLeft = vlp['width'];
-				}
-				var iw = (vlp['width']>1?vlp['width']:100);
-				tblWdth+=iw;
-				vlp['width']= iw+"px";
-				
-				if(ip!=0&&(vlp.title==null||vlp.title=='')) {
-					vlp.title=vlp.data;
-					vlp['width']= (iw*1.5)+"px";
-				}
-			}
-        });
+		var tblWdth = actions.getTableWidth(data,autoWidth,tab);
 		if(!autoWidth) $('#table_'+tab).css('width',(tblWdth)+'px');
 		
-//		hhh = $(document).height() - $('#table3').outerHeight()- $('#functionName').outerHeight()- $('#ebFilters').outerHeight()- $('#ebFooter').outerHeight() - $('#tabs').outerHeight();
-		headerOffset = $('#ebTabHeader').offset();
-		hhh = $(document).height() - (headerOffset?(headerOffset.top):0) - $('#ebTabHeader').outerHeight() - $('#ebFooter').outerHeight() - 120;
-		tHeight = ""+hhh+'px';
+		tHeight = actions.getTableHeight(tab);
 		option = {data: data.dataSet,
 		          columns: data.properties,
 		          destroy: true,
@@ -709,7 +738,7 @@ var actions = {
 		       	scrollY:        tHeight,
 //		                "scrollCollapse": true,
 				"paging":         false,
-				"dom": 'rt<"#toolbar_'+tab+'">p<"bottom"f><"clear">',
+				"dom": 'rt<"#toolbar_'+tab+'">p<"bottom"i><"bottom"f><"clear">',
 				/* initComplete: function () {
 					var cls = this.api().columns();
 		            cls.every( function () {
@@ -739,6 +768,11 @@ var actions = {
 	 		}
 		}
 		
+	    /*isDestroyTable = typeof(options.destroy) !== "undefined"&&options.destroy;
+	    if (isDestroyTable) {
+	    	 $('#table_'+tab).DataTable(option);
+	    }*/
+
 		var tbl = $('#table_'+tab).DataTable(option);
 		return tbl;
 	},

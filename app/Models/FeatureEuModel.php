@@ -19,13 +19,23 @@ class FeatureEuModel extends EbBussinessModel
 			$newData[static::$idField] = $newData[config("constants.euId")];
 			unset($newData[config("constants.euId")]);
 		}
-		$newData[static::$dateField] = $occur_date;
+		if (array_key_exists(static::$dateField, $newData)) {
+			$occur_date = $newData[static::$dateField];
+		}
+		else $newData[static::$dateField] = $occur_date;
+		
 		$newData[config("constants.flowPhase")] = $newData[config("constants.euFlowPhase")];
-		$newData['EVENT_TYPE'] = $newData[config("constants.eventType")];
-		return [static::$idField => $newData[static::$idField],
+		
+		$keyFields = [static::$idField => $newData[static::$idField],
 				config("constants.flowPhase") => $newData[config("constants.euFlowPhase")],
-				'EVENT_TYPE' => $newData[config("constants.eventType")],
 				static::$dateField=>$occur_date];
+		
+		if (array_key_exists(config("constants.eventType"), $newData)) {
+			$newData['EVENT_TYPE'] 		= $newData[config("constants.eventType")];
+			$keyFields['EVENT_TYPE'] 	= $newData[config("constants.eventType")];
+		}
+		
+		return $keyFields;
 	}
 	
 	public static function findManyWithConfig($updatedIds)

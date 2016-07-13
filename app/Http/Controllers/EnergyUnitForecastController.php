@@ -15,7 +15,7 @@ class EnergyUnitForecastController extends CodeController {
 		return $mdl::getTableName();
 	}
 	
-	public function getProperties($dcTable,$facility_id,$occur_date){
+	public function getProperties($dcTable,$facility_id,$occur_date,$postData){
 		$properties = $this->getOriginProperties($dcTable);
 		$results = ['properties'	=>$properties,
 		];
@@ -37,8 +37,9 @@ class EnergyUnitForecastController extends CodeController {
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	$date_end 		= 	$postData['date_end'];
-    	$date_end		= 	Carbon::parse($date_end);
-		$id 			= 	$postData['EnergyUnit'];
+//     	$date_end		= 	Carbon::parse($date_end);
+		$date_end		= 	\Helper::parseDate($date_end);
+    	$id 			= 	$postData['EnergyUnit'];
 		
 		$phase_type 	= 	$postData['ExtensionPhaseType'];
 		$value_type 	= 	$postData['ExtensionValueType'];
@@ -70,7 +71,8 @@ class EnergyUnitForecastController extends CodeController {
     public function run(Request $request){
     	$postData = $request->all();
     	$date_end 		= 	$postData['date_end'];
-    	$date_end		= 	Carbon::parse($date_end);
+//     	$date_end		= 	Carbon::parse($date_end);
+		$date_end		= 	\Helper::parseDate($date_end);
     	$object_id 			= 	$postData['EnergyUnit'];
     	 
     	$phase_type 	= 	$postData['ExtensionPhaseType'];
@@ -89,12 +91,15 @@ class EnergyUnitForecastController extends CodeController {
     	$c2				=	$postData['c2'];
     	
     	$date_begin 	= 	$postData['date_begin'];
-    	$date_begin		= 	Carbon::parse($date_begin);
+//     	$date_begin		= 	Carbon::parse($date_begin);
+		$date_begin		= 	\Helper::parseDate($date_begin);
     	$date_from 		= 	$postData['f_from_date'];
-    	$date_from		= 	Carbon::parse($date_from);
+//     	$date_from		= 	Carbon::parse($date_from);
+		$date_from		= 	\Helper::parseDate($date_from);
     	$date_to 		= 	$postData['f_to_date'];
-    	$date_to		= 	Carbon::parse($date_to);
-    	
+//     	$date_to		= 	Carbon::parse($date_to);
+    	$date_to		= 	\Helper::parseDate($date_to);
+    	 
     	$from_date 		= 	$date_begin;
     	
 		$mkey="_".date("Ymdhis_").rand(100,1000)/* ."hung_test" */;
@@ -179,12 +184,12 @@ class EnergyUnitForecastController extends CodeController {
 		
 		file_put_contents("prop$mkey.txt",$params);
 		
-		$error = "";
+		$error = [];
 		$results = [];
 		
 		if(!file_exists('pdforecast.exe'))
 		{
-			$error = "Exec file not found";
+			$error[] = "Exec file not found";
 		}
 		else
 		{
@@ -194,8 +199,7 @@ class EnergyUnitForecastController extends CodeController {
 				exec("pdforecast.exe $mkey");
 				if(file_exists("error$mkey.txt"))
 				{
-					$error = file_get_contents("error$mkey.txt", true);
-// 					logError(file_get_contents("error$mkey.txt", true));
+					$error[] = file_get_contents("error$mkey.txt", true);
 				}
 		
 				if(file_exists("forecast_q$mkey.csv"))
@@ -252,22 +256,6 @@ class EnergyUnitForecastController extends CodeController {
  										\DB::enableQueryLog();
 										EnergyUnitDataForecast::updateOrCreate($attributes,$values);
 										$result['sql']=\Helper::logger();
-// 										$sqls[] = \DB::getQueryLog();
-										/* $table=$src."_DATA_FORECAST";
-										$sql="select ID from $table a where a.$pre"."_ID=$object_id and OCCUR_DATE='$x_date' $phasecondition";
-										$id=getOneValue($sql);
-										if($id>0)
-											$sql="update $table set $field='$x_value' where ID=$id";
-											else
-											{
-												if($src=="ENERGY_UNIT")
-													$sql="insert into $table($pre"."_ID,OCCUR_DATE,FLOW_PHASE,$field) values ($object_id,'$x_date',$phase_type,'$x_value')";
-													else
-														$sql="insert into $table($pre"."_ID,OCCUR_DATE,$field) values ($object_id,'$x_date','$x_value')";
-											}
-											$sql=str_replace("''","null",$sql);
-											echo " sql: $sql";
-											mysql_query($sql) or err(mysql_error()); */
 									}
 								}
 							}
@@ -281,13 +269,13 @@ class EnergyUnitForecastController extends CodeController {
 				else
 				{
 // 					logError("Result file not found");
-					$error.= "Result file not found";
+					$error[]= "Result file not found";
 				}
 			}
 			else
 			{
 // 				logError("Input files not found");
-				$error.= "Input files not found";
+				$error[]= "Input files not found";
 			}
 		}
 		
@@ -298,6 +286,7 @@ class EnergyUnitForecastController extends CodeController {
 				'time'			=>$timeForecast,
 				'result'		=>$results,
 				'error'			=>$error,
+				'key'			=>$mkey,
 		];
 		
 		$this->cleanFiles($mkey);

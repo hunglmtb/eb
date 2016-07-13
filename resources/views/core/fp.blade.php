@@ -6,5 +6,4 @@ $subMenus = [	array('title' => 'WELL FORECAST', 'link' => 'forecast'),
 ];
 ?>
 @extends('core.bscontent',['subMenus' => $subMenus])
- 
- 
+

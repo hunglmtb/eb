@@ -29,7 +29,8 @@ class EuTestController extends CodeController {
     	
     	$object_id = $postData['EnergyUnit'];
     	$date_end = $postData['date_end'];
-    	$date_end = Carbon::parse($date_end);
+//     	$date_end = Carbon::parse($date_end);
+    	$date_end		= 	\Helper::parseDate($date_end);
     	
     	$euWheres = ['EU_ID' => $object_id];
     	

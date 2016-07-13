@@ -3258,18 +3258,26 @@ $(function(){
             if(!$.isArray(this.sourceData)) {
                 return;
             }
-
+            
+    		var checklistType 			= 'checkbox';
             for(var i=0; i<this.sourceData.length; i++) {
-                $label = $('<label>').append($('<input>', {
-                                           type: 'checkbox',
-                                           value: this.sourceData[i].value 
-                                     }))
+            	var checklistOption = {
+					                    type: 'checkbox',
+					                    value: this.sourceData[i].value,
+					              };
+            	
+            	if(this.sourceData[i].hasOwnProperty('name')) {
+            		checklistType 			= 'radio';
+            		checklistOption.type 	= checklistType;
+					checklistOption['name'] = this.sourceData[i].name;
+				}
+                $label = $('<label>').append($('<input>', checklistOption))
                                      .append($('<span>').text(' '+this.sourceData[i].text));
                 
                 $('<div>').append($label).appendTo(this.$tpl);
             }
             
-            this.$input = this.$tpl.find('input[type="checkbox"]');
+            this.$input = this.$tpl.find('input[type="'+checklistType+'"]');
             this.setClass();
         },
        

@@ -283,6 +283,49 @@ table.dataTable {
 
 .current_job{background-color:#d8ebff;color:#378de5}
 
+#container_preos th {
+    white-space: normal;
+    /* padding: 1px 1px; */
+}
+
+#table_preos{
+	width: 150px;
+}
+.cellnumber {
+	text-align: right;
+}
+.editable-container{
+	/* float: right; */
+}
+#tabs_contents .ui-tabs-panel {
+   padding-bottom: 0;
+}
+
+.dataTables_filter label {
+   margin-bottom: 0;
+}
+
+.dataTables_filter input {
+	margin-bottom: 4px;
+}
+.dataTables_wrapper .dataTables_info {
+    clear: none;
+    margin-left: 5px;
+}
+
+#table_allocateplan {
+   width: 600px;
+   margin-left: 0px;
+   /* overflow: auto; */
+}
+#table_allocateplan thead th, #table_allocateplan_action thead th{
+	padding: 10px 18px;
+	white-space: nowrap;
+	border-bottom: 1px solid #111111;
+}
+#table_allocateplan_action, #container_allocateplan{
+	float:left;
+}
 /* .editable-container.editable-inline {
     width: 100%;
 }

@@ -1,3 +1,7 @@
+<?php 
+$configuration	=	auth()->user()->getConfiguration(); 
+?>
+
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
@@ -20,7 +24,7 @@
 <script type="text/javascript" src="/common/js/jquery.dataTables.js"></script> 
 <script type="text/javascript" src="/common/js/dataTables.fixedColumns.min.js"></script>
 <script type='text/javascript'>
-var configuration =  <?php echo json_encode(auth()->user()->getConfiguration()); ?>;
+var configuration =  <?php echo json_encode($configuration); ?>;
 </script>
 <script type="text/javascript" src="/common/js/utils.js"></script>
 <script src="/common/js/jquery-ui.js"></script>
