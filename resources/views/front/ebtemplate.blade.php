@@ -526,9 +526,9 @@ menu["config"]=[
 		{menutext:"View Config",desc:"",url:"/viewconfig"},
 	];
 menu["interface"]=[
-		{menutext:"IMPORT DATA",desc:"Import Tags Spreadsheet",url:"../interface/import.php"},
-		{menutext:"SOURCE CONFIG",desc:"",url:"../interface/config.php"},
-		{menutext:"DATA LOADER",desc:"",url:"../interface/dataloader.php"}
+		{menutext:"IMPORT DATA",desc:"Import Tags Spreadsheet",url:"/importdata"},
+		{menutext:"SOURCE CONFIG",desc:"",url:"/sourceconfig"},
+		{menutext:"DATA LOADER",desc:"",url:"/dataloader"}
 	];
 function func(o)
 {

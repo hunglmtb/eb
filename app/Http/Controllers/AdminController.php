@@ -713,9 +713,9 @@ class AdminController extends Controller {
 			$obj['USER_ID'] = $current_username; 
 			$obj['FACILITY_ID'] = $data['FACILITY_ID'];
 			
-			\DB::enableQueryLog();
+			//\DB::enableQueryLog();
 			AuditValidateTable::updateOrCreate($condition,$obj);
-			\Log::info(\DB::getQueryLog());
+			//\Log::info(\DB::getQueryLog());
 		}
 		
 		$objType_id = $data['OBJECTTYPE'];

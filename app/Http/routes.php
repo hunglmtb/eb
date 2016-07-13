@@ -287,3 +287,27 @@ Route::post('checksql', 'DataViewController@checkSQL');
 Route::get('downloadExcel/{sql}', 'DataViewController@downloadExcel');
 Route::post('savesql', 'DataViewController@savesql');
 
+Route::get('importdata', 'InterfaceController@_index');
+Route::post('getimportsetting', 'InterfaceController@getImportSetting');
+Route::post('doimport', 'InterfaceController@doImport');
+
+Route::get('sourceconfig', 'InterfaceController@_indexConfig');
+Route::post('saveimportsetting', 'InterfaceController@saveImportSetting');
+Route::post('deletesetting', 'InterfaceController@deleteSetting');
+Route::post('renamesetting', 'InterfaceController@renameSetting');
+Route::post('loadintservers', 'InterfaceController@loadIntServers');
+Route::post('detailsconnection', 'InterfaceController@detailsConnection');
+Route::post('saveconn', 'InterfaceController@saveConn');
+Route::post('renameconn', 'InterfaceController@renameConn');
+Route::post('deleteconn', 'InterfaceController@deleteConn');
+Route::post('loadtagset', 'InterfaceController@loadTagSet');
+Route::post('savetagset', 'InterfaceController@saveTagSet');
+Route::post('loadtagsets', 'InterfaceController@loadTagSets');
+Route::post('renametagset', 'InterfaceController@renameTagSet');
+Route::post('deletetagset', 'InterfaceController@deleteTagSet');
+Route::post('pi', 'InterfaceController@pi');
+
+Route::get('dataloader', 'InterfaceController@_indexDataloader');
+Route::post('gettablefieldsall', 'InterfaceController@getTableFieldsAll');
+Route::post('doimportdataloader', 'InterfaceController@doImportDataLoader');
+

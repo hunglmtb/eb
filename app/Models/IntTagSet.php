@@ -4,5 +4,14 @@ use App\Models\DynamicModel;
 
  class IntTagSet extends DynamicModel 
 { 
-	protected $table = 'int_tag_set'; 
+	protected $table = 'INT_TAG_SET'; 
+	public $timestamps = false;
+	public $primaryKey  = 'ID';
+	
+	protected $fillable  = [
+			'ID',
+			'NAME',
+			'TAGS',
+			'CONNECTION_ID'
+	];
 } 

@@ -173,4 +173,12 @@
 			<li class="sublast"><a href="/tagsMapping">Tags Mapping</a></li>
 		</ul>
 		</li>
+		
+		<li><a href="#"><span>Interfaces</span></a>
+		<ul>
+			<li><a href="/importdata">Import Data</a></li>
+			<li><a href="/sourceconfig">Source Config</a></li>
+			<li><a href="/dataloader">Data Loader</a></li>
+		</ul>
+		</li>
 	</ul>

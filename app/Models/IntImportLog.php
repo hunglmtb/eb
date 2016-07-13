@@ -4,5 +4,22 @@ use App\Models\DynamicModel;
 
  class IntImportLog extends DynamicModel 
 { 
-	protected $table = 'int_import_log'; 
+	protected $table = 'INT_IMPORT_LOG'; 
+	
+	public $timestamps = false;
+	public $primaryKey  = 'ID';
+	
+	protected $fillable  = [
+			'ID',
+			'FILE_NAME',
+			'FILE_SIZE',
+			'BEGIN_TIME',
+			'END_TIME',
+			'USER_NAME',
+			'TAGS_READ',
+			'TAGS_LOADED',
+			'TAGS_REJECTED',
+			'TAGS_OVERRIDE',
+			'NOTE'
+	];
 } 
