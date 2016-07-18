@@ -159,6 +159,8 @@ Route::post('allocateplan/save', 	'AllocatePlanController@save');
 Route::get('me/setting',			['uses' =>'UserSettingController@index'/* ,'middleware' => 'checkRight:FP_ALLOCATE_PLAN' */]);
 Route::post('me/setting/save', 		'UserSettingController@saveSetting');
 
+Route::get('fp/loadplanforecast',		['uses' =>'ForecastPlanningController@loadplan','middleware' => 'checkRight:FP_LOAD_PLAN_FORECAST']);
+
 //----------admin
 Route::get('am/users', 'AdminController@_index');
 Route::post('am/loadData', 'AdminController@getData');
@@ -199,6 +201,11 @@ Route::get('am/editGroup', 'AdminController@_indexEditGroup');
 Route::post('am/loadGroup', 'AdminController@loadGroup');
 Route::post('am/saveGroup', 'AdminController@saveGroup');
 Route::post('am/deleteGroup', 'AdminController@deleteGroup');
+
+Route::get('am/helpeditor', 'AdminController@_helpEditor');
+Route::post('am/getFunction', 'AdminController@getFunction');
+Route::post('am/gethelp', 'AdminController@gethelp');
+Route::post('am/savehelp', 'AdminController@savehelp');
 
 //========== DATA VISUALIZATION
 Route::get('diagram', 'DVController@_indexDiagram');

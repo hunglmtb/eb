@@ -19,6 +19,8 @@ use App\Models\UserRight;
 use App\Models\UserRole;
 use App\Models\UserRoleRight;
 use App\Models\UserUserRole;
+use App\Models\EbFunctions;
+
 use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
@@ -1165,5 +1167,36 @@ class AdminController extends Controller {
 		return response ()->json ( array (
 				'result' => $datatablegroup, 'datatablegroup'=>$data
 		) );
+	}
+	
+	public function _helpEditor() {
+		
+		$eb_functions = EbFunctions::where('USE_FOR', 'like', '%TASK_GROUP%')->orderBy('CODE')->get();
+	
+		return view ( 'admin.helpeditor', ['eb_functions'=>$eb_functions]);
+	}
+	
+	public function getFunction(Request $request) {
+		$data = $request->all();
+		\DB::enableQueryLog();
+		$subEbFunctions = EbFunctions::where(['PARENT_CODE'=>$data['CODE']])->orderBy('CODE')->get();
+		\Log::info(\DB::getQueryLog());
+		return response ()->json ($subEbFunctions);
+	}
+	
+	public function gethelp(Request $request) {
+		$data = $request->all();
+		$tmp = EbFunctions::where(['CODE'=>$data['func_code']])->select('HELP')->first();
+		
+		return response ()->json ($tmp['HELP']);
+	}
+	
+	public function savehelp(Request $request) {
+		$data = $request->all();
+		
+		$help=addslashes($data['help']);
+		EbFunctions::where(['CODE'=>$data['func_code']])->update(['HELP'=>$help]);
+	
+		return response ()->json ("Ok");
 	}
 }

@@ -180,13 +180,13 @@ class InterfaceController extends Controller {
 		if(isset($data ['tab']))
 			$obj ['TAB'] = $data ['tab'];
 		
-		if(isset($data ['col_tag']))
+		if(isset($data ['col_tag']) && !is_null($data ['col_tag']))
 			$obj ['COL_TAG'] = $data ['col_tag'];
 		
-		if(isset($data ['col_time']))
+		if(isset($data ['col_time']) && !is_null($data ['col_time']))
 			$obj ['COL_TIME'] = $data ['col_time'];
 		
-		if(isset($data ['col_value']))
+		if(isset($data ['col_value']) && !is_null($data ['col_value']))
 			$obj ['COL_VALUE'] = $data ['col_value'];
 		
 		if(isset($data ['row_start']))
@@ -196,10 +196,7 @@ class InterfaceController extends Controller {
 			$obj ['ROW_FINISH'] = $data ['row_finish'];
 		
 		if(isset($data ['cols_mapping']))
-			$obj ['COLS_MAPPING'] = $data ['cols_mapping'];
-		
-		if(isset($data ['cols_mapping']))
-			$obj ['COLS_MAPPING'] = $data ['cols_mapping'];
+			$obj ['COLS_MAPPING'] = $data ['cols_mapping'];		
 		
 		$result = IntImportSetting::updateOrCreate ( $condition, $obj );
 		$id = $result->ID;
@@ -839,46 +836,48 @@ class InterfaceController extends Controller {
 					$datatype = "NUMBER";
 				
 				$maps = explode ( PHP_EOL, $mapping );
+				if(count($maps) > 0){
 				$sql = "";
-				$keys_check = "";
-				$F = "";
-				$V = "";
-				$X = "";
-				$vars = array ();
-				
-				foreach ( $maps as $map ) {
-					$str .= "map:$map<br>";
-					$exps = explode ( '=', $map );
-					if (count ( $exps ) == 2) {
-						$field = trim ( $exps [0] );
-						$exp = trim ( $exps [1] );
-						$dateformat = "";
-						$iskey = false;
-						if (strpos ( $exp, '*' ) !== false) {
-							$iskey = true;
-							$exp = str_replace ( '*', '', $exp );
+					$keys_check = "";
+					$F = "";
+					$V = "";
+					$X = "";
+					$vars = array ();
+					
+					foreach ( $maps as $map ) {
+						$str .= "map:$map<br>";
+						$exps = explode ( '=', $map );
+						if (count ( $exps ) == 2) {
+							$field = trim ( $exps [0] );
+							$exp = trim ( $exps [1] );
+							$dateformat = "";
+							$iskey = false;
+							if (strpos ( $exp, '*' ) !== false) {
+								$iskey = true;
+								$exp = str_replace ( '*', '', $exp );
+							}
+							$k = strpos ( $exp, '{' );
+							if ($k > 0) {
+								$l = strpos ( $exp, '}', $k );
+								if ($l > $k)
+									$dateformat = substr ( $exp, $k + 1, $l - $k - 1 );
+								$exp = substr ( $exp, 0, $k );
+							}
+							$value = "'$exp'";
+							if (strlen ( $exp ) == 1 && ord ( strtolower ( $exp ) ) >= 97 && ord ( strtolower ( $exp ) ) <= 122) {
+								$key = ord ( strtolower ( $exp ) ) - 96;
+								$vars [$key] = $exp;
+								$value = "'@VALUE_$key'";
+							}
+							if ($dateformat)
+								$value = "STR_TO_DATE($value,'$dateformat')";
+							if ($iskey) {
+								$keys_check .= ($keys_check ? " and " : "") . "`$field`=$value";
+							}
+							$F .= ($F ? "," : "") . "`$field`";
+							$V .= ($V ? "," : "") . $value;
+							$X .= ($X ? "," : "") . "`$field`=$value";
 						}
-						$k = strpos ( $exp, '{' );
-						if ($k > 0) {
-							$l = strpos ( $exp, '}', $k );
-							if ($l > $k)
-								$dateformat = substr ( $exp, $k + 1, $l - $k - 1 );
-							$exp = substr ( $exp, 0, $k );
-						}
-						$value = "'$exp'";
-						if (strlen ( $exp ) == 1 && ord ( strtolower ( $exp ) ) >= 97 && ord ( strtolower ( $exp ) ) <= 122) {
-							$key = ord ( strtolower ( $exp ) ) - 96;
-							$vars [$key] = $exp;
-							$value = "'@VALUE_$key'";
-						}
-						if ($dateformat)
-							$value = "STR_TO_DATE($value,'$dateformat')";
-						if ($iskey) {
-							$keys_check .= ($keys_check ? " and " : "") . "`$field`=$value";
-						}
-						$F .= ($F ? "," : "") . "`$field`";
-						$V .= ($V ? "," : "") . $value;
-						$X .= ($X ? "," : "") . "`$field`=$value";
 					}
 				}
 				

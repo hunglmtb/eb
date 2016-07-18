@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
- 
+use App\Models\IntImportSetting; 
+
 class ForecastPlanningController extends EBController {
 	
 	public function forecast(){
@@ -46,5 +47,21 @@ class ForecastPlanningController extends EBController {
 				'extra' 				=> 	['IntObjectType','ExtensionPhaseType']
 		);
 		return view ( 'fp.allocateplan',['filters'=>$filterGroups]);
+	}
+	
+	public function loadplan(){
+		$filterGroups = array(	'productionFilterGroup'	=>[
+				['name'=>'IntObjectType',		'independent'=>true,'getMethod'=>'getPreosObjectType'],
+				['name'=>'ExtensionPhaseType',	'independent'=>true,'getMethod'=>'getPreosPhaseType'],
+				'IntObjectType'			=>'ObjectName',
+		],
+				'frequenceFilterGroup'	=> [],
+				'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
+						['id'=>'date_end','name'=>'To date']),
+				'extra' 				=> 	['IntObjectType','ExtensionPhaseType']
+		);
+		
+		$int_import_setting = IntImportSetting::all('ID', 'NAME');
+		return view ( 'fp.loadplanforecast',['filters'=>$filterGroups, 'int_import_setting'=>$int_import_setting]);
 	}
 }

@@ -516,7 +516,7 @@ menu["admin"]=[
 		{menutext:"USERS",desc:"",url:"am/users"},
 		{menutext:"Audit Trail",desc:"",url:"am/audittrail"},
 		{menutext:"USERS LOG",desc:"",url:"am/userlog"},
-		{menutext:"HELP EDITOR",desc:"",url:"../help/"}
+		{menutext:"HELP EDITOR",desc:"",url:"am/helpeditor"}
 	];
 menu["config"]=[
 		{menutext:"Fields Config",desc:"",url:"/fieldsconfig"},
