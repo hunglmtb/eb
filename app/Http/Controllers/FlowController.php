@@ -19,6 +19,10 @@ class FlowController extends CodeController {
 		$this->keyColumns = [$this->idColumn,$this->phaseColumn];
 	}
 	
+	/* public function getFirstProperty($dcTable){
+		return  ['data'=>$dcTable,'title'=>'Object name','width'=>230];
+	} */
+	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	$record_freq = $postData['CodeReadingFrequency'];
     	$phase_type = $postData['CodeFlowPhase'];
@@ -69,6 +73,31 @@ class FlowController extends CodeController {
 // 		$flowPhase = $newData [config ( "constants.flFlowPhase" )];
 		$aFormulas = \FormulaHelpers::getAffects ( $mdlName, $columns, $objectId);
 		return $aFormulas;
+	}
+	
+	public function getHistory($mdl,$field,$rowData,$limit){
+		$dcTable		= $mdl::getTableName();
+		$obj_name		= $rowData[$dcTable];
+		
+		$row_id			= $rowData['ID'];
+		$obj_id			= $rowData["FLOW_ID"];
+		
+		$fieldName		= $this->getFieldLabel($field,$mdl::getTableName());
+		$occur_date		= $row_id>0?$rowData['OCCUR_DATE']:Carbon::now();
+		$history = $mdl::where('FLOW_ID','=',$obj_id)
+						->whereDate('OCCUR_DATE', '<', $occur_date)
+						->whereNotNull($field)
+						->orderBy('OCCUR_DATE','desc')
+						->skip(0)->take($limit)
+						->select('OCCUR_DATE',					    		
+								"$field as VALUE"
+								)
+						->get();
+		
+		return ['name'		=> $obj_name,
+				'dataSet'	=> $history,
+				'fieldName'	=> $fieldName
+		];
 	}
     
 }

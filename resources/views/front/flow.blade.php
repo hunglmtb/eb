@@ -19,8 +19,10 @@ FLOW DATA CAPTURE
 @section('adaptData')
 @parent
 <script>
-	actions.loadUrl = "/code/load";
-	actions.saveUrl = "/code/save";
+	actions.loadUrl 		= "/code/load";
+	actions.saveUrl 		= "/code/save";
+	actions.historyUrl 		= "/code/history";
+	
 	actions.type = {
 					idName:['{{config("constants.flowId")}}','{{config("constants.flFlowPhase")}}'],
 					keyField:'{{config("constants.flowId")}}',

@@ -36,3 +36,7 @@ if (!isset($currentSubmenu)) $currentSubmenu ='';
  -->	
 @stop
 
+@section('modalWindow')
+	@include('core.history')
+@stop
+

@@ -2,6 +2,13 @@
 //turn to inline mode
 $.fn.editable.defaults.mode = 'inline';
 
+//var defaultEditableTemplate = $.fn.editableform.template;
+$.fn.editableform.template = '<form class="form-inline editableform">'+
+'<div class="control-group">' + 
+'<div><div class="extension-buttons" style="display:none;"><img src="/common/css/images/hist.png" height="16" class="editable-extension"></div><div class="editable-input"></div><div class="editable-buttons"></div></div>'+
+'<div class="editable-error-block"></div>' + 
+'</div>' + 
+'</form>';
 var ebtoken = $('meta[name="_token"]').attr('content');
 $.ajaxSetup({
 	headers: {
@@ -88,222 +95,218 @@ var typetoclass = function (data){
 
 var actions = {
 		
-	loadUrl : false,
-	saveUrl : false,
-	readyToLoad : false,
-	loadedData : {},
-	loadPostParams : null,
-	initData : false,
-	initSaveData :false,
-	editedData : {},
-	deleteData : {},
-	objectIds : [],
+	loadUrl 			: false,
+	saveUrl 			: false,
+	historyUrl			: false,
+	readyToLoad 		: false,
+	loadedData 			: {},
+	loadPostParams 		: null,
+	initData 			: false,
+	initSaveData 		:false,
+	editedData 			: {},
+	deleteData 			: {},
+	objectIds 			: [],
 	extraDataSetColumns : {},
-	extraDataSet : {},
-	loadSuccess : function(data){alert("success");},
-	loadError : function(data){
-					alert(JSON.stringify(data.responseText));
-				},
+	extraDataSet 		: {},
+	loadSuccess 		: function(data){alert("success");},
+	loadError 			: function(data){alert(JSON.stringify(data.responseText));},
 	shouldLoad 			: function(data){return false;},
 	addingNewRowSuccess	: function(data,table,tab,isAddingNewRow){},
-	afterGotSavedData : function(data,table,key){},
-	dominoColumns : function(columnName,newValue,tab,rowData,collection,td){},
-	loadNeighbor: function (){
-		if (actions.shouldLoad()) {
-			actions.doLoad(false);
-		}
-		else{
-			var activeTabID = getActiveTabID();
-			var postData = actions.loadedData[activeTabID];
-			actions.updateView(postData);
-		}
-	},
-	loadParams : function (reLoadParams){
-		var params;
-		if (reLoadParams) {
-			params = {};
-			for (var key in javascriptFilterGroups) {
-				filterGroup = javascriptFilterGroups[key];
-				for (var jkey in filterGroup) {
-					entry = filterGroup[jkey];
-					if($('.'+entry.id).css('display') != 'none'){ 
-						   params[entry.id] = $('#'+entry.id).val();
-					}
-				}
-			}
-			actions.loadPostParams = params;
-		} else {
-			params = actions.loadPostParams;
-		}
-		if (typeof(actions.initData) == "function") {
-			var extras = actions.initData();
-			if (extras) {
-				jQuery.extend(extras, params);
-				return extras;
-			}
-		}
-		return params;
-	},
+	afterGotSavedData 	: function(data,table,key){},
+	dominoColumns 		: function(columnName,newValue,tab,rowData,collection,td){},
+	loadNeighbor		: function (){
+							if (actions.shouldLoad()) {
+								actions.doLoad(false);
+							}
+							else{
+								var activeTabID = getActiveTabID();
+								var postData = actions.loadedData[activeTabID];
+								actions.updateView(postData);
+							}
+						},
+	loadParams 			: function (reLoadParams){
+							var params;
+							if (reLoadParams) {
+								params = {};
+								for (var key in javascriptFilterGroups) {
+									filterGroup = javascriptFilterGroups[key];
+									for (var jkey in filterGroup) {
+										entry = filterGroup[jkey];
+										if($('.'+entry.id).css('display') != 'none'){ 
+											   params[entry.id] = $('#'+entry.id).val();
+										}
+									}
+								}
+								actions.loadPostParams = params;
+							} else {
+								params = actions.loadPostParams;
+							}
+							if (typeof(actions.initData) == "function") {
+								var extras = actions.initData();
+								if (extras) {
+									jQuery.extend(extras, params);
+									return extras;
+								}
+							}
+							return params;
+						},
 	
-	loadSaveParams : function (reLoadParams){
-		var params = actions.loadParams(reLoadParams);
-		if (reLoadParams) {
-			if(!jQuery.isEmptyObject(actions.editedData)){
-				params['editedData'] = actions.editedData;
-			}
-			if(!jQuery.isEmptyObject(actions.deleteData)){
-				params['deleteData'] = actions.deleteData;
-			}
-			params['objectIds'] = actions.objectIds;
-		} else {
-//			params = actions.loadPostParams;
-		}
-		return params;
-	},
+	loadSaveParams 		: function (reLoadParams){
+							var params = actions.loadParams(reLoadParams);
+							if (reLoadParams) {
+								if(!jQuery.isEmptyObject(actions.editedData)){
+									params['editedData'] = actions.editedData;
+								}
+								if(!jQuery.isEmptyObject(actions.deleteData)){
+									params['deleteData'] = actions.deleteData;
+								}
+								params['objectIds'] = actions.objectIds;
+							} else {
+					//			params = actions.loadPostParams;
+							}
+							return params;
+						},
 	
-	doLoad : function (reLoadParams){
-		if (this.loadUrl) {
-			validated = actions.loadValidating(reLoadParams);
-			if(validated){
-				console.log ( "doLoad url: "+this.loadUrl );
-				actions.readyToLoad = true;
-				showWaiting();
-				actions.editedData = {};
-				$.ajax({
-					url: this.loadUrl,
-					type: "post",
-					data: actions.loadParams(reLoadParams),
-					success:function(data){
-						hideWaiting();
-						if(data!=null&&data.hasOwnProperty('objectIds')){
-							actions.objectIds = data.objectIds;
-						}
-						actions.editedData = {};
-						if (typeof(actions.loadSuccess) == "function") {
-							actions.loadSuccess(data);
-						}
-						else{
-							alert("load success");
-						}
-					},
-					error: function(data) {
-						hideWaiting();
-						if (typeof(actions.loadError) == "function") {
-							actions.loadError(data);
-						}
-					}
-				});
-				return true;
-			}
-			else console.log ( "not validated");
-
-		}
-		else{
-			alert("init load params");
-		}
-		return false;
-	},
-	updateView : function(postData){
-		var noData = jQuery.isEmptyObject(postData);
-		if (!noData) {
-			for (var key in javascriptFilterGroups) {
-				filterGroup = javascriptFilterGroups[key];
-				for (var jkey in filterGroup) {
-					entry = filterGroup[jkey];
-					if($('.'+entry.id).css('display') != 'none'){
-						if ($('#'+entry.id).val()!=postData[entry.id]) {
-							$('#'+entry.id).val(postData[entry.id]).trigger('change');
-						}
-					}
-				}
-			}
-		}
-	},
-	loadValidating : function (reLoadParams){
-		return true;
-	},
-	validating : function (reLoadParams){
-		isNoChange = (jQuery.isEmptyObject(actions.editedData))&&(jQuery.isEmptyObject(actions.deleteData));
-		if(isNoChange) alert("no change to commit");
-		return !isNoChange;
-	},
-	doSave : function (reLoadParams){
-		if (this.saveUrl) {
-			validated = actions.validating(reLoadParams);
-//			actions.readyToLoad = true;
-			if(validated){
-				console.log ( "doLoad url: "+this.saveUrl );
-				showWaiting();
-				$.ajax({
-					url: this.saveUrl,
-					type: "post",
-					data: actions.loadSaveParams(reLoadParams),
-					success:function(data){
-						hideWaiting();
-						if (typeof(actions.saveSuccess) == "function") {
-							actions.saveSuccess(data);
-						}
-						else{
-							alert("save success");
-						}
-					},
-					error: function(data) {
-						if (typeof(actions.loadError) == "function") {
-							actions.loadError(data);
-						}
-						hideWaiting();
-					}
-				});
-				return true;
-			}
-			else console.log ( "not validated ");
-		}
-		else{
-			alert("save url not initial");
-		}
-		return false;
-	},
+	doLoad 				: function (reLoadParams){
+							if (this.loadUrl) {
+								validated = actions.loadValidating(reLoadParams);
+								if(validated){
+									console.log ( "doLoad url: "+this.loadUrl );
+									actions.readyToLoad = true;
+									showWaiting();
+									actions.editedData = {};
+									$.ajax({
+										url: this.loadUrl,
+										type: "post",
+										data: actions.loadParams(reLoadParams),
+										success:function(data){
+											hideWaiting();
+											if(data!=null&&data.hasOwnProperty('objectIds')){
+												actions.objectIds = data.objectIds;
+											}
+											actions.editedData = {};
+											if (typeof(actions.loadSuccess) == "function") {
+												actions.loadSuccess(data);
+											}
+											else{
+												alert("load success");
+											}
+										},
+										error: function(data) {
+											hideWaiting();
+											if (typeof(actions.loadError) == "function") {
+												actions.loadError(data);
+											}
+										}
+									});
+									return true;
+								}
+								else console.log ( "not validated");
+							}
+							else{
+								alert("init load params");
+							}
+							return false;
+						},
+	updateView 			: function(postData){
+							var noData = jQuery.isEmptyObject(postData);
+							if (!noData) {
+								for (var key in javascriptFilterGroups) {
+									filterGroup = javascriptFilterGroups[key];
+									for (var jkey in filterGroup) {
+										entry = filterGroup[jkey];
+										if($('.'+entry.id).css('display') != 'none'){
+											if ($('#'+entry.id).val()!=postData[entry.id]) {
+												$('#'+entry.id).val(postData[entry.id]).trigger('change');
+											}
+										}
+									}
+								}
+							}
+						},
+	loadValidating 		: function (reLoadParams){return true;},
+	validating 			: function (reLoadParams){
+							isNoChange = (jQuery.isEmptyObject(actions.editedData))&&(jQuery.isEmptyObject(actions.deleteData));
+							if(isNoChange) alert("no change to commit");
+							return !isNoChange;
+						},
+	doSave 				: function (reLoadParams){
+							if (this.saveUrl) {
+								validated = actions.validating(reLoadParams);
+					//			actions.readyToLoad = true;
+								if(validated){
+									console.log ( "doLoad url: "+this.saveUrl );
+									showWaiting();
+									$.ajax({
+										url: this.saveUrl,
+										type: "post",
+										data: actions.loadSaveParams(reLoadParams),
+										success:function(data){
+											hideWaiting();
+											if (typeof(actions.saveSuccess) == "function") {
+												actions.saveSuccess(data);
+											}
+											else{
+												alert("save success");
+											}
+										},
+										error: function(data) {
+											if (typeof(actions.loadError) == "function") {
+												actions.loadError(data);
+											}
+											hideWaiting();
+										}
+									});
+									return true;
+								}
+								else console.log ( "not validated ");
+							}
+							else{
+								alert("save url not initial");
+							}
+							return false;
+						},
 	getExtraDataSetColumn :function(data,cindex,rowData){
-		sourceColumn = data.properties[cindex].data;
-		ecolumn = actions.extraDataSetColumns[sourceColumn];
- 		ecollectionColumn = rowData[ecolumn];
- 		ecollection = null;
- 		
- 		if(ecollectionColumn!=null&&
- 				ecollectionColumn!=''&&
- 				typeof(actions.extraDataSet[ecolumn]) !== "undefined"){
- 			if(actions.extraDataSet[ecolumn].hasOwnProperty(sourceColumn)){
- 				ecollection = actions.extraDataSet[ecolumn][sourceColumn];
- 			}
- 			else if(typeof(actions.extraDataSet[ecolumn][ecollectionColumn]) !== "undefined"){
-	 			ecollection = actions.extraDataSet[ecolumn][ecollectionColumn];
-	 		}
-		}
- 		if(ecollection == null){
- 			if($.isArray(actions.extraDataSet[ecolumn]))  ecollection = actions.extraDataSet[ecolumn];
- 			else if(typeof(sourceColumn) !== "undefined" && sourceColumn==ecolumn){
- 	 			ecollection = actions.extraDataSet[sourceColumn][ecolumn];
- 	 		}
- 		} 
- 			
- 		return ecollection;
-	},
-	isEditable : function (column,rowData,rights){
-		var rs = column.DATA_METHOD==1||column.DATA_METHOD=='1';
-		if (rs) {
-			if(rowData.RECORD_STATUS=="A"){
-				rs =$.inArray("ADMIN_APPROVE", rights);
-			}
-			else if(rowData.RECORD_STATUS=="V"){
-				rs =$.inArray("ADMIN_APPROVE", rights)&&$.inArray("ADMIN_VALIDATE", rights);
-			}
-		}
-		return rs;
-		
-	},
-	preDataTable : function (dataset){
-		return dataset;
-	},
+							sourceColumn = data.properties[cindex].data;
+							ecolumn = actions.extraDataSetColumns[sourceColumn];
+					 		ecollectionColumn = rowData[ecolumn];
+					 		ecollection = null;
+					 		
+					 		if(ecollectionColumn!=null&&
+					 				ecollectionColumn!=''&&
+					 				typeof(actions.extraDataSet[ecolumn]) !== "undefined"){
+					 			if(actions.extraDataSet[ecolumn].hasOwnProperty(sourceColumn)){
+					 				ecollection = actions.extraDataSet[ecolumn][sourceColumn];
+					 			}
+					 			else if(typeof(actions.extraDataSet[ecolumn][ecollectionColumn]) !== "undefined"){
+						 			ecollection = actions.extraDataSet[ecolumn][ecollectionColumn];
+						 		}
+							}
+					 		if(ecollection == null){
+					 			if($.isArray(actions.extraDataSet[ecolumn]))  ecollection = actions.extraDataSet[ecolumn];
+					 			else if(typeof(sourceColumn) !== "undefined" && sourceColumn==ecolumn){
+					 	 			ecollection = actions.extraDataSet[sourceColumn][ecolumn];
+					 	 		}
+					 		} 
+					 			
+					 		return ecollection;
+						},
+	isEditable 			: function (column,rowData,rights){
+						var rs = column.DATA_METHOD==1||column.DATA_METHOD=='1';
+						if (rs) {
+							if(rowData.RECORD_STATUS=="A"){
+								rs =$.inArray("ADMIN_APPROVE", rights);
+							}
+							else if(rowData.RECORD_STATUS=="V"){
+								rs =$.inArray("ADMIN_APPROVE", rights)&&$.inArray("ADMIN_VALIDATE", rights);
+							}
+						}
+						return rs;
+						
+					},
+	preDataTable 	: function (dataset){
+						return dataset;
+					},
 	afterDataTable : function (table,tab){
 		$("#toolbar_"+tab).html('');
 	},
@@ -354,7 +357,13 @@ var actions = {
 				editable['viewformat'] = configuration.picker.DATE_FORMAT;
 //				editable['viewformat'] = 'mm/dd/yyyy';
 			}
+			if (type=='number'&&this.historyUrl) {
+				editable['extensionHandle'] = function() {
+												actions.loadHistory(tab,columnName,rowData);
+									    	  };
+			}
 	    	break;
+	    	
 		case "datetimepicker":
 			editable['onblur'] = 'submit';
 			editable['type'] = 'datetime';
@@ -397,7 +406,11 @@ var actions = {
     	$(td).on("shown", function(e, editable) {
     		  editable.input.$input.get(0).select();
     		  if(type=="timepicker") $(".table-condensed thead").css("visibility","hidden");
-    		  if(type=="number") $( editable.input.$input.get(0) ).closest( ".editable-container" ).css("float","right");
+    		  $(".extension-buttons").css("display","none");
+    		  if(type=="number") {
+					$( editable.input.$input.get(0) ).closest( ".editable-container" ).css("float","right");
+					if (actions.historyUrl) $(".extension-buttons").css("display","block");
+    		  }
 //    		  if(type=="timepicker") $(".table-condensed th").text("");
     	});
 	},
@@ -414,6 +427,146 @@ var actions = {
         	 /* var tabindex = $(this).attr('tabindex');
             $('[tabindex=' + (tabindex +1)+ ']').focus(); */
 	    };
+	},
+	loadHistory	:	function(tab,columnName,rowData,limit){
+		if (this.historyUrl) {
+			console.log ( "loadHistory url: "+this.historyUrl );
+			limit = typeof(limit) !== "undefined"?limit:$('#cboLimit').val();
+			
+			currentHistory = typeof(currentHistory) !== "undefined"?currentHistory:{
+																						tab			:	false,
+																						columnName	:	false,
+																						rowData		:	false
+																				};
+			currentHistory.tab			= tab;
+			currentHistory.columnName	= columnName;
+			currentHistory.rowData		= rowData;
+			$("#boxHistory").dialog({
+				height: 350,
+				width: 900,
+				position: { my: 'top', at: 'top+150' },
+				modal: true,
+				title: "History data",
+			});
+//			$("#history_container").html("<br/><br/><br/>Loading...");
+//			$("#history_list").html("<br/>Loading...");
+			$("#history_loading").html("Loading...");
+			$("#history_loading").css("display","block");
+			$("#history_container").css("display","none");
+
+			$.ajax({
+				url: this.historyUrl,
+				type: "post",
+				data: {
+						tabTable	: tab,	
+						field		: columnName,	
+						rowData		: rowData, 
+						limit		: limit
+					},
+				success:function(data){
+					$("#history_container").css("display","block");
+					$("#history_loading").css("display","none");
+					console.log ( "loadHistory success : "+JSON.stringify(data));
+					historyDataSet = [];
+					list = '';
+					$.each(data.history.dataSet, function( index, value ) {
+//						value['y'] = parseFloat(value['VALUE']);
+						date = moment.utc(value['OCCUR_DATE'],configuration.time.DATE_FORMAT_UTC);
+						y = date.year();
+						m = date.month();
+						d = date.date();
+						day = Date.UTC(y,m,d);
+						vl = Math.ceil(parseFloat(value['VALUE']) * 10) / 10;
+						historyDataSet.push([day, vl]);
+						list+="<a href='javascript:parent.Historical.selectHistoryValue("+vl+")'>"+date.format(configuration.time.DATE_FORMAT)+" : "+vl+"</a><br>";;
+		            });
+					
+					$("#history_list").html(list);
+					
+					 xchart=new Highcharts.Chart({
+					        chart: {
+					            zoomType: 'xy',
+								renderTo: 'history_container'
+					        },
+							credits: false,
+					        title: {
+					            text: data.history.name        },
+					        subtitle: {
+					            text: data.history.fieldName 
+					        },
+					        xAxis: {
+					            type: 'datetime',
+					            dateTimeLabelFormats: { // don't display the dummy year
+					            	month: '%e. %b',
+//					                year: '%b'
+					            },
+					            title: {
+					                text: 'Occur date'
+					            }
+					        },
+					        tooltip: {
+					            headerFormat: '',// '<b>{series.name}</b><br>',
+					            pointFormat: '{point.x:%e. %b}: {point.y:.2f}'
+					        },
+
+					        plotOptions: {
+					            spline: {
+					                marker: {
+					                    enabled: true
+					                }
+					            }
+					        },
+					        exporting: {
+					            sourceWidth: $('#history_container').width(),
+					            sourceHeight: $('#history_container').height(),
+					            scale: 1,
+					        },
+					        series: [
+								{
+					            type: $('#cboChartType').val(),
+								showInLegend: false,
+					            //name: '<?php echo $field_label; ?>',
+					            data: historyDataSet}
+					        ],
+					        yAxis: [{ // Primary yAxis
+					            labels: {
+					                format: '{value}',
+					                style: {
+					                    color: Highcharts.getOptions().colors[0]
+					                }
+					            },
+					            title: {
+					                text: '',
+					                style: {
+					                    color: Highcharts.getOptions().colors[0]
+					                }
+					            },
+					            opposite: false
+
+					        }
+							]
+					    });
+						/*$( "#radio" ).buttonset();
+						$('input[type="radio"]').click(function(){
+							if ($(this).is(':checked'))
+							{
+								changeChartType($(this).val());
+							}
+						});*/
+				},
+				error: function(data) {
+					console.log ( "loadHistory error: "/*+JSON.stringify(data)*/);
+					$("#history_loading").html("not availble");
+
+				}
+			});
+			
+			return true;
+		}
+		else{
+			console.log ( "init historyUrl ");
+		}
+		return false;
 	},
 	getKeyFieldSet : function(){
 		if(typeof(actions.type.idName) == "function"){

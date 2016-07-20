@@ -121,6 +121,33 @@ class CodeController extends EBController {
     	return response()->json($results);
     }
     
+    public function history(Request $request){
+    	$postData 				= $request->all();
+    	$dcTable 				= $this->getWorkingTable($postData); 
+     	$field 					= $postData['field'];
+     	$rowData 				= $postData['rowData'];
+    	$mdlName 				= $postData[config("constants.tabTable")];
+		$mdl 					= "App\Models\\$mdlName";
+     	$limit					= array_key_exists('limit',  $postData)?$postData['limit']:10;
+     	$limit					= ($limit>=1 && $limit<=100)?$limit:10;
+     	
+     	$history				= $this->getHistory($mdl,$field,$rowData,$limit);
+     	
+        $results['history'] 	= $history;
+        $results['$limit'] 		= $limit;
+        $results['postData'] 	= $postData;
+        /* return view ('partials.history',['history'	=>$history,
+						        		'limit'		=>$limit,
+						        		'postData'	=>$postData,
+        ]); */
+        
+    	return response()->json($results);
+    }
+    
+    public function getHistory($mdl,$field,$rowData,$limit){
+    	return [];
+    }
+    
     public function getWorkingTable($postData){
     	$mdlName = $postData[config("constants.tabTable")];
     	$mdl = "App\Models\\$mdlName";
@@ -130,6 +157,16 @@ class CodeController extends EBController {
     public function getSecondaryData($postData,$dcTable,$facility_id,$occur_date,$results){
     	return null;
     }
+    
+    protected function getFieldLabel($field, $table) {
+    	$row =  CfgFieldProps::where('TABLE_NAME', '=', $table)
+    	->where('USE_FDC', '=', 1)
+    	->where('COLUMN_NAME', '=', $field)
+    	->select('LABEL')
+    	->first();
+    	return $row?$row->LABEL:"";
+    }
+    
     
     public function getProperties($dcTable,$facility_id,$occur_date,$postData){
     	

@@ -97,7 +97,11 @@ Editableform is linked with one of input types, e.g. 'text', 'select' etc.
                  
                 //attach 'cancel' handler
                 this.$form.find('.editable-cancel').click($.proxy(this.cancel, this));
-                
+                var extensionButton = this.$form.find('.editable-extension');
+                if(!(extensionButton === null || extensionButton === undefined || extensionButton === '')
+                		&& typeof this.options.extensionHandle === 'function' ) 
+                	extensionButton.click($.proxy(this.options.extensionHandle, this));
+
                 if(this.input.error) {
                     this.error(this.input.error);
                     this.$form.find('.editable-submit').attr('disabled', true);
