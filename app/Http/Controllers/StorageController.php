@@ -119,10 +119,21 @@ class StorageController extends CodeController {
 	  		$values['OCCUR_DATE'] = $occur_date;
 	  		StorageDataValue::updateOrCreate($attributes,$values);
     	}
-    	
-				    	
-  		    			
-    	
 //     	\Log::info(\DB::getQueryLog());
     }
+    
+	public function getHistoryConditions($table,$rowData,$row_id){
+		if(substr($table,0,4)=="TANK"){
+			$obj_table="TANK";
+			$obj_id_field="TANK_ID";
+		}
+		else if(substr($table,0,7)=="STORAGE"){
+			$obj_table="STORAGE";
+			$obj_id_field="STORAGE_ID";
+		}
+		else return null;
+		
+		$obj_id			= $rowData[$obj_id_field];
+		return [$obj_id_field	=>	$obj_id];
+	}
 }

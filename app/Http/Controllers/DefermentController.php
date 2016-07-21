@@ -216,4 +216,35 @@ class DefermentController extends CodeController {
     			));
     	return response()->json('Edit Successfullly');
     }
+    
+    public function getHistoryConditions($dcTable,$rowData,$row_id){
+    	return ['DEFER_TARGET'			=>	$rowData["DEFER_TARGET"],
+    			'DEFER_GROUP_TYPE'		=>	$rowData["DEFER_GROUP_TYPE"],
+    	];
+    }
+    
+    public function getHistoryData($mdl, $field,$rowData,$where, $limit){
+		$row_id			= $rowData['ID'];
+    	if ($row_id<=0) return [];
+    	
+    	$occur_date		= $rowData['BEGIN_TIME'];
+    	$history 		= $mdl::where($where)
+						    	->whereDate('BEGIN_TIME', '<', $occur_date)
+						    	->whereNotNull($field)
+						    	->orderBy('BEGIN_TIME','desc')
+						    	->skip(0)->take($limit)
+						    	->select('BEGIN_TIME as OCCUR_DATE',
+						    			"$field as VALUE"
+						    			)
+				    			->get();
+    	return $history;
+    }
+    
+    public function getFieldTitle($dcTable,$field,$rowData){
+    	$row = EnergyUnit::where(['ID'=>$rowData['DEFER_TARGET']])
+				    	 ->select('NAME')
+				    	 ->first();
+    	$obj_name		= $row?$row->NAME:"";
+    	return $obj_name;
+    }
 }

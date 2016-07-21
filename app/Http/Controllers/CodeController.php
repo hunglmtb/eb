@@ -144,10 +144,46 @@ class CodeController extends EBController {
     	return response()->json($results);
     }
     
-    public function getHistory($mdl,$field,$rowData,$limit){
-    	return [];
-    }
+	public function getHistory($mdl,$field,$rowData,$limit){
+		$dcTable		= $mdl::getTableName();
+		$obj_name		= $this->getFieldTitle($dcTable,$field,$rowData);
+		
+		$row_id			= $rowData['ID'];
+		$fieldName		= $this->getFieldLabel($field,$dcTable);
+		
+		$where			= $this->getHistoryConditions($dcTable,$rowData,$row_id);
+		
+		if ($where) {
+			$history		= $this->getHistoryData($mdl, $field,$rowData,$where, $limit);
+			
+		}
+		else $history = [];
+		
+		return ['name'		=> $obj_name,
+				'dataSet'	=> $history,
+				'fieldName'	=> $fieldName
+		];
+	}
+	
+	public function getHistoryData($mdl, $field,$rowData,$where, $limit){
+		$row_id			= $rowData['ID'];
+		$occur_date		= $row_id>0?$rowData['OCCUR_DATE']:Carbon::now();
+		$history 		= $mdl::where($where)
+								->whereDate('OCCUR_DATE', '<', $occur_date)
+								->whereNotNull($field)
+								->orderBy('OCCUR_DATE','desc')
+								->skip(0)->take($limit)
+								->select('OCCUR_DATE',
+										"$field as VALUE"
+										)
+								->get();
+		return $history;
+	}
     
+	public function getHistoryConditions($table,$rowData,$row_id){
+		return null;
+	}
+	
     public function getWorkingTable($postData){
     	$mdlName = $postData[config("constants.tabTable")];
     	$mdl = "App\Models\\$mdlName";
@@ -165,6 +201,11 @@ class CodeController extends EBController {
     	->select('LABEL')
     	->first();
     	return $row?$row->LABEL:"";
+    }
+    
+    public function getFieldTitle($dcTable,$field,$rowData){
+    	$obj_name		= $rowData[$dcTable];
+    	return $obj_name;
     }
     
     

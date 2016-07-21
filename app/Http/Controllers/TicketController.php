@@ -69,4 +69,47 @@ class TicketController extends CodeController {
     	return $notExist;
     }
     
+    
+    public function getHistoryConditions($dcTable,$rowData,$row_id){
+    	return ['TANK_ID'			=>	$rowData["TANK_ID"],
+    	];
+    }
+    
+    public function getHistoryData($mdl, $field,$rowData,$where, $limit){
+    	
+    	/* $sSQL="select concat(concat(a.OCCUR_DATE,' '), a.LOADING_TIME) OCCUR_DATE, 
+    	round(a.$field,2) `VALUE` 
+    	from $table a,
+    	(select TANK_ID,OCCUR_DATE from $table where ID=$row_id) b 
+    	where a.TANK_ID=b.TANK_ID 
+    	and a.OCCUR_DATE<b.OCCUR_DATE 
+    	and a.$field is not null 
+    	order by concat(concat(a.OCCUR_DATE,' '), a.LOADING_TIME) desc 
+    	limit $limit"; */
+    	 
+    	
+    	
+    	$row_id			= $rowData['ID'];
+    	if ($row_id<=0) return [];
+    
+    	$occur_date		= $rowData['OCCUR_DATE'];
+    	$history 		= $mdl::where($where)
+					    	->whereDate('OCCUR_DATE', '<', $occur_date)
+					    	->whereNotNull($field)
+					    	->orderBy('OCCUR_DATE','desc')
+					    	->skip(0)->take($limit)
+					    	->select(\DB::raw("concat(concat(OCCUR_DATE,' '), LOADING_TIME) as OCCUR_DATE"),
+					    			"$field as VALUE"
+					    			)
+					    	->get();
+    	return $history;
+    }
+    
+    public function getFieldTitle($dcTable,$field,$rowData){
+    	$row = Tank::where(['ID'=>$rowData['TANK_ID']])
+    	->select('NAME')
+    	->first();
+    	$obj_name		= $row?$row->NAME:"";
+    	return $obj_name;
+    }
 }

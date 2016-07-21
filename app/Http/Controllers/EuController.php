@@ -8,6 +8,7 @@ use App\Models\CodeStatus;
 use App\Models\EuPhaseConfig;
 use App\Models\EnergyUnitDataAlloc;
 use App\Models\EnergyUnitCompDataAlloc;
+use Carbon\Carbon;
 
 class EuController extends CodeController {
     
@@ -108,5 +109,18 @@ class EuController extends CodeController {
     
     protected function getFlowPhase($newData) {
     	return $newData [config ( "constants.euFlowPhase" )];
+    }
+    
+    public function getHistoryConditions($dcTable,$rowData,$row_id){
+    	$obj_id			= $rowData[config("constants.euId")];
+    	$where			= ["EU_ID"	=> $obj_id];
+    	if($row_id<=0) {
+    		$where['FLOW_PHASE']	= 2;
+    	}
+    	else{
+    		$where['FLOW_PHASE']	= $rowData['FLOW_PHASE'];
+    		$where['EVENT_TYPE']	= $rowData['EVENT_TYPE'];
+    	}
+    	return $where;
     }
 }

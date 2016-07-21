@@ -15,8 +15,9 @@ RUN TICKET CAPTURE
 @section('adaptData')
 @parent
 <script>
-	actions.loadUrl = "/ticket/load";
-	actions.saveUrl = "/ticket/save";
+	actions.loadUrl 		= "/ticket/load";
+	actions.saveUrl 		= "/ticket/save";
+	actions.historyUrl 		= "/ticket/history";
 	actions.type = {
 					idName:['ID','FLOW_PHASE','TANK_ID','OCCUR_DATE','TICKET_NO'],
 					keyField:'ID',
@@ -28,6 +29,18 @@ RUN TICKET CAPTURE
 		$("#toolbar_"+tab).html('');
 	} */
 	addingOptions.keepColumns = ['OCCUR_DATE','TICKET_NO','TICKET_TYPE'];
+
+	actions['parseChartDate'] = function(datetime){
+		date = moment.utc(datetime,configuration.time.DATETIME_FORMAT_UTC);
+		y 		= date.year();
+		m 		= date.month();
+		d 		= date.date();
+		hour 	= date.hour();
+		minute 	= date.minute();
+		day = Date.UTC(y,m,d,hour,minute);
+		return {data	: day,
+				display	: date.format(configuration.time.DATETIME_FORMAT)};
+				};
 	
 </script>
 @stop

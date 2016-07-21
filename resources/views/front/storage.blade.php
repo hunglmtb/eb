@@ -30,8 +30,9 @@ TANK & STORAGE DATA CAPTURE
 							StorageDataPlan : storageIdColumn,
 							StorageDataForecast : storageIdColumn,
 						};
-	actions.loadUrl = "/storage/load";
-	actions.saveUrl = "/storage/save";
+	actions.loadUrl 		= "/storage/load";
+	actions.saveUrl 		= "/storage/save";
+	actions.historyUrl 		= "/storage/history";
 	actions.type = {
 					idName:['{{config("constants.tankId")}}','{{config("constants.tankFlowPhase")}}'],
 					keyField:'{{config("constants.tankId")}}',

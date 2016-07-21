@@ -3,14 +3,177 @@
 <script src="/common/js/highcharts-offline-exporting.js?1"></script>
 
 <script>
+
+$.fn.editableform.template = '<form class="form-inline editableform">'+
+'<div class="control-group">' + 
+'<div><div class="extension-buttons" style="display:none;"><img src="/common/css/images/hist.png" height="16" class="editable-extension"></div><div class="editable-input"></div><div class="editable-buttons"></div></div>'+
+'<div class="editable-error-block"></div>' + 
+'</div>' + 
+'</form>';
+
 var xchart;
 var currentHistory	= {
-		tab			:	false,
-		columnName	:	false,
-		rowData		:	false
+		tab				:	false,
+		columnName		:	false,
+		rowData			:	false,
+		successFunction	:	false,
+		notLocked		:	false,
 };
+
+var selectHistoryValue = function(newValue){};
+
+var parseChartDate	= typeof(actions.parseChartDate) == "function"? actions.parseChartDate	: function(datetime){
+																			date = moment.utc(datetime,configuration.time.DATE_FORMAT_UTC);
+																			y = date.year();
+																			m = date.month();
+																			d = date.date();
+																			day = Date.UTC(y,m,d);
+																			return {data	: day,
+																					display	: date.format(configuration.time.DATE_FORMAT)};
+																		};
+
+actions.extensionHandle	 = function(tab,columnName,rowData,limit,successFunction,notLocked){
+	if (this.historyUrl) {
+		console.log ( "extensionHandle url: "+this.historyUrl );
+		limit = typeof(limit) !== "undefined"&&limit!==false?limit:$('#cboLimit').val();
+		
+		currentHistory = typeof(currentHistory) !== "undefined"?currentHistory:{
+																					tab				:	false,
+																					columnName		:	false,
+																					rowData			:	false,
+																					successFunction	:	false,
+																					notLocked		:	false,
+																			};
+		currentHistory.tab				= tab;
+		currentHistory.columnName		= columnName;
+		currentHistory.rowData			= rowData;
+		currentHistory.successFunction	= successFunction;
+		currentHistory.notLocked		= notLocked;
+		$("#boxHistory").dialog({
+			height: 350,
+			width: 900,
+			position: { my: 'top', at: 'top+150' },
+			modal: true,
+			title: "History data",
+		});
+//		$("#history_container").html("<br/><br/><br/>Loading...");
+//		$("#history_list").html("<br/>Loading...");
+		$("#history_loading").html("Loading...");
+		$("#history_loading").css("display","block");
+		$("#history_container").css("display","none");
+
+		$.ajax({
+			url: this.historyUrl,
+			type: "post",
+			data: {
+					tabTable	: tab,	
+					field		: columnName,	
+					rowData		: rowData, 
+					limit		: limit
+				},
+			success:function(data){
+				$("#history_container").css("display","block");
+				$("#history_loading").css("display","none");
+				console.log ( "extensionHandle success : "/* +JSON.stringify(data) */);
+				historyDataSet = [];
+				list = '';
+				selectHistoryValue = function(newValue){
+					$('#boxHistory').dialog('close');
+					if(notLocked) successFunction(null,newValue);
+// 					actions.putModifiedData(tab,columnName,newValue,rowData);
+				};
+				
+				$.each(data.history.dataSet, function( index, value ) {
+//					value['y'] = parseFloat(value['VALUE']);
+					day	= parseChartDate(value['OCCUR_DATE']);
+					vl = Math.ceil(parseFloat(value['VALUE']) * 10) / 10;
+					historyDataSet.push([day.data, vl]);
+					list+="<a href='javascript:selectHistoryValue("+vl+")'>"+day.display+" : "+vl+"</a><br>";;
+					
+	            });
+				
+				$("#history_list").html(list);
+				
+				 xchart=new Highcharts.Chart({
+				        chart: {
+				            zoomType: 'xy',
+							renderTo: 'history_container'
+				        },
+						credits: false,
+				        title: {
+				            text: data.history.name        },
+				        subtitle: {
+				            text: data.history.fieldName 
+				        },
+				        xAxis: {
+				            type: 'datetime',
+				            dateTimeLabelFormats: { // don't display the dummy year
+				            	month: '%e. %b',
+//				                year: '%b'
+				            },
+				            title: {
+				                text: 'Occur date'
+				            }
+				        },
+				        tooltip: {
+				            headerFormat: '',// '<b>{series.name}</b><br>',
+				            pointFormat: '{point.x:%e. %b}: {point.y:.2f}'
+				        },
+
+				        plotOptions: {
+				            spline: {
+				                marker: {
+				                    enabled: true
+				                }
+				            }
+				        },
+				        exporting: {
+				            sourceWidth: $('#history_container').width(),
+				            sourceHeight: $('#history_container').height(),
+				            scale: 1,
+				        },
+				        series: [
+							{
+				            type: $('#cboChartType').val(),
+							showInLegend: false,
+				            data: historyDataSet}
+				        ],
+				        yAxis: [{ // Primary yAxis
+				            labels: {
+				                format: '{value}',
+				                style: {
+				                    color: Highcharts.getOptions().colors[0]
+				                }
+				            },
+				            title: {
+				                text: '',
+				                style: {
+				                    color: Highcharts.getOptions().colors[0]
+				                }
+				            },
+				            opposite: false
+
+				        }
+						]
+				    });
+			},
+			error: function(data) {
+				console.log ( "extensionHandle error: "/*+JSON.stringify(data)*/);
+				$("#history_loading").html("not availble");
+
+			}
+		});
+		
+		return true;
+	}
+	else{
+		console.log ( "init historyUrl ");
+	}
+	return false;
+}
+
 function limitChange(limit){
-	parent.actions.loadHistory(currentHistory.tab,currentHistory.columnName,currentHistory.rowData,limit);
+	actions.extensionHandle(currentHistory.tab,currentHistory.columnName,currentHistory.rowData,limit,currentHistory.successFunction,currentHistory.notLocked);
 }
 function changeChartType(type){
 	xchart.series[0].update({
