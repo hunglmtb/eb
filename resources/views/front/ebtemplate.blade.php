@@ -493,7 +493,7 @@ menu["delivery"]=[
 		{menutext:"CONTRACT ADMIN",desc:"",url:"../pd/contractdata.php"},
 		{menutext:"CARGO ADMIN",desc:"",url:"../pd/cargoentry.php"},
 		{menutext:"CARGO ACTION",desc:"",url:"../pd/cargovoyage.php"},
-		{menutext:"CARGO MANAGEMENT",desc:"",url:"../pd/cargodemurrage.php"},
+		{menutext:"CARGO MANAGEMENT",desc:"",url:"/demurrageebo"},
 		{menutext:"CARGO<br>MONITORING",desc:"",url:"../pd/liftaccdailybalance.php"},
 //		{menutext:"VOYAGE GROUND",desc:"",url:"../pd/?func=voyageground"},
 //		{menutext:"VOYAGE PIPELINE",desc:"",url:"../pd/?func=voyagepipeline"}

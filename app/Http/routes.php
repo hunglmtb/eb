@@ -333,3 +333,6 @@ Route::get('dataloader', 'InterfaceController@_indexDataloader');
 Route::post('gettablefieldsall', 'InterfaceController@getTableFieldsAll');
 Route::post('doimportdataloader', 'InterfaceController@doImportDataLoader');
 
+Route::get('demurrageebo',		['uses' =>'ProductDeliveryController@demurrageebo','middleware' => 'checkRight:PD_CARGO_MAN_DEMUR']);
+Route::post('demurragreebo/load',['uses' =>'ProductDeliveryController@load','middleware' => 'saveWorkspace']);
+

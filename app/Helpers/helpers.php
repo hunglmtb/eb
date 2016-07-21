@@ -208,7 +208,7 @@ class Helper {
 	public static function parseDate($dateString)
 	{
 		$formatSetting 		= 	session('configuration');
-		$formatSetting 		= 	$formatSetting?$formatSetting:DateTimeFormat::$defaultFormat;
+		$formatSetting 		= 	$formatSetting?$formatSetting:\App\Models\DateTimeFormat::$defaultFormat;
 		$dateFormat 		= 	$formatSetting['DATE_FORMAT'];
 		$carbonFormat		= 	\Helper::convertDate2CarbonFormat($dateFormat);
 		$carbonDate 		= 	Carbon::createFromFormat($carbonFormat, $dateString);

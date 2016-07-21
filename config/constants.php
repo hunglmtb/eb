@@ -24,6 +24,8 @@ return [
 																		'name'			=>'tank'),
 										'EnergyUnit'			=>	array('filterName'	=>'Energy Unit',
 																		'name'			=>'EnergyUnit'),
+										'Storage'				=>	array('filterName'	=>'Storage',
+																		'name'			=>'Storage'),
 										'IntObjectType'			=>	array('filterName'	=>'Object Type',
 																		'name'			=>'IntObjectType',
 																		'dependences'	=>['ObjectName'],

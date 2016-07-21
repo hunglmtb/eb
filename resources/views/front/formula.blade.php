@@ -36,6 +36,8 @@ $currentSubmenu = 'formula';
 <link rel="stylesheet" href="/common/css/allocation/style.css"/>
 <script src="/common/js/jquery.js"></script>
 <script type="text/javascript" src="/common/js/splitter.js"></script>
+<script type="text/javascript" src="/common/js/jquery.reveal.js"></script>
+<script src="/common/js/jquery-ui.min.js"></script>
 <script type="text/javascript">
 $().ready(function() {
 	$("#MySplitter").height($(window).height()-200);
