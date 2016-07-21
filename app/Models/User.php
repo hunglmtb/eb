@@ -96,8 +96,7 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 	}
 	
 	public function configuration(){
-		$row	= 	$this->workspace()
-						->where('USER_ID','=',$this->ID)
+		$row	= 	UserWorkspace::where('USER_ID','=',$this->ID)
 						->select('DATE_FORMAT','TIME_FORMAT')
 						->first();
 		$formatSetting = [];
