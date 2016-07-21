@@ -43,6 +43,14 @@ class Facility extends UomModel
 		return $this->hasMany('App\Models\EnergyUnit', 'FACILITY_ID', 'ID');
 	}
 	
+	public function Storage($fields=null)
+	{
+		if ($fields!=null&&is_array($fields)) {
+			return $this->hasMany('App\Models\Storage', 'FACILITY_ID', 'ID')->select($fields);
+		}
+		return $this->hasMany('App\Models\Storage', 'FACILITY_ID', 'ID');
+	}
+	
 	/* public function ObjectName($option=null)
 	{
 		if ($option!=null&&is_array($option)) {
