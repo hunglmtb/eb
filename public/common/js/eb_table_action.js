@@ -79,7 +79,7 @@ var intVal = function ( i ) {
     	actions.addingNewRowSuccess(data,table,tab,isAddingNewRow);
 	};
 	actions.createdFirstCellColumn  = function (td, cellData, rowData, row, col) {
-		$(td).css('z-index','90');
+		$(td).css('z-index','1');
 		var table =$(this).dataTable();
 		var tableId = table.attr('id');
 	    var splits = tableId.split("_");

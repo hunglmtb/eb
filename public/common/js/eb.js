@@ -629,7 +629,7 @@ var actions = {
 		return cell;
 	},
 	createdFirstCellColumn : function (td, cellData, rowData, row, col) {
-		$(td).css('z-index','99');
+		$(td).css('z-index','1');
 	},
 	getGrepValue : function (data,value,row) {
 						return data;
