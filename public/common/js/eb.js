@@ -421,15 +421,21 @@ var actions = {
 						actions.extensionHandle(tab,columnName,rowData,false,successFunction);
 					}
 			};
+//			$(td).css("position","relative");
+			var $newdiv1 = $( "<div class='fakeCell' style='width: 100%;height: 100%;position: absolute;left: 0; top: 0;'></div>" );
+			$( td ).append( $newdiv1 );
 			
-			$(td).editable(editable);
-			$(td).on("shown", function(e, editable) {
+			$($newdiv1).editable(editable);
+			$($newdiv1).on("shown", function(e, editable) {
 				$(".extension-buttons").css("display","none");
 				$( editable.input.$input.get(0) ).closest( ".editable-container" ).css("float","right");
 				if (actions.historyUrl) {
 					$(".editable-input").css("display","none");
+//					$(".editable-input input").prop("disabled", true);
 					$(".extension-buttons").css("display","block");
-
+					$(td).css("display","table-cell");
+					$(".editable-extension").css("margin","0px");
+					$(".editable-container").css("float","left");
 				}
 			});
 		}
@@ -622,7 +628,9 @@ var actions = {
 		}
 		return cell;
 	},
-	createdFirstCellColumn : function (td, cellData, rowData, row, col) {},
+	createdFirstCellColumn : function (td, cellData, rowData, row, col) {
+		$(td).css('z-index','99');
+	},
 	getGrepValue : function (data,value,row) {
 						return data;
 	},

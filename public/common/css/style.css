@@ -293,6 +293,8 @@ table.dataTable {
 }
 .cellnumber {
 	text-align: right;
+	position: relative;
+	overflow: hidden;
 }
 .editable-container{
 	/* float: right; */
