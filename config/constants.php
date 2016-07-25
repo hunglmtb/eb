@@ -1,5 +1,55 @@
 <?php
 
+$tab = array();
+$tab['FLOW'] =[
+		['NAME'=>'FDC VALUE', 'ID'=>'FlowDataFdcValue'],
+		['NAME'=>'STD VALUE', 'ID'=>'FlowDataValue'],
+		['NAME'=>'THEORETICAL', 'ID'=>'FlowDataTheor'],
+		['NAME'=>'ALLOCATION', 'ID'=>'FlowDataAlloc'],
+		['NAME'=>'COMPOSITION ALLOC', 'ID'=>'FlowCompDataAlloc'],
+		['NAME'=>'PLAN', 'ID'=>'FlowDataPlan'],
+		['NAME'=>'FORECAST', 'ID'=>'FlowDataForecast']
+];
+
+$tab['ENERGY_UNIT'] =[
+		['NAME'=>'FDC VALUE', 'ID'=>'FlowDataFdcValue'],
+		['NAME'=>'STD VALUE', 'ID'=>'FlowDataValue'],
+		['NAME'=>'THEORETICAL', 'ID'=>'FlowDataTheor'],
+		['NAME'=>'ALLOCATION', 'ID'=>'FlowDataAlloc'],
+		['NAME'=>'COMPOSITION ALLOC', 'ID'=>'FlowCompDataAlloc'],
+		['NAME'=>'PLAN', 'ID'=>'FlowDataPlan'],
+		['NAME'=>'FORECAST', 'ID'=>'FlowDataForecast']
+];
+
+$tab['STORAGE'] =[
+		['NAME'=>'TANK FDC', 'ID'=>'TankDataFdcValue'],
+		['NAME'=>'TANK VALUE', 'ID'=>'TankDataValue'],
+		['NAME'=>'TANK PLAN', 'ID'=>'TankDataPlan'],
+		['NAME'=>'TANK FORECAST', 'ID'=>'TankDataForecast'],
+		['NAME'=>'STORAGE VALUE', 'ID'=>'StorageDataValue'],
+		['NAME'=>'STORAGE PLAN', 'ID'=>'StorageDataPlan'],
+		['NAME'=>'STORAGE FORECAST', 'ID'=>'StorageDataForecast']
+];
+
+$tab['TICKET'] =[
+		['NAME'=>'TICKET FDC', 'ID'=>'RunTicketFdcValue'],
+		['NAME'=>'TICKET VALUE', 'ID'=>'RunTicketFdcValue'],
+];
+
+$tab['EU_TEST'] =[
+		['NAME'=>'FDC VALUE', 'ID'=>'EuTestDataFdcValue'],
+		['NAME'=>'STD VALUE', 'ID'=>'EuTestDataStdValue'],
+		['NAME'=>'DAY VALUE', 'ID'=>'EuTestDataValue'],
+];
+
+$tab['DEFERMENT'] =[
+		['NAME'=>'DEFERMENT', 'ID'=>'Deferment']
+];
+
+$tab['QUALITY'] =[
+		['NAME'=>'QUALITY DATA', 'ID'=>'QltyData']
+];
+
 return [
         'tabTable'					=> 'tabTable',
 		'keyField'					=> 'keyField',
@@ -86,5 +136,6 @@ return [
 																		'name'			=>'CodeInjectPoint',
 																		'id'			=>'CodeInjectPoint'),
 										],
+		'tab'							=>$tab
 		// etc
 ];

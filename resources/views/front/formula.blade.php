@@ -102,7 +102,7 @@ var _formula = {
 		curObjectID : 0,
 		current_formula_id :0,
 		current_var_id : 0,
-
+		objName : null,
 		cboChange : function(id){
 			var table = ""
 			var cboSet = ""; 
@@ -140,11 +140,22 @@ var _formula = {
 			var cbo = '';
 			$('#cboObjName').html(cbo);
 			cbo += ' <option value="" selected>(None)</option>';
-			for(var v = 0; v < data.length; v++){
-				cbo += ' 		<option value="' + data[v].ID + '">' + data[v].NAME + '</option>';
+			for(var v = 0; v < data.length; v++){			
+				cbo += ' 		<option value="' + data[v].ID + '" '+ _formula.setSelected(data[v].ID) +'>' + data[v].NAME + '</option>';
 			}
 
 			$('#cboObjName').html(cbo);
+		},
+
+		setSelected : function(ID){
+			var selected = "";
+			if(_formula.objName == null) return selected;
+			for (var i = 0; i < _formula.objName.length; i++){
+				if(_formula.objName[i] == ID)
+					selected = "selected";
+			}				
+
+			return selected;
 		},
 		cancelEdit : function()
 		{
@@ -260,7 +271,7 @@ var _formula = {
 					_formula.current_formula_id=-1;
 					_formula.current_var_id=-1;
 					$("#bodyFormulasList tr").eq(0).trigger("click");
-				} 
+				}
 			});	
 		},
 		showFormula : function(data){
@@ -408,7 +419,7 @@ var _formula = {
 			$('#cboUserArea').html('');
 			$('#cboUserFacility').html('');
 			$('#cboObjName').html('');
-			_formula.editFormula(-1,false);
+			_formula.editFormula(-1,false);			
 		},
 		editFormula : function(formula_id,isVar)
 		{
@@ -438,10 +449,13 @@ var _formula = {
 			}
 			if(formula_id>0)
 			{	
-				_formula.curObjectID=$("#"+pre+"ObjID_"+formula_id).html();
-				_formula.curPUID=$("#"+pre+"PUID_"+formula_id).html();
-				_formula.curAreaID=$("#"+pre+"AreaID_"+formula_id).html();
-				_formula.curFacilityID=$("#"+pre+"FacilityID_"+formula_id).html();
+				_formula.curObjectID = $("#"+pre+"ObjID_"+formula_id).html();
+				_formula.curPUID = $("#"+pre+"PUID_"+formula_id).html();
+				_formula.curAreaID = $("#"+pre+"AreaID_"+formula_id).html();
+				_formula.curFacilityID = $("#"+pre+"FacilityID_"+formula_id).html();
+				var tmp = $("#"+pre+"ObjID_"+formula_id).html();
+
+				_formula.objName = tmp.split(',');
 
 				$("#txtFormulaName").val($("#"+pre+"FormulaName_"+formula_id).html());
 				$("#txtComment").val($("#"+pre+"Comment_"+formula_id).html());
@@ -480,14 +494,14 @@ var _formula = {
 				title: tt+(isVar?" variable":" formula"),
 			});
 		},
-		reloadCbo : function(id, data){
+		reloadCbo : function(id, data, vdefault){
 			$('#'+id).empty();
 			
 			var _data = data.result;
 			var cbo = '';
 			$('#'+id).html(cbo);
-			//cbo += ' 		<option value="0">All</option>';
 			for(var v in _data){
+
 				cbo += ' 		<option value="' + _data[v].ID + '">' + _data[v].NAME + '</option>';
 			}
 
@@ -520,7 +534,7 @@ var _formula = {
 				'txtFormulaName' : $('#txtFormulaName').val(),
 				'txtFormula' : $('#txtFormula').val(),
 				'txtTableName' : $('#txtTableName').val(),
-				'txtValueColumn' : $('#txtFormula').val(),
+				'txtValueColumn' : $('#txtValueColumn').val(),
 				'txtIDColumn' : $('#txtIDColumn').val(),
 				'txtDateColumn' : $('#txtDateColumn').val(),
 				'cboFlowPhase' : $('#cboFlowPhase').val(),
@@ -549,10 +563,11 @@ var _formula = {
 						alert("Save successfully");
 						$("#boxEditFormula").dialog("close");
 						$("#isvar").val(0);
-						if(isVar)
+						/* if(isVar){
 							_formula.reloadVarsList();
-						else
+						}else{ */
 							_formula.loadFormulasList();
+						//}
 					}
 				});			
 		},

@@ -245,10 +245,10 @@ class FormulaController extends Controller {
 				$param['ALLOC_TYPE'] = $data['cboAllocType'];
 				$param['FORMULA'] = $data['txtFormula'];
 				
-				if(!empty($data['txtBeginDate']))
+				if($data['txtBeginDate'] != "")
 					$param['BEGIN_DATE'] = Carbon::createFromFormat('m/d/Y',$data['txtBeginDate'])->format('Y-m-d');
 				
-				if(!empty($data['txtEndDate']))
+				if($data['txtEndDate'] != "")
 					$param['END_DATE'] = Carbon::createFromFormat('m/d/Y',$data['txtEndDate'])->format('Y-m-d');
 				
 				$condition = array (
@@ -263,22 +263,29 @@ class FormulaController extends Controller {
 					$tmp = [];
 					$tmp = FoVar::where(['FORMULA_ID'=>$formula_id])
 					->select('NAME','STATIC_VALUE','ORDER', 'FORMULA_ID', 'OBJECT_TYPE', 'OBJECT_ID', 'TABLE_NAME', 'VALUE_COLUMN', 'OBJ_ID_COLUMN', 'DATE_COLUMN', 'FLOW_PHASE', 'ALLOC_TYPE', 'COMMENT')
-					->first();
-					$tmp['FORMULA_ID'] = $new_formula_id;
-					$tmp = json_decode(json_encode($tmp), true);
+					->first ();
+					$tmp ['FORMULA_ID'] = $new_formula_id;
+					$tmp = json_decode ( json_encode ( $tmp ), true );
 					
 					$condition = array (
-							'ID' => -1
+							'ID' => - 1 
 					);
 					$tmp = FoVar::updateOrCreate ( $condition, $tmp );
 				}
-			}
-			else
-			{
-				if($objname)
+			} else {
+				if ($objname)
 					$str = $objname;
-				else 
+				else
 					$str = "";
+				
+				$begin_date = $data ['txtBeginDate'];
+				if ($begin_date != "")
+					$begin_date = Carbon::createFromFormat('m/d/Y',$begin_date)->format('Y-m-d');
+				
+				$end_date = $data ['txtEndDate'];
+				if ($end_date != "")
+					$end_date = Carbon::createFromFormat('m/d/Y',$end_date)->format('Y-m-d');
+				
 				$p = [
 					'NAME'=>$data['txtFormulaName'],
 					'COMMENT' => $data['txtComment'],
@@ -292,8 +299,8 @@ class FormulaController extends Controller {
 					'FLOW_PHASE'=>$data['cboFlowPhase'],
 					'ALLOC_TYPE'=>$data['cboAllocType'],
 					'FORMULA'=>$data['txtFormula'],
-					'BEGIN_DATE'=>Carbon::createFromFormat('m/d/Y',$data['txtBeginDate'])->format('Y-m-d'),
-					'END_DATE'=>Carbon::createFromFormat('m/d/Y',$data['txtEndDate'])->format('Y-m-d')
+					'BEGIN_DATE'=>$begin_date,
+					'END_DATE'=>$end_date
 				];
 				
 				Formula::where(['ID'=>$formula_id])->update($p);

@@ -14,6 +14,7 @@ use App\Models\CodeForecastType;
 use App\Models\UomConversion;
 use App\Models\AdvChart;
 use App\Models\Formula;
+use App\Models\CfgFieldProps;
 
 use DB;
 use Carbon\Carbon;
@@ -70,20 +71,44 @@ class graphController extends Controller {
 		$code_plan_type = CodePlanType::all(['ID', 'NAME']);
 		$code_forecast_type = CodeForecastType::all(['ID', 'NAME']);
 		
+		$datasource = $this->getDataSource('FLOW');			
+		
 		$tmp = $this->loadObjectname($data);
 		
 		return view ( 'front.graph',['result'=>$tmp, 'workSpace'=>$workSpace, 'code_alloc_type'=>$code_alloc_type, 
-				'code_plan_type'=>$code_plan_type, 'code_forecast_type'=>$code_forecast_type]);
+				'code_plan_type'=>$code_plan_type, 'code_forecast_type'=>$code_forecast_type, 'datasource'=>$datasource]);
+	}
+	
+	private function getDataSource($code){
+		$result = null;
+	
+		$datasource = config("constants.tab");
+		$result = $datasource[$code];
+		
+		return $result;
 	}
 	
 	public function loadVizObjects(Request $request){
 		$data = $request->all ();	
 		
 		$tmp = $this->loadObjectname($data);
-		//\Log::info ( \DB::getQueryLog () );
+		
+		$tab = $this->getTab($data);
 	
-		return response ()->json ( ['result' => $tmp] );
+		return response ()->json ( ['result' => $tmp, 'tab'=>$tab] );
 	}
+	
+	private function getTab($data){
+		$object_type = $data['object_type'];
+		
+		$obj_types=explode("/",$object_type);
+		
+		$table_name=$obj_types[1];
+		if($table_name == 'TANK')
+			$table_name = 'STORAGE';
+		
+		return $this->getDataSource($table_name);
+	 }
 	
 	private function loadObjectname($data){
 		
@@ -147,6 +172,27 @@ class graphController extends Controller {
 		//\Log::info ( \DB::getQueryLog () );
 		
 		return $tmp;
+	}
+	
+	public function getProperty(Request $request){
+		$data = $request->all ();	
+		$result = array ();
+		$model = 'App\\Models\\' . $data['table'];
+		$tableName = $model::getTableName ();
+		
+		$tmp  = CfgFieldProps::where(['USE_FDC'=>1, 'TABLE_NAME'=>$tableName])->get(['COLUMN_NAME AS ID', 'LABEL AS NAME']);
+		
+		if(count($tmp) > 0){
+			foreach ($tmp as $t){
+				if($t->NAME == '' || is_null($t->NAME)){
+					$t->NAME = $t->ID;
+				}
+				
+				array_push($result, $t);
+			}
+		}
+		
+		return response ()->json ( $result );
 	}
 	
 	public function saveWorkSpaceInfo($date_begin, $date_end, $facility_id)

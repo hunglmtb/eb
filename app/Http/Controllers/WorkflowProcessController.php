@@ -271,11 +271,6 @@ class WorkflowProcessController extends Controller {
 					\Log::info($e->getMessage());
 				}
 			}
-		}else if($taskconfig->formula_id>0){
-			
-		}
-		else{
-			
 		}
 	}
 	
