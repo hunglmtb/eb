@@ -653,6 +653,8 @@ class CodeController extends EBController {
 	    			$rs[] = $selectData;
 	    			break;
     			case 'REQUEST_UOM' :
+    			case 'NOMINATION_UOM' :
+    			case 'REQUEST_QTY_UOM' :
     				$selectData = ['id'=>'PdCodeMeasUom','targets'=>$i,'COLUMN_NAME'=>$columnName];
     				$selectData['data'] = \App\Models\PdCodeMeasUom::all();
     				$rs[] = $selectData;
@@ -682,6 +684,28 @@ class CodeController extends EBController {
 	    			$selectData['data'] = \App\Models\Storage::where('FACILITY_ID', $facility_id)->get();
 	    			$rs[] = $selectData;
 	    			break;
+    			case 'REQUEST_TOLERANCE' :
+    				$selectData = ['id'=>'PdCodeQtyAdj','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = \App\Models\PdCodeQtyAdj::all();
+    				$rs[] = $selectData;
+    				break;
+    			case 'ADJUSTABLE_TIME' :
+    			case 'NOMINATION_ADJ_TIME' :
+    				$selectData = ['id'=>'PdCodeTimeAdj','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = \App\Models\PdCodeTimeAdj::all();
+    				$rs[] = $selectData;
+    				break;
+		    	case 'INCOTERM' :
+		    		$selectData = ['id'=>'PdCodeIncoterm','targets'=>$i,'COLUMN_NAME'=>$columnName];
+		    		$selectData['data'] = \App\Models\PdCodeIncoterm::all();
+		    		$rs[] = $selectData;
+		    		break;
+	    		case 'TRANSIT_TYPE' :
+	    			$selectData = ['id'=>'PdCodeTransitType','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = \App\Models\PdCodeTransitType::all();
+	    			$rs[] = $selectData;
+	    			break;
+		    		
     		}
     		$i++;
     	}

@@ -6,7 +6,7 @@ use App\Models\IntImportSetting;
 class ForecastPlanningController extends EBController {
 	
 	public function forecast(){
-		$filterGroups = array(	'productionFilterGroup'	=>['EnergyUnit'],
+		$filterGroups = array(	'productionFilterGroup'	=>[2 =>'EnergyUnit'],
 								'frequenceFilterGroup'=> [['name'=>'ExtensionPhaseType','single'=> true],
 															'ExtensionValueType',
 															'ExtensionDataSource'],

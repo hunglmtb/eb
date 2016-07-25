@@ -173,6 +173,11 @@ Route::post('cargoentry/load',		['uses' =>	'Cargo\CargoEntryController@load','mi
 Route::post('cargoentry/save', 		'Cargo\CargoEntryController@save');
 Route::post('cargoentry/nominate', 		'Cargo\CargoEntryController@nominate');
 
+
+Route::get('pd/cargonomination',			['uses' =>'ProductDeliveryController@cargonomination','middleware' => 'checkRight:PD_CARGO_ADMIN_NOMINATION']);
+Route::post('cargonomination/load',			['uses' =>	'Cargo\CargoNominationController@load','middleware' => 'saveWorkspace']);
+Route::post('cargonomination/save', 		'Cargo\CargoNominationController@save');
+Route::post('cargonomination/confirm', 		'Cargo\CargoNominationController@confirm');
 //----------admin
 Route::get('am/users', 'AdminController@_index');
 Route::post('am/loadData', 'AdminController@getData');

@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class PdCodeTransitType extends DynamicModel 
 { 
-	protected $table = 'pd_code_transit_type'; 
+	protected $table = 'PD_CODE_TRANSIT_TYPE'; 
 } 

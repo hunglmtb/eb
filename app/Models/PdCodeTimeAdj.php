@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class PdCodeTimeAdj extends DynamicModel 
 { 
-	protected $table = 'pd_code_time_adj'; 
+	protected $table = 'PD_CODE_TIME_ADJ'; 
 } 

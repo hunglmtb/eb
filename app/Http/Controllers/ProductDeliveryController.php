@@ -9,7 +9,7 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function demurrageebo() {
-		$filterGroups = array(	'productionFilterGroup'	=>['Storage'],								
+		$filterGroups = array(	'productionFilterGroup'	=>[2			=>'Storage'],								
 								'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
 																['id'=>'date_end','name'=>'To date']),
 						);
@@ -20,6 +20,14 @@ class ProductDeliveryController extends CodeController {
 		$filterGroups = array(	'productionFilterGroup'	=>[],
 		);
 		return view ( 'front.cargoadmin.cargoentry',['filters'=>$filterGroups]);
+	}
+	
+	public function cargonomination() {
+		$filterGroups = array(	'productionFilterGroup'	=>[2			=>'Storage'],
+								'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
+																['id'=>'date_end','name'=>'To date']),
+						);
+		return view ( 'front.cargoadmin.cargonomination',['filters'=>$filterGroups]);
 	}
 	
 	public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){

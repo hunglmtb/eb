@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class PdCodeQtyAdj extends DynamicModel 
 { 
-	protected $table = 'pd_code_qty_adj'; 
+	protected $table = 'PD_CODE_QTY_ADJ'; 
 } 
