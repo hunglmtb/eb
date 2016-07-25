@@ -90,6 +90,8 @@ $(function(){
 	$("#chartObjectContainer").sortable();
 
 	$(".phase_type").hide();
+
+	$('#cboObjectNameTable').change();
 });
 
 var _graph = {
@@ -134,6 +136,7 @@ var _graph = {
 		sendAjaxNotMessage('/loadVizObjects', param, function(data){
 			$('#txtObjectName').val($("#cboObjectType ").text());
 			adminControl.reloadCbo('cboObjectName',data);
+			_graph.loadCbo('cboObjectNameTable',data.tab);
 
 			_graph.lastObjectType = objectType;
 			if($("#cboObjectType").val().indexOf("ENERGY_UNIT") > -1)
@@ -178,8 +181,8 @@ var _graph = {
 			$(".phase_type").hide();
 		}
 		
-		$("#cboObjectNameTable").val($("#cboObjectNameTable").find('option:visible:first').attr("value"));
-		$("#cboObjectNameProps").val($("#cboObjectNameProps").find('option:visible:first').attr("value"));
+		/* $("#cboObjectNameTable").val($("#cboObjectNameTable").find('option:visible:first').attr("value"));
+		$("#cboObjectNameProps").val($("#cboObjectNameProps").find('option:visible:first').attr("value")); */
 		
 		_graph.loadObjects();
 	},
@@ -196,6 +199,14 @@ var _graph = {
 			$(".forecast_type").show();
 		else 
 			$(".forecast_type").hide();
+
+		param = {
+			'table' : $("#cboObjectNameTable").val()
+		};
+		
+		sendAjaxNotMessage('/getProperty', param, function(data){
+			_graph.loadCbo('cboObjectNameProps', data);
+		});
 	},
 	addObject : function()
 	{
@@ -350,6 +361,16 @@ var _graph = {
 		$('#listCharts').dialog("close");
 		_graph.draw();
 	},
+
+	loadCbo : function(id, data){
+		var cbo = '';
+		$('#'+id).html(cbo);
+		for(var v in data){
+			cbo += ' 		<option value="' + data[v].ID + '">' + data[v].NAME + '</option>';
+		}
+		$('#'+id).html(cbo);
+		$('#'+id).change();
+	},
 	saveChart : function(isAddNew)
 	{
 		var config = _graph.getChartConfig();
@@ -440,7 +461,10 @@ function iframeOnload()
 							</td>
 							<td width="120"><select style="width: 100%; height: 22"
 								id="cboObjectNameTable" size="1" name="cboObjectNameTable" onchange="_graph.ObjectNameTableChange();">
-									<option class="eutest_table" value="DATA_STD_VALUE">STD Value</option>
+									@foreach($datasource as $re)
+										<option value="{!!$re['ID']!!}">{!!$re['NAME']!!}</option> 
+									@endforeach
+									<!-- <option class="eutest_table" value="DATA_STD_VALUE">STD Value</option>
 									<option class="eutest_table" value="DATA_VALUE">Day Value</option>
 									<option class="eutest_table" value="DATA_FDC_VALUE">FDC Value</option>
 									<option selected class="object_table" value="DATA_VALUE">Day	Value</option>
@@ -448,7 +472,7 @@ function iframeOnload()
 									<option class="object_table" value="DATA_THEOR">Theoretical</option>
 									<option class="object_table" value="DATA_ALLOC">Allocation</option>
 									<option class="object_table" value="DATA_PLAN">Plan</option>
-									<option class="object_table" value="DATA_FORECAST">Forecast</option>
+									<option class="object_table" value="DATA_FORECAST">Forecast</option> -->
 							</select></td>
 							<td><select style="width: 100%; height: 22"
 								id="cboObjectNameProps" size="1" name="cboObjectNameProps">

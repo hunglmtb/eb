@@ -248,6 +248,7 @@ Route::get('loadchart/{param}/{minvalue}/{maxvalue}/{date_begin}/{date_end}/{inp
 Route::post('listCharts', 'graphController@getListCharts');
 Route::post('deleteChart', 'graphController@deleteChart');
 Route::post('saveChart', 'graphController@saveChart');
+Route::post('getProperty', 'graphController@getProperty');
 
 Route::get('viewconfig', 'ViewConfigController@_indexViewConfig');
 Route::post('loadPlotObjects', 'ViewConfigController@loadPlotObjects');
