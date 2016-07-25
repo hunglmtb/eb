@@ -12,8 +12,9 @@ QUALITY DATA CAPTURE
 @section('adaptData')
 @parent
 <script>
-	actions.loadUrl = "/quality/load";
-	actions.saveUrl = "/quality/save";
+	actions.loadUrl 		= "/quality/load";
+	actions.saveUrl			= "/quality/save";
+	actions.historyUrl 		= "/quality/history";
 	actions.type = {
 					idName:['ID'],
 					keyField:'DT_RowId',

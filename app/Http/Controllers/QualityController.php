@@ -354,4 +354,54 @@ class QualityController extends CodeController {
     	}
     	return response()->json('Edit Successfullly');
     }
+    
+    
+    public function getHistoryConditions($dcTable,$rowData,$row_id){
+    	return ['SRC_TYPE'		=>	$rowData["SRC_TYPE"],
+    			'SRC_ID'		=>	$rowData["SRC_ID"],
+    	];
+    }
+    
+    public function getHistoryData($mdl, $field,$rowData,$where, $limit){
+    	$row_id			= $rowData['ID'];
+    	if ($row_id<=0) return [];
+    	 
+    	$occur_date		= $rowData['EFFECTIVE_DATE'];
+    	$history 		= $mdl::where($where)
+						    	->whereDate('EFFECTIVE_DATE', '<', $occur_date)
+						    	->whereNotNull($field)
+						    	->orderBy('EFFECTIVE_DATE','desc')
+						    	->skip(0)->take($limit)
+						    	->select('EFFECTIVE_DATE as OCCUR_DATE',
+						    			"$field as VALUE"
+						    			)
+				    			->get();
+    	return $history;
+    }
+    
+    public function getFieldTitle($dcTable,$field,$rowData){
+    	$obj_table = null;
+    	if($rowData["SRC_TYPE"]==1)
+    		$obj_table="Flow";
+    	else if($rowData["SRC_TYPE"]==2)
+	    	$obj_table="EnergyUnit";
+	    else if($rowData["SRC_TYPE"]==3)
+    		$obj_table="Tank";
+    	else if($rowData["SRC_TYPE"]==4)
+    		$obj_table="Equipment";
+    	else if($rowData["SRC_TYPE"]==5)
+    		$obj_table="PdCargo";
+    	else if($rowData["SRC_TYPE"]==6)
+    		$obj_table="Reservoir";
+    	
+    	$mdl = $obj_table?'App\Models\\' . $obj_table:null;
+    	if ($mdl) {
+	    	$row = $mdl::where(['ID'=>$rowData['SRC_ID']])
+						    	->select('NAME')
+						    	->first();
+	    	$obj_name		= $row?$row->NAME:"";
+	    	return $obj_name;
+    	}
+    	return '';
+    }
 }

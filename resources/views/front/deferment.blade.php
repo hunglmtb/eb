@@ -12,8 +12,9 @@ DEFERMENT DATA CAPTURE
 @section('adaptData')
 @parent
 <script>
-	actions.loadUrl = "/deferment/load";
-	actions.saveUrl = "/deferment/save";
+	actions.loadUrl 		= "/deferment/load";
+	actions.saveUrl 		= "/deferment/save";
+	actions.historyUrl 		= "/deferment/history";
 	actions.type = {
 					idName:['ID'],
 					keyField:'ID',

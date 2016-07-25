@@ -63,4 +63,35 @@ class EuTestController extends CodeController {
     	}
     }
     
+    
+    public function getHistoryConditions($dcTable,$rowData,$row_id){
+    	return ['EU_ID'			=>	$rowData["EU_ID"],
+    	];
+    }
+    
+    public function getHistoryData($mdl, $field,$rowData,$where, $limit){
+    	$row_id			= $rowData['ID'];
+    	if ($row_id<=0) return [];
+    	 
+    	$occur_date		= $rowData['BEGIN_TIME'];
+    	$history 		= $mdl::where($where)
+    	->whereDate('BEGIN_TIME', '<', $occur_date)
+    	->whereNotNull($field)
+    	->orderBy('BEGIN_TIME','desc')
+    	->skip(0)->take($limit)
+    	->select('BEGIN_TIME as OCCUR_DATE',
+    			"$field as VALUE"
+    			)
+    			->get();
+    			return $history;
+    }
+    
+    public function getFieldTitle($dcTable,$field,$rowData){
+    	$row = EnergyUnit::where(['ID'=>$rowData['EU_ID']])
+					    	->select('NAME')
+					    	->first();
+    	$obj_name		= $row?$row->NAME:"";
+    	return $obj_name;
+    }
+    
 }

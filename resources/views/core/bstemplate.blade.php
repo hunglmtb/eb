@@ -34,7 +34,6 @@ var configuration =  <?php echo json_encode($configuration); ?>;
 
 <body style="margin:0; overflow-x:hidden">
 	@yield('floatWindow')
-	@yield('modalWindow')
 	<header role="banner">
 		@include('partials.header')
 		@yield('header')
@@ -44,5 +43,6 @@ var configuration =  <?php echo json_encode($configuration); ?>;
 	 </main>
 
 	@include('partials.footer')
+	@yield('modalWindow')
 </body>
 </html>

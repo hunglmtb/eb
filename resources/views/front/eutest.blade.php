@@ -15,8 +15,10 @@ WELL TEST DATA CAPTURE
 @section('adaptData')
 @parent
 <script>
-	actions.loadUrl = "/eutest/load";
-	actions.saveUrl = "/eutest/save";
+	actions.loadUrl 		= "/eutest/load";
+	actions.saveUrl 		= "/eutest/save";
+	actions.historyUrl 		= "/eutest/history";
+	
 	actions.type = {
 					idName:['ID','EU_ID','BEGIN_TIME','END_TIME','EFFECTIVE_DATE'],
 					keyField:'ID',

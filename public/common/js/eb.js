@@ -2,13 +2,6 @@
 //turn to inline mode
 $.fn.editable.defaults.mode = 'inline';
 
-//var defaultEditableTemplate = $.fn.editableform.template;
-$.fn.editableform.template = '<form class="form-inline editableform">'+
-'<div class="control-group">' + 
-'<div><div class="extension-buttons" style="display:none;"><img src="/common/css/images/hist.png" height="16" class="editable-extension"></div><div class="editable-input"></div><div class="editable-buttons"></div></div>'+
-'<div class="editable-error-block"></div>' + 
-'</div>' + 
-'</form>';
 var ebtoken = $('meta[name="_token"]').attr('content');
 $.ajaxSetup({
 	headers: {
@@ -331,11 +324,12 @@ var actions = {
 		return html+extraHtml;
 	},
 	applyEditable : function (tab,type,td, cellData, rowData, columnName,collection){
+		var successFunction = actions.getEditSuccessfn(tab,td, rowData, columnName,collection);
 		var  editable = {
 	    	    title: 'edit',
 	    	    emptytext: '',
 	    	    showbuttons:false,
-	    	    success: actions.getEditSuccessfn(tab,td, rowData, columnName,collection),
+	    	    success: successFunction,
 	    	};
 		
 		switch(type){
@@ -359,7 +353,7 @@ var actions = {
 			}
 			if (type=='number'&&this.historyUrl) {
 				editable['extensionHandle'] = function() {
-												actions.loadHistory(tab,columnName,rowData);
+												actions.extensionHandle(tab,columnName,rowData,false,successFunction,true);
 									    	  };
 			}
 	    	break;
@@ -414,6 +408,38 @@ var actions = {
 //    		  if(type=="timepicker") $(".table-condensed th").text("");
     	});
 	},
+	applyLockedCellHistory	:	function (tab,type,td, cellData, rowData, columnName){
+		if(type=="number") {
+			var successFunction = actions.getEditSuccessfn(tab,td, rowData, columnName);
+			var  editable = {
+					title			: 'edit',
+					emptytext		: '',
+					showbuttons		: false,
+					success			: successFunction,
+					onblur			: 'cancel',
+					extensionHandle	: function() {
+						actions.extensionHandle(tab,columnName,rowData,false,successFunction);
+					}
+			};
+//			$(td).css("position","relative");
+			var $newdiv1 = $( "<div class='fakeCell' style='width: 100%;height: 100%;position: absolute;left: 0; top: 0;'></div>" );
+			$( td ).append( $newdiv1 );
+			
+			$($newdiv1).editable(editable);
+			$($newdiv1).on("shown", function(e, editable) {
+				$(".extension-buttons").css("display","none");
+				$( editable.input.$input.get(0) ).closest( ".editable-container" ).css("float","right");
+				if (actions.historyUrl) {
+					$(".editable-input").css("display","none");
+//					$(".editable-input input").prop("disabled", true);
+					$(".extension-buttons").css("display","block");
+					$(td).css("display","table-cell");
+					$(".editable-extension").css("margin","0px");
+					$(".editable-container").css("float","left");
+				}
+			});
+		}
+	},
 	getEditSuccessfn  : function(tab, td, rowData, columnName,collection) {
 		return function(response, newValue) {
         	rowData = actions.putModifiedData(tab,columnName,newValue,rowData);
@@ -428,145 +454,7 @@ var actions = {
             $('[tabindex=' + (tabindex +1)+ ']').focus(); */
 	    };
 	},
-	loadHistory	:	function(tab,columnName,rowData,limit){
-		if (this.historyUrl) {
-			console.log ( "loadHistory url: "+this.historyUrl );
-			limit = typeof(limit) !== "undefined"?limit:$('#cboLimit').val();
-			
-			currentHistory = typeof(currentHistory) !== "undefined"?currentHistory:{
-																						tab			:	false,
-																						columnName	:	false,
-																						rowData		:	false
-																				};
-			currentHistory.tab			= tab;
-			currentHistory.columnName	= columnName;
-			currentHistory.rowData		= rowData;
-			$("#boxHistory").dialog({
-				height: 350,
-				width: 900,
-				position: { my: 'top', at: 'top+150' },
-				modal: true,
-				title: "History data",
-			});
-//			$("#history_container").html("<br/><br/><br/>Loading...");
-//			$("#history_list").html("<br/>Loading...");
-			$("#history_loading").html("Loading...");
-			$("#history_loading").css("display","block");
-			$("#history_container").css("display","none");
-
-			$.ajax({
-				url: this.historyUrl,
-				type: "post",
-				data: {
-						tabTable	: tab,	
-						field		: columnName,	
-						rowData		: rowData, 
-						limit		: limit
-					},
-				success:function(data){
-					$("#history_container").css("display","block");
-					$("#history_loading").css("display","none");
-					console.log ( "loadHistory success : "+JSON.stringify(data));
-					historyDataSet = [];
-					list = '';
-					$.each(data.history.dataSet, function( index, value ) {
-//						value['y'] = parseFloat(value['VALUE']);
-						date = moment.utc(value['OCCUR_DATE'],configuration.time.DATE_FORMAT_UTC);
-						y = date.year();
-						m = date.month();
-						d = date.date();
-						day = Date.UTC(y,m,d);
-						vl = Math.ceil(parseFloat(value['VALUE']) * 10) / 10;
-						historyDataSet.push([day, vl]);
-						list+="<a href='javascript:parent.Historical.selectHistoryValue("+vl+")'>"+date.format(configuration.time.DATE_FORMAT)+" : "+vl+"</a><br>";;
-		            });
-					
-					$("#history_list").html(list);
-					
-					 xchart=new Highcharts.Chart({
-					        chart: {
-					            zoomType: 'xy',
-								renderTo: 'history_container'
-					        },
-							credits: false,
-					        title: {
-					            text: data.history.name        },
-					        subtitle: {
-					            text: data.history.fieldName 
-					        },
-					        xAxis: {
-					            type: 'datetime',
-					            dateTimeLabelFormats: { // don't display the dummy year
-					            	month: '%e. %b',
-//					                year: '%b'
-					            },
-					            title: {
-					                text: 'Occur date'
-					            }
-					        },
-					        tooltip: {
-					            headerFormat: '',// '<b>{series.name}</b><br>',
-					            pointFormat: '{point.x:%e. %b}: {point.y:.2f}'
-					        },
-
-					        plotOptions: {
-					            spline: {
-					                marker: {
-					                    enabled: true
-					                }
-					            }
-					        },
-					        exporting: {
-					            sourceWidth: $('#history_container').width(),
-					            sourceHeight: $('#history_container').height(),
-					            scale: 1,
-					        },
-					        series: [
-								{
-					            type: $('#cboChartType').val(),
-								showInLegend: false,
-					            //name: '<?php echo $field_label; ?>',
-					            data: historyDataSet}
-					        ],
-					        yAxis: [{ // Primary yAxis
-					            labels: {
-					                format: '{value}',
-					                style: {
-					                    color: Highcharts.getOptions().colors[0]
-					                }
-					            },
-					            title: {
-					                text: '',
-					                style: {
-					                    color: Highcharts.getOptions().colors[0]
-					                }
-					            },
-					            opposite: false
-
-					        }
-							]
-					    });
-						/*$( "#radio" ).buttonset();
-						$('input[type="radio"]').click(function(){
-							if ($(this).is(':checked'))
-							{
-								changeChartType($(this).val());
-							}
-						});*/
-				},
-				error: function(data) {
-					console.log ( "loadHistory error: "/*+JSON.stringify(data)*/);
-					$("#history_loading").html("not availble");
-
-				}
-			});
-			
-			return true;
-		}
-		else{
-			console.log ( "init historyUrl ");
-		}
-		return false;
+	extensionHandle		:	function(tab,columnName,rowData,limit,successFunction){
 	},
 	getKeyFieldSet : function(){
 		if(typeof(actions.type.idName) == "function"){
@@ -640,6 +528,7 @@ var actions = {
 		 	        	}
 		 				actions.applyEditable(tab,type,td, cellData, rowData, colName,collection);
 		 			}
+		 			else if (type=='number'&&actions.historyUrl)  actions.applyLockedCellHistory(tab,type,td, cellData, rowData, colName);
 			    };
 		}
 		switch(type){
@@ -739,7 +628,9 @@ var actions = {
 		}
 		return cell;
 	},
-	createdFirstCellColumn : function (td, cellData, rowData, row, col) {},
+	createdFirstCellColumn : function (td, cellData, rowData, row, col) {
+		$(td).css('z-index','1');
+	},
 	getGrepValue : function (data,value,row) {
 						return data;
 	},

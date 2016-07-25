@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class PdCodeCargoPriority extends DynamicModel 
 { 
-	protected $table = 'pd_code_cargo_priority'; 
+	protected $table = 'PD_CODE_CARGO_PRIORITY'; 
 } 

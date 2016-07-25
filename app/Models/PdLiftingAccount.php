@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class PdLiftingAccount extends DynamicModel 
 { 
-	protected $table = 'pd_lifting_account'; 
+	protected $table = 'PD_LIFTING_ACCOUNT'; 
 } 

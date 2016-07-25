@@ -293,6 +293,8 @@ table.dataTable {
 }
 .cellnumber {
 	text-align: right;
+	position: relative;
+	overflow: hidden;
 }
 .editable-container{
 	/* float: right; */
@@ -349,4 +351,8 @@ table.dataTable {
 
 #history_list a{
 	color: #0000ff;
+}
+
+.nominate{
+    margin-left: 15px;
 }
