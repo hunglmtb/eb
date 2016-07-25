@@ -14,7 +14,13 @@ class ProductDeliveryController extends CodeController {
 																['id'=>'date_end','name'=>'To date']),
 						);
 		return view ( 'front.demurrageebo',['filters'=>$filterGroups]);
-	}	
+	}
+	
+	public function cargoentry() {
+		$filterGroups = array(	'productionFilterGroup'	=>[],
+		);
+		return view ( 'front.cargoadmin.cargoentry',['filters'=>$filterGroups]);
+	}
 	
 	public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
 		 

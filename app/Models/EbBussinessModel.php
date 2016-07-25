@@ -13,6 +13,7 @@ class EbBussinessModel extends DynamicModel {
 	protected $objectModel = null;
 	protected static $enableCheckCondition = false;
 	protected $disableUpdateAudit = true;
+	public  static  $idField = 'ID';
 	
 	protected $excludeColumns = [];
 	public  static $ignorePostData = false;

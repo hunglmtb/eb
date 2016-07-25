@@ -652,6 +652,36 @@ class CodeController extends EBController {
 	    			$selectData['data'] = CodeFlowPhase::all();
 	    			$rs[] = $selectData;
 	    			break;
+    			case 'REQUEST_UOM' :
+    				$selectData = ['id'=>'PdCodeMeasUom','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = \App\Models\PdCodeMeasUom::all();
+    				$rs[] = $selectData;
+    				break;
+	    		case 'PRIORITY' :
+	    			$selectData = ['id'=>'PdCodeCargoPriority','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = \App\Models\PdCodeCargoPriority::all();
+	    			$rs[] = $selectData;
+	    			break;
+    			case 'QUANTITY_TYPE' :
+    				$selectData = ['id'=>'PdCodeCargoQtyType','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = \App\Models\PdCodeCargoQtyType::all();
+    				$rs[] = $selectData;
+    				break;
+	    		case 'LIFTING_ACCT' :
+	    			$selectData = ['id'=>'PdLiftingAccount','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = \App\Models\PdLiftingAccount::all();
+	    			$rs[] = $selectData;
+	    			break;
+    			case 'CONTRACT_ID' :
+    				$selectData = ['id'=>'PdContract','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = \App\Models\PdContract::all();
+    				$rs[] = $selectData;
+    				break;
+	    		case 'STORAGE_ID' :
+	    			$selectData = ['id'=>'Storage','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = \App\Models\Storage::where('FACILITY_ID', $facility_id)->get();
+	    			$rs[] = $selectData;
+	    			break;
     		}
     		$i++;
     	}

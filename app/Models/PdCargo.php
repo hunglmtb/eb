@@ -1,8 +1,21 @@
 <?php 
 namespace App\Models; 
-use App\Models\DynamicModel; 
+use App\Models\EbBussinessModel; 
 
- class PdCargo extends DynamicModel 
+ class PdCargo extends EbBussinessModel 
 { 
-	protected $table = 'pd_cargo'; 
+	protected $table = 'PD_CARGO';
+	protected $primaryKey = 'ID';
+	protected $dates = ['REQUEST_DATE'];
+	protected $fillable  = ['CODE', 
+							'NAME', 
+							'OTHER_PARTY_CODE', 
+							'LIFTING_ACCT', 
+							'STORAGE_ID', 
+							'REQUEST_DATE', 
+							'REQUEST_QTY', 
+							'REQUEST_UOM', 
+							'PRIORITY', 
+							'QUANTITY_TYPE', 
+							'CONTRACT_ID'];
 } 

@@ -491,7 +491,7 @@ menu["forecast"]=[
 ?>
 menu["delivery"]=[
 		{menutext:"CONTRACT ADMIN",desc:"",url:"../pd/contractdata.php"},
-		{menutext:"CARGO ADMIN",desc:"",url:"../pd/cargoentry.php"},
+		{menutext:"CARGO ADMIN",desc:"",url:"../pd/cargoentry"},
 		{menutext:"CARGO ACTION",desc:"",url:"../pd/cargovoyage.php"},
 		{menutext:"CARGO MANAGEMENT",desc:"",url:"/demurrageebo"},
 		{menutext:"CARGO<br>MONITORING",desc:"",url:"../pd/liftaccdailybalance.php"},

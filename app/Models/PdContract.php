@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class PdContract extends DynamicModel 
 { 
-	protected $table = 'pd_contract'; 
+	protected $table = 'PD_CONTRACT'; 
 } 

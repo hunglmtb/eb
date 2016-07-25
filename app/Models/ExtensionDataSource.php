@@ -10,7 +10,7 @@ class ExtensionDataSource extends DynamicModel
 		return  collect([
 							(object)['ID' =>	'VALUE'	,'NAME' => 'Standard'      	],
 							(object)['ID' =>	'THEOR'	,'NAME' => 'Theoretical'    ],
-							(object)['ID' =>	'ALLOC'	,'NAME' => 'GAllocation'    ],
+							(object)['ID' =>	'ALLOC'	,'NAME' => 'Allocation'    ],
 						]);
 	}
 	

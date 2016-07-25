@@ -168,6 +168,11 @@ Route::post('me/setting/save', 		'UserSettingController@saveSetting');
 
 Route::get('fp/loadplanforecast',		['uses' =>'ForecastPlanningController@loadplan','middleware' => 'checkRight:FP_LOAD_PLAN_FORECAST']);
 
+Route::get('pd/cargoentry',			['uses' =>'ProductDeliveryController@cargoentry','middleware' => 'checkRight:PD_CARGO_ADMIN_ENTRY']);
+Route::post('cargoentry/load',		['uses' =>	'Cargo\CargoEntryController@load','middleware' => 'saveWorkspace']);
+Route::post('cargoentry/save', 		'Cargo\CargoEntryController@save');
+Route::post('cargoentry/nominate', 		'Cargo\CargoEntryController@nominate');
+
 //----------admin
 Route::get('am/users', 'AdminController@_index');
 Route::post('am/loadData', 'AdminController@getData');
