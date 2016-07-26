@@ -178,6 +178,8 @@ Route::get('pd/cargonomination',			['uses' =>'ProductDeliveryController@cargonom
 Route::post('cargonomination/load',			['uses' =>	'Cargo\CargoNominationController@load','middleware' => 'saveWorkspace']);
 Route::post('cargonomination/save', 		'Cargo\CargoNominationController@save');
 Route::post('cargonomination/confirm', 		'Cargo\CargoNominationController@confirm');
+Route::post('cargonomination/loadsrc', 		'Cargo\CargoNominationController@loadsrc');
+
 //----------admin
 Route::get('am/users', 'AdminController@_index');
 Route::post('am/loadData', 'AdminController@getData');

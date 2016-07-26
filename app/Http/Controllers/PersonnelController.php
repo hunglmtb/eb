@@ -10,8 +10,6 @@ use App\Models\CodePersonnelType;
 
 class PersonnelController extends CodeController {
 	
-	protected $extraDataSetColumns;
-	
 	public function __construct() {
 		parent::__construct();
 		$this->extraDataSetColumns = [	'TITLE'				=>	[	'column'	=>'BA_ID',
@@ -27,7 +25,6 @@ class PersonnelController extends CodeController {
     	if($table!=PersonnelSumDay::getTableName()){
 	//     	$personnel = Personnel::getTableName();
 	    	$codePersonnelTitle = CodePersonnelTitle::getTableName();
-	    	$extraDataSet = [];
 	    	//      	\DB::enableQueryLog();
 	    	$dataSet = Personnel::join($codePersonnelTitle,"$codePersonnelTitle.ID", '=', "$table.TITLE")
 	    					->where("FACILITY_ID","=",$facility_id)
@@ -41,11 +38,7 @@ class PersonnelController extends CodeController {
 			    			->get();
 	    	//  		\Log::info(\DB::getQueryLog());
 			    			
-	    	if ($dataSet&&$dataSet->count()>0) {
-	    		foreach($this->extraDataSetColumns as $column => $extraDataSetColumn){
-	    			$extraDataSet[$column] = $this->getExtraEntriesBy($column,$extraDataSetColumn,$dataSet);
-	    		}
-	    	}
+	    	$extraDataSet 	= $this->getExtraDataSet($dataSet);
 	    	
 	    	return ['dataSet'=>$dataSet,
 	    			'extraDataSet'=>$extraDataSet,
@@ -132,26 +125,5 @@ class PersonnelController extends CodeController {
     			break;
     	}
     	return $data;
-    }
-    
-    public function loadsrc(Request $request){
-    	//     	sleep(2);
-    	$postData = $request->all();
-    	$sourceColumn = $postData['name'];
-    	$sourceColumnValue = $postData['value'];
-    	$dataSet = [];
-    		
-    	if (array_key_exists($sourceColumn, $this->extraDataSetColumns)) {
-		   	$extraDataSetColumn = $this->extraDataSetColumns[$sourceColumn];
-		   	$targetColumn = $extraDataSetColumn['column'];
-		   	$data = $this->loadTargetEntries($sourceColumnValue,$sourceColumn,$extraDataSetColumn,null);
-		   	$dataSet[$targetColumn] = [	'data'			=>	$data,
-		   			'ofId'			=>	$sourceColumnValue,
-		   			'sourceColumn'	=>	$sourceColumn
-		   	];
-    	}
-    	 
-    	return response()->json(['dataSet'=>$dataSet,
-    							'postData'=>$postData]);
     }
 }

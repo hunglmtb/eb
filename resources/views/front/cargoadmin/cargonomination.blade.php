@@ -23,6 +23,23 @@ CARGO NOMINATION
 			};
 	addingOptions.keepColumns = ['STORAGE_ID','REQUEST_UOM','PRIORITY','QUANTITY_TYPE','LIFTING_ACCT','CONTRACT_ID'];
 
+	actions.extraDataSetColumns = {'PD_TRANSIT_CARRIER_ID':'TRANSIT_TYPE'};
+		
+		source['TRANSIT_TYPE']	={	dependenceColumnName	:	['PD_TRANSIT_CARRIER_ID'],
+									url						: 	'/cargonomination/loadsrc'
+									};
+	
+		source.initRequest = function(tab,columnName,newValue,collection){
+			postData = actions.loadedData[tab];
+			srcData = {	name : columnName,
+						value : newValue,
+						Facility : postData['Facility'],
+	 					target: source[columnName].dependenceColumnName,
+	// 					srcType : srcType,
+					};
+			return srcData;
+		}
+	
 	var renderFirsColumn = actions.renderFirsColumn;
 	actions.renderFirsColumn  = function ( data, type, rowData ) {
 		var html = renderFirsColumn(data, type, rowData );

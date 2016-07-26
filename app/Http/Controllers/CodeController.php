@@ -48,6 +48,7 @@ class CodeController extends EBController {
 	protected $keyColumns ;
 	protected $theorModel ;
 	protected $isApplyFormulaAfterSaving;
+	protected $extraDataSetColumns;
 	
 	
 	public function __construct() {
@@ -264,6 +265,21 @@ class CodeController extends EBController {
     
 	public function getDataSet($postData, $dcTable, $facility_id, $occur_date,$properties) {
 		return [];
+	}
+	
+	public function getExtraDataSet($dataSet, $bunde = []){
+		$extraDataSet = [];
+		if ($dataSet
+			&&$dataSet->count()>0
+			&&$this->extraDataSetColumns
+			&&is_array($this->extraDataSetColumns)
+			&&count($this->extraDataSetColumns)>0) {
+				
+			foreach($this->extraDataSetColumns as $column => $extraDataSetColumn){
+				$extraDataSet[$column] = $this->getExtraEntriesBy($column,$extraDataSetColumn,$dataSet,$bunde);
+			}
+		}
+		return $extraDataSet;
 	}
 	
 	public function getModelName($mdlName,$postData) {
@@ -705,6 +721,11 @@ class CodeController extends EBController {
 	    			$selectData['data'] = \App\Models\PdCodeTransitType::all();
 	    			$rs[] = $selectData;
 	    			break;
+    			case 'CARGO_ID' :
+    				$selectData = ['id'=>'PdCargo','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = \App\Models\PdCargo::all();
+    				$rs[] = $selectData;
+    				break;
 		    		
     		}
     		$i++;
@@ -788,5 +809,29 @@ class CodeController extends EBController {
     }
     
     public function putExtraBundle(&$bunde,$sourceColumn,$entry){
+    }
+    
+    public function loadTargetEntries($sourceColumnValue,$sourceColumn,$extraDataSetColumn,$bunde){
+    	return null;
+    }
+    
+    public function loadsrc(Request $request){
+    	$postData = $request->all();
+    	$sourceColumn = $postData['name'];
+    	$sourceColumnValue = $postData['value'];
+    	$dataSet = [];
+    
+    	if (array_key_exists($sourceColumn, $this->extraDataSetColumns)) {
+    		$extraDataSetColumn = $this->extraDataSetColumns[$sourceColumn];
+    		$targetColumn = $extraDataSetColumn['column'];
+    		$data = $this->loadTargetEntries($sourceColumnValue,$sourceColumn,$extraDataSetColumn,null);
+    		$dataSet[$targetColumn] = [	'data'			=>	$data,
+    				'ofId'			=>	$sourceColumnValue,
+    				'sourceColumn'	=>	$sourceColumn
+    		];
+    	}
+    
+    	return response()->json(['dataSet'=>$dataSet,
+    			'postData'=>$postData]);
     }
 }

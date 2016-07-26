@@ -7,15 +7,11 @@ use Illuminate\Http\Request;
 
 class TagsMappingController extends CodeController {
     
-	protected $extraDataSetColumns;
-	
 	public function __construct() {
 		parent::__construct();
 		$this->extraDataSetColumns = [	
 										'TABLE_NAME'		=>	[	'column'	=>'COLUMN_NAME',
 																	'model'		=>'CodeDeferCode2'],
-										/* 'TABLE_NAME'		=>	[	'column'	=>'TABLE_NAME',
-																	'model'		=>'CodeDeferCode2'], */
 									];
 	}
 	
@@ -57,13 +53,8 @@ class TagsMappingController extends CodeController {
 								)
 		 				->get();
 	    
-		 				
-    	if ($dataSet&&$dataSet->count()>0) {
-    		$bunde = ['OBJECT_TYPE' => $object_type];
-    		foreach($this->extraDataSetColumns as $column => $extraDataSetColumn){
-    			$extraDataSet[$column] = $this->getExtraEntriesBy($column,$extraDataSetColumn,$dataSet,$bunde);
-    		}
-    	}
+    	$bunde = ['OBJECT_TYPE' => $object_type];
+    	$extraDataSet 	= $this->getExtraDataSet($dataSet, $bunde);
     	
     	$data = IntMapTable::where("OBJECT_TYPE",'=',$object_type)
     	->orderBy('NAME')

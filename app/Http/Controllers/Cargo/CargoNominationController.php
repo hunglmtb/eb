@@ -9,23 +9,19 @@ use Illuminate\Http\Request;
 
 class CargoNominationController extends CodeController {
     
+	public function __construct() {
+		parent::__construct();
+		$this->extraDataSetColumns = [	'TRANSIT_TYPE'	=>	[	'column'	=>'PD_TRANSIT_CARRIER_ID',
+																'model'		=>'PdTransitCarrier'],
+		];
+	}
+	
     public function getFirstProperty($dcTable){
 		return  ['data'=>'ID','title'=>'','width'=>90];
 	}
 	
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
-    	
-    	/* $sSQL="SELECT a.ID, 
-    	$fields FROM pd_cargo_nomination a,
-    	PD_CARGO b
-    	WHERE a.CARGO_ID=b.ID 
-    	and b.STORAGE_ID=$storage_id 
-    	and a.REQUEST_DATE >= STR_TO_DATE('$DateFrom', '%m/%d/%Y')
-    	AND a.REQUEST_DATE <= STR_TO_DATE('$DateTo', '%m/%d/%Y') 
-    	order by a.ID"; */
-    	 
-    	
     	
     	$date_end 		= $postData['date_end'];
     	$date_end 		= \Helper::parseDate($date_end);
@@ -51,9 +47,30 @@ class CargoNominationController extends CodeController {
   		    			->get();
 //  		\Log::info(\DB::getQueryLog());
  		    			
-    	return ['dataSet'=>$dataSet,
-//     			'objectIds'=>$objectIds
+    	$extraDataSet 	= $this->getExtraDataSet($dataSet);
+    	 
+    	return ['dataSet'		=> $dataSet,
+    			'extraDataSet'	=> $extraDataSet
     	];
+    }
+    
+	public function loadTargetEntries($sourceColumnValue,$sourceColumn,$extraDataSetColumn,$bunde = null){
+    	$data = null;
+    	switch ($sourceColumn) {
+    		case 'TRANSIT_TYPE':
+		    	$targetModel = $extraDataSetColumn['model'];
+		    	$targetEloquent = "App\Models\\$targetModel";
+		    	$data = $targetEloquent::where('TRANSIT_TYPE','=',$sourceColumnValue)
+		    							->select("ID as value",
+									    		"NAME as text",
+		    									"ID",
+		    									"NAME",
+		    									"CODE"
+		    									)
+		    							->get();
+    			break;
+    	}
+    	return $data;
     }
     
     public function confirm(Request $request){

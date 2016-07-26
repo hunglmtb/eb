@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class PdTransitCarrier extends DynamicModel 
 { 
-	protected $table = 'pd_transit_carrier'; 
+	protected $table = 'PD_TRANSIT_CARRIER'; 
 } 
