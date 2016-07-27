@@ -104,7 +104,8 @@ class EbBussinessModel extends DynamicModel {
 	        		unset($values[$column]);
 	        	}
 	        }
-			$instance->fill($values)->save();
+			$instance = $instance->checkAndSave($values);
+// 			$instance->fill($values)->save();
 // 	        $values = static::calculateBeforeUpdateOrCreate ( $attributes, $values );
 	        return $instance;
 		}
@@ -148,6 +149,11 @@ class EbBussinessModel extends DynamicModel {
 	}
 	
 	public function afterSaving($postData) {
+	}
+	
+	public function checkAndSave($values) {
+		$this->fill($values)->save();
+		return $this;
 	}
 	
 	public function updateDependRecords($occur_date,$values,$postData) {

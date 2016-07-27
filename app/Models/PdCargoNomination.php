@@ -1,11 +1,11 @@
 <?php 
 namespace App\Models; 
-use App\Models\DynamicModel; 
+use App\Models\EbBussinessModel; 
+use App\Exceptions\DataInputException;
 
- class PdCargoNomination extends DynamicModel 
+ class PdCargoNomination extends EbBussinessModel 
 { 
 	protected $table = 'PD_CARGO_NOMINATION'; 
-	protected $primaryKey = 'ID';
 	protected $dates = ['REQUEST_DATE'];
 	protected $fillable  = ['NAME', 
 							'CARGO_ID', 
@@ -40,4 +40,21 @@ use App\Models\DynamicModel;
 							'BL_QTY', 
 							'DEMURRAGE_CHARGE', 
 							'PARCEL_QTY'];
+	
+	public function checkAndSave($values) {
+		$cargo_id 			= $values['CARGO_ID'];
+		$pdCargo			= PdCargo::getTableName();
+		$pdCargoNomination 	= PdCargoNomination::getTableName();
+		$row				= static::join($pdCargo,"$pdCargoNomination.CARGO_ID",'=',"$pdCargo.ID")
+									->where("$pdCargoNomination.CARGO_ID",'=',$cargo_id)
+									->select("$pdCargo.NAME")
+									->first();
+		
+		 
+		if ($row==null) {
+			$this->fill($values)->save();
+			return $this;
+		}
+		throw new DataInputException ( "Cargo $row->NAME nominated already");
+	}
 } 

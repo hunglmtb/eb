@@ -1,6 +1,6 @@
 <?php
 $subMenus = [array('title' => 'CONTRACT ADMIN', 'link' => ''),
-		array('title' => 'CARGO ADMIN', 'link' => 'cargoadmin'),
+		array('title' => 'CARGO ADMIN', 'link' => 'cargoentry'),
 		array('title' => 'CARGO NOMINATION', 'link' => 'cargonomination'),
 		array('title' => 'CARGO ACTION', 'link' => ''),
 		array('title' => 'CARGO MANAGEMENT', 'link' => 'ticket'),

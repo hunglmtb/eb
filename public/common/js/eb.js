@@ -600,8 +600,18 @@ var actions = {
 		case "checkbox":
 //			cell["className"] = 'select-checkbox';
 			cell["render"] = function ( data2, type2, row ) {
-								return '<div  class="checkboxCell" ><input type="checkbox" value="'+data2+'"size="15"></div>';
+								checked = data2?'checked':'';
+								return '<div  class="checkboxCell" ><input class="cellCheckboxInput" type="checkbox" value="'+data2+'"size="15" '+checked+'></div>';
 							};
+			cell["createdCell"] = function (td, cellData, rowData, row, col) {
+				colName = data.properties[col].data;
+ 				$(td).addClass( colName );
+ 				$(td).addClass( "cell"+type );
+ 				$(td).find(".cellCheckboxInput").click(function(){
+ 					fn = actions.getEditSuccessfn(tab,td, rowData, columnName,collection);
+ 					fn(null,$(this).is(':checked')?1:0);
+ 				});
+		    };
 	    	break;
 		case "select":
 			cell["render"] = function ( data2, type2, row ) {
