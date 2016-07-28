@@ -76,19 +76,6 @@ class TicketController extends CodeController {
     }
     
     public function getHistoryData($mdl, $field,$rowData,$where, $limit){
-    	
-    	/* $sSQL="select concat(concat(a.OCCUR_DATE,' '), a.LOADING_TIME) OCCUR_DATE, 
-    	round(a.$field,2) `VALUE` 
-    	from $table a,
-    	(select TANK_ID,OCCUR_DATE from $table where ID=$row_id) b 
-    	where a.TANK_ID=b.TANK_ID 
-    	and a.OCCUR_DATE<b.OCCUR_DATE 
-    	and a.$field is not null 
-    	order by concat(concat(a.OCCUR_DATE,' '), a.LOADING_TIME) desc 
-    	limit $limit"; */
-    	 
-    	
-    	
     	$row_id			= $rowData['ID'];
     	if ($row_id<=0) return [];
     

@@ -8,23 +8,28 @@ use Carbon\Carbon;
 { 
 	protected $table = 'RUN_TICKET_VALUE';
 	protected $primaryKey = 'ID';
-	protected $dates = ['OCCUR_DATE'];
-	protected $fillable  = ['OCCUR_DATE', 
-							'TICKET_NO', 
-							'TANK_ID', 
-							'CARRIER_ID', 
-							'BEGIN_LEVEL', 
-							'END_LEVEL', 
-							'BEGIN_VOL', 
-							'END_VOL', 
-							'SW', 
-							'TICKET_GRS_VOL', 
-							'TICKET_NET_VOL', 
-							'TICKET_DENSITY', 
-							'TICKET_GRS_MASS', 
-							'TICKET_NET_MASS', 
-							'TICKET_WTR_VOL', 
-							'LOADING_TIME'];
+	protected $dates = ['OCCUR_DATE','REPORT_DATE'];
+	protected $fillable  = [
+							'OCCUR_DATE',
+							'TICKET_NO',
+							'TICKET_TYPE',
+							'TANK_ID',
+							'CARRIER_ID',
+							'BEGIN_LEVEL',
+							'END_LEVEL',
+							'BEGIN_VOL',
+							'END_VOL',
+							'SW',
+							'TICKET_GRS_VOL',
+							'TICKET_NET_VOL',
+							'TICKET_DENSITY',
+							'TICKET_GRS_MASS',
+							'TICKET_NET_MASS',
+							'TICKET_WTR_VOL',
+							'LOADING_TIME',
+							'REPORT_DATE'
+	];
+	
 	
 	public static function getKeyColumns(&$newData,$occur_date,$postData){
 		if ( array_key_exists ( 'auto', $newData )) {

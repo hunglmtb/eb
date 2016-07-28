@@ -42,9 +42,9 @@ class EuController extends CodeController {
     	$euWheres = ['FACILITY_ID' => $facility_id, 'FDC_DISPLAY' => 1];
     	if ($record_freq>0) $euWheres["$eu.DATA_FREQ"]= $record_freq;
      	if ($eu_group_id>0) $euWheres["$eu.EU_GROUP_ID"]= $eu_group_id;
-    	else $euWheres["$eu.EU_GROUP_ID"]= null;
+//     	else $euWheres["$eu.EU_GROUP_ID"]= null;
     	
-//     	\DB::enableQueryLog();
+//      	\DB::enableQueryLog();
     	$dataSet = EnergyUnit::join($codeStatus,'STATUS', '=', "$codeStatus.ID")
 				    	->join($euPhaseConfig,function ($query) use ($eu,$euPhaseConfig,$phase_type,$event_type) {
 						    					$query->on("$euPhaseConfig.EU_ID",'=',"$eu.ID");
@@ -88,7 +88,7 @@ class EuController extends CodeController {
  		    			->orderBy($dcTable)
   		    			->orderBy('EU_FLOW_PHASE')
   		    			->get();
-//  		\Log::info(\DB::getQueryLog());
+//   		\Log::info(\DB::getQueryLog());
  		    			
     	return ['dataSet'=>$dataSet,
 //     			'objectIds'=>$objectIds

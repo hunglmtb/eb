@@ -86,7 +86,7 @@ return [
 																		'default'		=>['ID'=>0,'NAME'=>'All']),
 										'EnergyUnitGroup'		=>	array('filterName'	=>'Energy Unit Group',
 																		'name'			=>'energyUnitGroup',
-																		'default'		=>['ID'=>'0','NAME'=>'No Group']),
+																		'default'		=>['ID'=>0,'NAME'=>'All']),
 										'CodeReadingFrequency'	=>	array('filterName'	=>'Record Frequency',
 																		'name'			=>'CodeReadingFrequency',
 																		'id'			=>'CodeReadingFrequency',
