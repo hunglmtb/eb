@@ -85,6 +85,15 @@ var typetoclass = function (data){
 	return "text";
 };
 
+var source = {
+		initRequest	:	 function(tab,columnName,newValue,collection){
+			postData = actions.loadedData[tab];
+			srcData = {	name : columnName,
+						value : newValue,
+						};
+			return srcData;
+		}
+	};
 
 var actions = {
 		
@@ -95,7 +104,7 @@ var actions = {
 	loadedData 			: {},
 	loadPostParams 		: null,
 	initData 			: false,
-	initSaveData 		:false,
+	initSaveData 		: false,
 	editedData 			: {},
 	deleteData 			: {},
 	objectIds 			: [],
@@ -302,6 +311,14 @@ var actions = {
 					},
 	afterDataTable : function (table,tab){
 		$("#toolbar_"+tab).html('');
+	},
+	deleteActionColumn : function ( data, type, rowData ) {
+		var id = rowData['DT_RowId'];
+		var html = '<a id="delete_row_'+id+'" class="actionLink">Delete</a>';
+		return html;
+	},
+	isDisableAddingButton	: function (tab,table) {
+		return true;
 	},
 	renderFirsColumn : function ( data, type, rowData ) {
 		var html = "<div class='firstColumn'>"+data+"</div>";

@@ -1,8 +1,8 @@
 <?php 
 namespace App\Models; 
-use App\Models\DynamicModel; 
+use App\Models\EbBussinessModel; 
 
- class PdCargoSchedule extends DynamicModel 
+ class PdCargoSchedule extends EbBussinessModel 
 { 
 	protected $table 		= 'PD_CARGO_SCHEDULE';
 	protected $dates 		= ['SCHEDULE_DATE'];

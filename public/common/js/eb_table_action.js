@@ -6,17 +6,13 @@ var intVal = function ( i ) {
 	};
 	var index = 1000;
 	var addingOptions ={keepColumns:[]};
-	var source = {
-					initRequest	:	 function(tab,columnName,newValue,collection){
-						postData = actions.loadedData[tab];
-						srcData = {	name : columnName,
-									value : newValue,
-									};
-						return srcData;
-					}
-				};
+	
+	actions.isDisableAddingButton	= function (tab,table) {
+		return false;
+	};
 	
 	actions.afterDataTable = function (table,tab){
+		if(actions.isDisableAddingButton(tab,table)) return;
 		$("#toolbar_"+tab).html('<button>Add</button>');
 		$("#toolbar_"+tab).addClass('toolbarAction');
 		$("#toolbar_"+tab+ " button").on( 'click', function () {
@@ -56,11 +52,7 @@ var intVal = function ( i ) {
             });
 	};
 	
-	actions.renderFirsColumn = function ( data, type, rowData ) {
-		var id = rowData['DT_RowId'];
-		var html = '<a id="delete_row_'+id+'" class="actionLink">Delete</a>';
-		return html;
-	}
+	actions.renderFirsColumn = actions.deleteActionColumn;
 
 	actions.afterGotSavedData = function (data,table,tab){
     	var editedData = actions.editedData[tab];

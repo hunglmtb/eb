@@ -671,6 +671,7 @@ class CodeController extends EBController {
     			case 'REQUEST_UOM' :
     			case 'NOMINATION_UOM' :
     			case 'REQUEST_QTY_UOM' :
+    			case 'SCHEDULE_UOM' :
     				$selectData = ['id'=>'PdCodeMeasUom','targets'=>$i,'COLUMN_NAME'=>$columnName];
     				$selectData['data'] = \App\Models\PdCodeMeasUom::all();
     				$rs[] = $selectData;
@@ -726,7 +727,17 @@ class CodeController extends EBController {
     				$selectData['data'] = \App\Models\PdCargo::all();
     				$rs[] = $selectData;
     				break;
-		    		
+	    		case 'BERTH_ID' :
+	    			$selectData = ['id'=>'PdBerth','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = \App\Models\PdBerth::all();
+	    			$rs[] = $selectData;
+	    			break;
+    			case 'CARGO_STATUS' :
+    				$selectData = ['id'=>'PdCodeCargoStatus','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = \App\Models\PdCodeCargoStatus::all();
+    				$rs[] = $selectData;
+    				break;
+	    			
     		}
     		$i++;
     	}

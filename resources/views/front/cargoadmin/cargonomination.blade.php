@@ -29,17 +29,6 @@ CARGO NOMINATION
 									url						: 	'/cargonomination/loadsrc'
 									};
 	
-	source.initRequest = function(tab,columnName,newValue,collection){
-		postData = actions.loadedData[tab];
-		srcData = {	name : columnName,
-					value : newValue,
-// 					Facility : postData['Facility'],
- 					target: source[columnName].dependenceColumnName,
-// 					srcType : srcType,
-				};
-		return srcData;
-	}
-	
 	var renderFirsColumn = actions.renderFirsColumn;
 	actions.renderFirsColumn  = function ( data, type, rowData ) {
 		var html = renderFirsColumn(data, type, rowData );
@@ -63,7 +52,7 @@ CARGO NOMINATION
 @parent
 <script>
 	editBox.editRow = function (id,rowData){
-// 		showWaiting();
+ 		showWaiting();
 		isReset = (rowData['CARGO_STATUS'] == 3 || rowData['CARGO_STATUS'] == '3');
 		actionText = isReset?'reset':'confirm';
 		requestUrl = isReset?'/cargonomination/reset':'/cargonomination/confirm';

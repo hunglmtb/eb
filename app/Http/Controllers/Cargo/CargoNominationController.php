@@ -2,43 +2,33 @@
 namespace App\Http\Controllers\Cargo;
 
 use App\Exceptions\DataInputException;
-use App\Http\Controllers\CodeController;
-use App\Models\PdCargoNomination;
 use App\Models\PdCargo;
-use App\Models\Storage;
-use Illuminate\Http\Request;
-use App\Models\PdCargoSchedule;
-use App\Models\PdVoyage;
 use App\Models\PdCargoLoad;
-use App\Models\PdTransitCarrier;
+use App\Models\PdCargoNomination;
+use App\Models\PdCargoSchedule;
 use App\Models\PdCargoUnload;
-use App\Models\TerminalTimesheetData;
+use App\Models\PdTransitCarrier;
+use App\Models\PdVoyage;
 use App\Models\PdVoyageDetail;
+use App\Models\Storage;
+use App\Models\TerminalTimesheetData;
+use Illuminate\Http\Request;
 
-class CargoNominationController extends CodeController {
+class CargoNominationController extends CargoAdminController {
     
-	public function __construct() {
-		parent::__construct();
-		$this->extraDataSetColumns = [	'TRANSIT_TYPE'	=>	[	'column'	=>'PD_TRANSIT_CARRIER_ID',
-																'model'		=>'PdTransitCarrier'],
-		];
-	}
-	
     public function getFirstProperty($dcTable){
 		return  ['data'=>'ID','title'=>'','width'=>90];
 	}
-	
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	
     	$date_end 		= $postData['date_end'];
     	$date_end 		= \Helper::parseDate($date_end);
     	$storage_id 	= $postData['Storage'];
-    	 
-    	$mdlName = $postData[config("constants.tabTable")];
-    	$mdl = "App\Models\\$mdlName";
+    	$mdlName 		= $postData[config("constants.tabTable")];
+    	$mdl 			= "App\Models\\$mdlName";
+    	$pdCargo 		= PdCargo::getTableName();
     	
-    	$pdCargo = PdCargo::getTableName();
 //     	\DB::enableQueryLog();
     	$dataSet = $mdl::join($pdCargo,function ($query) use ($pdCargo,$storage_id,$dcTable) {
 								    		$query->on("$dcTable.CARGO_ID",'=',"$pdCargo.ID")
