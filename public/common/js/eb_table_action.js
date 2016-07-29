@@ -99,31 +99,14 @@ var intVal = function ( i ) {
 					type: "post",
 					data: srcData,
 					success:function(data){
-						$.each(dependenceColumnNames, function( i, dependence ) {
-							dataSet = data.dataSet[dependence].data;
-							if(typeof(dataSet) !== "undefined"&&dataSet.length>0){
-								sourceColumn = data.dataSet[dependence].sourceColumn;
-								ofId = data.dataSet[dependence].ofId;
-								cellData=dataSet[0]['ID'];
-								rowData[dependence] = cellData;
-								if(typeof(actions.extraDataSet[sourceColumn]) == "undefined"){
-									actions.extraDataSet[sourceColumn] = [];
-								}
-								actions.extraDataSet[sourceColumn][ofId] = dataSet;
-								dependencetd = $('#'+DT_RowId+" ."+dependence);
-								actions.applyEditable(tab,'select',dependencetd, cellData, rowData, dependence,dataSet);
-								actions.putModifiedData(tab,dependence,cellData,rowData);
-// 		 					createdFirstCellColumnByTable(table,rowData,dependencetd,tab);
-							}
-						});
 						console.log ( "success dominoColumns "+data );
+						actions.dominoColumnSuccess(data,dependenceColumnNames);
 					},
 					error: function(data) {
 						console.log ( "error dominoColumns "+data );
 					}
 				});
 			}
-			
 		}
 		createdFirstCellColumnByTable(table,rowData,td,tab);
 	}
