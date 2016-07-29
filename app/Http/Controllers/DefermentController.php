@@ -7,13 +7,10 @@ use App\Models\DefermentDetail;
 use App\Models\DefermentGroup;
 use App\Models\DefermentGroupEu;
 use App\Models\EnergyUnit;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DefermentController extends CodeController {
     
-	protected $extraDataSetColumns;
-	
 	public function __construct() {
 		parent::__construct();
 		$this->extraDataSetColumns = [	'DEFER_GROUP_TYPE'	=>	[	'column'	=>'DEFER_TARGET',
@@ -38,7 +35,6 @@ class DefermentController extends CodeController {
     	$date_end = $postData['date_end'];
     	$date_end = \Helper::parseDate($date_end);
     	
-    	$extraDataSet = [];
     	$dataSet = null;
     	$codeDeferGroupType = CodeDeferGroupType::getTableName();
 	    
@@ -57,17 +53,14 @@ class DefermentController extends CodeController {
 // 					    			->orderBy($dcTable)
  									->get();
 	    
-    	if ($dataSet&&$dataSet->count()>0) {
-    		$bunde = ['FACILITY_ID' => $facility_id];
-    		foreach($this->extraDataSetColumns as $column => $extraDataSetColumn){
-    			$extraDataSet[$column] = $this->getExtraEntriesBy($column,$extraDataSetColumn,$dataSet,$bunde);
-    		}
-    	}
-    	
+    	$bunde = ['FACILITY_ID' => $facility_id];
+    	$extraDataSet 	= $this->getExtraDataSet($dataSet, $bunde);
+    	 
     	return ['dataSet'=>$dataSet,
      			'extraDataSet'=>$extraDataSet
     	];
     }
+    
     
     public function putExtraBundle(&$bunde,$sourceColumn,$entry){
     	if ($sourceColumn=='DEFER_GROUP_TYPE') {

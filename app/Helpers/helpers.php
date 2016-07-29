@@ -227,4 +227,9 @@ class Helper {
 		endforeach;
 		return $prep;
 	}
+	
+	public static function isNullOrEmpty($value){
+		return $value==null||$value==''||$value==false;
+	}
+	
 }

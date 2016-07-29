@@ -85,6 +85,15 @@ var typetoclass = function (data){
 	return "text";
 };
 
+var source = {
+		initRequest	:	 function(tab,columnName,newValue,collection){
+			postData = actions.loadedData[tab];
+			srcData = {	name : columnName,
+						value : newValue,
+						};
+			return srcData;
+		}
+	};
 
 var actions = {
 		
@@ -95,7 +104,7 @@ var actions = {
 	loadedData 			: {},
 	loadPostParams 		: null,
 	initData 			: false,
-	initSaveData 		:false,
+	initSaveData 		: false,
 	editedData 			: {},
 	deleteData 			: {},
 	objectIds 			: [],
@@ -303,6 +312,14 @@ var actions = {
 	afterDataTable : function (table,tab){
 		$("#toolbar_"+tab).html('');
 	},
+	deleteActionColumn : function ( data, type, rowData ) {
+		var id = rowData['DT_RowId'];
+		var html = '<a id="delete_row_'+id+'" class="actionLink">Delete</a>';
+		return html;
+	},
+	isDisableAddingButton	: function (tab,table) {
+		return true;
+	},
 	renderFirsColumn : function ( data, type, rowData ) {
 		var html = "<div class='firstColumn'>"+data+"</div>";
 		var extraHtml = "<div class='extraFirstColumn'>";
@@ -456,6 +473,26 @@ var actions = {
 	},
 	extensionHandle		:	function(tab,columnName,rowData,limit,successFunction){
 	},
+	dominoColumnSuccess	:	function(data,dependenceColumnNames){
+		$.each(dependenceColumnNames, function( i, dependence ) {
+			dataSet = data.dataSet[dependence].data;
+			if(typeof(dataSet) !== "undefined"&&dataSet.length>0){
+				sourceColumn = data.dataSet[dependence].sourceColumn;
+				ofId = data.dataSet[dependence].ofId;
+				cellData=dataSet[0]['ID'];
+				rowData[dependence] = cellData;
+				if(typeof(actions.extraDataSet[sourceColumn]) == "undefined"){
+					actions.extraDataSet[sourceColumn] = [];
+				}
+				actions.extraDataSet[sourceColumn][ofId] = dataSet;
+				dependencetd = $('#'+DT_RowId+" ."+dependence);
+				actions.applyEditable(tab,'select',dependencetd, cellData, rowData, dependence,dataSet);
+				actions.putModifiedData(tab,dependence,cellData,rowData);
+//				createdFirstCellColumnByTable(table,rowData,dependencetd,tab);
+			}
+		});
+		console.log ( "success dominoColumns "+data );
+	},
 	getKeyFieldSet : function(){
 		if(typeof(actions.type.idName) == "function"){
 			return actions.type.idName();
@@ -600,8 +637,18 @@ var actions = {
 		case "checkbox":
 //			cell["className"] = 'select-checkbox';
 			cell["render"] = function ( data2, type2, row ) {
-								return '<div  class="checkboxCell" ><input type="checkbox" value="'+data2+'"size="15"></div>';
+								checked = data2?'checked':'';
+								return '<div  class="checkboxCell" ><input class="cellCheckboxInput" type="checkbox" value="'+data2+'"size="15" '+checked+'></div>';
 							};
+			cell["createdCell"] = function (td, cellData, rowData, row, col) {
+				colName = data.properties[col].data;
+ 				$(td).addClass( colName );
+ 				$(td).addClass( "cell"+type );
+ 				$(td).find(".cellCheckboxInput").click(function(){
+ 					fn = actions.getEditSuccessfn(tab,td, rowData, columnName,collection);
+ 					fn(null,$(this).is(':checked')?1:0);
+ 				});
+		    };
 	    	break;
 		case "select":
 			cell["render"] = function ( data2, type2, row ) {

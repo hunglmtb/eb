@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class PdVoyageDetail extends DynamicModel 
 { 
-	protected $table = 'pd_voyage_detail'; 
+	protected $table = 'PD_VOYAGE_DETAIL'; 
 } 

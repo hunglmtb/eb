@@ -6,17 +6,13 @@ var intVal = function ( i ) {
 	};
 	var index = 1000;
 	var addingOptions ={keepColumns:[]};
-	var source = {
-					initRequest	:	 function(tab,columnName,newValue,collection){
-						postData = actions.loadedData[tab];
-						srcData = {	name : columnName,
-									value : newValue,
-									};
-						return srcData;
-					}
-				};
+	
+	actions.isDisableAddingButton	= function (tab,table) {
+		return false;
+	};
 	
 	actions.afterDataTable = function (table,tab){
+		if(actions.isDisableAddingButton(tab,table)) return;
 		$("#toolbar_"+tab).html('<button>Add</button>');
 		$("#toolbar_"+tab).addClass('toolbarAction');
 		$("#toolbar_"+tab+ " button").on( 'click', function () {
@@ -56,11 +52,7 @@ var intVal = function ( i ) {
             });
 	};
 	
-	actions.renderFirsColumn = function ( data, type, rowData ) {
-		var id = rowData['DT_RowId'];
-		var html = '<a id="delete_row_'+id+'" class="actionLink">Delete</a>';
-		return html;
-	}
+	actions.renderFirsColumn = actions.deleteActionColumn;
 
 	actions.afterGotSavedData = function (data,table,tab){
     	var editedData = actions.editedData[tab];
@@ -107,31 +99,14 @@ var intVal = function ( i ) {
 					type: "post",
 					data: srcData,
 					success:function(data){
-						$.each(dependenceColumnNames, function( i, dependence ) {
-							dataSet = data.dataSet[dependence].data;
-							if(typeof(dataSet) !== "undefined"&&dataSet.length>0){
-								sourceColumn = data.dataSet[dependence].sourceColumn;
-								ofId = data.dataSet[dependence].ofId;
-								cellData=dataSet[0]['ID'];
-								rowData[dependence] = cellData;
-								if(typeof(actions.extraDataSet[sourceColumn]) == "undefined"){
-									actions.extraDataSet[sourceColumn] = [];
-								}
-								actions.extraDataSet[sourceColumn][ofId] = dataSet;
-								dependencetd = $('#'+DT_RowId+" ."+dependence);
-								actions.applyEditable(tab,'select',dependencetd, cellData, rowData, dependence,dataSet);
-								actions.putModifiedData(tab,dependence,cellData,rowData);
-// 		 					createdFirstCellColumnByTable(table,rowData,dependencetd,tab);
-							}
-						});
 						console.log ( "success dominoColumns "+data );
+						actions.dominoColumnSuccess(data,dependenceColumnNames);
 					},
 					error: function(data) {
 						console.log ( "error dominoColumns "+data );
 					}
 				});
 			}
-			
 		}
 		createdFirstCellColumnByTable(table,rowData,td,tab);
 	}

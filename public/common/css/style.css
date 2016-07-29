@@ -250,7 +250,8 @@ table.dataTable {
 	width: 100px;
 }
 
-#table_Deferment .THEOR_OIL_PERDAY,#table_Deferment  .THEOR_GAS_PERDAY,#table_Deferment  .THEOR_WATER_PERDAY {
+#table_Deferment .THEOR_OIL_PERDAY,#table_Deferment  .THEOR_GAS_PERDAY,#table_Deferment  .THEOR_WATER_PERDAY ,
+#table_PdCargoNomination .REQUEST_DATE, #table_PdCargoNomination .REQUEST_QTY , #table_PdCargoNomination .REQUEST_QTY_UOM {
 	background-clip: content-box;
 	background-color: yellow;
 }
@@ -355,4 +356,10 @@ table.dataTable {
 
 .nominate{
     margin-left: 15px;
+}
+
+#table_PdCargoNomination .NOMINATION_DATE, #table_PdCargoNomination .NOMINATION_QTY,
+#table_PdCargoNomination .NOMINATION_UOM ,#table_PdCargoNomination .NOMINATION_ADJ_TIME   {
+	background-clip: content-box;
+    background-color: #88ff88;
 }

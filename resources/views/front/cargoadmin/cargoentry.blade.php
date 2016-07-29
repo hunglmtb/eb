@@ -46,6 +46,7 @@ CARGO ENTRY
 @parent
 <script>
 	editBox.editRow = function (id,rowData){
+		showWaiting();
 		$.ajax({
 			url: '/cargoentry/nominate',
 			type: "post",
@@ -53,6 +54,7 @@ CARGO ENTRY
 					cargoId		: id,	
 				},
 			success:function(data){
+				hideWaiting();
 				console.log ( "Nominate success: "/*+JSON.stringify(data)*/);
 				alert(data.message);
 				if(data.code=='NOT_EXIST'){
@@ -69,6 +71,7 @@ CARGO ENTRY
 				}
 			},
 			error: function(data) {
+				hideWaiting();
 				console.log ( "Nominate error: "/*+JSON.stringify(data)*/);
 				alert("ERROR");
 			}
