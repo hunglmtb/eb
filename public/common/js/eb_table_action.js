@@ -100,7 +100,7 @@ var intVal = function ( i ) {
 					data: srcData,
 					success:function(data){
 						console.log ( "success dominoColumns "+data );
-						actions.dominoColumnSuccess(data,dependenceColumnNames,rowData);
+						actions.dominoColumnSuccess(data,dependenceColumnNames,rowData,tab);
 					},
 					error: function(data) {
 						console.log ( "error dominoColumns "+data );

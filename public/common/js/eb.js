@@ -473,7 +473,7 @@ var actions = {
 	},
 	extensionHandle		:	function(tab,columnName,rowData,limit,successFunction){
 	},
-	dominoColumnSuccess	:	function(data,dependenceColumnNames,rowData){
+	dominoColumnSuccess	:	function(data,dependenceColumnNames,rowData,tab){
 		$.each(dependenceColumnNames, function( i, dependence ) {
 			dataSet = data.dataSet[dependence].data;
 			if(typeof(dataSet) !== "undefined"&&dataSet.length>0){
