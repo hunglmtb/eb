@@ -705,7 +705,17 @@ class CodeController extends EBController {
 	    			$selectData['data'] = \App\Models\PdCodeTransitType::all();
 	    			$rs[] = $selectData;
 	    			break;
-		    		
+    			case 'ACTIVITY_NAME' :
+    				$selectData = ['id'=>'ID','targets'=>$i,'COLUMN_NAME'=>'NAME'];
+    				$sql = "";
+    				$sql .= " SELECT ID, NAME FROM pd_code_load_activity a where exists (select 1 from PD_CARGO_LOAD b join TERMINAL_TIMESHEET_DATA  c ON ( b.ID = c.PARENT_ID AND c.IS_LOAD = 1 ) where c.ACTIVITY_ID = a.ID)";
+					$sql .= " union all";
+					$sql .= " SELECT ID, NAME FROM pd_code_load_activity a where exists (select 1 from PD_CARGO_UNLOAD b join TERMINAL_TIMESHEET_DATA  c ON ( b.ID = c.PARENT_ID AND c.IS_LOAD = 1 ) where c.ACTIVITY_ID = a.ID)"; 
+
+					$tmp = \DB::select($sql);					
+    				$selectData['data'] = $tmp;
+    				$rs[] = $selectData;
+    				break;
     		}
     		$i++;
     	}

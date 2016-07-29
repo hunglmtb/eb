@@ -345,5 +345,7 @@ Route::post('gettablefieldsall', 'InterfaceController@getTableFieldsAll');
 Route::post('doimportdataloader', 'InterfaceController@doImportDataLoader');
 
 Route::get('demurrageebo',		['uses' =>'ProductDeliveryController@demurrageebo','middleware' => 'checkRight:PD_CARGO_MAN_DEMUR']);
-Route::post('demurragreebo/load',['uses' =>'ProductDeliveryController@load','middleware' => 'saveWorkspace']);
+Route::post('demurragreebo/load',['uses' =>'Cargo\DemurrageeboController@load','middleware' => 'saveWorkspace']);
+Route::post('demurragreebo/save', 		'Cargo\DemurrageeboController@saveDemurrage');
+Route::post('demurragreebo/loadsrc', 		'Cargo\DemurrageeboController@loadsrc');
 

@@ -29,20 +29,4 @@ class ProductDeliveryController extends CodeController {
 						);
 		return view ( 'front.cargoadmin.cargonomination',['filters'=>$filterGroups]);
 	}
-	
-	public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
-		 
-		$mdlName = $postData[config("constants.tabTable")];
-		$mdl = "App\Models\\$mdlName";
-		$date_end = $postData['date_end'];
-		//     	$date_end = Carbon::parse($date_end);
-		$date_end = \Helper::parseDate($date_end);
-		 
-		return ['dataSet'=>null				
-		];
-	}
-	
-	public function getFirstProperty($dcTable){
-		return  null;
-	}
 }
