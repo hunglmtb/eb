@@ -16,6 +16,9 @@ class CargoEntryController extends CodeController {
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	
+    	$date_end 		= $postData['date_end'];
+    	$date_end 		= \Helper::parseDate($date_end);
+    	
     	$mdlName = $postData[config("constants.tabTable")];
     	$mdl = "App\Models\\$mdlName";
     	
@@ -26,6 +29,8 @@ class CargoEntryController extends CodeController {
     	$dataSet = $mdl::join($storage,"$dcTable.STORAGE_ID", '=', "$storage.ID")
     					->leftJoin($pdCargoNomination,"$pdCargoNomination.CARGO_ID", '=', "$dcTable.ID")
     					->where(["$storage.FACILITY_ID" => $facility_id])
+    					->whereDate("$dcTable.REQUEST_DATE",'<=',$date_end)
+    					->whereDate("$dcTable.REQUEST_DATE",'>=',$occur_date)
 				    	->select(
 				    			"$dcTable.ID as $dcTable",
 				    			"$dcTable.ID as DT_RowId",
