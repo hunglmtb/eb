@@ -1,5 +1,5 @@
 <?php
-	$currentSubmenu 	=	'forecast';
+	$currentSubmenu 	=	'/fp/forecast';
 	$key 				= 	'forecast';
 	/* $tables = ['EnergyUnitDataFdcValue'	=>['name'=>'FDC VALUE'],
 	]; */

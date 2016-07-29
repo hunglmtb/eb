@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu ='chemical';
+$currentSubmenu ='/fo/chemical';
 $tables = ['KeystoreTankDataValue'	=>['name'=>'CHEMICAL TANK VALUE'],
 		'KeystoreStorageDataValue'	=>['name'=>'CHEMICAL STORAGE VALUE'],
 		'KeystoreInjectionPointDay'	=>['name'=>'CHEMICAL INJECTION POINT']

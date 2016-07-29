@@ -1,5 +1,5 @@
 <?php
-	$currentSubmenu ='storage';
+	$currentSubmenu ='/dc/storage';
 	$tables = ['TankDataFdcValue'		=>['name'=>'TANK FDC'],
 				'TankDataValue'			=>['name'=>'TANK VALUE'],
 				'TankDataPlan'			=>['name'=>'TANK PLAN'],

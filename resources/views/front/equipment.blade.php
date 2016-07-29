@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu ='equipment';
+$currentSubmenu ='/fo/equipment';
 $tables = ['EquipmentDataValue'	=>['name'=>'DAY_VALUE']];
 ?>
 @extends('core.fo')

@@ -1,5 +1,5 @@
 <?php
-	$currentSubmenu =	'allocateplan';
+	$currentSubmenu =	'/fp/allocateplan';
 	$key 			= 	'allocateplan';
  ?>
 

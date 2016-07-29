@@ -1,5 +1,5 @@
 <?php
-	$currentSubmenu ='flow';
+	$currentSubmenu ='/dc/flow';
 	$tables = ['FlowDataFdcValue'	=>['name'=>'FDC VALUE'],
 				'FlowDataValue'		=>['name'=>'STD VALUE'],
 				'FlowDataTheor'		=>['name'=>'THEORETICAL'],

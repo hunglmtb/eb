@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu ='comment';
+$currentSubmenu ='/fo/comment';
 $tables = ['Comment'	=>['name'=>'Comment']];
 ?>
 @extends('core.fo_action')

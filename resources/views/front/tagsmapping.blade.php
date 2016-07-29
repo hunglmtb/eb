@@ -1,5 +1,5 @@
 <?php
-	$currentSubmenu ='tagsMapping';
+	$currentSubmenu ='/tagsMapping';
 	$tables = ['IntTagMapping'	=>['name'=>'Tags Mapping']];
  	$active = 0;
 ?>
@@ -21,7 +21,8 @@ TAG MAPPING CONFIG
 						return 'ID';
 						},
 					};
-	actions.extraDataSetColumns = {'OBJECT_ID':'OBJECT_ID',
+	actions.extraDataSetColumns = {
+									'OBJECT_ID':'OBJECT_ID',
 									'TABLE_NAME':'TABLE_NAME',
 									'COLUMN_NAME':'TABLE_NAME'
 								};
