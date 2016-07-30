@@ -1,5 +1,5 @@
 <?php
-	$currentSubmenu =	'preos';
+	$currentSubmenu =	'/fp/preos';
 	$key 			= 	'preos';
  	$active = 1;
  ?>

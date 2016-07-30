@@ -18,6 +18,8 @@ class ProductDeliveryController extends CodeController {
 	
 	public function cargoentry() {
 		$filterGroups = array(	'productionFilterGroup'	=>[],
+								'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
+																['id'=>'date_end','name'=>'To date']),
 		);
 		return view ( 'front.cargoadmin.cargoentry',['filters'=>$filterGroups]);
 	}

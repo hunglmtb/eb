@@ -27,17 +27,6 @@ class TagsMappingController extends CodeController {
 		$objectType=IntObjectType::find($object_type);
 		$xtable=$objectType->CODE;
     	 
-    	
-//     	$objects = "select ID,`NAME` from $xtable where FACILITY_ID=$facility_id order by `NAME`";
-    	$objects = \DB::table($xtable)->where("FACILITY_ID",'=',$facility_id)
-    									->orderBy('NAME')
-    									->get(['ID','NAME',"ID as value","NAME as text"]);
-    	 
-    	$extraDataSet = [
-    			'OBJECT_ID'			=>	$objects,
-//     			'TABLE_NAME'		=>	$c_table
-    	];
-	   
 	    $where = [
 	    		"$xtable.FACILITY_ID" 	=> $facility_id,
  	    		"$dcTable.OBJECT_TYPE" 	=> $object_type,
@@ -64,7 +53,14 @@ class TagsMappingController extends CodeController {
     			"TABLE_NAME as text"]);
     	
      	$extraDataSet['TABLE_NAME']['TABLE_NAME'] = $data;
-    	 
+     	
+     	$objects = \DB::table($xtable)
+     					->where("FACILITY_ID",'=',$facility_id)
+				     	->orderBy('NAME')
+				     	->get(['ID','NAME',"ID as value","NAME as text"]);
+     	
+     	$extraDataSet['OBJECT_ID']['OBJECT_ID'] = $objects;
+     	
     	return ['dataSet'=>$dataSet,
      			'extraDataSet'=>$extraDataSet
     	];

@@ -1,5 +1,5 @@
 <?php
-	$currentSubmenu ='eu';
+	$currentSubmenu ='/dc/eu';
 	$tables = ['EnergyUnitDataFdcValue'	=>['name'=>'FDC VALUE'],
 			'EnergyUnitDataValue'		=>['name'=>'STD VALUE'],
 			'EnergyUnitDataTheor'		=>['name'=>'THEORETICAL'],

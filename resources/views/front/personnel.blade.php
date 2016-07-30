@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu ='personnel';
+$currentSubmenu ='/fo/personnel';
 $tables = ['Personnel'	=>['name'=>'PERSONNEL']];
 ?>
 @extends('core.fo_action')

@@ -1,5 +1,5 @@
 <?php
-	$currentSubmenu ='deferment';
+	$currentSubmenu ='/dc/deferment';
 	$tables = ['Deferment'	=>['name'=>'DEFERMENT']];
  	$active = 0;
 ?>

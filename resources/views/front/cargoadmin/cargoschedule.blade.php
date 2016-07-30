@@ -1,5 +1,5 @@
 <?php
-	$currentSubmenu ='cargoschedule';
+	$currentSubmenu ='/pd/cargoschedule';
 	$tables = ['PdCargoSchedule'	=>['name'=>'Data Input']];
 	$isAction = true;
 ?>

@@ -1,5 +1,5 @@
 <?php
-	$currentSubmenu =	'loadplanforecast';
+	$currentSubmenu =	'/fp/loadplanforecast';
 	$key 			= 	'loadplanforecast';
  ?>
 

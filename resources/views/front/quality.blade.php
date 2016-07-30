@@ -1,5 +1,5 @@
 <?php
-	$currentSubmenu ='quality';
+	$currentSubmenu ='/dc/quality';
 	$tables = ['QltyData'	=>['name'=>'QUALITY DATA']];
  	$active = 0;
 ?>

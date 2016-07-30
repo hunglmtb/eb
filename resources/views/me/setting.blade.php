@@ -7,6 +7,8 @@ $df = new \App\Models\DateTimeFormat;
 $dateformatSource	=	$df->getFormat('DATE_FORMAT');
 $timeformatSource	=	$df->getFormat('TIME_FORMAT');
 
+$currentSubmenu ='/me/setting';
+
 ?>
 @extends('core.bstemplate',['subMenus' => array('pairs' => $subMenus, 'currentSubMenu' => $currentSubmenu)])
 

@@ -1,5 +1,5 @@
 <?php
-	$currentSubmenu ='eutest';
+	$currentSubmenu ='/dc/eutest';
 	$tables = ['EuTestDataFdcValue'		=>['name'=>'FDC VALUE'],
 			'EuTestDataStdValue'		=>['name'=>'STD VALUE'],
 			'EuTestDataValue'			=>['name'=>'DAY VALUE'],

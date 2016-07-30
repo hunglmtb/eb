@@ -1,5 +1,5 @@
 <?php
-	$currentSubmenu ='ticket';
+	$currentSubmenu ='/dc/ticket';
 	$tables = [
 			'RunTicketFdcValue'		=>['name'=>'TICKET FDC'],
 			'RunTicketValue'		=>['name'=>'TICKET VALUE'],
