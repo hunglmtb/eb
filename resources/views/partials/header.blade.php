@@ -142,8 +142,8 @@ var xmenu=
 				[
 					{"code":"","name":"Cargo Management","title":"","link":"#","menus":
 						[
-							{"name":"Demurrage/EBO","title":"","link":"#"},
-							{"name":"Cargo Documents","title":"","link":"#"},
+							{"name":"Demurrage/EBO","title":"","link":"/demurrageebo"},
+							{"name":"Cargo Documents","title":"","link":"/cargodocuments"},
 							{"name":"Cargo Status","title":"","link":"#"},
 						]
 					},
