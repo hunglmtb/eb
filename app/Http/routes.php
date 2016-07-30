@@ -355,3 +355,6 @@ Route::post('demurragreebo/load',['uses' =>'Cargo\DemurrageeboController@load','
 Route::post('demurragreebo/save', 		'Cargo\DemurrageeboController@saveDemurrage');
 Route::post('demurragreebo/loadsrc', 		'Cargo\DemurrageeboController@loadsrc');
 
+Route::get('cargodocuments',		['uses' =>'ProductDeliveryController@cargodocuments','middleware' => 'checkRight:PD_CARGO_MAN_DOC']);
+Route::post('cargodocuments/load',['uses' =>'Cargo\CargoDocumentsController@load','middleware' => 'saveWorkspace']);
+

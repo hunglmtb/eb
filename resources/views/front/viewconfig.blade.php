@@ -216,7 +216,7 @@ var _viewconfig = {
 				{
 					var label=$("#cboObjectName option:selected").text();
 					label=prompt("Add with label",label);
-					if(label.trim()=="") return;
+					if(label=="") return;
 
 					var s="<li class='x_item' config='"+x+"'><span>"+label+"("+$("#cboObjectNameTable option:selected").text()+($("#cboEUFlowPhase").is(":visible")?"."+$("#cboEUFlowPhase option:selected").text():"")+"."+$("#cboObjectNameProps option:selected").text()+")"+math+"</span> "+'<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="/img/x.png"><br></li>';
 					$("#plotItemObjectContainer").append(s);
@@ -412,29 +412,20 @@ var _viewconfig = {
 				</select>
 			</td>
 			
-			<td><b>Plot Item type</b></td>
-			<td>
-				<select id='cboChartType' style='width:200px'>
-					<option value='line'>Line</option>
-					<option value='spline'>Curved line</option>
-					<option value='column'>Column</option>
-					<option value='area'>Area</option>
-					<option value='areaspline'>Curved Area</option>
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td><b><span>Flow</span></b></td>
-			<td><select style="width:100%;height:22px" id="cboObjectName" onchange="_viewconfig.loadEUPhase();" size="1" name="cboObjectName"></select></td>
 			<td><b>Data source</b></td>
 			<td><select style="width:200px;height:22px" id="cboObjectNameTable" onchange="_viewconfig.cboObjectNameTableChange();" size="1" name="cboObjectNameTable"></select></td>
 			
 		</tr>
 		<tr>
-			<td><b><span class="phase_type">Flow phase</span></b></td>
-			<td><span class="phase_type"><select style="width:100%;" id="cboEUFlowPhase" size="1" name="cboEUFlowPhase"></select></span></td>		
+			<td><b><span>Flow</span></b></td>
+			<td><select style="width:100%;height:22px" id="cboObjectName" onchange="_viewconfig.loadEUPhase();" size="1" name="cboObjectName"></select></td>
 			<td ><b>Property</b></td>
 			<td ><select style="width:200px;height:22px" id="cboObjectNameProps" size="1" name="cboObjectNameProps"></select></td>
+		</tr>
+		<tr>
+			<td><b><span class="phase_type">Flow phase</span></b></td>
+			<td><span class="phase_type"><select style="width:100%;" id="cboEUFlowPhase" size="1" name="cboEUFlowPhase"></select></span></td>		
+			
 		</tr>
 		<tr>
 			<td><b>Operation</b></td>

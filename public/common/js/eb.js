@@ -86,7 +86,7 @@ var typetoclass = function (data){
 };
 
 var source = {
-		initRequest	:	 function(tab,columnName,newValue,collection){
+		initRequest	:	 function(tab,columnName,newValue,collection, rowData){
 			postData = actions.loadedData[tab];
 			srcData = {	name : columnName,
 						value : newValue,

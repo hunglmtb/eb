@@ -13,7 +13,7 @@ class ProductDeliveryController extends CodeController {
 								'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
 																['id'=>'date_end','name'=>'To date']),
 						);
-		return view ( 'front.demurrageebo',['filters'=>$filterGroups]);
+		return view ( 'front.cargoadmin.demurrageebo',['filters'=>$filterGroups]);
 	}
 	
 	public function cargoentry() {
@@ -36,5 +36,13 @@ class ProductDeliveryController extends CodeController {
 						['id'=>'date_end','name'=>'To date']),
 		);
 		return view ( 'front.cargoadmin.cargoschedule',['filters'=>$filterGroups]);
+	}
+	
+	public function cargodocuments() {
+		$filterGroups = array(	'productionFilterGroup'	=>[2			=>'Storage'],
+				'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
+						['id'=>'date_end','name'=>'To date']),
+		);
+		return view ( 'front.cargoadmin.cargodocuments',['filters'=>$filterGroups]);
 	}
 }

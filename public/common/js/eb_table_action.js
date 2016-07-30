@@ -83,7 +83,7 @@ var intVal = function ( i ) {
 // 		if(columnName=='SRC_TYPE') {
 		if(columnName!=null&&source!=null&&source.hasOwnProperty(columnName)){
 			if(typeof(source[columnName].url) !== "undefined"&&source[columnName].url != null){
-				srcData = source.initRequest(tab,columnName,newValue,collection);
+				srcData = source.initRequest(tab,columnName,newValue,collection, rowData);
 				if(srcData==null) return;
 				
 				DT_RowId = rowData['DT_RowId'];

@@ -572,7 +572,7 @@ class AllocationController extends Controller {
 		AllocRunner::where(['ID'=>$runner_id])->update(['NAME'=>$runner_name, 'ORDER'=>$order, 'ALLOC_TYPE'=>$alloc_type, 'THEOR_VALUE_TYPE'=>$theor_value_type, 'THEOR_PHASE'=>$theor_phase]);
 		
 		//Delete all Object in runner
-		AllocRunnerObjects::where(['ID'=>$runner_id])->delete();
+		AllocRunnerObjects::where(['RUNNER_ID'=>$runner_id])->delete();
 		
 		//Add again
 		foreach($obj_froms as $obj_from)
