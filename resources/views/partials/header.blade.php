@@ -57,11 +57,11 @@ var xmenu=
 				[
 					{"code":"","name":"Data Visualization","title":"","link":"#","menus":
 						[
-							{"name":"Network Models","title":"","link":"#"},
-							{"name":"Data Views","title":"","link":"#"},
-							{"name":"Reports","title":"","link":"#"},
+							{"name":"Network Models","title":"","link":"/diagram"},
+							{"name":"Data Views","title":"","link":"/dataview"},
+							{"name":"Reports","title":"","link":"/workreport"},
 							{"name":"Graph Plotting","title":"","link":"#"},
-							{"name":"Workflow","title":"","link":"#"},
+							{"name":"Workflow","title":"","link":"/workflow"},
 							{"name":"Task Manager","title":"","link":"#"},
 						]
 					},
@@ -71,14 +71,14 @@ var xmenu=
 				[
 					{"code":"","name":"Allocation","title":"","link":"#","menus":
 						[
-							{"name":"Run Allocation","title":"","link":"#"},
-							{"name":"Allocation Config","title":"","link":"#"},
+							{"name":"Run Allocation","title":"","link":"/allocrun"},
+							{"name":"Allocation Config","title":"","link":"/allocset"},
 						]
 					},
 					{"code":"","name":"Interface","title":"","link":"#","menus":
 						[
-							{"name":"Import Data","title":"","link":"#"},
-							{"name":"Data Loader","title":"","link":"#"},
+							{"name":"Import Data","title":"","link":"/importdata"},
+							{"name":"Data Loader","title":"","link":"/dataloader"},
 						]
 					},
 				]

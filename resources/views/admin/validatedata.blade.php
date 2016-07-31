@@ -174,12 +174,6 @@ var _validatedata = {
 }
 </script>
 
-<div id="EditGroup"
-	style="display: none; width: 100%; height: 100%; background: #ffffff; overflow: hidden;">
-	<iframe id="iframeWorkflow"
-		style="border: none; padding: 0px; margin-left:-21px; width: 110%; height: 100%; box-sizing: border-box;"></iframe>
-</div>
-
 <div>
 	<table style="table-layout: fixed;">
 		<thead id="table5">
