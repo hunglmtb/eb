@@ -10,8 +10,7 @@
 </div>
 
 	 <div id="user_box" style="position:absolute;top:8px;right:10px;text-align:right">
-	 <span>{{$current_username}}
-	 </span>
+	 <span style="cursor:pointer" onclick="location.href='/me/setting';"><font color="#33b5e8"><span id="textUsername">{{$current_username}}</span></font></span>
 	 <img src="/img/settings.png" onclick="showWorkflow()" height="24" width="24" id="uf_settings" title="Settings" style="">
 	 <img src="/img/help.png" onclick="showHelp()" title="Help on this function" style="">
 	 <a href="/auth/logout"><img src="/img/logout.png" title="Log out" style=""></a>
@@ -22,7 +21,6 @@
 <script>
 var xmenu=
 [
-	{"name":"DASHBOARD","link":"/",background_img:"","columns":null},
 	{"name":"PRODUCTION","link":"#",background_img:"oilgas.png","columns":
 		[
 			{"blocks":
@@ -55,6 +53,19 @@ var xmenu=
 			},
 			{"blocks":
 				[
+					{"code":"","name":"Allocation","title":"","link":"#","menus":
+						[
+							{"name":"Run Allocation","title":"","link":"#"},
+						]
+					},
+				]
+			}
+		]
+	},
+	{"name":"Data Visualization","link":"#",background_img:"oilgas.png","columns":
+		[
+			{"blocks":
+				[
 					{"code":"","name":"Data Visualization","title":"","link":"#","menus":
 						[
 							{"name":"Network Models","title":"","link":"#"},
@@ -63,38 +74,11 @@ var xmenu=
 							{"name":"Graph Plotting","title":"","link":"#"},
 							{"name":"Workflow","title":"","link":"#"},
 							{"name":"Task Manager","title":"","link":"#"},
+							{"name":"DASHBOARD","title":"","link":"/"},
 						]
 					},
 				]
-			},
-			{"blocks":
-				[
-					{"code":"","name":"Allocation","title":"","link":"#","menus":
-						[
-							{"name":"Run Allocation","title":"","link":"#"},
-							{"name":"Allocation Config","title":"","link":"#"},
-						]
-					},
-					{"code":"","name":"Interface","title":"","link":"#","menus":
-						[
-							{"name":"Import Data","title":"","link":"#"},
-							{"name":"Data Loader","title":"","link":"#"},
-						]
-					},
-				]
-			},
-			{"blocks":
-				[
-					{"code":"","name":"Forecast & Planning","title":"","link":"#","menus":
-						[
-							{"name":"Well Forecast","title":"WELL FORECAST","link":"/fp/forecast"},
-							{"name":"PREoS","title":"PENG-ROBINSON EQUATION OF STATE","link":"/fp/preos"},
-							{"name":"Manual Allocate Plan","title":"MANUAL ALLOCATE PLAN","link":"/fp/allocateplan"},
-							{"name":"Load Plan/Forecast","title":"LOAD PLAN/FORECAST DATA","link":"/fp/loadplanforecast"},
-						]
-					},
-				]
-			},
+			}
 		]
 	},
 	{"name":"PRODUCT DELIVERY","link":"#",background_img:"delivery2.png","columns":
@@ -198,7 +182,7 @@ var xmenu=
 			},
 		]
 	},
-	{"name":"CONFIG","link":"#",background_img:"config.png","columns":
+	{"name":"ADMIN","link":"#",background_img:"config.png","columns":
 		[
 			{"blocks":
 				[
@@ -219,11 +203,17 @@ var xmenu=
 							{"name":"Roles","title":"","link":"#"},
 							{"name":"User Logs","title":"","link":"#"},
 							{"name":"Audit Trail","title":"","link":"#"},
+							{"name":"User Settings","title":"","link":"#"},
+							{"name":"Change Password","title":"Change Password","link":"/me/setting"},
 							{"name":"Help Editor","title":"","link":"#"},
 						]
 					},
 				]
 			},
+		]
+	},
+	{"name":"CONFIG","link":"#",background_img:"config.png","columns":
+		[
 			{"blocks":
 				[
 					{"code":"","name":"System Configuration","title":"","link":"#","menus":
@@ -243,6 +233,9 @@ var xmenu=
 					{"code":"","name":"Interface","title":"","link":"#","menus":
 						[
 							{"name":"Source Config","title":"","link":"#"},
+							{"name":"Import Data","title":"","link":"#"},
+							{"name":"Data Loader","title":"","link":"#"},
+							{"name":"Dashboard Config","title":"","link":"#"},
 						]
 					},
 					{"code":"","name":"Allocation","title":"","link":"#","menus":
@@ -251,18 +244,23 @@ var xmenu=
 						]
 					},
 				]
-			},
+			}
+		]
+	},
+	{"name":"Forecast & Planning","link":"#",background_img:"oilgas.png","columns":
+		[
 			{"blocks":
 				[
-					{"code":"","name":"User","title":"","link":"#","menus":
+					{"code":"","name":"Forecast & Planning","title":"","link":"#","menus":
 						[
-							{"name":"Dashboard Config","title":"","link":"#"},
-							{"name":"User Settings","title":"","link":"#"},
-							{"name":"Change Password","title":"Change Password","link":"/me/setting"},
+							{"name":"Well Forecast","title":"WELL FORECAST","link":"/fp/forecast"},
+							{"name":"PREoS","title":"PENG-ROBINSON EQUATION OF STATE","link":"/fp/preos"},
+							{"name":"Manual Allocate Plan","title":"MANUAL ALLOCATE PLAN","link":"/fp/allocateplan"},
+							{"name":"Load Plan/Forecast","title":"LOAD PLAN/FORECAST DATA","link":"/fp/loadplanforecast"},
 						]
 					},
 				]
-			},
+			}
 		]
 	},
 ];

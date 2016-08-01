@@ -538,7 +538,7 @@ var actions = {
 			return moment.utc(newValue).format(configuration.time.DATE_FORMAT_UTC);
 //			return moment.utc(newValue).format("YYYY-MM-DD HH:mm:ss");
 		}
-		return moment(newValue).format(configuration.time.DATETIME_FORMAT_UTC);
+		return moment.utc(newValue).format(configuration.time.DATETIME_FORMAT_UTC);
 //		return moment(newValue).format("YYYY-MM-DD HH:mm:ss");
 	},
 	getCellType : function(data,type,cindex){
@@ -604,7 +604,7 @@ var actions = {
 //									return moment(data2).format("MM/DD/YYYY");
 									
 								}
-								return moment(data2,configuration.time.DATE_FORMAT_UTC).format(configuration.time.DATE_FORMAT);
+								return moment.utc(data2,configuration.time.DATETIME_FORMAT_UTC).format(configuration.time.DATE_FORMAT);
 //								return moment(data2,"YYYY-MM-DD").format("MM/DD/YYYY");
 							};
 	    	break;
