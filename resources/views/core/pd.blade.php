@@ -4,7 +4,8 @@ $subMenus = [array('title' => 'CONTRACT ADMIN', 	'link' => ''),
 			array('title' => 'CARGO NOMINATION', 	'link' => 'cargonomination'),
 			array('title' => 'CARGO SCHEDULE', 		'link' => 'cargoschedule'),
 			array('title' => 'CARGO ACTION', 		'link' => ''),
-			array('title' => 'CARGO MANAGEMENT', 	'link' => 'ticket'),
+			array('title' => 'DEMURRAGE/EBO', 	'link' => 'demurrageebo'),
+			array('title' => 'CARGO DOCUMENTS', 	'link' => 'cargodocuments'),
 			array('title' => 'CARGO MONITORING', 	'link' => '')
 ];
 ?>

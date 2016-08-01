@@ -215,7 +215,7 @@ var _graph = {
 			var d=$("#cboObjectType").val().split("/");
 			var s1="", s2="", s3="";
 			if(d.length>1)
-			{
+			{1
 				s1=d[1]+"_";
 			}
 			if(d.length>2)
@@ -227,7 +227,7 @@ var _graph = {
 				s3=":"+$("#cboEUFlowPhase").val();
 			}
 			
-			var x=d[0]+":"+$("#cboObjectName").val()+":"+s1+$("#cboObjectNameTable").val()+":"+s2+$("#cboObjectNameProps").val()+s3+"~"+$("#cboAllocType").val()+"~"+$("#cboPlanType").val()+"~"+$("#cboForecastType").val();
+			var x=d[0]+":"+$("#cboObjectName").val()+":"+$("#cboObjectNameTable").val()+":"+$("#cboObjectNameProps").val()+s3+"~"+$("#cboAllocType").val()+"~"+$("#cboPlanType").val()+"~"+$("#cboForecastType").val();
 			if($("span[object_value='"+x+"']").length==0)
 			{
 				var sel="<select class='x_chart_type' style='width:100px'><option value='line'>Line</option><option value='spline'>Curved line</option><option value='column'>Column</option><option value='area'>Area</option><option value='areaspline'>Curved Area</option></select>";
@@ -366,7 +366,7 @@ var _graph = {
 		var cbo = '';
 		$('#'+id).html(cbo);
 		for(var v in data){
-			cbo += ' 		<option value="' + data[v].ID + '">' + data[v].NAME + '</option>';
+			cbo += ' 		<option value="' + data[v].CODE + '">' + data[v].NAME + '</option>';
 		}
 		$('#'+id).html(cbo);
 		$('#'+id).change();

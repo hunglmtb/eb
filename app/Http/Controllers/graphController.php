@@ -180,14 +180,13 @@ class graphController extends Controller {
 		$model = 'App\\Models\\' . $data['table'];
 		$tableName = $model::getTableName ();
 		
-		$tmp  = CfgFieldProps::where(['USE_FDC'=>1, 'TABLE_NAME'=>$tableName])->get(['COLUMN_NAME AS ID', 'LABEL AS NAME']);
+		$tmp  = CfgFieldProps::where(['USE_FDC'=>1, 'TABLE_NAME'=>$tableName])->get(['COLUMN_NAME AS CODE', 'LABEL AS NAME']);
 		
 		if(count($tmp) > 0){
 			foreach ($tmp as $t){
 				if($t->NAME == '' || is_null($t->NAME)){
-					$t->NAME = $t->ID;
+					$t->NAME = $t->CODE;
 				}
-				
 				array_push($result, $t);
 			}
 		}

@@ -12,13 +12,13 @@ $tab['FLOW'] =[
 ];
 
 $tab['ENERGY_UNIT'] =[
-		['NAME'=>'FDC VALUE', 'ID'=>'FlowDataFdcValue'],
-		['NAME'=>'STD VALUE', 'ID'=>'FlowDataValue'],
-		['NAME'=>'THEORETICAL', 'ID'=>'FlowDataTheor'],
-		['NAME'=>'ALLOCATION', 'ID'=>'FlowDataAlloc'],
-		['NAME'=>'COMPOSITION ALLOC', 'ID'=>'FlowCompDataAlloc'],
-		['NAME'=>'PLAN', 'ID'=>'FlowDataPlan'],
-		['NAME'=>'FORECAST', 'ID'=>'FlowDataForecast']
+		['NAME'=>'FDC VALUE', 'ID'=>'EnergyUnitDataFdcValue'],
+		['NAME'=>'STD VALUE', 'ID'=>'EnergyUnitDataValue'],
+		['NAME'=>'THEORETICAL', 'ID'=>'EnergyUnitDataTheor'],
+		['NAME'=>'ALLOCATION', 'ID'=>'EnergyUnitDataAlloc'],
+		['NAME'=>'COMPOSITION ALLOC', 'ID'=>'EnergyUnitCompDataAlloc'],
+		['NAME'=>'PLAN', 'ID'=>'EnergyUnitDataPlan'],
+		['NAME'=>'FORECAST', 'ID'=>'EnergyUnitDataForecast']
 ];
 
 $tab['STORAGE'] =[

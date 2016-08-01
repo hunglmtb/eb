@@ -1,6 +1,7 @@
 <?php
 	$currentSubmenu ='demurragreebo';
-	$tables = ['Demurrage'	=>['name'=>'Load']];
+	$tables = ['PdDemurageEbo'	=>['name'=>'Load']];
+	$isAction = true;
 ?>
 
 @extends('core.pd')
@@ -25,6 +26,32 @@ DEMURRAGE/EBO
 	source['ACTIVITY_NAME']	={	dependenceColumnName	:	['START_TIME', 'END_TIME', 'ELAPSE_TIME'],
 			url						: 	'/demurragreebo/loadsrc'
 		};
+
+	source.initRequest = function(tab,columnName,newValue,collection, rowData){
+		postData = actions.loadedData[tab];
+		srcData = {						
+ 					row_id : rowData['DT_RowId']
+				};
+		return srcData;
+	}
+
+	actions.dominoColumnSuccess = function(_data, dependenceColumnNames, rowData, tab){
+		var data = _data.dataSet;
+
+		var table = $('#table_Demurrage').DataTable();
+
+		rowData['START_TIME'] = data['START_TIME'];
+		rowData['END_TIME'] = data['END_TIME'];
+		rowData['ELAPSE_TIME'] = data['ELAPSE_TIME'];
+
+    	row = table.row( '#'+rowData['DT_RowId']);
+		row.data(rowData).draw(false);
+			
+	};
+
+	actions.isDisableAddingButton	= function (tab,table) {
+		return true;
+	};
 
 	$(function(){
 		var ebtoken = $('meta[name="_token"]').attr('content');

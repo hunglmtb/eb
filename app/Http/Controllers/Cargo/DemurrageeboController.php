@@ -147,31 +147,12 @@ class DemurrageeboController extends CodeController {
 	}
 	
 	public function loadsrc(Request $request){
-		//     	sleep(2);
-		$postData = $request->all();	
-		$sourceColumn = $postData['name'];
-		$sourceColumnValue = $postData['value'];
+		$postData = $request->all();
 		
 		$dataSet = array();
-		
-		$dataSet['START_TIME'] = [	'data'			=>	[array('ID'=>1,
-																'NAME'=>'2016-01-01 12:12'
-																)],
-				'ofId'			=>	$sourceColumnValue,
-				'sourceColumn'	=>	$sourceColumn
-		];
-		$dataSet['END_TIME'] = [	'data'			=>	[array('ID'=>2,
-																'NAME'=>'2016-01-02 12:12'
-																)],
-				'ofId'			=>	$sourceColumnValue,
-				'sourceColumn'	=>	$sourceColumn
-		];
-		$dataSet['ELAPSE_TIME'] = [	'data'			=>	[array('ID'=>3,
-																'NAME'=>1234
-																)],
-				'ofId'			=>	$sourceColumnValue,
-				'sourceColumn'	=>	$sourceColumn
-		];
+		$dataSet['START_TIME'] ='2016-01-01 12:12';
+		$dataSet['END_TIME'] = '2016-01-02 12:12';
+		$dataSet['ELAPSE_TIME'] = 1234;
 		 
 		return response()->json(['dataSet'=>$dataSet,
 				'postData'=>$postData]);

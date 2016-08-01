@@ -55,7 +55,7 @@ var xmenu=
 				[
 					{"code":"","name":"Allocation","title":"","link":"#","menus":
 						[
-							{"name":"Run Allocation","title":"","link":"#"},
+							{"name":"Run Allocation","title":"","link":"/allocrun"},
 						]
 					},
 				]
@@ -68,13 +68,12 @@ var xmenu=
 				[
 					{"code":"","name":"Data Visualization","title":"","link":"#","menus":
 						[
-							{"name":"Network Models","title":"","link":"#"},
-							{"name":"Data Views","title":"","link":"#"},
-							{"name":"Reports","title":"","link":"#"},
+							{"name":"Network Models","title":"","link":"/diagram"},
+							{"name":"Data Views","title":"","link":"/dataview"},
+							{"name":"Reports","title":"","link":"/workreport"},
 							{"name":"Graph Plotting","title":"","link":"#"},
-							{"name":"Workflow","title":"","link":"#"},
+							{"name":"Workflow","title":"","link":"/workflow"},
 							{"name":"Task Manager","title":"","link":"#"},
-							{"name":"DASHBOARD","title":"","link":"/"},
 						]
 					},
 				]
@@ -126,8 +125,8 @@ var xmenu=
 				[
 					{"code":"","name":"Cargo Management","title":"","link":"#","menus":
 						[
-							{"name":"Demurrage/EBO","title":"","link":"#"},
-							{"name":"Cargo Documents","title":"","link":"#"},
+							{"name":"Demurrage/EBO","title":"","link":"/demurrageebo"},
+							{"name":"Cargo Documents","title":"","link":"/cargodocuments"},
 							{"name":"Cargo Status","title":"","link":"#"},
 						]
 					},
@@ -233,14 +232,14 @@ var xmenu=
 					{"code":"","name":"Interface","title":"","link":"#","menus":
 						[
 							{"name":"Source Config","title":"","link":"#"},
-							{"name":"Import Data","title":"","link":"#"},
-							{"name":"Data Loader","title":"","link":"#"},
+							{"name":"Import Data","title":"","link":"/importdata"},
+							{"name":"Data Loader","title":"","link":"/dataloader"},
 							{"name":"Dashboard Config","title":"","link":"#"},
 						]
 					},
 					{"code":"","name":"Allocation","title":"","link":"#","menus":
 						[
-							{"name":"Allocation Config","title":"","link":"#"},
+							{"name":"Allocation Config","title":"","link":"/allocset"},
 						]
 					},
 				]
