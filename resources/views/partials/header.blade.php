@@ -71,7 +71,7 @@ var xmenu=
 							{"name":"Network Models","title":"","link":"/diagram"},
 							{"name":"Data Views","title":"","link":"/dataview"},
 							{"name":"Reports","title":"","link":"/workreport"},
-							{"name":"Graph Plotting","title":"","link":"#"},
+							{"name":"Advanced Graph","title":"","link":"/graph"},
 							{"name":"Workflow","title":"","link":"/workflow"},
 							{"name":"Task Manager","title":"","link":"#"},
 						]
@@ -187,9 +187,9 @@ var xmenu=
 				[
 					{"code":"","name":"Transaction Data","title":"","link":"#","menus":
 						[
-							{"name":"Validate Data","title":"","link":"#"},
-							{"name":"Approve Data","title":"","link":"#"},
-							{"name":"Lock Data","title":"","link":"#"},
+							{"name":"Validate Data","title":"VALIDATE DATA","link":"/am/validatedata"},
+							{"name":"Approve Data","title":"APPROVE DATA","link":"/am/approvedata"},
+							{"name":"Lock Data","title":"DATA LOCKING","link":"/am/lockdata"},
 						]
 					},
 				]
@@ -198,13 +198,13 @@ var xmenu=
 				[
 					{"code":"","name":"Administrator","title":"","link":"#","menus":
 						[
-							{"name":"Users","title":"","link":"#"},
-							{"name":"Roles","title":"","link":"#"},
-							{"name":"User Logs","title":"","link":"#"},
-							{"name":"Audit Trail","title":"","link":"#"},
-							{"name":"User Settings","title":"","link":"#"},
+							{"name":"Users","title":"Users Management","link":"/am/users"},
+							{"name":"Roles","title":"Roles Settings","link":"/am/roles"},
+							{"name":"User Logs","title":"USERS LOG","link":"/am/userlog"},
+							{"name":"Audit Trail","title":"Audit Trail","link":"/am/audittrail"},
+// 							{"name":"User Settings","title":"","link":"#"},
 							{"name":"Change Password","title":"Change Password","link":"/me/setting"},
-							{"name":"Help Editor","title":"","link":"#"},
+							{"name":"Help Editor","title":"HELP EDITOR","link":"/am/helpeditor"},
 						]
 					},
 				]

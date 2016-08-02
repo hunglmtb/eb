@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu = 'roles';
+$currentSubmenu ='/am/roles';
 $listControls = [ 
 		'UserRole' => array (
 				'label' => 'User Roles',
@@ -10,9 +10,7 @@ $listControls = [
 
 @extends('core.am', ['listControls' => $listControls])
 
-@section('title')
-<div class="title">Roles Settings</div>
-@stop @section('group')
+@section('group')
 <div id="controlSearch">
 	<div class="role_title">
 		<b>Role </b>
@@ -32,7 +30,8 @@ $listControls = [
 
 </div>
 <br>
-@stop @section('content')
+@stop 
+@section('content')
 
 <script type="text/javascript">
 

@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu = 'userlog';
+$currentSubmenu = '/am/userlog';
 
 $listControls = [ 		
 		'USER' => array (
@@ -32,9 +32,7 @@ $listControls = [
 
 @extends('core.am', ['listControls' => $listControls])
 
-@section('title')
-<div class="title">USERS LOG</div>
-@stop @section('content')
+@section('content')
 
 <script type="text/javascript">
 $(function(){	

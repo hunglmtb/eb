@@ -1,8 +1,8 @@
+<?php
+$currentSubmenu = '/am/helpeditor';
+?>
 @extends('core.bshelpeditor')
 
-@section('title')
-<div class="title">HELP EDITOR</div>
-@stop 
 @section('content')
 <script src="/ckeditor/ckeditor.js"></script>
 <script type="text/javascript">

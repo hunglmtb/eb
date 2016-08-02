@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu = 'validatedata';
+$currentSubmenu = '/am/validatedata';
 
 $listControls = [ 
 		'LoProductionUnit' => array (
@@ -62,9 +62,7 @@ $listControls = [
 
 @extends('core.am', ['listControls' => $listControls])
 
-@section('title')
-<div class="title">VALIDATE DATA</div>
-@stop @section('content')
+@section('content')
 
 <script type="text/javascript">
 $(function(){

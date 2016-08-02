@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu = 'users';
+$currentSubmenu ='/am/users';
 $listControls = [ 
 		'UserRole' => array (
 				'label' => 'User Roles',
@@ -35,10 +35,6 @@ $listControls = [
 ?>
 
 @extends('core.am', ['listControls' => $listControls])
-
-@section('title')
-<div class="title">Users Management</div>
-@stop @section('content')
 
 <script type="text/javascript">
 $(function(){		
