@@ -36,6 +36,8 @@ $listControls = [
 
 @extends('core.am', ['listControls' => $listControls])
 
+@section('content')
+
 <script type="text/javascript">
 $(function(){		
 
