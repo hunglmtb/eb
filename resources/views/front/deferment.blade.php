@@ -2,9 +2,10 @@
 	$currentSubmenu ='/dc/deferment';
 	$tables = ['Deferment'	=>['name'=>'DEFERMENT']];
  	$active = 0;
-?>
+	$isAction = true;
+ ?>
 
-@extends('core.action')
+@extends('core.pm')
 @section('funtionName')
 DEFERMENT DATA CAPTURE
 @stop
@@ -71,11 +72,11 @@ DEFERMENT DATA CAPTURE
 		tab = 'deferment';
 			options = {
 	 					tableOption :	{
-			 									searching: false,
-			 									autoWidth: false,
-			 									scrollX: true,
+			 									searching	: false,
+			 									autoWidth	: false,
+			 									scrollX		: true,
 			 									bInfo 		: false,
-			 									scrollY		:	"320px",
+			 									scrollY		:	"250px",
 			 								}
 				};
 		subData = data[tab];
@@ -87,14 +88,7 @@ DEFERMENT DATA CAPTURE
 
 @section('editBoxContentview')
 @parent
-<table border='0' cellpadding='0' style='width:100%;height:100%'>
-			<caption style='background:gray;color:white;height:20px;font-size:10.5pt' id = 'cationEditGroup'></caption>
-			<tr>
-				<td valign='top'>
-					<div id="table_deferment_containerdiv" class="secondaryTable" style='height:400px;width: 950px;overflow:auto'>
-						<table id="table_deferment" class="fixedtable nowrap display"></table>
-					</div>
-				</td>
-			</tr>
-		</table>
+<div id="table_deferment_containerdiv" class="secondaryTable" style='height:100%;width: 100%;overflow:auto'>
+	<table id="table_deferment" class="fixedtable nowrap display"></table>
+</div>
 @stop

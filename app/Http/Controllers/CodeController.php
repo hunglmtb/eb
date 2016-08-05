@@ -748,6 +748,27 @@ class CodeController extends EBController {
     				$selectData['data'] = \App\Models\PdCodeCargoStatus::all();
     				$rs[] = $selectData;
     				break;
+	    		case 'CONTRACT_TYPE' :
+	    			$selectData = ['id'=>'PdCodeContractType','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = \App\Models\PdCodeContractType::all();
+	    			$rs[] = $selectData;
+	    			break;
+    			case 'CONTRACT_PERIOD' :
+    				$selectData = ['id'=>'PdCodeContractPeriod','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = \App\Models\PdCodeContractPeriod::all();
+    				$rs[] = $selectData;
+    				break;
+	    		case 'CONTRACT_EXPENDITURE' :
+	    			$selectData = ['id'=>'PdContractExpenditure','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = \App\Models\PdContractExpenditure::all();
+	    			$rs[] = $selectData;
+	    			break;
+    			case 'CONTRACT_TEMPLATE' :
+    				$selectData = ['id'=>'PdContractTemplate','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = \App\Models\PdContractTemplate::all();
+    				$rs[] = $selectData;
+    				break;
+	    			
     		}
     		$i++;
     	}

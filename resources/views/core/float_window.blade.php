@@ -11,6 +11,10 @@
         });
 	};
 
+ 	editBox.initExtraPostData = function (id,rowData){
+ 	 		return 	{id:id};
+ 	 	}
+ 		
 	var editId = false;
  	editBox.editRow = function (id,rowData){
 	    	$('#tableEditGroup').html("<p> Loading...</p>");
@@ -19,7 +23,7 @@
 	    	$('#divEditGroup').show("fast");
 //	    		$('#table_editrow').html("");
 	    	$('#cationEditGroup').html(rowData.CODE);
-	    	editDataPosting = {id:id};
+	    	editDataPosting = editBox.initExtraPostData(id,rowData);
 	    	$.each(editBox.fields, function( index, value ) {
 	    		delete actions.editedData[value];
 	        });

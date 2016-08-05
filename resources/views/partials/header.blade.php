@@ -86,7 +86,7 @@ var xmenu=
 				[
 					{"code":"","name":"Contract Admin","title":"","link":"#","menus":
 						[
-							{"name":"Contract Data","title":"","link":"#"},
+							{"name":"Contract Data","title":"Contract Data","link":"/pd/contractdata"},
 							{"name":"Contract Calculation","title":"","link":"#"},
 							{"name":"Contract Template","title":"","link":"#"},
 							{"name":"Cargo Program","title":"","link":"#"},

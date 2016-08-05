@@ -1,12 +1,14 @@
 <?php
 if (!isset($subMenus)) $subMenus = [];
 if (!isset($active)) $active =1;
+if (!isset($isAction)) $isAction =false;
+
 ?>
 @extends('core.bsmain',['subMenus' => $subMenus])
 
 @section('content')
 	@if(isset($tables))
-			<div id="tabs">
+		<div id="tabs">
 			<ul  id="ebTabHeader">
 				@foreach($tables as $key => $table )
 					<li id="{{$key}}"><a href="#tabs-{{$key}}"><font size="2">{{$table['name']}}</font></a></li>
@@ -38,6 +40,7 @@ if (!isset($active)) $active =1;
 			</script>
 		@stop
 	@endif
+ 	@yield('extraContent')
 @stop
 
 @section('adaptData')
@@ -138,4 +141,13 @@ if (!isset($active)) $active =1;
 		}
  	};
 </script>
+
+@if(isset($isAction)&&$isAction)
+	<script src="/common/js/eb_table_action.js"></script>
+	@section('floatWindow')
+		@yield('editBox')
+		@include('core.edit_dialog')
+	@stop
+@endif
 @stop
+

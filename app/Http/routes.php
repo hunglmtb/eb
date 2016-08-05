@@ -184,6 +184,12 @@ Route::get('pd/cargoschedule',			['uses' =>'ProductDeliveryController@cargosched
 Route::post('cargoschedule/load',		['uses' =>	'Cargo\CargoScheduleController@load','middleware' => 'saveWorkspace']);
 Route::post('cargoschedule/save', 		'Cargo\CargoScheduleController@save');
 
+Route::get('pd/contractdata',			['uses' =>'ProductDeliveryController@contractdata','middleware' => 'checkRight:PD_CONTRACT_ADMIN_DATA']);
+Route::post('contractdata/load',		['uses' =>'Contract\ContractDataController@load','middleware' => 'saveWorkspace']);
+Route::post('contractdata/save', 		'Contract\ContractDataController@save');
+Route::post('contractdetail/load',		'Contract\ContractDataController@loadDetail');
+Route::post('contractdetail/save', 		'Contract\ContractDataController@saveDetail');
+
 //----------admin
 Route::get('am/users', 'AdminController@_index');
 Route::post('am/loadData', 'AdminController@getData');

@@ -332,7 +332,8 @@ table.dataTable {
 #cboLimit {
 	width: 70px;
 }
-#history_loading{
+#history_loading,
+#box_loading{
 	position: absolute;
     top: 0px;
     left: 0px;
@@ -362,4 +363,9 @@ table.dataTable {
 #table_PdCargoNomination .NOMINATION_UOM ,#table_PdCargoNomination .NOMINATION_ADJ_TIME   {
 	background-clip: content-box;
     background-color: #88ff88;
+}
+
+#container_PdContract .dataTables_scrollBody,
+#container_PdContractDetail .dataTables_scrollBody {
+    min-height: 150px;
 }

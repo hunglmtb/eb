@@ -54,8 +54,9 @@ actions.extensionHandle	 = function(tab,columnName,rowData,limit,successFunction
 			width: 900,
 			position: { my: 'top', at: 'top+150' },
 			modal: true,
-			title: "History data",
+			title: "History data"
 		});
+
 //		$("#history_container").html("<br/><br/><br/>Loading...");
 //		$("#history_list").html("<br/>Loading...");
 		$("#history_loading").html("Loading...");
@@ -183,7 +184,7 @@ function changeChartType(type){
 </script>
 
 <div id="boxHistory" style="display:none;">
-	<div id="frameChart" style="width:100%;border:none;height: 100%; margin-top: 0">
+	<div id="historyContent" style="width:100%;border:none;height: 100%; margin-top: 0">
 		<div style="position:absolute;left:230px;top:10px;z-index:100">
 		Chart type <select id="cboChartType" onchange="changeChartType($(this).val())" style="width:100px"><option value="line">Line</option><option value="spline">Curved line</option><option value="column">Column</option><option value="area">Area</option><option value="areaspline">Curved Area</option></select>
 		<!--

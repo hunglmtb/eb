@@ -2,9 +2,10 @@
 	$currentSubmenu ='/dc/quality';
 	$tables = ['QltyData'	=>['name'=>'QUALITY DATA']];
  	$active = 0;
-?>
+	$isAction = true;
+ ?>
 
-@extends('core.action')
+@extends('core.pm')
 @section('funtionName')
 QUALITY DATA CAPTURE
 @stop
@@ -74,17 +75,18 @@ QUALITY DATA CAPTURE
 	editBox.saveUrl = '/quality/edit/saving';
 	editBox.editGroupSuccess = function(data,id){
 	//	    				$('#tableEditGroup').html(JSON.stringify(data));
+					scrollY = "220px";
 	    			tab = 'gas';
 	    				options = {
 	    		 					tableOption :	{
-	    	 		 									searching: false,
-	    	 		 									autoWidth: true,
+	    	 		 									searching	: false,
+	    	 		 									autoWidth	: true,
 	    	 		 									bInfo 		: false,
-	    	 		 									scrollY		:	"320px",
+	    	 		 									scrollY		: scrollY,
 	    	 		 									footerCallback : function ( row, data3, start, end, display ) {
 					    									            var api = this.api();
 					    									            columns = [1,2,3];
-					    									            renderSumRow(api,columns);
+					    									            editBox.renderSumRow(api,columns);
 	    									        	}
 	    	 		 								}
 	    					};
@@ -96,7 +98,7 @@ QUALITY DATA CAPTURE
 	    					tableOption :{	searching	: false,
 	    									autoWidth	: true,
 	    									bInfo 		: false,
-	    	 								scrollY		:	"250px",
+	    	 								scrollY		: scrollY,
 	    									footerCallback : function ( row, data3, start, end, display ) {
 	    														var api = this.api();
 	    											            columns = [1];
@@ -121,10 +123,9 @@ QUALITY DATA CAPTURE
 @section('editBoxContentview')
 @parent
 <table border='0' cellpadding='0' style='width:100%;height:100%'>
-			<caption style='background:gray;color:white;height:20px;font-size:10.5pt' id = 'cationEditGroup'></caption>
 			<tr>
 				<td valign='top'>
-					<div id="table_oil_containerdiv" class="secondaryTable" style='height:400px;overflow:auto'>
+					<div id="table_oil_containerdiv" class="secondaryTable" style='height:100%;overflow:auto'>
 						<table id="table_oil" class="fixedtable nowrap display">
 							<tfoot>
 								<tr>
@@ -141,7 +142,7 @@ QUALITY DATA CAPTURE
 					</div>
 				</td>
 				<td valign='top'>
-					<div id="table_gas_containerdiv" class="secondaryTable" style='height:400px;overflow:auto'>
+					<div id="table_gas_containerdiv" class="secondaryTable" style='height:100%;overflow:auto'>
 						<table id="table_gas" class="fixedtable nowrap display">
 						<tfoot>
 							<tr>
