@@ -830,6 +830,18 @@ var actions = {
 //		                "scrollCollapse": true,
 				"paging":         false,
 				"dom": 'rt<"#toolbar_'+tab+'">p<"bottom"i><"bottom"f><"clear">',
+				drawCallback	: function ( settings ) { 
+			        var table = $('#table_'+tab).DataTable();
+			        $('#table_'+tab+' tbody').on( 'click', 'tr', function () {
+			            if ( $(this).hasClass('selected') ) {
+//			                 $(this).removeClass('selected');
+			            }
+			            else {
+			                table.$('tr.selected').removeClass('selected');
+			                $(this).addClass('selected');
+			            }
+			        } );
+			    },
 				/* initComplete: function () {
 					var cls = this.api().columns();
 		            cls.every( function () {

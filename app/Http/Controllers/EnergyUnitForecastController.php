@@ -15,10 +15,9 @@ class EnergyUnitForecastController extends CodeController {
 		return $mdl::getTableName();
 	}
 	
-	public function getProperties($dcTable,$facility_id,$occur_date,$postData){
+    public function getProperties($dcTable,$facility_id=false,$occur_date=null,$postData=null){
 		$properties = $this->getOriginProperties($dcTable);
-		$results = ['properties'	=>$properties,
-		];
+		$results = ['properties'	=>$properties];
 		return $results;
 	}
 	

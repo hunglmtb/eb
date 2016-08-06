@@ -33,7 +33,7 @@ class AllocatePlanController extends CodeController {
 		return $mdl;
 	}
 	
-	public function getProperties($dcTable,$facility_id,$occur_date,$postData){
+    public function getProperties($dcTable,$facility_id=false,$occur_date=null,$postData=null){
 		$source_type 	= 	$postData['IntObjectTypeName'];
 		$prefix 		= 	$this->getPreFix($source_type);
 		$properties = collect([

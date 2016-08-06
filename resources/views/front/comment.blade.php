@@ -1,8 +1,9 @@
 <?php
 $currentSubmenu ='/fo/comment';
 $tables = ['Comment'	=>['name'=>'Comment']];
+$isAction = true;
 ?>
-@extends('core.fo_action')
+@extends('core.fo')
 
 @section('funtionName')
 COMMENT DATA CAPTURE

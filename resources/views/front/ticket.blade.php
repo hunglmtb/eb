@@ -5,9 +5,10 @@
 			'RunTicketValue'		=>['name'=>'TICKET VALUE'],
 	];
  	$active = 1;
+ 	$isAction = true;
 ?>
 
-@extends('core.action')
+@extends('core.pm')
 @section('funtionName')
 RUN TICKET CAPTURE
 @stop

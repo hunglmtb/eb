@@ -2,9 +2,10 @@
 	$currentSubmenu ='/tagsMapping';
 	$tables = ['IntTagMapping'	=>['name'=>'Tags Mapping']];
  	$active = 0;
-?>
+	$isAction = true;
+ ?>
 
-@extends('core.sc_action')
+@extends('core.sc')
 @section('funtionName')
 TAG MAPPING CONFIG
 @stop

@@ -210,7 +210,7 @@ class CodeController extends EBController {
     }
     
     
-    public function getProperties($dcTable,$facility_id,$occur_date,$postData){
+    public function getProperties($dcTable,$facility_id=false,$occur_date=null,$postData=null){
     	
     	$properties = $this->getOriginProperties($dcTable);
     	$firstProperty = $this->getFirstProperty($dcTable);
@@ -228,6 +228,7 @@ class CodeController extends EBController {
     }
     
     public function isLocked($dcTable,$occur_date,$facility_id){
+    	if (!$occur_date||!$facility_id) return false;
     	$user = auth()->user();
     	$locked = 	$user->hasRight('DATA_READONLY')||
     				\Helper::checkLockedTable($dcTable,$occur_date,$facility_id)||

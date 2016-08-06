@@ -3,12 +3,15 @@ namespace App\Http\Controllers\Contract;
 
 use App\Http\Controllers\CodeController;
 use Illuminate\Http\Request;
-use App\Models\PdContractDetail;
+use App\Models\PdContractData;
+use App\Models\PdContractTemplate;
+use App\Models\PdContractTemplateAttribute;
 
 class ContractDataController extends CodeController {
     
     public function getFirstProperty($dcTable){
-		return  ['data'=>$dcTable,'title'=>'','width'=>90];
+//     	$width = $dcTable==PdContractData::getTableName()?40:90;
+		return  ['data'=>$dcTable,'title'=>'','width'=> 50];
 	}
 	
 	
@@ -21,10 +24,10 @@ class ContractDataController extends CodeController {
     	$mdl = "App\Models\\$mdlName";
     	
 //     	\DB::enableQueryLog();
-    	$dataSet = $mdl::whereDate("$dcTable.BEGIN_DATE",'<=',$date_end)
-    					->whereDate("$dcTable.BEGIN_DATE",'>=',$occur_date)
-    					->whereDate("$dcTable.END_DATE",'<=',$date_end)
-    					->whereDate("$dcTable.END_DATE",'>=',$occur_date)
+    	$dataSet = $mdl::whereDate("$dcTable.BEGIN_DATE",'>=',$occur_date)
+    					->whereDate("$dcTable.BEGIN_DATE",'<=',$date_end)
+    					/* ->whereDate("$dcTable.END_DATE",'>=',$occur_date)
+    					->whereDate("$dcTable.END_DATE",'<=',$date_end) */
 				    	->select(
 				    			"$dcTable.ID as $dcTable",
 				    			"$dcTable.ID as DT_RowId",
@@ -38,44 +41,46 @@ class ContractDataController extends CodeController {
     }
     
 	public function loadDetail(Request $request){
-    	$postData 			= $request->all();
-    	$id 				= $postData['id'];
-     	$templateId 		= $postData['templateId'];
+    	$postData 				= $request->all();
+    	$id 					= $postData['id'];
+     	$templateId 			= $postData['templateId'];
      	
-    	$contractDetail 	= PdContractDetail::getTableName();
-    	$properties 		= $this->getOriginProperties($contractDetail);
+    	$contractDetail 		= PdContractData::getTableName();
+    	$results 				= $this->getProperties($contractDetail);
     	
-    	/* $dataSet = $this->getContractDetail($id,$templateId);
-	    $results = [];
-    	$results['PdContractDetail'] = ['properties'	=>$properties,
-	    							'dataSet'		=>$dataSet]; */
+    	$dataSet 				= $this->getContractData($id,$templateId);
+	    $results['dataSet'] 	= $dataSet;
 	    
-    	return response()->json('keke');
-//     	return response()->json($results);
+    	return response()->json(['PdContractData' => $results]);
 	}
     
     
-    public function getContractDetail($id,$templateId){
-    	$defermentDetail =DefermentDetail::getTableName();
-    	//     	$defermentGroupEu =DefermentGroupEu::getTableName();
-    	$energyUnit =EnergyUnit::getTableName();
-    	$deferment =Deferment::getTableName();
-    	$dataSet = Deferment::join($energyUnit, "$deferment.DEFER_TARGET", '=', "$energyUnit.ID")
-    	->leftJoin($defermentDetail, function($join) use ($defermentDetail,$deferment,$energyUnit){
-    		$join->on("$defermentDetail.DEFERMENT_ID", '=', "$deferment.ID")
-    		->on("$defermentDetail.EU_ID",'=',"$energyUnit.ID");
-    	})
-    	->where("$deferment.ID",'=',$id)
-    	//well
-    	->where("$deferment.DEFER_GROUP_TYPE",'=',3)
-    	->select(
-    			"$energyUnit.ID as ID",
-    			"$energyUnit.NAME as NAME",
-    			"$energyUnit.ID as DT_RowId",
-    			"$deferment.DEFER_GROUP_TYPE",
-    			"$defermentDetail.*"
-    			)
-    			->get();
-    			return $dataSet;
+    public function getContractData($id,$templateId){
+    	return [];
+    	
+    	$sSQL="SELECT b.CODE,
+    	b.NAME,
+    	b.ID
+    	FROM PD_CONTRACT_TEMPLATE_ATTRIBUTE a,
+    	PD_CODE_CONTRACT_ATTRIBUTE b
+    	WHERE a.CONTRACT_TEMPLATE=$templateId
+    	and a.ACTIVE=1
+    	and b.ID=a.ATTRIBUTE ";
+    	
+    	$pdContractTemplateAttribute	= PdContractTemplateAttribute::getTableName();
+    	$pdCodeContractAttribute		= PdCodeContractAttribute::getTableName();
+    	$dataSet = PdContractTemplateAttribute::join($pdCodeContractAttribute, 
+									    			"$pdContractTemplateAttribute.ATTRIBUTE", 
+									    			'=', 
+									    			"$pdCodeContractAttribute.ID")
+										    	->where("$pdContractTemplateAttribute.CONTRACT_TEMPLATE",'=',$templateId)
+										    	->where("$pdContractTemplateAttribute.ACTIVE",'=',1)
+										    	->select(
+										    			"$pdCodeContractAttribute.ID",
+										    			"$pdCodeContractAttribute.NAME",
+										    			"$pdCodeContractAttribute.CODE"
+										    			)
+										    	->get();
+    	return $dataSet;
     }
 }

@@ -1,8 +1,9 @@
 <?php
 $currentSubmenu ='/fo/personnel';
 $tables = ['Personnel'	=>['name'=>'PERSONNEL']];
+$isAction = true;
 ?>
-@extends('core.fo_action')
+@extends('core.fo')
 
 @section('funtionName')
 PERSONNEL DATA

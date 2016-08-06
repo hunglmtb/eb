@@ -83,6 +83,10 @@
 			}
 				
 			editBox.editRow = function (id,rowData){
+				if (typeof(editBox.preEditHandleAction) == "function") {
+					editBox.preEditHandleAction(id,rowData);
+				}
+				
 		 		success = function(data){
 					editBox.editGroupSuccess(data,id);
 				}

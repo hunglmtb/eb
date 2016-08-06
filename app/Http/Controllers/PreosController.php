@@ -20,7 +20,7 @@ class PreosController extends CodeController {
 		return $mdl;
 	}
 	
-	public function getProperties($dcTable,$facility_id,$occur_date,$postData){
+    public function getProperties($dcTable,$facility_id=false,$occur_date=null,$postData=null){
 		$objs 			= 	$this->getPostObjects($postData);
 		if ($objs&&count($objs)>0) {
 			$objectArray	=	[(object)[

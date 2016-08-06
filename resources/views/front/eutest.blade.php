@@ -5,9 +5,10 @@
 			'EuTestDataValue'			=>['name'=>'DAY VALUE'],
 	];
  	$active = 1;
+	$isAction = true;
 ?>
 
-@extends('core.action')
+@extends('core.pm')
 @section('funtionName')
 WELL TEST DATA CAPTURE
 @stop
