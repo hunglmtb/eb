@@ -21,16 +21,16 @@
 
 	actions.renderFirsColumn = function ( data, type, rowData ) {
 		var id = rowData['DT_RowId'];
-		var html = '<a id="edit_row_'+id+'" class="actionLink">Select</a>';
+		isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
+		var html = '';
+		if(isAdding)
+			html = '<a class="actionLink">Select</a>';
+		else 
+			html += '<a id="edit_row_'+id+'" class="actionLink">Select</a>';
 		return html;
 	};
-
-	/* actions.getTableOption	= function(data){
-		return {tableOption :	{
-									scrollY			: null,
-								}
-		};
-	} */
+	
+	addingOptions.keepColumns = ['CONTRACT_TEMPLATE','CONTRACT_TYPE','CONTRACT_PERIOD','CONTRACT_EXPENDITURE'];
 
 	editBox.initExtraPostData = function (id,rowData){
 	 		return 	{
@@ -43,6 +43,7 @@
 		var html = '<a id="delete_row_'+id+'" class="actionLink">Delete</a>';
 		return html;
 	};
+
 </script>
 @stop
 
@@ -54,24 +55,20 @@
 	editBox.saveUrl = '/contractdetail/save';
 	editBox.enableRefresh = true;
 
-	editBox.preEditHandleAction = function(id,rowData){
-// 		$('#table_PdContractData_containerdiv').html('<table id="table_PdContractData" class="fixedtable nowrap display"></table>');
-	}
-
 	editBox.editGroupSuccess = function(data,id){
 		tab = 'PdContractData';
 			options = {
 	 					tableOption :	{
-			 									searching	: false,
 			 									autoWidth	: false,
-// 			 									scrollX		: true,
-			 									bInfo 		: false,
-			 									scrollY		: "240px",
-			 								}
+ 			 									scrollX		: false,
+			 									scrollY		: "200px",
+			 							}
 				};
 		subData = data[tab];
-		renderTable(tab,subData,options);
+		etbl = renderTable(tab,subData,options,actions.createdFirstCellColumn);
+		if(etbl!=null) actions.afterDataTable(etbl,tab);
 	}
+
 </script>
 @stop
 

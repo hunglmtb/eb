@@ -27,14 +27,15 @@
     			type: "post",
     			data: editData,
     			success:function(data){
-    				console.log ( "success saveEditGroup "+JSON.stringify(data) );
-    				alert(JSON.stringify(data));
     				hideWaiting();
+    				console.log ( "success saveEditGroup "+JSON.stringify(data) );
+    				alert("success");
     				editBox.closeEditWindow();
     				if(editBox.enableRefresh) actions.doLoad(true);
     			},
     			error: function(data) {
     				hideWaiting();
+    				alert("error saveEditGroup ");
     				console.log ( "error saveEditGroup ");
     			}
     		});

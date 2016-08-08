@@ -48,14 +48,14 @@ class ContractDataController extends CodeController {
     	$contractDetail 		= PdContractData::getTableName();
     	$results 				= $this->getProperties($contractDetail);
     	
-    	$dataSet 				= $this->getContractData($id,$templateId);
+    	$dataSet 				= $this->getContractData($id,$templateId,$results['properties']);
 	    $results['dataSet'] 	= $dataSet;
 	    
     	return response()->json(['PdContractData' => $results]);
 	}
     
     
-    public function getContractData($id,$templateId){
+    public function getContractData($id,$templateId,$properties){
     	/* return [];
     	
     	$sSQL="SELECT b.CODE,
@@ -89,34 +89,44 @@ class ContractDataController extends CodeController {
 				    			->select(
 				    					"$pdContractData.*",
 				    					"$pdCodeContractAttribute.ID as DT_RowId",
-// 				    					"$pdCodeContractAttribute.ID as ATTRIBUTE_ID",
+ 				    					"$pdCodeContractAttribute.ID as $pdContractData",
 				    					"$pdCodeContractAttribute.NAME as CONTRACT_ID",
 				    					"$pdCodeContractAttribute.CODE as ATTRIBUTE_ID",
-				    					"$pdCodeContractAttribute.FORMULA_ID"
+				    					"$pdCodeContractAttribute.FORMULA_ID",
+				    					"$pdCodeContractAttribute.ID as ID"
 				    					)
 		    					->get();
     	
 		    					
+    	$selects = ["$pdCodeContractAttribute.ID as DT_RowId",
+	    			"$pdCodeContractAttribute.ID as $pdContractData",
+	    			"$pdCodeContractAttribute.NAME as CONTRACT_ID",
+	    			"$pdCodeContractAttribute.CODE as ATTRIBUTE_ID",
+	    			"$pdCodeContractAttribute.ID"];
+    	
+    	foreach($properties as $property ){
+    		$columnName = $property['data'];
+    		if ($columnName!='CONTRACT_ID'&&$columnName!='ATTRIBUTE_ID'&&$columnName!='ID') {
+	    		$selects[] = \DB::raw("null as $columnName");
+    		}
+    	}
+    	
     	$templateQuery = PdContractTemplateAttribute::join($pdCodeContractAttribute, 
 									    			"$pdContractTemplateAttribute.ATTRIBUTE", 
 									    			'=', 
 									    			"$pdCodeContractAttribute.ID")
 										    	->where("$pdContractTemplateAttribute.CONTRACT_TEMPLATE",'=',$templateId)
 										    	->where("$pdContractTemplateAttribute.ACTIVE",'=',1)
-										    	->select(
-										    			"$pdCodeContractAttribute.ID as DT_RowId",
-										    			"$pdCodeContractAttribute.ID",
-										    			"$pdCodeContractAttribute.NAME as CONTRACT_ID",
-										    			"$pdCodeContractAttribute.CODE as ATTRIBUTE_ID",
-										    			"$pdCodeContractAttribute.*"
-										    			);
+										    	->select($selects);
 // 										    	->get();
     	
+										    	
     	$existAttributes = $contractDataSet->pluck('DT_RowId');
     	if (count($existAttributes)>0) {
     		$templateQuery->whereNotIn("$pdCodeContractAttribute.ID", $existAttributes);
     	}
     	$templateDataSet = $templateQuery->get();
+    	
     	$dataSet = $contractDataSet->merge($templateDataSet);
     	return $dataSet;
     }

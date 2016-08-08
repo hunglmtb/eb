@@ -369,3 +369,7 @@ table.dataTable {
 #container_PdContractDetail .dataTables_scrollBody {
     min-height: 150px;
 }
+
+#savebtn span{
+padding: 2px 16px;
+}

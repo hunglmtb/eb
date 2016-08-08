@@ -145,24 +145,29 @@ var intVal = function ( i ) {
 		$(td).find('#delete_row_'+id).click(deleteFunction);
 		$('#delete_row_'+id).click(deleteFunction);
 
-		var editFunction = function(){
+		var editFunction = function(e){
+			e.preventDefault();
 			var r = table.fnGetPosition(td)[0];
 		    var rowData = table.api().data()[ r];
 		    editBox.editRow(id,rowData);
 		};
-		$(td).find('#edit_row_'+id).click(editFunction);
-		$('#edit_row_'+id).click(editFunction);
+//		$(td).find('#edit_row_'+id).click(editFunction);
+		table.$('#edit_row_'+id).click(editFunction);
 	}
 
-	var renderTable = function (tab,subData,options) {
+	var renderTable = function (tab,subData,options,createdFirstCellColumnFunction) {
 		if(subData==null){
 			$('#table_'+tab+'_containerdiv').css("display", "none");
 		}
 		else{
 			$('#table_'+tab+'_containerdiv').css("display", "block");
 // 			$('#table_'+tab+'_containerdiv').html('<table id="table_'+tab+'" border="0" cellpadding="3" width="100%"></table>');
-			etbl = actions.initTableOption(tab,subData,options,actions.renderFirsEditColumn,null);
+			createdFirstCellColumnFunction = typeof(createdFirstCellColumnFunction) == "function"?createdFirstCellColumnFunction:null;
+			etbl = actions.initTableOption(tab,subData,options,actions.renderFirsEditColumn,createdFirstCellColumnFunction);
+			return etbl;
+//			actions.afterDataTable(etbl,tab);
 		}
+		return null;
 	};
 
 	actions['renderFirsEditColumn'] = function ( data, type, rowData ) {

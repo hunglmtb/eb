@@ -75,7 +75,7 @@ QUALITY DATA CAPTURE
 	editBox.saveUrl = '/quality/edit/saving';
 	editBox.editGroupSuccess = function(data,id){
 	//	    				$('#tableEditGroup').html(JSON.stringify(data));
-					scrollY = "220px";
+					scrollY = "200px";
 	    			tab = 'gas';
 	    				options = {
 	    		 					tableOption :	{

@@ -34,14 +34,14 @@
 							title: title,
 							create: function() {
 								if (typeof(editBox.saveDetail) == "function") {
+							        var saveBtn = $("<a id='savebtn' href='#' style='right: 20px;display:none'>Save</a>")
+													.button({/* icons:{primary: "ui-icon-plus"}, */text: true});
+										saveBtn.insertBefore('.ui-dialog-titlebar-close').click(function(e){
+											   e.preventDefault();
+	// 										   alert("click");
+											   editBox.saveDetail(postData.id);
+										});
 								}
-						        var saveBtn = $("<a id='savebtn' href='#' style='right: 20px;display:none'>Save</a>")
-												.button({/* icons:{primary: "ui-icon-plus"}, */text: true});
-									saveBtn.insertBefore('.ui-dialog-titlebar-close').click(function(e){
-										   e.preventDefault();
-										   alert("click");
-										   editBox.saveDetail(postData.id);
-									});
 						    }
 						};
 				$("#floatBox").dialog(dialogOptions);

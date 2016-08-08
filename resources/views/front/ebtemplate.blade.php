@@ -490,7 +490,7 @@ menu["forecast"]=[
 // else{
 ?>
 menu["delivery"]=[
-		{menutext:"CONTRACT ADMIN",desc:"",url:"../pd/contractdata.php"},
+		{menutext:"CONTRACT ADMIN",desc:"",url:"../pd/contractdata"},
 		{menutext:"CARGO ADMIN",desc:"",url:"../pd/cargoentry"},
 		{menutext:"CARGO ACTION",desc:"",url:"../pd/cargovoyage.php"},
 		{menutext:"CARGO MANAGEMENT",desc:"",url:"/demurrageebo"},
