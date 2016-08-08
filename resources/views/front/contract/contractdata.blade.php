@@ -38,6 +38,11 @@
 		 		templateId	: rowData.CONTRACT_TEMPLATE};
 	 	}
 
+	actions.renderFirsEditColumn = function ( data, type, rowData ) {
+		var id = rowData['DT_RowId'];
+		var html = '<a id="delete_row_'+id+'" class="actionLink">Delete</a>';
+		return html;
+	};
 </script>
 @stop
 
@@ -52,7 +57,7 @@
 	editBox.preEditHandleAction = function(id,rowData){
 // 		$('#table_PdContractData_containerdiv').html('<table id="table_PdContractData" class="fixedtable nowrap display"></table>');
 	}
-	
+
 	editBox.editGroupSuccess = function(data,id){
 		tab = 'PdContractData';
 			options = {

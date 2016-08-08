@@ -673,6 +673,7 @@ class CodeController extends EBController {
     			case 'NOMINATION_UOM' :
     			case 'REQUEST_QTY_UOM' :
     			case 'SCHEDULE_UOM' :
+    			case 'ATTRIBUTE_UOM' :
     				$selectData = ['id'=>'PdCodeMeasUom','targets'=>$i,'COLUMN_NAME'=>$columnName];
     				$selectData['data'] = \App\Models\PdCodeMeasUom::all();
     				$rs[] = $selectData;

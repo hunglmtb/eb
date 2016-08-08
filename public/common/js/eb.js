@@ -833,11 +833,11 @@ var actions = {
 				drawCallback	: function ( settings ) { 
 			        var table = $('#table_'+tab).DataTable();
 			        $('#table_'+tab+' tbody').on( 'click', 'tr', function () {
+		                table.$('tr.selected').removeClass('selected');
 			            if ( $(this).hasClass('selected') ) {
 //			                 $(this).removeClass('selected');
 			            }
 			            else {
-			                table.$('tr.selected').removeClass('selected');
 			                $(this).addClass('selected');
 			            }
 			        } );

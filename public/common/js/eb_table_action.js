@@ -161,10 +161,10 @@ var intVal = function ( i ) {
 		else{
 			$('#table_'+tab+'_containerdiv').css("display", "block");
 // 			$('#table_'+tab+'_containerdiv').html('<table id="table_'+tab+'" border="0" cellpadding="3" width="100%"></table>');
-			etbl = actions.initTableOption(tab,subData,options,renderFirsEditColumn,null);
+			etbl = actions.initTableOption(tab,subData,options,actions.renderFirsEditColumn,null);
 		}
 	};
 
-	var renderFirsEditColumn = function ( data, type, rowData ) {
+	actions['renderFirsEditColumn'] = function ( data, type, rowData ) {
 		return '<b>'+rowData.NAME+'</b>';
 	};
