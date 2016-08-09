@@ -65,7 +65,7 @@ actions.extensionHandle	 = function(tab,columnName,rowData,limit,successFunction
 			historyDataSet = [];
 			list = '';
 			selectHistoryValue = function(newValue){
-				editBox.closeEditWindow();
+				editBox.closeEditWindow(true);
 // 				$('#boxHistory').dialog('close');
 				if(notLocked) successFunction(null,newValue);
 //					actions.putModifiedData(tab,columnName,newValue,rowData);

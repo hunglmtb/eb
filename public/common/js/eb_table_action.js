@@ -11,45 +11,54 @@ var intVal = function ( i ) {
 		return false;
 	};
 	
+	actions.getAddButtonHandler = function (table,tab,doMore){
+		return function () {
+			var columns = table.settings()[0].aoColumns;
+			var sample = table.rows(0).data()[0];
+			var addingRow = {};
+			if(sample!=null){
+				addingRow = jQuery.extend({}, sample);
+			}
+			addingRow['DT_RowId'] = 'NEW_RECORD_DT_RowId_'+(index++);
+			addingRow['ID'] = addingRow['DT_RowId'];
+//				var addingRow = {};
+			$.each(columns, function( i, vl ) {
+				if($.inArray(vl.data,addingOptions.keepColumns)<=-1){
+					 addingRow[vl.data] = '';
+				}
+				else{
+					if(sample==null){
+						 addingRow[vl.data] = '';
+					}
+					else{
+						actions.putModifiedData(tab,vl.data,addingRow[vl.data],addingRow);
+					}
+				}
+	        });
+			
+			if(typeof(editBox.hidenFields) !== "undefined"){
+				$.each(editBox.hidenFields, function( i, vl ) {
+					actions.putModifiedData(tab,vl.field,actions.loadedData[tab][vl.name],addingRow);
+				});
+			}
+			
+			if(typeof(doMore) == "function"){
+				addingRow = doMore(addingRow);
+			}
+//				addingRow['notAttachedToList'] = true;
+			table.row.add(addingRow).draw( false );
+
+			var tbbody = $('#table_'+tab);
+	 		tbbody.tableHeadFixer({"left" : 1,head: false,});
+        }
+	};
+
 	actions.afterDataTable = function (table,tab){
 		if(actions.isDisableAddingButton(tab,table)) return;
 		$("#toolbar_"+tab).html('<button>Add</button>');
 		$("#toolbar_"+tab).addClass('toolbarAction');
-		$("#toolbar_"+tab+ " button").on( 'click', function () {
-				var columns = table.settings()[0].aoColumns;
-				var sample = table.rows(0).data()[0];
-				var addingRow = {};
-				if(sample!=null){
-					addingRow = jQuery.extend({}, sample);
-				}
-				addingRow['DT_RowId'] = 'NEW_RECORD_DT_RowId_'+(index++);
-				addingRow['ID'] = addingRow['DT_RowId'];
-// 				var addingRow = {};
-				$.each(columns, function( i, vl ) {
-					if($.inArray(vl.data,addingOptions.keepColumns)<=-1){
-						 addingRow[vl.data] = '';
-					}
-					else{
-						if(sample==null){
-							 addingRow[vl.data] = '';
-						}
-						else{
-							actions.putModifiedData(tab,vl.data,addingRow[vl.data],addingRow);
-						}
-					}
-		        });
-				
-				if(typeof(editBox.hidenFields) !== "undefined"){
-					$.each(editBox.hidenFields, function( i, vl ) {
-						actions.putModifiedData(tab,vl.field,actions.loadedData[tab][vl.name],addingRow);
-					});
-				}
-// 				addingRow['notAttachedToList'] = true;
-				table.row.add(addingRow).draw( false );
-
-				var tbbody = $('#table_'+tab);
-		 		tbbody.tableHeadFixer({"left" : 1,head: false,});
-            });
+		addButtonHandle = actions.getAddButtonHandler(table,tab);
+		$("#toolbar_"+tab+ " button").on( 'click', addButtonHandle);
 	};
 	
 	actions.renderFirsColumn = actions.deleteActionColumn;
@@ -163,7 +172,11 @@ var intVal = function ( i ) {
 			$('#table_'+tab+'_containerdiv').css("display", "block");
 // 			$('#table_'+tab+'_containerdiv').html('<table id="table_'+tab+'" border="0" cellpadding="3" width="100%"></table>');
 			createdFirstCellColumnFunction = typeof(createdFirstCellColumnFunction) == "function"?createdFirstCellColumnFunction:null;
-			etbl = actions.initTableOption(tab,subData,options,actions.renderFirsEditColumn,createdFirstCellColumnFunction);
+			
+			renderFirstColumn = typeof(options.tableOption.renderFirsColumn) != "undefined"?
+								options.tableOption.renderFirsColumn:
+									actions.renderFirsEditColumn;
+			etbl = actions.initTableOption(tab,subData,options,renderFirstColumn,createdFirstCellColumnFunction);
 			return etbl;
 //			actions.afterDataTable(etbl,tab);
 		}

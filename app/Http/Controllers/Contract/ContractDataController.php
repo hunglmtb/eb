@@ -35,9 +35,7 @@ class ContractDataController extends CodeController {
   		    			->get();
 //  		\Log::info(\DB::getQueryLog());
  		    			
-    	return ['dataSet'=>$dataSet,
-//     			'objectIds'=>$objectIds
-    	];
+    	return ['dataSet'=>$dataSet];
     }
     
 	public function loadDetail(Request $request){
@@ -53,30 +51,24 @@ class ContractDataController extends CodeController {
 	    
     	return response()->json(['PdContractData' => $results]);
 	}
+	
+	/* public function saveDetail(Request $request){
+		
+		$postData 				= $request->all();
+		$id 					= $postData['id'];
+		$templateId 			= $postData['templateId'];
+	
+		$contractDetail 		= PdContractData::getTableName();
+		$results 				= $this->getProperties($contractDetail);
+		 
+		$dataSet 				= $this->getContractData($id,$templateId,$results['properties']);
+		$results['dataSet'] 	= $dataSet;
+		 
+		return response()->json(['PdContractData' => $results]);
+	} */
     
     
     public function getContractData($id,$templateId,$properties){
-    	/* return [];
-    	
-    	$sSQL="SELECT b.CODE,
-    	b.NAME,
-    	b.ID
-    	FROM PD_CONTRACT_TEMPLATE_ATTRIBUTE a,
-    	PD_CODE_CONTRACT_ATTRIBUTE b
-    	WHERE a.CONTRACT_TEMPLATE=$templateId
-    	and a.ACTIVE=1
-    	and b.ID=a.ATTRIBUTE "; */
-    	
-    	/* $sSQL="SELECT b.CODE,
-    	b.NAME,
-    	b.FORMULA_ID,
-    	a.*,
-    	b.ID as ATTRIBUTE_ID
-    	FROM PD_CONTRACT_DATA a,
-    	PD_CODE_CONTRACT_ATTRIBUTE b
-    	WHERE a.CONTRACT_ID  = $vid
-    	AND a.ATTRIBUTE_ID = b.ID"; */
-    	
     	$pdContractData					= PdContractData::getTableName();
     	$pdContractTemplateAttribute	= PdContractTemplateAttribute::getTableName();
     	$pdCodeContractAttribute		= PdCodeContractAttribute::getTableName();

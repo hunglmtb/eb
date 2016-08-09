@@ -188,7 +188,7 @@ Route::get('pd/contractdata',			['uses' =>'ProductDeliveryController@contractdat
 Route::post('contractdata/load',		['uses' =>'Contract\ContractDataController@load','middleware' => 'saveWorkspace']);
 Route::post('contractdata/save', 		'Contract\ContractDataController@save');
 Route::post('contractdetail/load',		'Contract\ContractDataController@loadDetail');
-Route::post('contractdetail/save', 		'Contract\ContractDataController@saveDetail');
+Route::post('contractdetail/save', 		'Contract\ContractDataController@save');
 
 //----------admin
 Route::get('am/users', 'AdminController@_index');

@@ -2,11 +2,7 @@
 
 @section('editBoxParams')
 <script>
-	/* editBox.preSendingRequest = function() {
-		editDataPosting = editBox.initExtraPostData(id,rowData);
-		return editDataPosting;
-	} */
-    editBox.saveDetail = function(editId) {
+    editBox.saveDetail = function(editId,success) {
     	if(editId&&editId!=null){
     		isEmpty = true;
     		$.each(editBox.fields, function( index, value ) {
@@ -30,8 +26,12 @@
     				hideWaiting();
     				console.log ( "success saveEditGroup "+JSON.stringify(data) );
     				alert("success");
-    				editBox.closeEditWindow();
     				if(editBox.enableRefresh) actions.doLoad(true);
+    				close = true
+    				if (typeof(success) == "function") {
+    					close = success(data);
+					}
+    				editBox.closeEditWindow(close);
     			},
     			error: function(data) {
     				hideWaiting();

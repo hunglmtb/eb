@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\PdCodeContractAttribute;
 
 class ProductDeliveryController extends CodeController {
 	
@@ -53,6 +54,12 @@ class ProductDeliveryController extends CodeController {
 				'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
 						['id'=>'date_end','name'=>'To date']),
 		);
-		return view ( 'front.contract.contractdata',['filters'=>$filterGroups]);
+		
+		$sql="select * from PD_CODE_CONTRACT_ATTRIBUTE order by `ORDER`";
+		
+		$contractAttributes = PdCodeContractAttribute::all();
+		return view ( 'front.contract.contractdata',['filters'=>$filterGroups,
+													'contractAttributes'=>$contractAttributes
+		]);
 	}
 }

@@ -9,8 +9,8 @@
 				hidenFields : [],
 				};
 
-		editBox.closeEditWindow = function() {
-			$('#floatBox').dialog('close');
+		editBox.closeEditWindow = function(close) {
+			if(close) $('#floatBox').dialog('close');
 			$.each(editBox.fields, function( index, value ) {
 				delete actions.editedData[value];
 		    });
@@ -39,7 +39,7 @@
 										saveBtn.insertBefore('.ui-dialog-titlebar-close').click(function(e){
 											   e.preventDefault();
 	// 										   alert("click");
-											   editBox.saveDetail(postData.id);
+											   editBox.saveDetail(postData.id,editBox['saveFloatDialogSucess']);
 										});
 								}
 						    }
@@ -121,4 +121,13 @@
 			</div>
 	 	@endforeach
 		<div id="box_loading" >Loading...</div>
+</div>
+
+@section('floatMoreBox')
+	<div id="floatMoreBox" style="display:none;">
+		@yield('floatMoreBoxContent')
 	</div>
+@stop
+@yield('floatMoreBox')
+
+
