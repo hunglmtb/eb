@@ -53,18 +53,7 @@ class ContractDataController extends CodeController {
 	}
 	
 	/* public function saveDetail(Request $request){
-		
-		$postData 				= $request->all();
-		$id 					= $postData['id'];
-		$templateId 			= $postData['templateId'];
-	
-		$contractDetail 		= PdContractData::getTableName();
-		$results 				= $this->getProperties($contractDetail);
-		 
-		$dataSet 				= $this->getContractData($id,$templateId,$results['properties']);
-		$results['dataSet'] 	= $dataSet;
-		 
-		return response()->json(['PdContractData' => $results]);
+		return $this->save($request);
 	} */
     
     
@@ -80,12 +69,14 @@ class ContractDataController extends CodeController {
 				    			->where("$pdContractData.CONTRACT_ID",'=',$id)
 				    			->select(
 				    					"$pdContractData.*",
+				    					"$pdContractData.CONTRACT_ID as CONTRACT_ID_INDEX",
+				    					"$pdContractData.ATTRIBUTE_ID as ATTRIBUTE_ID_INDEX",
 				    					"$pdCodeContractAttribute.ID as DT_RowId",
  				    					"$pdCodeContractAttribute.ID as $pdContractData",
 				    					"$pdCodeContractAttribute.NAME as CONTRACT_ID",
 				    					"$pdCodeContractAttribute.CODE as ATTRIBUTE_ID",
 				    					"$pdCodeContractAttribute.FORMULA_ID",
-				    					"$pdCodeContractAttribute.ID as ID"
+ 				    					"$pdCodeContractAttribute.ID as ID"
 				    					)
 		    					->get();
     	
@@ -94,7 +85,10 @@ class ContractDataController extends CodeController {
 	    			"$pdCodeContractAttribute.ID as $pdContractData",
 	    			"$pdCodeContractAttribute.NAME as CONTRACT_ID",
 	    			"$pdCodeContractAttribute.CODE as ATTRIBUTE_ID",
-	    			"$pdCodeContractAttribute.ID"];
+	    			"$pdCodeContractAttribute.ID",
+    				"$pdCodeContractAttribute.ID as ATTRIBUTE_ID_INDEX",
+    				\DB::raw("$id as CONTRACT_ID_INDEX"),
+    	];
     	
     	foreach($properties as $property ){
     		$columnName = $property['data'];

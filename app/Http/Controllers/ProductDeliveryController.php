@@ -55,8 +55,6 @@ class ProductDeliveryController extends CodeController {
 						['id'=>'date_end','name'=>'To date']),
 		);
 		
-		$sql="select * from PD_CODE_CONTRACT_ATTRIBUTE order by `ORDER`";
-		
 		$contractAttributes = PdCodeContractAttribute::all();
 		return view ( 'front.contract.contractdata',['filters'=>$filterGroups,
 													'contractAttributes'=>$contractAttributes

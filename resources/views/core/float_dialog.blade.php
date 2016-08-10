@@ -11,9 +11,6 @@
 
 		editBox.closeEditWindow = function(close) {
 			if(close) $('#floatBox').dialog('close');
-			$.each(editBox.fields, function( index, value ) {
-				delete actions.editedData[value];
-		    });
 		};
 		
 		editBox.initExtraPostData = function (id,rowData){
@@ -25,21 +22,25 @@
 				postData 	= option.postData;
 				url 		= option.url;
 				viewId 		= option.viewId;
-				
+				editId		= postData.id;
 				var dialogOptions = {
 							height: 350,
 							width: 900,
 							position: { my: 'top', at: 'top+150' },
 							modal: true,
 							title: title,
+							close: function(event) {
+										$.each(editBox.fields, function( index, value ) {
+											delete actions.editedData[value];
+									    });
+								    },
 							create: function() {
 								if (typeof(editBox.saveDetail) == "function") {
 							        var saveBtn = $("<a id='savebtn' href='#' style='right: 20px;display:none'>Save</a>")
 													.button({/* icons:{primary: "ui-icon-plus"}, */text: true});
 										saveBtn.insertBefore('.ui-dialog-titlebar-close').click(function(e){
 											   e.preventDefault();
-	// 										   alert("click");
-											   editBox.saveDetail(postData.id,editBox['saveFloatDialogSucess']);
+											   editBox.saveDetail(editId,editBox['saveFloatDialogSucess']);
 										});
 								}
 						    }

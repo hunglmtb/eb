@@ -87,7 +87,11 @@ var intVal = function ( i ) {
    		var tab = splits[1];
  		createdFirstCellColumnByTable(table,rowData,td,tab);
     };
-
+    
+    actions['initDeleteObject']  = function (tab,id, rowData) {
+    	return {'ID':id};
+    };
+    
 	actions.dominoColumns = function(columnName,newValue,tab,rowData,collection,table,td){
 // 		if(columnName=='SRC_TYPE') {
 		if(columnName!=null&&source!=null&&source.hasOwnProperty(columnName)){
@@ -146,7 +150,8 @@ var intVal = function ( i ) {
 		    	}
 		   	}
         	else{
-		    	eData.push({'ID':id});
+        		deleteObject = actions.initDeleteObject(tab,id,rowData);
+		    	eData.push(deleteObject);
         	}
 	        	//remove on table
     		table.api().rows( r).remove().draw( false );

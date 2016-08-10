@@ -493,9 +493,9 @@ var actions = {
 		});
 		console.log ( "success dominoColumns "+data );
 	},
-	getKeyFieldSet : function(){
+	getKeyFieldSet : function(tab){
 		if(typeof(actions.type.idName) == "function"){
-			return actions.type.idName();
+			return actions.type.idName(tab);
 		}
 		return actions.type.idName;
 	},
@@ -517,7 +517,7 @@ var actions = {
 		}
     	if (result.length == 0) {
         	var editedData = {};
-        	idName = actions.getKeyFieldSet();
+        	idName = actions.getKeyFieldSet(tab);
         	 $.each(idName, function( i, vl ) {
 	        	editedData[vl] = rowData[vl];
              });

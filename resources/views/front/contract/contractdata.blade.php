@@ -14,10 +14,13 @@
 	actions.loadUrl = "/contractdata/load";
 	actions.saveUrl = "/contractdata/save";
 	actions.type = {
-			idName:['ID'],
+			idName		: function (tab){
+							if(tab=='PdContractData') return ['CONTRACT_ID_INDEX', 'ATTRIBUTE_ID_INDEX'];
+							return ['ID'];
+						},
 			keyField:'ID',
 			saveKeyField : function (model){
-				return 'ID';
+					return 'ID';
 				},
 			};
 
@@ -34,7 +37,10 @@
 	
 	addingOptions.keepColumns = ['BEGIN_DATE','END_DATE','CONTRACT_TEMPLATE','CONTRACT_TYPE','CONTRACT_PERIOD','CONTRACT_EXPENDITURE'];
 
+	currentContractId = 0;
+	
 	editBox.initExtraPostData = function (id,rowData){
+		currentContractId = id;
 	 		return 	{
 		 		id			: id,
 		 		templateId	: rowData.CONTRACT_TEMPLATE};
@@ -75,8 +81,10 @@
 						 							               	$('#table_'+tab+' tbody').off( 'click', 'tr');
 					 								   				doMore = function(addingRow){
 					 								   				 	selectRow = table.row('.selected').data();
-					 								   					addingRow['ATTRIBUTE_ID'] 	= selectRow.CODE;
-					 								   					addingRow['CONTRACT_ID'] = selectRow.NAME;
+					 								   					addingRow['ATTRIBUTE_ID'] 		= selectRow.CODE;
+					 								   					addingRow['CONTRACT_ID'] 		= selectRow.NAME;
+						 								   				addingRow['ATTRIBUTE_ID_INDEX'] = selectRow.ID;
+					 								   					addingRow['CONTRACT_ID_INDEX'] 	= currentContractId;
 					 								   					return addingRow;
 					 								   				}
 					 								   				getAddButtonHandler(otable,otab,doMore)();
@@ -110,6 +118,27 @@
 		else return getAddButtonHandler(otable,otab);
 	};
 
+	editBox['initSavingDetailData'] = function(editId,success) {
+		params 		= actions.loadSaveParams(true);
+		editedData 	= {};
+		deleteData 	= {};
+		$.each(editBox.fields, function( index, value ) {
+			editedData[value] 	= actions.editedData[value];
+			deleteData[value] 	= actions.deleteData[value];
+   		 });
+
+  		 return {
+  	  		 		id			: editId,
+  	  		 		editedData	: editedData,
+  	  		 		deleteData	: deleteData,
+  	  		 };
+	};
+
+	 actions['initDeleteObject']  = function (tab,id, rowData) {
+		 if(tab=='PdContractData') return {'ID':id, CONTRACT_ID : rowData.CONTRACT_ID_INDEX};
+			return {'ID':id};
+	 };
+	
 </script>
 @stop
 
@@ -119,7 +148,7 @@
 	editBox.fields = ['PdContractData'];
 	editBox.loadUrl = "/contractdetail/load";
 	editBox.saveUrl = '/contractdetail/save';
-	editBox.enableRefresh = true;
+	editBox.enableRefresh = false;
 
 	editBox.editGroupSuccess = function(data,id){
 		tab = 'PdContractData';
@@ -136,6 +165,7 @@
 	}
 
 	editBox['saveFloatDialogSucess'] = function(data,id){
+		actions.saveSuccess(data);
 		close = false;
 		return close;
 	}

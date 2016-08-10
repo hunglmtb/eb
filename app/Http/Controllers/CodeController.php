@@ -301,17 +301,17 @@ class CodeController extends EBController {
     	else{
 	    	$editedData = $postData['editedData'];
     	}
-//      	$record_freq = $postData['CodeReadingFrequency'];
-//      	$phase_type = $postData['CodeFlowPhase'];
-     	$facility_id = $postData['Facility'];
+     	
+     	$facility_id = null;
+     	if (array_key_exists('Facility',  $postData)){
+     		$facility_id = $postData['Facility'];
+     	}
      	
      	$occur_date = null;
      	if (array_key_exists('date_begin',  $postData)){
      		$occur_date = $postData['date_begin'];
-//      		$occur_date = Carbon::parse($occur_date);
  			$occur_date 	= \Helper::parseDate($occur_date);
      	}
-//      	$objectIds = array_key_exists('objectIds', $postData)?$postData['objectIds']:[];
      	
      	$affectedIds = [];
      	$this->preSave($editedData,$affectedIds,$postData);
@@ -458,7 +458,7 @@ class CodeController extends EBController {
     		$deleteData = $postData['deleteData'];
     		foreach($deleteData as $mdlName => $mdlData ){
     			$mdl = "App\Models\\".$mdlName;
-    			$mdl::whereIn('ID', array_values($mdlData))->delete();
+    			$mdl::deleteWithConfig($mdlData);
     		}
     	}
     }

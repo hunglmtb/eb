@@ -125,20 +125,26 @@ if (!isset($isAction)) $isAction =false;
 			        });
 					actions.afterGotSavedData(data,table,key);
 				}
+				delete actions.editedData[key];
 			}
 		}
 		else if(typeof(postData) !== "undefined" && (postData.hasOwnProperty('deleteData'))){
 			for (var key in postData.deleteData) {
 				table = $('#table_'+key).DataTable();
 				actions.afterGotSavedData(data,table,key);
+				delete actions.deleteData[key];
 			}
 		}
-		actions.editedData = {};
-		actions.deleteData = {};
-		alert(JSON.stringify(data.updatedData));
+		/* actions.editedData = {};
+		actions.deleteData = {}; */
+// 		alert(JSON.stringify(data.updatedData));
+		msg = 'done\n';
 		if(data.hasOwnProperty('lockeds')){
-			alert(JSON.stringify(data.lockeds));
+			msg+=JSON.stringify(data.lockeds);
+// 			alert();
 		}
+
+		alert(msg);
  	};
 </script>
 

@@ -29,6 +29,11 @@ class EbBussinessModel extends DynamicModel {
 		return parent::findMany ( $updatedIds );
 	}
 	
+	public static function deleteWithConfig($mdlData) {
+		$valuesIds = array_values($mdlData);
+		static::whereIn('ID', $valuesIds)->delete();
+	}
+	
 	public static function updateValues(array $attributes, array &$values = [], $type, $fields) {
 		$unnecessary = true;
 		foreach ( $fields as $field ) {
