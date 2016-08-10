@@ -5,6 +5,7 @@ use App\Http\Controllers\CodeController;
 use App\Models\PdContractData;
 use App\Models\pdCodeContractAttribute;
 use App\Models\PdContractTemplateAttribute;
+use App\Models\PdContractQtyFormula;
 use Illuminate\Http\Request;
 
 class ContractDataController extends CodeController {
@@ -61,11 +62,16 @@ class ContractDataController extends CodeController {
     	$pdContractData					= PdContractData::getTableName();
     	$pdContractTemplateAttribute	= PdContractTemplateAttribute::getTableName();
     	$pdCodeContractAttribute		= PdCodeContractAttribute::getTableName();
+    	$pdContractQtyFormula			= PdContractQtyFormula::getTableName();
     	
     	$contractDataSet = PdContractData::join($pdCodeContractAttribute,
 					    			"$pdContractData.ATTRIBUTE_ID",
 					    			'=',
 					    			"$pdCodeContractAttribute.ID")
+				    			->leftJoin($pdContractQtyFormula,
+				    					"$pdCodeContractAttribute.FORMULA_ID",
+				    					'=',
+				    					"$pdContractQtyFormula.ID")
 				    			->where("$pdContractData.CONTRACT_ID",'=',$id)
 				    			->select(
 				    					"$pdContractData.*",
@@ -75,18 +81,20 @@ class ContractDataController extends CodeController {
  				    					"$pdCodeContractAttribute.ID as $pdContractData",
 				    					"$pdCodeContractAttribute.NAME as CONTRACT_ID",
 				    					"$pdCodeContractAttribute.CODE as ATTRIBUTE_ID",
-				    					"$pdCodeContractAttribute.FORMULA_ID",
- 				    					"$pdCodeContractAttribute.ID as ID"
+ 				    					"$pdCodeContractAttribute.ID as ID",
+				    					"$pdContractQtyFormula.NAME as FORMULA"
 				    					)
 		    					->get();
-    	
+		    					
 		    					
     	$selects = ["$pdCodeContractAttribute.ID as DT_RowId",
 	    			"$pdCodeContractAttribute.ID as $pdContractData",
 	    			"$pdCodeContractAttribute.NAME as CONTRACT_ID",
 	    			"$pdCodeContractAttribute.CODE as ATTRIBUTE_ID",
 	    			"$pdCodeContractAttribute.ID",
+				    "$pdCodeContractAttribute.FORMULA_ID as FORMULA",
     				"$pdCodeContractAttribute.ID as ATTRIBUTE_ID_INDEX",
+    				"$pdContractQtyFormula.NAME as FORMULA",
     				\DB::raw("$id as CONTRACT_ID_INDEX"),
     	];
     	
@@ -101,6 +109,10 @@ class ContractDataController extends CodeController {
 									    			"$pdContractTemplateAttribute.ATTRIBUTE", 
 									    			'=', 
 									    			"$pdCodeContractAttribute.ID")
+								    			->leftJoin($pdContractQtyFormula,
+								    					"$pdCodeContractAttribute.FORMULA_ID",
+								    					'=',
+								    					"$pdContractQtyFormula.ID")
 										    	->where("$pdContractTemplateAttribute.CONTRACT_TEMPLATE",'=',$templateId)
 										    	->where("$pdContractTemplateAttribute.ACTIVE",'=',1)
 										    	->select($selects);

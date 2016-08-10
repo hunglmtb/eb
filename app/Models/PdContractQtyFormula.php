@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class PdContractQtyFormula extends DynamicModel 
 { 
-	protected $table = 'pd_contract_qty_formula'; 
+	protected $table = 'PD_CONTRACT_QTY_FORMULA'; 
 } 
