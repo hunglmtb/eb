@@ -16,4 +16,17 @@ use App\Models\EbBussinessModel;
 							'CONTRACT_PERIOD', 
 							'CONTRACT_TEMPLATE', 
 							'CONTRACT_EXPENDITURE'];
+	
+	
+	public static function getByDateRange($sourceData){
+		$beginDate 		= $sourceData['date_begin'];
+		$endDate 		= $sourceData['date_end'];
+		
+		$entries = static::whereDate('BEGIN_DATE','>=',$beginDate)
+							->whereDate('BEGIN_DATE','<=',$endDate)
+							->select('ID', 'NAME')
+							->get();
+		
+		return $entries;
+	}
 } 

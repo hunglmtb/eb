@@ -60,4 +60,29 @@ class ProductDeliveryController extends CodeController {
 													'contractAttributes'=>$contractAttributes
 		]);
 	}
+	
+	public function contractcalculate() {
+		$filterGroups = array(
+						'frequenceFilterGroup'		=> array([	'id'			=>'PdContract',
+																'name'			=>'PdContract',
+																'filterName'	=>'Contract',
+																'getMethod'		=>'getByDateRange',
+																'source'		=>['dateFilterGroup'=>['date_begin','date_end']]
+						]),
+						'dateFilterGroup'			=> array('date_begin'	=> [	'id'			=>'date_begin',
+																					'name'			=>'From date',
+																					'dependences'	=>['PdContract'],
+																					'extra'			=>['date_end','PdContract']
+																				],
+															'date_end'		=> [	'id'			=>'date_end',
+																					'name'			=>'To date',
+																					'dependences'	=>['PdContract'],
+																					'extra'			=>['date_begin','PdContract']
+																				],
+						),
+						'enableButton'	=>false
+		);
+		return view ( 'front.contract.contractcalculate',['filters'=>$filterGroups,
+		]);
+	}
 }

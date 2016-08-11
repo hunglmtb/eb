@@ -135,6 +135,9 @@ return [
 										'CodeInjectPoint'		=>	array('filterName'	=>'Object Type',
 																		'name'			=>'CodeInjectPoint',
 																		'id'			=>'CodeInjectPoint'),
+										/* 'PdContract'			=>	array('filterName'	=>'Contract',
+																		'name'			=>'PdContract',
+																		'id'			=>'PdContract'), */
 										],
 		'tab'							=>$tab
 		// etc

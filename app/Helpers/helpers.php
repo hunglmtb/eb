@@ -8,28 +8,31 @@ class Helper {
 	public static function filter($option=null) {
 		if ($option==null) return;
 		$model='App\\Models\\'.$option['id'];
-		if ( array_key_exists('getMethod', $option)) {
-			$getMethod = $option['getMethod'];
-			$collection = $model::$getMethod();
+		$collection = $option['collection'];
+		if (!$collection) {
+			if ( array_key_exists('getMethod', $option)) {
+				$getMethod = $option['getMethod'];
+				$collection = $model::$getMethod();
+			}
+			else $collection = $model::all(['ID', 'NAME']);
 		}
-		else $collection = $model::all(['ID', 'NAME']);
 // 		$collection = $model::select(['ID', 'NAME'])->orderBy('NAME')->get();
-		$option['collection']=$collection;
+		$option['collection'] = $collection;
 		Helper::buildFilter($option);
 	}
 	
 	public static function buildFilter($option=null) {
-		if ($option==null) return;
-		$collection = $option['collection'];
-		$filterName = $option['filterName'];
+		if ($option == null) return;
+		$collection 	= $option['collection'];
 	
-		$default=array_key_exists('default', $option)?$option['default']:false;
-		$id=array_key_exists('id', $option)?$option['id']:false;
-		$name=array_key_exists('name', $option)?$option['name']:false;
-	
-		$htmlFilter = 	"<div class=\"filter $name\"><div><b>$filterName</b>".
-				'</div>
-				<select id="'.$id.'" name="'.$name.'">';
+		$default		= array_key_exists('default', $option)?$option['default']:false;
+		$id				= array_key_exists('id', $option)?$option['id']:false;
+		$name			= array_key_exists('name', $option)?$option['name']:false;
+		$filterName 	= array_key_exists('filterName', $option)?$option['filterName']:$name;
+		
+		$htmlFilter 	= "<div class=\"filter $name\"><div><b>$filterName</b>".
+							'</div>
+							<select id="'.$id.'" name="'.$name.'">';
 		if ($default) {
 			$htmlFilter .= '<option value="'.$default['ID'].'" selected >'.$default['NAME'].'</option>';
 		}
@@ -101,6 +104,14 @@ class Helper {
 												dateFormat:"'.$jsFormat.'"
 											});
 										</script>';
+					
+					if (array_key_exists('dependences', $option)) {
+						$dependences = $option['dependences'];
+						$extra = array_key_exists('extra', $option)&&count($option['extra'])>0?$option['extra']:null;
+						$extra = is_array($extra)&&count($extra)>0?",['".implode("','", $extra)."']":'';
+						$htmlFilter.= "<script>registerOnChange('$id',['".implode("','", $dependences)."']$extra)</script>";
+					}
+									
     				break;
     				case 'cboFilterBy':
     					$htmlFilter = 	"<div class=\"filter\"><div><b>$name</b>".

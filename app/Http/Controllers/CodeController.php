@@ -38,6 +38,7 @@ use App\Models\PdTransitCarrier;
 use App\Models\Personnel;
 use App\Models\StandardUom;
 use App\Models\Tank;
+use App\Models\CustomizeDateCollection;
 
 class CodeController extends EBController {
 	 
@@ -62,37 +63,33 @@ class CodeController extends EBController {
 		$bunde = $options['extra'];
 		$type = $options['type'];
 		
-		$mdl = 'App\Models\\'.$type;
-		$unit = $mdl::find($options['value']);
+		if ($type=='date_end'||$type=='date_begin') {
+			$unit = new CustomizeDateCollection($type,$options['value']);
+		}
+		else{
+			$mdl = 'App\Models\\'.$type;
+			$unit = $mdl::find($options['value']);
+		}
+		
 		$results = [];
 		
 		foreach($options['dependences'] as $model ){
 			$modelName = $model;
+			$currentId = null;
 			if ($unit!=null) {
-// 				$eCollection = $unit->$model(['ID', 'NAME'])->getResults();
-// 				$option = isset($bunde[$model])?$bunde[$model]:null;
 				$rs = ProductionGroupComposer::initExtraDependence($results,$model,$unit,$bunde);
 				$eCollection = $rs['collection'];
 				$modelName = $rs['model'];
+				$currentId = $rs['currentId'];
 			}
 			else  break;
-// 			if (count ( $eCollection ) > 0) {
-				if (array_key_exists($model,  config("constants.subProductFilterMapping"))&&
-						array_key_exists('default',  config("constants.subProductFilterMapping")[$model])) {
-					$eCollection[] = config("constants.subProductFilterMapping")[$model]['default'];
-				}
-				$unit = ProductionGroupComposer::getCurrentSelect ( $eCollection );
-				$filterArray = ProductionGroupComposer::getFilterArray ( $modelName, $eCollection, $unit );
-				$results [] = $filterArray;
-			/* }
-			else {
-				if (array_key_exists($model,  config("constants.subProductFilterMapping"))&&
-						array_key_exists('default',  config("constants.subProductFilterMapping")[$model])) {
-							$results [] = $filterArray;
-							$eCollection[] = config("constants.subProductFilterMapping")[$model]['default'];
-						}
-				break;
-			} */
+			if (array_key_exists($model,  config("constants.subProductFilterMapping"))&&
+					array_key_exists('default',  config("constants.subProductFilterMapping")[$model])) {
+				$eCollection[] = config("constants.subProductFilterMapping")[$model]['default'];
+			}
+			$unit = ProductionGroupComposer::getCurrentSelect ( $eCollection,$currentId );
+			$filterArray = ProductionGroupComposer::getFilterArray ( $modelName, $eCollection, $unit );
+			$results [] = $filterArray;
 		}
 		
 		return response($results, 200) // 200 Status Code: Standard response for successful HTTP request

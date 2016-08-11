@@ -47,6 +47,7 @@ var registerOnChange = function(id, dependentIds,more) {
 						option.attr('value', this.ID).text(this.NAME);
 						$('#'+results[i].id).append(option);
 					});
+					$('#'+results[i].id).val(results[i].currentId);
 				}
 				
 				enableSelect(dependentIds,false);

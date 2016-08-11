@@ -5,25 +5,30 @@ if (!isset($filters['extra'])) {
 
 $enableButton = isset($filterGroups['enableButton'])?$filterGroups['enableButton']:true;
 
-$mapping = ['LoProductionUnit'		=> 	array('filterName'	=>'Production Unit',
-											'name'			=>'productionUnit',
-											'dependences'	=> array_merge(['LoArea','Facility'],$filters['productionFilterGroup']),
-  											'extra'			=>$filters['extra'],
-										),
-			'LoArea'				=>	array('filterName'	=>'Area',
-											'name'			=>'area',
-											'dependences'	=> array_merge(['Facility'],$filters['productionFilterGroup']),
-  											'extra'			=>$filters['extra'],
-										),
-			'Facility'				=>	array('filterName'	=>'Facility',
-											'name'			=>'facility',
-											'dependences'	=>$filters['productionFilterGroup'],
-  											'extra'			=>$filters['extra'],
-										)
-			];
-
-$subMapping = config("constants.subProductFilterMapping");
-$mapping = array_merge($mapping,$subMapping);
+if (array_key_exists('productionFilterGroup', $filters)) {
+	$mapping = ['LoProductionUnit'		=> 	array('filterName'	=>'Production Unit',
+												'name'			=>'productionUnit',
+												'dependences'	=> array_merge(['LoArea','Facility'],$filters['productionFilterGroup']),
+	  											'extra'			=>$filters['extra'],
+											),
+				'LoArea'				=>	array('filterName'	=>'Area',
+												'name'			=>'area',
+												'dependences'	=> array_merge(['Facility'],$filters['productionFilterGroup']),
+	  											'extra'			=>$filters['extra'],
+											),
+				'Facility'				=>	array('filterName'	=>'Facility',
+												'name'			=>'facility',
+												'dependences'	=>$filters['productionFilterGroup'],
+	  											'extra'			=>$filters['extra'],
+											)
+				];
+	
+	$subMapping = config("constants.subProductFilterMapping");
+	$mapping = array_merge($mapping,$subMapping);
+}
+else{
+	$mapping = config("constants.subProductFilterMapping");
+}
 
 ?>
 <script type='text/javascript'>
@@ -60,7 +65,7 @@ $( document ).ready(function() {
 			@elseif($key=='frequenceFilterGroup')
 			<div class = "product_filter">
 				@foreach( $filters as $filter )
-					{{ Helper::filter(array_merge($filter, $mapping[$filter['id']])) }}
+					{{ Helper::filter(array_key_exists($filter['id'], $mapping)?array_merge($filter, $mapping[$filter['id']]):$filter) }}
 				@endforeach
 			</div>
 			@endif

@@ -190,6 +190,10 @@ Route::post('contractdata/save', 		'Contract\ContractDataController@save');
 Route::post('contractdetail/load',		'Contract\ContractDataController@loadDetail');
 Route::post('contractdetail/save', 		'Contract\ContractDataController@save');
 
+Route::get('pd/contractcalculate',			['uses' =>'ProductDeliveryController@contractcalculate','middleware' => 'checkRight:PD_CONTRACT_ADMIN_CALC']);
+Route::post('contractcalculate/load',		['uses' =>'Contract\ContractCalculateController@load','middleware' => 'saveWorkspace']);
+Route::post('contractcalculate/save', 		'Contract\ContractCalculateController@save');
+
 //----------admin
 Route::get('am/users', 'AdminController@_index');
 Route::post('am/loadData', 'AdminController@getData');
