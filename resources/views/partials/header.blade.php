@@ -88,7 +88,7 @@ var xmenu=
 						[
 							{"name":"Contract Data","title":"Contract Data","link":"/pd/contractdata"},
 							{"name":"Contract Calculation","title":"Contract Calculation","link":"/pd/contractcalculate"},
-							{"name":"Contract Template","title":"","link":"#"},
+							{"name":"Contract Template","title":"Contract Template","link":"/pd/contracttemplate"},
 							{"name":"Cargo Program","title":"","link":"#"},
 						]
 					},
@@ -125,9 +125,9 @@ var xmenu=
 				[
 					{"code":"","name":"Cargo Management","title":"","link":"#","menus":
 						[
-							{"name":"Demurrage/EBO","title":"","link":"/demurrageebo"},
-							{"name":"Cargo Documents","title":"","link":"/cargodocuments"},
-							{"name":"Cargo Status","title":"","link":"#"},
+							{"name":"Demurrage/EBO","title":"Demurrage/EBO","link":"/demurrageebo"},
+							{"name":"Cargo Documents","title":"Cargo Documents","link":"/cargodocuments"},
+							{"name":"Cargo Status","title":"Cargo Status","link":"#"},
 						]
 					},
 				]

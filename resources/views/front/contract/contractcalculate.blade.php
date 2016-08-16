@@ -60,64 +60,18 @@
 					success:function(data){
 						hideWaiting();
 						console.log ( "addyear  success  ");
-						alert("addyear  success  "/* +JSON.stringify(data) */);
+						alert("add year  success  "/* +JSON.stringify(data) */);
 						actions.loadSuccess(data);
 					},
 					error: function(data) {
 						hideWaiting();
-						console.log ( "addyear error "+JSON.stringify(data));
+						console.log ( "add year error "+JSON.stringify(data));
 						alert("addyear  error  ");
 						
 					}
 				});
 
 	}
-	
-	
-	editBox.initExtraPostData = function (id,rowData){
-		currentContractId = id;
-	 		return 	{
-		 		id			: id,
-		 		templateId	: rowData.CONTRACT_TEMPLATE};
-	 	}
-
-	actions.getAddButtonHandler = function (otable,otab){
-		if(otab=='PdContractQtyFormula'){
-			return function (e){
-					var dialogOptions = {
-							height: 100,
-							width: 400,
- 							position:  {my: 'left+80 bottom-80',at: "left bottom"},
-							modal: true,
-							of: $('#toolbar_PdContractQtyFormula'),
-							title: 'input',
-						};
-					$("#floatMoreBox").dialog(dialogOptions);
-				};
-		}
-		else return getAddButtonHandler(otable,otab);
-	};
-
-	editBox['initSavingDetailData'] = function(editId,success) {
-		params 		= actions.loadSaveParams(true);
-		editedData 	= {};
-		deleteData 	= {};
-		$.each(editBox.fields, function( index, value ) {
-			editedData[value] 	= actions.editedData[value];
-			deleteData[value] 	= actions.deleteData[value];
-   		 });
-
-  		 return {
-  	  		 		id			: editId,
-  	  		 		editedData	: editedData,
-  	  		 		deleteData	: deleteData,
-  	  		 };
-	};
-
-	 actions['initDeleteObject']  = function (tab,id, rowData) {
-		 if(tab=='PdContractData') return {'ID':id, CONTRACT_ID : rowData.CONTRACT_ID_INDEX};
-			return {'ID':id};
-	 };
 	
 </script>
 @stop

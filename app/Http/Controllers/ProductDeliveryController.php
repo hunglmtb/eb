@@ -85,4 +85,16 @@ class ProductDeliveryController extends CodeController {
 		return view ( 'front.contract.contractcalculate',['filters'=>$filterGroups,
 		]);
 	}
+	
+	public function contracttemplate() {
+		$filterGroups = array(	'productionFilterGroup'	=>[2			=>'Storage'],
+								'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
+																['id'=>'date_end','name'=>'To date']),
+		);
+	
+		$contractAttributes = PdCodeContractAttribute::all();
+		return view ( 'front.contract.contracttemplate',['filters'=>$filterGroups,
+				'contractAttributes'=>$contractAttributes
+		]);
+	}
 }

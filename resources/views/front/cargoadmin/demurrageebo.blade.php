@@ -1,6 +1,7 @@
 <?php
-	$currentSubmenu ='demurragreebo';
+	$currentSubmenu ='/demurrageebo';
 	$tables = ['PdDemurageEbo'	=>['name'=>'Load']];
+	
 	$isAction = true;
 ?>
 

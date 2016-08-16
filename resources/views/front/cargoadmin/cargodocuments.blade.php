@@ -1,5 +1,5 @@
 <?php
-	$currentSubmenu ='cargodocuments';
+	$currentSubmenu ='/cargodocuments';
 	$tables = ['PdCargoDocument'	=>['name'=>'Load']];
 	$isAction = true;
 ?>

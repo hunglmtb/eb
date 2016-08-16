@@ -36,14 +36,17 @@ var intVal = function ( i ) {
 				}
 	        });
 			
+			if(typeof(doMore) == "function"){
+				addingRow = doMore(addingRow);
+				$.each(columns, function( i, vl ) {
+					actions.putModifiedData(tab,vl.data,addingRow[vl.data],addingRow);
+		        });
+			}
+			
 			if(typeof(editBox.hidenFields) !== "undefined"){
 				$.each(editBox.hidenFields, function( i, vl ) {
 					actions.putModifiedData(tab,vl.field,actions.loadedData[tab][vl.name],addingRow);
 				});
-			}
-			
-			if(typeof(doMore) == "function"){
-				addingRow = doMore(addingRow);
 			}
 //				addingRow['notAttachedToList'] = true;
 			table.row.add(addingRow).draw( false );

@@ -748,6 +748,7 @@ class CodeController extends EBController {
     				$rs[] = $selectData;
     				break;
 	    		case 'CONTRACT_TYPE' :
+	    		case 'CONTACT_TYPE' :
 	    			$selectData = ['id'=>'PdCodeContractType','targets'=>$i,'COLUMN_NAME'=>$columnName];
 	    			$selectData['data'] = \App\Models\PdCodeContractType::all();
 	    			$rs[] = $selectData;
@@ -767,7 +768,6 @@ class CodeController extends EBController {
     				$selectData['data'] = \App\Models\PdContractTemplate::all();
     				$rs[] = $selectData;
     				break;
-	    			
     		}
     		$i++;
     	}

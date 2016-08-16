@@ -77,7 +77,7 @@ class ContractCalculateController extends CodeController {
 	     											'YEAR'			=> $year
 	     	];
 	     	 
-	     	PdContractYear::where($yAttributes)->delete();
+// 	     	PdContractYear::where($yAttributes)->delete();
 	     	foreach($qltyFormulas 	as 	$key 	=> $qltyFormula) {
 	     		$attributes['FORMULA_ID'] 		= $qltyFormula->ID;
 	     		$values 						= $attributes;

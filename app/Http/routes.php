@@ -195,6 +195,12 @@ Route::post('contractcalculate/load',		['uses' =>'Contract\ContractCalculateCont
 Route::post('contractcalculate/save', 		'Contract\ContractCalculateController@save');
 Route::post('contractcalculate/addyear', 		'Contract\ContractCalculateController@addyear');
 
+Route::get('pd/contracttemplate',			['uses' =>'ProductDeliveryController@contracttemplate','middleware' => 'checkRight:PD_CONTRACT_ADMIN_TEMP']);
+Route::post('contracttemplate/load',		['uses' =>'Contract\ContractTemplateController@load','middleware' 	=> 'saveWorkspace']);
+Route::post('contracttemplate/save', 		'Contract\ContractTemplateController@save');
+Route::post('contracttemplateattribute/load',		['uses' =>'Contract\ContractTemplateController@loadAttributes','middleware' 	=> 'saveWorkspace']);
+Route::post('contracttemplateattribute/save', 		'Contract\ContractTemplateController@save');
+
 //----------admin
 Route::get('am/users', 'AdminController@_index');
 Route::post('am/loadData', 'AdminController@getData');

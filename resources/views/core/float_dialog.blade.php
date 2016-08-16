@@ -24,6 +24,7 @@
 				viewId 		= option.viewId;
 				editId		= postData.id;
 				var dialogOptions = {
+							editId:editId,
 							height: 350,
 							width: 900,
 							position: { my: 'top', at: 'top+150' },
@@ -34,15 +35,18 @@
 											delete actions.editedData[value];
 									    });
 								    },
-							create: function() {
-								if (typeof(editBox.saveDetail) == "function") {
-							        var saveBtn = $("<a id='savebtn' href='#' style='right: 20px;display:none'>Save</a>")
+						    open: function( event, ui ) {
+						    	if (typeof(editBox.saveDetail) == "function") {
+							        	var saveBtn = $("<a id='savebtn' href='#' style='right: 20px;display:none'>Save</a>")
 													.button({/* icons:{primary: "ui-icon-plus"}, */text: true});
 										saveBtn.insertBefore('.ui-dialog-titlebar-close').click(function(e){
 											   e.preventDefault();
 											   editBox.saveDetail(editId,editBox['saveFloatDialogSucess']);
 										});
 								}
+							},
+							create: function() {
+								
 						    }
 						};
 				$("#floatBox").dialog(dialogOptions);
@@ -83,25 +87,25 @@
 				});
 			}
 				
-			editBox.editRow = function (id,rowData){
-				if (typeof(editBox.preEditHandleAction) == "function") {
-					editBox.preEditHandleAction(id,rowData);
-				}
-				
-		 		success = function(data){
-					editBox.editGroupSuccess(data,id);
-				}
-		    	option = {
-					    	title 		: rowData.CODE,
-					 		postData 	: editBox.initExtraPostData(id,rowData),
-					 		url 		: editBox.loadUrl,
-					 		viewId 		: 'editBoxContentview',
-		    	    	};
-		 		
-				editBox.showDialog(option,success);
-		    }
+		editBox.editRow = function (id,rowData){
+			if (typeof(editBox.preEditHandleAction) == "function") {
+				editBox.preEditHandleAction(id,rowData);
+			}
+			
+	 		success = function(data){
+				editBox.editGroupSuccess(data,id);
+			}
+	    	option = {
+				    	title 		: rowData.CODE,
+				 		postData 	: editBox.initExtraPostData(id,rowData),
+				 		url 		: editBox.loadUrl,
+				 		viewId 		: 'editBoxContentview',
+	    	    	};
+	 		
+			editBox.showDialog(option,success);
+	    }
 		
-			editBox.renderSumRow = function (api,columns){
+		editBox.renderSumRow = function (api,columns){
 			$.each(columns, function( i, column ) {
 		        total = 0;
 		        $.each(api.columns(column).data()[0], function( index, value ) {
