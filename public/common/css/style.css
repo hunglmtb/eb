@@ -373,3 +373,18 @@ table.dataTable {
 #savebtn span{
 padding: 2px 16px;
 }
+
+table.dataTable tbody tr.selected, table.dataTable.display tbody tr.odd.selected,
+	table.dataTable tbody tr.selected {
+	background-color: #b6cfff;
+}
+
+table.dataTable.display tbody tr:hover, table.dataTable.display tbody tr.odd:hover,
+	table.dataTable.display tbody tr.even:hover, table.dataTable.display tbody tr:hover.selected,
+	table.dataTable.display tbody tr.odd:hover.selected, table.dataTable.hover tbody tr:hover.selected,
+	table.dataTable.hover tbody tr.odd:hover.selected, table.dataTable.hover tbody tr.even:hover.selected,
+	t
+	able.dataTable.display tbody tr:hover.selected, table.dataTable.display tbody tr.odd:hover.selected,
+	table.dataTable.display tbody tr.even:hover.selected {
+	background-color: #b6cfff;
+}
