@@ -4,5 +4,10 @@ use App\Models\DynamicModel;
 
  class PdContractCalculation extends DynamicModel 
 { 
-	protected $table = 'pd_contract_calculation'; 
-} 
+	protected $table = 'PD_CONTRACT_CALCULATION'; 
+	
+	protected $fillable  = ['FORMULA_ID', 
+							'CONTRACT_ID', 
+							'COMMENTS'];
+ }
+	

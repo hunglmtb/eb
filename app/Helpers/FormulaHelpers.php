@@ -1,4 +1,16 @@
 <?php
+use App\Models\CfgFieldProps;
+use App\Models\Formula;
+use App\Models\Fovar;
+use App\Models\CodeQltySrcType;
+use App\Models\QltyDataDetail;
+use App\Models\QltyData;
+use App\Models\QltyProductElementType;
+use App\Models\StrappingTableData;
+use App\Models\PdContractYear;
+use App\Models\PdContractCalculation;
+use App\Models\PdContractData;
+use App\Models\PdCodeContractAttribute;
 
 function sum(){
 	$args = func_get_args();
@@ -19,14 +31,59 @@ function sum(){
 	return $s;
 }
 
-use App\Models\CfgFieldProps;
-use App\Models\Formula;
-use App\Models\Fovar;
-use App\Models\CodeQltySrcType;
-use App\Models\QltyDataDetail;
-use App\Models\QltyData;
-use App\Models\QltyProductElementType;
-use App\Models\StrappingTableData;
+function fn($n,$tem = 0) {
+	global $aryMstCalcu;
+	if($tem != 0) {
+		$aryMstCalcu = $tem;
+	}
+	$value = array_key_exists('fn('.$n.')', $aryMstCalcu)?(int) $aryMstCalcu['fn('.$n.')']:0;
+	return $value;
+
+}
+
+function contract_attr($formulaId,$code,$year = '') {
+ 	global $contractIdGlobal;
+ 	global $yearGlobal;
+	
+	if($year != '') {
+		$year  = $yearGlobal - 1;
+		$sSQL  =" SELECT a.FORMULA_VALUE FROM pd_contract_year a ,pd_contract_calculation b WHERE b.ID = a.CALCULATION_ID AND"
+				. "  a.CONTRACT_ID =  ".$contractIdGlobal ." AND  a.YEAR =  '".$year."'"." AND  b.FORMULA_ID =  '".$formulaId."'";
+		
+		$pdContractYear			= PdContractYear::getTableName();
+		$pdContractCalculation	= PdContractCalculation::getTableName();
+		$contractYear			= PdContractYear::join($pdContractCalculation,"$pdContractYear.CALCULATION_ID", '=', "$pdContractCalculation.ID")
+									->where("$pdContractYear.CONTRACT_ID", '=', $contractIdGlobal)
+									->where("$pdContractYear.YEAR", '=', $year)
+									->where("$pdContractCalculation.FORMULA_ID", '=', $formulaId)
+									->select("$pdContractYear.FORMULA_VALUE as ATTRIBUTE_VALUE")
+									->first();
+	} else {
+		$sSQL  =" SELECT ATTRIBUTE_VALUE 
+				FROM pd_code_contract_attribute a
+				,pd_contract_data b
+				WHERE b.ATTRIBUTE_ID = a.ID AND"
+				. "  b.CONTRACT_ID =  ".$contractIdGlobal ." 
+						AND  a.CODE =  '".$code."'";
+		
+		$pdContractData				= PdContractData::getTableName();
+		$pdCodeContractAttribute	= PdCodeContractAttribute::getTableName();
+		$contractYear				= PdCodeContractAttribute::join($pdContractData,"$pdContractData.ATTRIBUTE_ID", '=', "$pdCodeContractAttribute.ID")
+												->where("$pdCodeContractAttribute.CODE", '=', $code)
+												->where("$pdContractData.CONTRACT_ID", '=', $contractIdGlobal)
+												->select("ATTRIBUTE_VALUE")
+												->first();
+	}
+	/* $result=mysql_query($sSQL) or die("fail: ".$sSQL."-> error:".mysql_error());
+	while($row=mysql_fetch_array($result)) {
+		return $row['ATTRIBUTE_VALUE'];
+	} */
+	if ($contractYear) {
+		return $contractYear->ATTRIBUTE_VALUE;
+	}
+	return 0;
+}
+
 
 function evalErrorHandler($errno, $errstr, $errfile, $errline){
     \Log::info("$errstr at errno $errno file $errfile line $errline");
@@ -1286,6 +1343,58 @@ public static function calculateCrudeOil($T_obs, $P_obs, $API_obs) {
 			}
 		} */
 		return -1;
+	}
+	
+	
+	public static function getDataFormulaContract($qltyFormulas,$contractId,$year) {
+		$aryMstCalcu = array ();
+		$aryValue = array ();
+		$x = array ();
+		$contractIdGlobal = $contractId;
+		$yearGlobal = $year;
+		
+		foreach($qltyFormulas 	as 	$key 	=> $row) {
+			if ($row->LEVEL == 0) {
+				$str = str_replace ( 'contract_attr(', '', $row ->FORMULA );
+				$str = str_replace ( ')', '', $str );
+				$str = $row->ID . "," . $str;
+				$str = "$str,,$contractId,$year";
+				
+				$aryMstCalcu ['fn' . $row->FORMULA_NO] = call_user_func_array ( "contract_attr", explode ( ',', $str ) );
+				$aryValue [$row->ID] = ( int ) $aryMstCalcu ['fn' . $row->FORMULA_NO];
+			} else {
+			
+				$x [$row->ID] = $row->FORMULA;
+			}
+		}
+		
+		/* while ( $row = mysql_fetch_array ( $result ) ) {
+			if ($row ['LEVEL'] == 0) {
+				$str = str_replace ( 'contract_attr(', '', $row ['FORMULA'] );
+				$str = str_replace ( ')', '', $str );
+				$str = $row ['ID'] . "," . $str;
+	
+				$aryMstCalcu ['fn' . $row ['FORMULA_NO']] = call_user_func_array ( "contract_attr", explode ( ',', $str ) );
+				$aryValue [$row ['ID']] = ( int ) $aryMstCalcu ['fn' . $row ['FORMULA_NO']];
+			} else {
+	
+				$x [$row ['ID']] = $row ['FORMULA'];
+			}
+		} */
+		fn ( 1, $aryMstCalcu );
+		set_error_handler("evalErrorHandler");
+		foreach ( $x as $kk => $vv ) {
+			$vvoutput = preg_replace("/fn\(([a-z][0-9])\)/", "fn('$1')", $vv);
+			try {
+				eval ( '$aryValue[$kk] = (' . $vvoutput . ');' );
+			} catch( Exception $e ){
+				\Log::info("Exception with eval $s ".$e->getMessage());
+				$aryValue[$kk] = 0;
+			}
+			 
+		}
+		restore_error_handler();
+		return $aryValue;
 	}
     
 }

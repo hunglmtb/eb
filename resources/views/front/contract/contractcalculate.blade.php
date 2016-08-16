@@ -1,6 +1,6 @@
 <?php
 	$currentSubmenu ='/pd/contractcalculate';
-	$tables = ['PdContract'	=>['name'=>'Load']];
+	$tables = ['PdContractQtyFormula'	=>['name'=>'Load']];
 	$isAction = true;
 ?>
 
@@ -16,6 +16,7 @@
 	    };
 	    
 	    $( "#PdContract" ).change(onChangeFunction);
+    	actions.doLoad(true);
 	});
 
 	actions.loadUrl = "/contractcalculate/load";
@@ -31,20 +32,47 @@
 				},
 			};
 
-	actions.renderFirsColumn = function ( data, type, rowData ) {
-		var id = rowData['DT_RowId'];
-		isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
-		var html = '';
-		if(isAdding)
-			html += '<a id="delete_row_'+id+'" class="actionLink">Delete</a>';
-		else 
-			html += '<a id="edit_row_'+id+'" class="actionLink">&nbsp;Select</a>';
-		return html;
-	};
-	
-	addingOptions.keepColumns = ['BEGIN_DATE','END_DATE','CONTRACT_TEMPLATE','CONTRACT_TYPE','CONTRACT_PERIOD','CONTRACT_EXPENDITURE'];
+	actions.getTableOption	= function(data){
+		return {tableOption :	{
+									emptyTable			: true,
+								},
+				invisible:[]};
+		
+	}
+	actions.renderFirsColumn = actions.defaultRenderFirsColumn;
 
-	currentContractId = 0;
+	actions.isDisableAddingButton	= function (tab,table) {
+		return "Add year";
+	};
+
+	function addYear(){
+				showWaiting();
+				$("#floatMoreBox").dialog('close');
+
+				params		= actions.loadParams(true);
+	            postData  	= {PdContract : $('#PdContract').val(),
+	            				year : $('#year_monitoring').val()};
+				jQuery.extend(postData, params);
+	            $.ajax({
+					url: '/contractcalculate/addyear',
+					type: "post",
+					data: postData,
+					success:function(data){
+						hideWaiting();
+						console.log ( "addyear  success  ");
+						alert("addyear  success  "/* +JSON.stringify(data) */);
+						actions.loadSuccess(data);
+					},
+					error: function(data) {
+						hideWaiting();
+						console.log ( "addyear error "+JSON.stringify(data));
+						alert("addyear  error  ");
+						
+					}
+				});
+
+	}
+	
 	
 	editBox.initExtraPostData = function (id,rowData){
 		currentContractId = id;
@@ -53,73 +81,18 @@
 		 		templateId	: rowData.CONTRACT_TEMPLATE};
 	 	}
 
-	actions.renderFirsEditColumn = function ( data, type, rowData ) {
-		var id = rowData['DT_RowId'];
-		var html = '<a id="delete_row_'+id+'" class="actionLink">Delete</a>';
-		return html;
-	};
-
-	getAddButtonHandler = actions.getAddButtonHandler;
 	actions.getAddButtonHandler = function (otable,otab){
-		if(otab=='PdContractData'){
+		if(otab=='PdContractQtyFormula'){
 			return function (e){
 					var dialogOptions = {
-							height: 450,
+							height: 100,
 							width: 400,
-							position: { my: 'top', at: 'top+100' },
+ 							position:  {my: 'left+80 bottom-80',at: "left bottom"},
 							modal: true,
-							title: 'Attributes',
+							of: $('#toolbar_PdContractQtyFormula'),
+							title: 'input',
 						};
 					$("#floatMoreBox").dialog(dialogOptions);
-
-					tab = 'PdCodeContractAttribute';
-					options = {
-			 					tableOption :	{
-								 						searching			: true,
-					 									autoWidth			: false,
-					 									scrollX				: true,
-					 									bInfo 				: false,
-					 									scrollY				: "320px",
-					 									renderFirsColumn 	: null,
-					 									drawCallback	: function ( settings ) { 
-					 								        var table = $('#table_'+tab).DataTable();
-					 								        $('#table_'+tab+' tbody').on( 'click', 'tr', function () {
-					 								            if ( $(this).hasClass('selected') ) {
-						 							               	$('#table_'+tab+' tbody').off( 'click', 'tr');
-					 								   				doMore = function(addingRow){
-					 								   				 	selectRow = table.row('.selected').data();
-					 								   					addingRow['ATTRIBUTE_ID'] 		= selectRow.CODE;
-					 								   					addingRow['CONTRACT_ID'] 		= selectRow.NAME;
-						 								   				addingRow['ATTRIBUTE_ID_INDEX'] = selectRow.ID;
-					 								   					addingRow['CONTRACT_ID_INDEX'] 	= currentContractId;
-					 								   					return addingRow;
-					 								   				}
-					 								   				getAddButtonHandler(otable,otab,doMore)();
-						 							                table.$('tr.selected').removeClass('selected');
-					 								   				$('#floatMoreBox').dialog('close');
-					 								            }
-					 								            else {
-						 								            table.$('tr.selected').removeClass('selected');
-					 								                $(this).addClass('selected');
-					 								            }
-					 								        } );
-					 								    }
-					 							}
-						};
-					tableData = otable.data();
-					var attributeData = $.grep(contractAttributes,function(el,i) {
-							filters = $.grep(tableData,function(element,index) {
-							  	return element.ATTRIBUTE_ID==el.CODE;
-							});
-						  	return filters.length<=0
-						});
-//            	    	attributeData = contractAttributes;
-           	    	
-					subData = {	dataSet			: attributeData,
-								properties		: [{title:'CODE',data:'CODE',width:80},
-					           	    				{title:'NAME',data:'NAME',width:205}]
-					          };
-					etbl = renderTable(tab,subData,options);
 				};
 		}
 		else return getAddButtonHandler(otable,otab);
@@ -149,60 +122,16 @@
 </script>
 @stop
 
-@section('editBoxParams')
-@parent
-<script>
-	editBox.fields = ['PdContractData'];
-	editBox.loadUrl = "/contractdetail/load";
-	editBox.saveUrl = '/contractdetail/save';
-	editBox.enableRefresh = false;
-
-	editBox.editGroupSuccess = function(data,id){
-		tab = 'PdContractData';
-			options = {
-	 					tableOption :	{
-			 									autoWidth	: false,
- 			 									scrollX		: false,
-			 									scrollY		: "200px",
-			 							}
-				};
-		subData = data[tab];
-		etbl = renderTable(tab,subData,options,actions.createdFirstCellColumn);
-		if(etbl!=null) actions.afterDataTable(etbl,tab);
-	}
-
-	editBox['saveFloatDialogSucess'] = function(data,id){
-		actions.saveSuccess(data);
-		close = false;
-		return close;
-	}
-
-</script>
-@stop
-
-@section('editBoxContentview')
-@parent
-	<table border='0' cellpadding='0' style='width:100%;height:100%'>
-		<tr>
-			<td valign='top'>
-				<div id="table_PdContractData_containerdiv" style='height:100%;overflow:auto'>
-					<table id="table_PdContractData" class="fixedtable nowrap display"></table>
-				</div>
-			</td>
-		</tr>
-	</table>
-@stop
-
-
 @section('floatMoreBoxContent')
-	<table id="table_PdCodeContractAttribute" class="fixedtable nowrap display"></table>
+    <table id="table_PdContractYear" border='0' style='width:100%;height:50px;' cellpadding='5' cellspacing='0'>
+        <tr class='row_activity' style='cursor:pointer' >
+            <td>Year</td>
+            <td>
+                <input id="year_monitoring" class="" type="text" value="" name="year_monitoring" >
+            </td>
+            <td>
+                <input style="width:100px;font-size:10pt;" type="button" onClick="addYear()" value="Save" />
+            </td>
+        </tr>
+    </table>
 @stop
-
-@section('action_extra')
-	<div class="action_filter">
-		@if(!auth()->user()->hasRight('DATA_READONLY'))
-			<input type="button" value="Save" name="B3" id = "buttonSave" onClick="actions.doSave(true)" style="width: 85px;foat:left; height: 26px">
-		@endif
-	</div>
-@stop
-	

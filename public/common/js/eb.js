@@ -322,6 +322,9 @@ var actions = {
 		return true;
 	},
 	renderFirsColumn : function ( data, type, rowData ) {
+		return actions.defaultRenderFirsColumn(data, type, rowData);
+	},
+	defaultRenderFirsColumn : function ( data, type, rowData ) {
 		var html = "<div class='firstColumn'>"+data+"</div>";
 		var extraHtml = "<div class='extraFirstColumn'>";
 		if(rowData.hasOwnProperty('PHASE_CODE')){
@@ -869,6 +872,10 @@ var actions = {
 	    if (options!=null) {
 	 		if(typeof(options.tableOption) !== "undefined"&&options.tableOption!=null){
 	 			jQuery.extend(option, options.tableOption);
+	 			if(options.tableOption.hasOwnProperty('emptyTable')
+	 					&&options.tableOption.emptyTable) {
+	 				 $('#container_'+tab ).html('<table border="0" cellpadding="3" id="table_'+tab +'" class="fixedtable nowrap display"></table>');
+	 			}
 	 		}
 		}
 		

@@ -54,8 +54,10 @@ var intVal = function ( i ) {
 	};
 
 	actions.afterDataTable = function (table,tab){
-		if(actions.isDisableAddingButton(tab,table)) return;
-		$("#toolbar_"+tab).html('<button>Add</button>');
+		text = actions.isDisableAddingButton(tab,table)
+		if(text==true) return;
+		if(typeof(text) !== "string") text = 'Add';
+		$("#toolbar_"+tab).html('<button>'+text+'</button>');
 		$("#toolbar_"+tab).addClass('toolbarAction');
 		addButtonHandle = actions.getAddButtonHandler(table,tab);
 		$("#toolbar_"+tab+ " button").on( 'click', addButtonHandle);

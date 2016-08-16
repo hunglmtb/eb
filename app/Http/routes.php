@@ -193,6 +193,7 @@ Route::post('contractdetail/save', 		'Contract\ContractDataController@save');
 Route::get('pd/contractcalculate',			['uses' =>'ProductDeliveryController@contractcalculate','middleware' => 'checkRight:PD_CONTRACT_ADMIN_CALC']);
 Route::post('contractcalculate/load',		['uses' =>'Contract\ContractCalculateController@load','middleware' => 'saveWorkspace']);
 Route::post('contractcalculate/save', 		'Contract\ContractCalculateController@save');
+Route::post('contractcalculate/addyear', 		'Contract\ContractCalculateController@addyear');
 
 //----------admin
 Route::get('am/users', 'AdminController@_index');

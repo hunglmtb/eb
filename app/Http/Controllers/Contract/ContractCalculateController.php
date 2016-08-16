@@ -2,130 +2,106 @@
 namespace App\Http\Controllers\Contract;
 
 use App\Http\Controllers\CodeController;
-use App\Models\PdContractData;
-use App\Models\pdCodeContractAttribute;
-use App\Models\PdContractTemplateAttribute;
+use App\Models\PdContractCalculation;
 use App\Models\PdContractQtyFormula;
+use App\Models\PdContractYear;
 use Illuminate\Http\Request;
 
 class ContractCalculateController extends CodeController {
     
-    public function getFirstProperty($dcTable){
-//     	$width = $dcTable==PdContractData::getTableName()?40:90;
-		return  ['data'=>$dcTable,'title'=>'','width'=> 50];
+	public function load(Request $request){
+		$postData 	= $request->all();
+		$contractId = $postData['PdContract'];
+		$results 	= $this->loadData($contractId,$postData);
+	
+		return response()->json($results);
 	}
 	
+	public function loadData($contractId,$postData){
+		$pdContractYear			= PdContractYear::getTableName();
+		$pdContractCalculation	= PdContractCalculation::getTableName();
+		
+		$contractYears = PdContractYear::join($pdContractCalculation,"$pdContractYear.CALCULATION_ID", '=', "$pdContractCalculation.ID")
+										->where("$pdContractYear.CONTRACT_ID", '=', $contractId)
+										->select("$pdContractYear.FORMULA_VALUE",
+												"$pdContractYear.YEAR",
+												"$pdContractCalculation.FORMULA_ID")
+												->orderBy("$pdContractYear.YEAR",'desc')
+												->get();
+		
+				 
+		$propertiesArray = [(object)['data' =>	'NAME'			,'title' => 'Contract Quantity' ,'width' => 150    ],
+							(object)['data' =>	'DESCRIPTION'	,'title' => 'Description'		,'width' => 400    ]];
+
+
+		$pdContractQtyFormula			= PdContractQtyFormula::getTableName();
+		$data 							= PdContractQtyFormula::select(
+																	"ID as DT_RowId",
+																	"$pdContractQtyFormula.*")
+																->get();
+
+		$years = $contractYears->groupBy("YEAR");
+		if($years->count()>0){
+			foreach($years as $year => $set ){
+				$yearField = "year$year";
+				$propertiesArray[] = (object)['data' =>	$yearField		,'title' => "$year"];
 	
-    public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
-    		
-    	$date_end 		= $postData['date_end'];
-    	$date_end 		= \Helper::parseDate($date_end);
-    	
-    	$mdlName = $postData[config("constants.tabTable")];
-    	$mdl = "App\Models\\$mdlName";
-    	
-//     	\DB::enableQueryLog();
-    	$dataSet = $mdl::whereDate("$dcTable.BEGIN_DATE",'>=',$occur_date)
-    					->whereDate("$dcTable.BEGIN_DATE",'<=',$date_end)
-    					/* ->whereDate("$dcTable.END_DATE",'>=',$occur_date)
-    					->whereDate("$dcTable.END_DATE",'<=',$date_end) */
-				    	->select(
-				    			"$dcTable.ID as $dcTable",
-				    			"$dcTable.ID as DT_RowId",
-				    			"$dcTable.*") 
-  		    			->get();
-//  		\Log::info(\DB::getQueryLog());
- 		    			
-    	return ['dataSet'=>$dataSet];
-    }
-    
-	public function loadDetail(Request $request){
-    	$postData 				= $request->all();
-    	$id 					= $postData['id'];
-     	$templateId 			= $postData['templateId'];
+				$formulaGroups = $set->groupBy("FORMULA_ID");
+	
+				$data = $data->each(function ($item, $key) use ($yearField,$formulaGroups){
+					$item->{$yearField} = $formulaGroups[$item->ID][0]->FORMULA_VALUE;
+				});
+			}
+		}
+		$properties = collect($propertiesArray);
+		$results['properties']	= $properties;
+		$results['dataSet'] 	= $data;
+		$results['postData'] 	= $postData;
+		return $results;
+	}
+	
+	public function addyear(Request $request){
+    	$postData 								= $request->all();
+    	$contractId								= $postData['PdContract'];
+     	$year		 							= $postData['year'];
      	
-    	$contractDetail 		= PdContractData::getTableName();
-    	$results 				= $this->getProperties($contractDetail);
-    	
-    	$dataSet 				= $this->getContractData($id,$templateId,$results['properties']);
-	    $results['dataSet'] 	= $dataSet;
-	    
-    	return response()->json(['PdContractData' => $results]);
+     	$qltyFormulas		 					= PdContractQtyFormula::all();
+     	$formulaValues  						= \FormulaHelpers::getDataFormulaContract($qltyFormulas,$contractId,$year);
+     	
+     	$resultTransaction 						= \DB::transaction(function () use ($qltyFormulas,$formulaValues,$contractId,$year){
+	     	$attributes 						= ['CONTRACT_ID'	=> $contractId];
+	     	$yAttributes 						= ['CONTRACT_ID'	=> $contractId,
+	     											'YEAR'			=> $year
+	     	];
+	     	$yValues	 						= ['CONTRACT_ID'	=> $contractId,
+	     											'YEAR'			=> $year
+	     	];
+	     	 
+	     	PdContractYear::where($yAttributes)->delete();
+	     	foreach($qltyFormulas 	as 	$key 	=> $qltyFormula) {
+	     		$attributes['FORMULA_ID'] 		= $qltyFormula->ID;
+	     		$values 						= $attributes;
+	     		$calculation					= PdContractCalculation::updateOrCreate($attributes,$values);
+	     		
+	     		/* $sql = "INSERT INTO pd_contract_calculation(FORMULA_ID,CONTRACT_ID) "
+	     				. "VALUE(".$aryRequest['FORMULA_ID'.$id].",".$aryRequest['CONTRACT_ID'].")"; */
+	     		
+	     		$formulaValue					= (int) $formulaValues[$qltyFormula->ID];
+	     		$yAttributes['CALCULATION_ID'] 	= $calculation->ID;
+	     		$yValues['CALCULATION_ID'] 		= $calculation->ID;
+	     		$yValues['FORMULA_VALUE'] 		= $formulaValue;
+	     		$contractYear					= PdContractYear::updateOrCreate($yAttributes,$yValues);
+	     		 
+	     				
+	     	
+	     		/* $val = (int) $aryValue[$formulaId[$key]]; // abc($id,$contractId)  se thay bang cong thuc
+	     		$sql2 = "INSERT INTO pd_contract_year(CALCULATION_ID,YEAR,FORMULA_VALUE,CONTRACT_ID) VALUE($id,$year,'$val',$contractId)";
+	     		$sql2=str_replace("''", "NULL", $sql2); */
+	     	}
+     	});
+     	
+     	$results 	= $this->loadData($contractId,$postData);
+     	
+     	return response()->json($results);
 	}
-	
-	/* public function saveDetail(Request $request){
-		return $this->save($request);
-	} */
-    
-    
-    public function getContractData($id,$templateId,$properties){
-    	$pdContractData					= PdContractData::getTableName();
-    	$pdContractTemplateAttribute	= PdContractTemplateAttribute::getTableName();
-    	$pdCodeContractAttribute		= PdCodeContractAttribute::getTableName();
-    	$pdContractQtyFormula			= PdContractQtyFormula::getTableName();
-    	
-    	$contractDataSet = PdContractData::join($pdCodeContractAttribute,
-					    			"$pdContractData.ATTRIBUTE_ID",
-					    			'=',
-					    			"$pdCodeContractAttribute.ID")
-				    			->leftJoin($pdContractQtyFormula,
-				    					"$pdCodeContractAttribute.FORMULA_ID",
-				    					'=',
-				    					"$pdContractQtyFormula.ID")
-				    			->where("$pdContractData.CONTRACT_ID",'=',$id)
-				    			->select(
-				    					"$pdContractData.*",
-				    					"$pdContractData.CONTRACT_ID as CONTRACT_ID_INDEX",
-				    					"$pdContractData.ATTRIBUTE_ID as ATTRIBUTE_ID_INDEX",
-				    					"$pdCodeContractAttribute.ID as DT_RowId",
- 				    					"$pdCodeContractAttribute.ID as $pdContractData",
-				    					"$pdCodeContractAttribute.NAME as CONTRACT_ID",
-				    					"$pdCodeContractAttribute.CODE as ATTRIBUTE_ID",
- 				    					"$pdCodeContractAttribute.ID as ID",
-				    					"$pdContractQtyFormula.NAME as FORMULA"
-				    					)
-		    					->get();
-		    					
-		    					
-    	$selects = ["$pdCodeContractAttribute.ID as DT_RowId",
-	    			"$pdCodeContractAttribute.ID as $pdContractData",
-	    			"$pdCodeContractAttribute.NAME as CONTRACT_ID",
-	    			"$pdCodeContractAttribute.CODE as ATTRIBUTE_ID",
-	    			"$pdCodeContractAttribute.ID",
-				    "$pdCodeContractAttribute.FORMULA_ID as FORMULA",
-    				"$pdCodeContractAttribute.ID as ATTRIBUTE_ID_INDEX",
-    				"$pdContractQtyFormula.NAME as FORMULA",
-    				\DB::raw("$id as CONTRACT_ID_INDEX"),
-    	];
-    	
-    	foreach($properties as $property ){
-    		$columnName = $property['data'];
-    		if ($columnName!='CONTRACT_ID'&&$columnName!='ATTRIBUTE_ID'&&$columnName!='ID') {
-	    		$selects[] = \DB::raw("null as $columnName");
-    		}
-    	}
-    	
-    	$templateQuery = PdContractTemplateAttribute::join($pdCodeContractAttribute, 
-									    			"$pdContractTemplateAttribute.ATTRIBUTE", 
-									    			'=', 
-									    			"$pdCodeContractAttribute.ID")
-								    			->leftJoin($pdContractQtyFormula,
-								    					"$pdCodeContractAttribute.FORMULA_ID",
-								    					'=',
-								    					"$pdContractQtyFormula.ID")
-										    	->where("$pdContractTemplateAttribute.CONTRACT_TEMPLATE",'=',$templateId)
-										    	->where("$pdContractTemplateAttribute.ACTIVE",'=',1)
-										    	->select($selects);
-// 										    	->get();
-    	
-										    	
-    	$existAttributes = $contractDataSet->pluck('DT_RowId');
-    	if (count($existAttributes)>0) {
-    		$templateQuery->whereNotIn("$pdCodeContractAttribute.ID", $existAttributes);
-    	}
-    	$templateDataSet = $templateQuery->get();
-    	
-    	$dataSet = $contractDataSet->merge($templateDataSet);
-    	return $dataSet;
-    }
 }
