@@ -10,20 +10,21 @@ class EnergyUnitDataValue extends FeatureEuModel
 	use QltyDataConstrain;
 	protected $table = 'ENERGY_UNIT_DATA_VALUE';
 	protected $primaryKey = 'ID';
-	protected $fillable  = ['OCCUR_DATE',
-							'EU_ID',
-							'FLOW_PHASE',
-							'EVENT_TYPE',
-							'ACTIVE_HRS',
-							'EU_DATA_GRS_VOL',
-							'EU_DATA_NET_VOL',
-							'EU_DATA_GRS_MASS',
-							'EU_DATA_GRS_ENGY',
-							'EU_DATA_GRS_PWR',
-							'GOR',
-							'SW',
-							'STATUS_BY',
-							'STATUS_DATE',
+	protected $fillable  = ['OCCUR_DATE', 
+							'EU_ID', 
+							'EU_STATUS', 
+							'FLOW_PHASE', 
+							'EVENT_TYPE', 
+							'ACTIVE_HRS', 
+							'EU_DATA_GRS_VOL', 
+							'EU_DATA_NET_VOL', 
+							'EU_DATA_GRS_MASS', 
+							'EU_DATA_GRS_ENGY', 
+							'EU_DATA_GRS_PWR', 
+							'GOR', 
+							'SW', 
+							'STATUS_BY', 
+							'STATUS_DATE', 
 							'RECORD_STATUS'];
 	
 	protected static $enableCheckCondition = true;

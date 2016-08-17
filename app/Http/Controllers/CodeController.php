@@ -527,6 +527,15 @@ class CodeController extends EBController {
 	    			$withs[] = 'CodeVolUom';
 	    			$uoms[] = ['id'=>'CodeVolUom','targets'=>$i,'COLUMN_NAME'=>'FL_VOL_UOM'];
 	    			break;
+    			case 'EU_STATUS' :
+    				$selectData = ['id'=>'EuStatus','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = collect([
+													(object)['ID' =>	-1	,'NAME' => '(Auto)'    ],
+													(object)['ID' =>	1	,'NAME' => 'Online'    ],
+													(object)['ID' =>	0	,'NAME' => 'Offline'   ],
+												]);
+    				$rs[] = $selectData;
+    				break;
 	    			
     			case 'ALLOC_TYPE' :
 	    				$selectData = ['id'=>'CodeAllocType','targets'=>$i,'COLUMN_NAME'=>$columnName];
