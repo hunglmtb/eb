@@ -6,7 +6,7 @@ use App\Models\FeatureTicketModel;
 { 
 	protected $table = 'RUN_TICKET_FDC_VALUE';
 	protected $primaryKey = 'ID';
-	protected $dates = ['OCCUR_DATE'];
+	protected $dates = ['OCCUR_DATE','REPORT_DATE'];
 	protected $fillable  = ['NAME', 
 							'TICKET_NO', 
 							'LOADING_TIME', 
@@ -24,7 +24,7 @@ use App\Models\FeatureTicketModel;
 							'BEGIN_VOL', 
 							'END_VOL', 
 							'SW', 
-							'TICKET_GRS_VOL', 
+							'TICKET_GRS_VOL',
 							'TICKET_NET_VOL', 
 							'TICKET_DENSITY', 
 							'TICKET_GRS_MASS', 
@@ -35,5 +35,7 @@ use App\Models\FeatureTicketModel;
 							'CTV', 
 							'TEMP_UOM', 
 							'PRESS_UOM', 
-							'CARRIER_ID'];
+							'CARRIER_ID',
+							'REPORT_DATE'
+	];
 } 

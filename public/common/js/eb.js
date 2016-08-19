@@ -542,7 +542,7 @@ var actions = {
 			return moment.utc(newValue).format(configuration.time.DATE_FORMAT_UTC);
 //			return moment.utc(newValue).format("YYYY-MM-DD HH:mm:ss");
 		}
-		return moment.utc(newValue).format(configuration.time.DATETIME_FORMAT_UTC);
+		return moment(newValue).format(configuration.time.DATETIME_FORMAT_UTC);
 //		return moment(newValue).format("YYYY-MM-DD HH:mm:ss");
 	},
 	getCellType : function(data,type,cindex){
@@ -618,7 +618,7 @@ var actions = {
 									return "";
 								}
 								if (data2.constructor.name == "Date") { 
-									return moment(data2).format(configuration.time.DATETIME_FORMAT);
+									return moment.utc(data2).format(configuration.time.DATETIME_FORMAT);
 //									return moment(data2).format("MM/DD/YYYY HH:mm");
 								}
 								return moment.utc(data2,configuration.time.DATETIME_FORMAT_UTC).format(configuration.time.DATETIME_FORMAT);
@@ -631,10 +631,10 @@ var actions = {
 									return "";
 								}
 								if (data2.constructor.name == "Date") { 
-									return moment(data2).format(configuration.time.TIME_FORMAT);
+									return moment.utc(data2).format(configuration.time.TIME_FORMAT);
 //									return moment(data2).format("hh:mm A");
 								}
-								return moment(data2,configuration.time.TIME_FORMAT_UTC).format(configuration.time.TIME_FORMAT);
+								return moment.utc(data2,configuration.time.TIME_FORMAT_UTC).format(configuration.time.TIME_FORMAT);
 //								return moment(data2,"hh:mm:ss").format("hh:mm A");
 							};
 	    	break;

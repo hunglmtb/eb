@@ -77,17 +77,6 @@ use Carbon\Carbon;
 							!array_key_exists ( 'TICKET_NO', $attributes )||
 							!array_key_exists ( 'TANK_ID', $attributes ))) break;
 					
-			if(array_key_exists('OCCUR_DATE', $attributes)){
-				$occur_date = $attributes['OCCUR_DATE'];
-				$occur_date = \Helper::parseDate($occur_date);
-				
-				/* $occur_date = Carbon::parse($occur_date);
-				$occur_date->hour = 0;
-				$occur_date->minute = 0;
-				$occur_date->second = 0; */
-				$attributes['OCCUR_DATE'] = $occur_date;
-			}
-									
 			$fields = [	"BEGIN_VOL",
 						"END_VOL",
 						"TICKET_GRS_VOL",
