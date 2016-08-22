@@ -256,7 +256,7 @@
 		<div class="inner">
 				<h4>PRODUCTION<br>MANAGEMENT </h4>
 		</div>		
-		<a href="#" onclick="func(this)"></a>
+		<a id="pm" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
 		<div class="corner-2"></div>		
 	</div>
@@ -265,7 +265,7 @@
 		<div class="inner">
 				<h4>FIELD<br>OPERATIONS</h4>
 		</div>		
-		<a href="#" onclick="func(this)"></a>
+		<a id="fo" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
 		<div class="corner-2"></div>		
 	</div>
@@ -279,7 +279,7 @@
 				<p>We Open Everyday</p>
 -->				
 		</div>		
-		<a href="#" onclick="func(this)"></a>
+		<a id="dv" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
 		<div class="corner-2"></div>		
 	</div>	
@@ -288,7 +288,7 @@
 		<div class="inner">
 		<h4>ALLOCATION</h4>
 		</div>		
-		<a href="#" onclick="func(this)"></a>
+		<a id="allocation" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
 		<div class="corner-2"></div>		
 	</div>	
@@ -297,7 +297,7 @@
 		<div class="inner">
 		<h4>FORECAST & PLANNING </h4>
 		</div>		
-		<a href="#" onclick="func(this)"></a>
+		<a id="fp" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
 		<div class="corner-2"></div>		
 	</div>	
@@ -308,7 +308,7 @@ if(true){
 		<div class="inner">
 		<h4>PRODUCT<br>DELIVERY</h4>
 		</div>		
-		<a href="#" onclick="func(this)"></a>
+		<a id="pd" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
 		<div class="corner-2"></div>		
 	</div>
@@ -316,7 +316,7 @@ if(true){
 		<div class="inner">
 		<h4>GREENHOUSE<br>GAS</h4>
 		</div>		
-		<a href="#" onclick="func(this)"></a>
+		<a id="gg"href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
 		<div class="corner-2"></div>		
 	</div>	
@@ -349,7 +349,7 @@ else
 		<div class="inner">
 		<h4>ADMINISTRATOR</h4>
 		</div>		
-		<a href="#" onclick="func(this)"></a>
+		<a id="administrator" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
 		<div class="corner-2"></div>		
 	</div>	
@@ -358,7 +358,7 @@ else
 		<div class="inner">
 		<h4>SYSTEM<br>CONFIGURATION</h4>
 		</div>		
-		<a href="#" onclick="func(this)"></a>
+		<a id="sc" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
 		<div class="corner-2"></div>		
 	</div>	
@@ -367,7 +367,7 @@ else
 		<div class="inner">
 				<h4>INTERFACES</h4>
 		</div>		
-		<a href="#" onclick="func(this)"></a>
+		<a id="interfaces" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
 		<div class="corner-2"></div>		
 	</div>
@@ -379,6 +379,14 @@ $.ajaxSetup({
         'X-XSRF-Token': $('meta[name="_token"]').attr('content')
     }
 });
+
+$(document).ready(function () {
+	var submenu = '{{$menu}}';
+	if(typeof(submenu) !== "undefined" && submenu!=''){
+		func($("#"+submenu));
+	};
+});
+
 function logout()
 {
 	window.location.href="../auth/logout";
@@ -546,6 +554,8 @@ function func(o)
 		return;
 	}
 	var a=menu[menuID];
+	if(typeof(a) == "undefined") return ;
+	
 	if(a.length==0)
 	{
 		//alert("This function is not available");

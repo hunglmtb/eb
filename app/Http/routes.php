@@ -64,6 +64,8 @@ Route::get('auth/logout', 'Auth\AuthController@getLogout');
 Route::get('auth/confirm/{token}', 'Auth\AuthController@getConfirm');
 Route::get('login/success', 'HomeController@loginSuccess');
 
+Route::get('home/{menu?}', 'HomeController@index');
+
 // Registration routes...
 Route::get('auth/register', 'Auth\AuthController@getRegister');
 Route::post('auth/register', 'Auth\AuthController@postRegister');

@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu = 'fieldsconfig';
+$currentSubmenu = '/fieldsconfig';
 ?>
 
 @extends('core.bsconfig')

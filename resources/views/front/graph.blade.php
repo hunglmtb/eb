@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu = 'graph';
+$currentSubmenu = '/graph';
 $listControls = [ 
 		'begin_date' => array (
 				'label' => '<b>Begin date</b>',

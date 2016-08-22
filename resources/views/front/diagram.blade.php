@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu = 'diagram';
+$currentSubmenu = '/diagram';
 
 $cur_diagram_id = 0;
 ?>

@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu = 'workreport';
+$currentSubmenu = '/workreport';
 $host = ENV('DB_HOST');
 ?>
 @extends('core.bsdiagram')

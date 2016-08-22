@@ -5,7 +5,7 @@
 <link href="/common/css/header_menu.css" rel="stylesheet"/>
 
 <div id="menu-wrapper">
-	<img src="/img/eb2.png" height="40" style="position:absolute;z-index:2;top:10px;left:20px">
+	 <a href="/"><img src="/img/eb2.png" height="40" style="position:absolute;z-index:2;top:10px;left:20px"></a>
 	<ul class="nav" id = "menu_nav"></ul>
 </div>
 
@@ -21,11 +21,11 @@
 <script>
 var xmenu=
 [
-	{"name":"PRODUCTION","link":"#",background_img:"oilgas.png","columns":
+	{"name":"PRODUCTION","link":"/home/pm",background_img:"oilgas.png","columns":
 		[
 			{"blocks":
 				[
-					{"code":"","name":"Production management","title":"","link":"#","menus":
+					{"code":"","name":"Production management","title":"","link":"/home/pm","menus":
 						[
 							{"name":"Flow stream","title":"Flow Data Capture","link":"/dc/flow"},
 							{"name":"Energy Unit","title":"Energy Unit Data Capture","link":"/dc/eu"},
@@ -40,7 +40,7 @@ var xmenu=
 			},
 			{"blocks":
 				[
-					{"code":"","name":"Field Operations","title":"","link":"#","menus":
+					{"code":"","name":"Field Operations","title":"","link":"/home/fo","menus":
 						[
 							{"name":"Safety","title":"Safety","link":"/fo/safety"},
 							{"name":"Comments","title":"Comments","link":"/fo/comment"},
@@ -53,7 +53,7 @@ var xmenu=
 			},
 			{"blocks":
 				[
-					{"code":"","name":"Allocation","title":"","link":"#","menus":
+					{"code":"","name":"Allocation","title":"","link":"/home/allocation","menus":
 						[
 							{"name":"Run Allocation","title":"","link":"/allocrun"},
 						]
@@ -62,29 +62,29 @@ var xmenu=
 			}
 		]
 	},
-	{"name":"Data Visualization","link":"#",background_img:"oilgas.png","columns":
+	{"name":"Data Visualization","link":"/home/dv",background_img:"oilgas.png","columns":
 		[
 			{"blocks":
 				[
-					{"code":"","name":"Data Visualization","title":"","link":"#","menus":
+					{"code":"","name":"Data Visualization","title":"","link":"/home/dv","menus":
 						[
-							{"name":"Network Models","title":"","link":"/diagram"},
-							{"name":"Data Views","title":"","link":"/dataview"},
-							{"name":"Reports","title":"","link":"/workreport"},
-							{"name":"Advanced Graph","title":"","link":"/graph"},
-							{"name":"Workflow","title":"","link":"/workflow"},
-							{"name":"Task Manager","title":"","link":"#"},
+							{"name":"Network Models","title":"Network Models","link":"/diagram"},
+							{"name":"Data Views","title":"Data Views","link":"/dataview"},
+							{"name":"Reports","title":"Reports","link":"/workreport"},
+							{"name":"Advanced Graph","title":"Advanced Graph","link":"/graph"},
+							{"name":"Workflow","title":"Workflow","link":"/workflow"},
+							{"name":"Task Manager","title":"Task Manager","link":"#"},
 						]
 					},
 				]
 			}
 		]
 	},
-	{"name":"PRODUCT DELIVERY","link":"#",background_img:"delivery2.png","columns":
+	{"name":"PRODUCT DELIVERY","link":"/home/pd",background_img:"delivery2.png","columns":
 		[
 			{"blocks":
 				[
-					{"code":"","name":"Contract Admin","title":"","link":"#","menus":
+					{"code":"","name":"Contract Admin","title":"","link":"/home/pd","menus":
 						[
 							{"name":"Contract Data","title":"Contract Data","link":"/pd/contractdata"},
 							{"name":"Contract Calculation","title":"Contract Calculation","link":"/pd/contractcalculate"},
@@ -96,7 +96,7 @@ var xmenu=
 			},
 			{"blocks":
 				[
-					{"code":"","name":"Cargo Admin","title":"","link":"#","menus":
+					{"code":"","name":"Cargo Admin","title":"","link":"/home/pd","menus":
 						[
 							{"name":"Cargo Entry","title":"Cargo Entry","link":"/pd/cargoentry"},
 							{"name":"Cargo Nomination","title":"Cargo Nomination","link":"/pd/cargonomination"},
@@ -108,7 +108,7 @@ var xmenu=
 			},
 			{"blocks":
 				[
-					{"code":"","name":"Cargo Action","title":"","link":"#","menus":
+					{"code":"","name":"Cargo Action","title":"","link":"/home/pd","menus":
 						[
 							{"name":"Cargo Voyage","title":"","link":"#"},
 							{"name":"Cargo Load","title":"","link":"#"},
@@ -123,7 +123,7 @@ var xmenu=
 			},
 			{"blocks":
 				[
-					{"code":"","name":"Cargo Management","title":"","link":"#","menus":
+					{"code":"","name":"Cargo Management","title":"","link":"/home/pd","menus":
 						[
 							{"name":"Demurrage/EBO","title":"Demurrage/EBO","link":"/demurrageebo"},
 							{"name":"Cargo Documents","title":"Cargo Documents","link":"/cargodocuments"},
@@ -134,7 +134,7 @@ var xmenu=
 			},
 			{"blocks":
 				[
-					{"code":"","name":"Cargo Monitoring","title":"","link":"#","menus":
+					{"code":"","name":"Cargo Monitoring","title":"","link":"/home/pd","menus":
 						[
 							{"name":"LIFTING ACCT DAILY BALANCE","title":"","link":"#"},
 							{"name":"LIFTING ACCT MONTHLY DATA","title":"","link":"#"},
@@ -144,11 +144,11 @@ var xmenu=
 			},
 		]
 	},
-	{"name":"GHG","link":"#",background_img:"ghg2.png","columns":
+	{"name":"GHG","link":"/home/gg",background_img:"ghg2.png","columns":
 		[
 			{"blocks":
 				[
-					{"code":"","name":"Emission Sources","title":"","link":"#","menus":
+					{"code":"","name":"Emission Sources","title":"","link":"/home/gg","menus":
 						[
 							{"name":"Combustion","title":"","link":"#"},
 							{"name":"Indirect","title":"","link":"#"},
@@ -159,7 +159,7 @@ var xmenu=
 			},
 			{"blocks":
 				[
-					{"code":"","name":"Emission Entry","title":"","link":"#","menus":
+					{"code":"","name":"Emission Entry","title":"","link":"/home/gg","menus":
 						[
 							{"name":"Combustion","title":"","link":"#"},
 							{"name":"Indirect","title":"","link":"#"},
@@ -170,7 +170,7 @@ var xmenu=
 			},
 			{"blocks":
 				[
-					{"code":"","name":"Emission Release","title":"","link":"#","menus":
+					{"code":"","name":"Emission Release","title":"","link":"/home/gg","menus":
 						[
 							{"name":"Combustion","title":"","link":"#"},
 							{"name":"Indirect","title":"","link":"#"},
@@ -181,11 +181,11 @@ var xmenu=
 			},
 		]
 	},
-	{"name":"ADMIN","link":"#",background_img:"config.png","columns":
+	{"name":"ADMIN","link":"/home/administrator",background_img:"config.png","columns":
 		[
 			{"blocks":
 				[
-					{"code":"","name":"Transaction Data","title":"","link":"#","menus":
+					{"code":"","name":"Transaction Data","title":"","link":"/home/administrator","menus":
 						[
 							{"name":"Validate Data","title":"VALIDATE DATA","link":"/am/validatedata"},
 							{"name":"Approve Data","title":"APPROVE DATA","link":"/am/approvedata"},
@@ -196,7 +196,7 @@ var xmenu=
 			},
 			{"blocks":
 				[
-					{"code":"","name":"Administrator","title":"","link":"#","menus":
+					{"code":"","name":"Administrator","title":"","link":"/home/administrator","menus":
 						[
 							{"name":"Users","title":"Users Management","link":"/am/users"},
 							{"name":"Roles","title":"Roles Settings","link":"/am/roles"},
@@ -211,46 +211,46 @@ var xmenu=
 			},
 		]
 	},
-	{"name":"CONFIG","link":"#",background_img:"config.png","columns":
+	{"name":"CONFIG","link":"/home/sc",background_img:"config.png","columns":
 		[
 			{"blocks":
 				[
-					{"code":"","name":"System Configuration","title":"","link":"#","menus":
+					{"code":"","name":"System Configuration","title":"","link":"/home/sc","menus":
 						[
-							{"name":"Fields Config","title":"","link":"#"},
-							{"name":"Table Data","title":"","link":"#"},
+							{"name":"Fields Config","title":"Fields Config","link":"/fieldsconfig"},
+							{"name":"Table Data","title":"Table Data","link":"#"},
 							{"name":"Tags Mapping","title":"TAG MAPPING CONFIG","link":"/tagsMapping"},
-							{"name":"View Config","title":"","link":"#"},
-							{"name":"Formula Editor","title":"","link":"#"},
-							{"name":"Menu Config","title":"","link":"#"},
+							{"name":"View Config","title":"View Config","link":"/viewconfig"},
+							{"name":"Formula Editor","title":"Formula Editor","link":"/formula"},
+							{"name":"Menu Config","title":"Menu Config","link":"#"},
 						]
 					},
 				]
 			},
 			{"blocks":
 				[
-					{"code":"","name":"Interface","title":"","link":"#","menus":
+					{"code":"","name":"Interface","title":"","link":"/home/interfaces","menus":
 						[
-							{"name":"Source Config","title":"","link":"#"},
-							{"name":"Import Data","title":"","link":"/importdata"},
-							{"name":"Data Loader","title":"","link":"/dataloader"},
+							{"name":"Source Config","title":"Source Config","link":"/sourceconfig"},
+							{"name":"Import Data","title":"Import Data","link":"/importdata"},
+							{"name":"Data Loader","title":"Data Loader","link":"/dataloader"},
 							{"name":"Dashboard Config","title":"","link":"#"},
 						]
 					},
-					{"code":"","name":"Allocation","title":"","link":"#","menus":
+					{"code":"","name":"Allocation","title":"","link":"/home/allocation","menus":
 						[
-							{"name":"Allocation Config","title":"","link":"/allocset"},
+							{"name":"Allocation Config","title":"Allocation Config","link":"/allocset"},
 						]
 					},
 				]
 			}
 		]
 	},
-	{"name":"Forecast & Planning","link":"#",background_img:"oilgas.png","columns":
+	{"name":"Forecast & Planning","link":"/home/fp",background_img:"oilgas.png","columns":
 		[
 			{"blocks":
 				[
-					{"code":"","name":"Forecast & Planning","title":"","link":"#","menus":
+					{"code":"","name":"Forecast & Planning","title":"","link":"/home/fp","menus":
 						[
 							{"name":"Well Forecast","title":"WELL FORECAST","link":"/fp/forecast"},
 							{"name":"PREoS","title":"PENG-ROBINSON EQUATION OF STATE","link":"/fp/preos"},
@@ -296,7 +296,7 @@ for(var i = 0; i < xmenu.length; i++) {
 							activeTitle = is_menu_active?menu.title:activeTitle;
 						}
 					}
-					html_block+='<div class="nav-cell'+(is_block_active?' activex':'')+'"><h3>'+block.name+'</h3><ul>'+html_menu+'</ul></div>';
+					html_block+='<div class="nav-cell'+(is_block_active?' activex':'')+'"><a href="'+block.link+'"><h3>'+block.name+'</h3></a><ul>'+html_menu+'</ul></div>';
 				}
 				html_col+='<div class="nav-column">'+html_block+'</div>';
 			}

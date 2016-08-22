@@ -12,9 +12,9 @@ class HomeController extends Controller
 	 *
 	 * @return Response
 	 */
-	public function index()
+	public function index($menu = '')
 	{
-		return view('front.ebindex');
+		return view ( 'front.ebindex',['menu'=>$menu]);
 	}
 
 	/**

@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu = 'allocset';
+$currentSubmenu = '/allocset';
 ?>
 
 @extends('core.bsallocation')

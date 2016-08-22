@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu = 'dataview';
+$currentSubmenu = '/dataview';
 
 $role = $_role;
 ?>

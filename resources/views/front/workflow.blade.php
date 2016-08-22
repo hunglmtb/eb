@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu = 'workflow';
+$currentSubmenu = '/workflow';
 
 $cur_diagram_id = 0;
 ?>

@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu = 'sourceconfig';
+$currentSubmenu = '/sourceconfig';
 ?>
 
 @extends('core.bsinterface')

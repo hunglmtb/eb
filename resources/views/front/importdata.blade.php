@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu = 'importdata';
+$currentSubmenu = '/importdata';
 ?>
 
 @extends('core.bsinterface')

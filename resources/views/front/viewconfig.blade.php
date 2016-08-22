@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu = 'viewconfig';
+$currentSubmenu = '/viewconfig';
 $listControls = [ 
 		'LoProductionUnit' => array (
 				'label' => 'Production Unit',

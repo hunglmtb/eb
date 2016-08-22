@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu = 'formula';
+$currentSubmenu = '/formula';
 ?>
 
 @extends('core.bsconfig')

@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu = 'dataloader';
+$currentSubmenu = '/dataloader';
 ?>
 
 @extends('core.bsinterface')
