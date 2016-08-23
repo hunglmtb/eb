@@ -16,7 +16,11 @@
 		editBox.initExtraPostData = function (id,rowData){
 		 		return 	{id:id};
 		 	}
-		
+
+		editBox['getSaveButton'] = function (){
+			return $("<a id='savebtn' href='#' style='right: 60px;display:none;position: absolute;'>Save</a>")
+			.button({/* icons:{primary: "ui-icon-plus"}, */text: true});
+	 	};
 		editBox.showDialog = function (option,success,error){
 				title 		= option.title;
 				postData 	= option.postData;
@@ -37,8 +41,7 @@
 								    },
 						    open: function( event, ui ) {
 						    	if (typeof(editBox.saveDetail) == "function") {
-							        	var saveBtn = $("<a id='savebtn' href='#' style='right: 20px;display:none'>Save</a>")
-													.button({/* icons:{primary: "ui-icon-plus"}, */text: true});
+							        	var saveBtn = editBox.getSaveButton();
 										saveBtn.insertBefore('.ui-dialog-titlebar-close').click(function(e){
 											   e.preventDefault();
 											   editBox.saveDetail(editId,editBox['saveFloatDialogSucess']);
@@ -69,7 +72,7 @@
 					data: postData,
 					success:function(data){
 						$("#history_container").css("display","block");
-						$("#savebtn").css("display","table");
+						$("#savebtn").css("display","block");
 						$("#box_loading").css("display","none");
 						
 						console.log ( "send "+url+"  success : "/* +JSON.stringify(data) */);

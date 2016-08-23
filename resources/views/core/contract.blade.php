@@ -2,7 +2,8 @@
 	$isAction = true;
 	if (!isset($detailTableTab)) $detailTableTab = '';
 	if (!isset($attributeTableTab)) $attributeTableTab = '';
-	?>
+	if (!isset($contractAttributes)) $contractAttributes = '';
+?>
 
 @extends('core.pd')
 

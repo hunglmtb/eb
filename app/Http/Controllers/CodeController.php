@@ -604,7 +604,10 @@ class CodeController extends EBController {
     				break;
     			case 'CARRIER_ID' :
     				$selectData = ['id'=>'PdTransitCarrier','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				$selectData['data'] = PdTransitCarrier::where('TRANSIT_TYPE',1)->get();
+    				if ($dcTable==\App\Models\PdVoyage::getTableName()) 
+    					$selectData['data'] = PdTransitCarrier::all();
+    				else
+    					$selectData['data'] = PdTransitCarrier::where('TRANSIT_TYPE',1)->get();
     				$rs[] = $selectData;
     				break;
     			case 'BA_ID' :
@@ -695,6 +698,7 @@ class CodeController extends EBController {
     				$rs[] = $selectData;
     				break;
 	    		case 'LIFTING_ACCT' :
+	    		case 'LIFTING_ACCOUNT' :
 	    			$selectData = ['id'=>'PdLiftingAccount','targets'=>$i,'COLUMN_NAME'=>$columnName];
 	    			$selectData['data'] = \App\Models\PdLiftingAccount::all();
 	    			$rs[] = $selectData;

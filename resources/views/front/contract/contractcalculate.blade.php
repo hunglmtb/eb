@@ -1,10 +1,12 @@
 <?php
 	$currentSubmenu ='/pd/contractcalculate';
 	$tables = ['PdContractQtyFormula'	=>['name'=>'Load']];
+	$detailTableTab = 'PdContractYear';
 	$isAction = true;
+	
 ?>
 
-@extends('core.pd')
+@extends('core.contract')
 
 @section('adaptData')
 @parent
@@ -45,6 +47,20 @@
 		return "Add year";
 	};
 
+	actions.getAddButtonHandler = function (otable,otab){
+                 return function (e){
+                                 var dialogOptions = {
+                                                 height: 100,
+                                                 width: 400,
+                                                 position:  {my: 'left+80 bottom-80',at: "left bottom"},
+                                                 modal: true,
+                                                 of: $('#toolbar_PdContractQtyFormula'),
+                                                 title: 'input',
+                                         };
+                                 $("#floatMoreBox").dialog(dialogOptions);
+                         };
+	 };
+	
 	function addYear(){
 				showWaiting();
 				$("#floatMoreBox").dialog('close');

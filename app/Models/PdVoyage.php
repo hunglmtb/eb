@@ -1,8 +1,8 @@
 <?php 
 namespace App\Models; 
-use App\Models\DynamicModel; 
+use App\Models\EbBussinessModel; 
 
- class PdVoyage extends DynamicModel 
+ class PdVoyage extends EbBussinessModel 
 { 
 	protected $table 		= 'PD_VOYAGE';
 	protected $dates 		= ['SCHEDULE_DATE'];

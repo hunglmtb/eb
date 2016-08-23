@@ -60,10 +60,10 @@ var intVal = function ( i ) {
 		text = actions.isDisableAddingButton(tab,table)
 		if(text==true) return;
 		if(typeof(text) !== "string") text = 'Add';
-		$("#toolbar_"+tab).html('<button>'+text+'</button>');
+		$("#toolbar_"+tab).html('<button class = "addButton">'+text+'</button>');
 		$("#toolbar_"+tab).addClass('toolbarAction');
 		addButtonHandle = actions.getAddButtonHandler(table,tab);
-		$("#toolbar_"+tab+ " button").on( 'click', addButtonHandle);
+		$("#toolbar_"+tab+ " .addButton").on( 'click', addButtonHandle);
 	};
 	
 	actions.renderFirsColumn = actions.deleteActionColumn;

@@ -383,6 +383,12 @@ table.dataTable.display tbody tr.even:hover.selected
 	background-color: #b6cfff;
 }
 
-table.dataTable thead .sorting {
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc {
     text-align: right;
+}
+
+.toolbarAction button{
+	margin-left: 5px;
 }

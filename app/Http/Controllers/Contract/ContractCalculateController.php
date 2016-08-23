@@ -44,7 +44,7 @@ class ContractCalculateController extends CodeController {
 		if($years->count()>0){
 			foreach($years as $year => $set ){
 				$yearField = "year$year";
-				$propertiesArray[] = (object)['data' =>	$yearField		,'title' => "$year"];
+				$propertiesArray[] = (object)['data' =>	$yearField		,'title' => "$year",'DATA_METHOD'=>0,'INPUT_TYPE'=>2];
 	
 				$formulaGroups = $set->groupBy("FORMULA_ID");
 	
