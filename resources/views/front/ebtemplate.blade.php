@@ -460,20 +460,20 @@ function layoutUserLoggedOut()
 var menuBox;
 var menu={};
 menu["production"]=[
-		{menutext:"Flow Stream",desc:"",url:"dc/flow"},
-		{menutext:"Energy Unit",desc:"",url:"../dc/eu"},
-		{menutext:"Tank & Storage",desc:"",url:"../dc/storage"},
-		{menutext:"Ticket",desc:"",url:"../dc/ticket"},
-		{menutext:"Well Test",desc:"",url:"../dc/eutest"},
-		{menutext:"Deferment",desc:"",url:"../dc/deferment"},
-		{menutext:"Quality",desc:"",url:"../dc/quality"}
+		{menutext:"Flow Stream",desc:"",url:"/dc/flow"},
+		{menutext:"Energy Unit",desc:"",url:"/dc/eu"},
+		{menutext:"Tank & Storage",desc:"",url:"/dc/storage"},
+		{menutext:"Ticket",desc:"",url:"/dc/ticket"},
+		{menutext:"Well Test",desc:"",url:"/dc/eutest"},
+		{menutext:"Deferment",desc:"",url:"/dc/deferment"},
+		{menutext:"Quality",desc:"",url:"/dc/quality"}
 	];
 menu["operation"]=[
-		{menutext:"Safety",desc:"",url:"fo/safety"},
-		{menutext:"Comments",desc:"",url:"../fo/comment"},
-		{menutext:"Equipment",desc:"",url:"../fo/equipment"},
-		{menutext:"Chemical",desc:"",url:"../fo/chemical"},
-		{menutext:"Personnel",desc:"",url:"../fo/personnel"}
+		{menutext:"Safety",desc:"",url:"/fo/safety"},
+		{menutext:"Comments",desc:"",url:"/fo/comment"},
+		{menutext:"Equipment",desc:"",url:"/fo/equipment"},
+		{menutext:"Chemical",desc:"",url:"/fo/chemical"},
+		{menutext:"Personnel",desc:"",url:"/fo/personnel"}
 	];
 menu["visual"]=[
 		{menutext:"Network Model",desc:"",url:"diagram"},
@@ -481,28 +481,28 @@ menu["visual"]=[
 		{menutext:"Report",desc:"",url:"workreport"},
 		{menutext:"Advanced Graph",desc:"",url:"graph"},
 		{menutext:"Workflow",desc:"",url:"workflow"},
-		{menutext:"Task Manager",desc:"",url:"../taskman/?com=task"}
+		{menutext:"Task Manager",desc:"",url:"/taskman/?com=task"}
 	];
 menu["allocation"]=[
 		{menutext:"Run Allocation",desc:"",url:"/allocrun"},
 		{menutext:"Config Allocation",desc:"",url:"/allocset"}
 	];
 menu["forecast"]=[
-		{menutext:"WELL FORECAST",desc:"",url:"../fp/forecast"},
+		{menutext:"WELL FORECAST",desc:"",url:"/fp/forecast"},
 		{menutext:"PREoS",desc:"",url:"../fp/preos"},
-		{menutext:"MANUAL ALLOCATE<br>PLAN",desc:"",url:"../fp/allocateplan"},
-		{menutext:"LOAD<br>PLAN/FORECAST",desc:"",url:"../fp/loadplanforecast"},
+		{menutext:"MANUAL ALLOCATE<br>PLAN",desc:"",url:"/fp/allocateplan"},
+		{menutext:"LOAD<br>PLAN/FORECAST",desc:"",url:"/fp/loadplanforecast"},
 	];
 <?php
 // if($current_username=="CP_User"){}
 // else{
 ?>
 menu["delivery"]=[
-		{menutext:"CONTRACT ADMIN",desc:"",url:"../pd/contractdata"},
-		{menutext:"CARGO ADMIN",desc:"",url:"../pd/cargoentry"},
-		{menutext:"CARGO ACTION",desc:"",url:"../pd/cargovoyage.php"},
+		{menutext:"CONTRACT ADMIN",desc:"",url:"/pd/contractdata"},
+		{menutext:"CARGO ADMIN",desc:"",url:"/pd/cargoentry"},
+		{menutext:"CARGO ACTION",desc:"",url:"/pd/cargovoyage.php"},
 		{menutext:"CARGO MANAGEMENT",desc:"",url:"/demurrageebo"},
-		{menutext:"CARGO<br>MONITORING",desc:"",url:"../pd/liftaccdailybalance.php"},
+		{menutext:"CARGO<br>MONITORING",desc:"",url:"/pd/liftaccdailybalance.php"},
 //		{menutext:"VOYAGE GROUND",desc:"",url:"../pd/?func=voyageground"},
 //		{menutext:"VOYAGE PIPELINE",desc:"",url:"../pd/?func=voyagepipeline"}
 	];
@@ -517,19 +517,19 @@ menu["greenhouse"]=[
 // }
 ?>
 menu["admin"]=[
-		{menutext:"VALIDATE DATA",desc:"",url:"am/validatedata"},
-		{menutext:"APPROVE DATA",desc:"",url:"am/approvedata"},
-		{menutext:"LOCK DATA",desc:"",url:"am/lockdata"},
-		{menutext:"ROLES",desc:"",url:"am/roles"},
-		{menutext:"USERS",desc:"",url:"am/users"},
-		{menutext:"Audit Trail",desc:"",url:"am/audittrail"},
-		{menutext:"USERS LOG",desc:"",url:"am/userlog"},
-		{menutext:"HELP EDITOR",desc:"",url:"am/helpeditor"}
+		{menutext:"VALIDATE DATA",desc:"",url:"	/am/validatedata"},
+		{menutext:"APPROVE DATA",desc:"",url:"/am/approvedata"},
+		{menutext:"LOCK DATA",desc:"",url:"/am/lockdata"},
+		{menutext:"ROLES",desc:"",url:"/am/roles"},
+		{menutext:"USERS",desc:"",url:"/am/users"},
+		{menutext:"Audit Trail",desc:"",url:"/am/audittrail"},
+		{menutext:"USERS LOG",desc:"",url:"/am/userlog"},
+		{menutext:"HELP EDITOR",desc:"",url:"/am/helpeditor"}
 	];
 menu["config"]=[
 		{menutext:"Fields Config",desc:"",url:"/fieldsconfig"},
 		{menutext:"Tables Data",desc:"",url:"../tabledata/index.php"},
-		{menutext:"Tags Mapping",desc:"",url:"../tagsMapping"},
+		{menutext:"Tags Mapping",desc:"",url:"/tagsMapping"},
 		{menutext:"Formula Editor",desc:"",url:"/formula"},
 		{menutext:"View Config",desc:"",url:"/viewconfig"},
 	];
