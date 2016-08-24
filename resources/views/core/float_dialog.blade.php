@@ -108,15 +108,17 @@
 			editBox.showDialog(option,success);
 	    }
 		
-		editBox.renderSumRow = function (api,columns){
+		editBox.renderSumRow = function (api,columns,fixed){
+			fixed = typeof(fixed) == "undefined"?3:fixed;
+	        total = 0;
 			$.each(columns, function( i, column ) {
-		        total = 0;
 		        $.each(api.columns(column).data()[0], function( index, value ) {
 		        	total += intVal(value);
 				});
 		        // Update footer
-		        $( api.columns(column).footer() ).html(total.toFixed(3));
+		        $( api.columns(column).footer() ).html(total.toFixed(fixed));
 			});
+			return total;
 		}
 	}
 </script>

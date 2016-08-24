@@ -130,15 +130,19 @@
 	editBox.fields = ['{{$detailTableTab}}'];
 	editBox.enableRefresh = false;
 
+	editBox['getEditTableOption'] = function(tab){
+			return {
+			 			tableOption :	{
+								autoWidth	: false,
+								scrollX		: false,
+								scrollY		: "200px",
+						}
+					};
+		};
+		
 	editBox.editGroupSuccess = function(data,id){
-		tab = '{{$detailTableTab}}';
-			options = {
-	 					tableOption :	{
-			 									autoWidth	: false,
- 			 									scrollX		: false,
-			 									scrollY		: "200px",
-			 							}
-				};
+		tab 	= '{{$detailTableTab}}';
+		options = editBox.getEditTableOption(tab);
 		subData = data[tab];
 		etbl = renderTable(tab,subData,options,actions.createdFirstCellColumn);
 		if(etbl!=null) actions.afterDataTable(etbl,tab);
@@ -159,7 +163,9 @@
 		<tr>
 			<td valign='top'>
 				<div id="table_{{$detailTableTab}}_containerdiv" style='height:100%;overflow:auto'>
-					<table id="table_{{$detailTableTab}}" class="fixedtable nowrap display"></table>
+					<table id="table_{{$detailTableTab}}" class="fixedtable nowrap display">
+					@yield('editBoxfooter')
+					</table>
 				</div>
 			</td>
 		</tr>

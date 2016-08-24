@@ -11,7 +11,7 @@ var intVal = function ( i ) {
 		return false;
 	};
 	
-	actions.getAddButtonHandler = function (table,tab,doMore){
+	actions['getDefaultAddButtonHandler'] = function (table,tab,doMore){
 		return function () {
 			var columns = table.settings()[0].aoColumns;
 			var sample = table.rows(0).data()[0];
@@ -55,6 +55,8 @@ var intVal = function ( i ) {
 	 		tbbody.tableHeadFixer({"left" : 1,head: false,});
         }
 	};
+	
+	actions.getAddButtonHandler = actions.getDefaultAddButtonHandler;
 
 	actions.afterDataTable = function (table,tab){
 		text = actions.isDisableAddingButton(tab,table)
@@ -62,7 +64,7 @@ var intVal = function ( i ) {
 		if(typeof(text) !== "string") text = 'Add';
 		$("#toolbar_"+tab).html('<button class = "addButton">'+text+'</button>');
 		$("#toolbar_"+tab).addClass('toolbarAction');
-		addButtonHandle = actions.getAddButtonHandler(table,tab);
+		addButtonHandle = actions.getAddButtonHandler(table,tab,actions['doMoreAddingRow']);
 		$("#toolbar_"+tab+ " .addButton").on( 'click', addButtonHandle);
 	};
 	

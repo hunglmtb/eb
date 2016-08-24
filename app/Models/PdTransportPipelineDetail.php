@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class PdTransportPipelineDetail extends DynamicModel 
 { 
-	protected $table = 'pd_transport_pipeline_detail'; 
+	protected $table = 'PD_TRANSPORT_PIPELINE_DETAIL'; 
 } 

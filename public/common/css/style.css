@@ -392,3 +392,9 @@ table.dataTable thead .sorting_desc {
 .toolbarAction button{
 	margin-left: 5px;
 }
+
+#table_PdVoyageDetail_containerdiv .dataTables_scrollFoot {
+    position: absolute;
+    /* bottom: 4px; */
+    z-index: -1;
+}

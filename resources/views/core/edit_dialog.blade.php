@@ -10,6 +10,10 @@
   		 return editData;
 	};
 
+    editBox['notValidatedData'] = function(editId) {
+        return false;
+    };
+    	
     editBox.saveDetail = function(editId,success) {
     	if(editId&&editId!=null){
     		isEmpty = true;
@@ -26,6 +30,7 @@
         		alert('data is empty');
         		return;
         	}
+        	if(editBox.notValidatedData(editId)) return;
     		showWaiting();
     		$.ajax({
     			url: editBox.saveUrl,

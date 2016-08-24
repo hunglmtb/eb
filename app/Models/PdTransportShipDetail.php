@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class PdTransportShipDetail extends DynamicModel 
 { 
-	protected $table = 'pd_transport_ship_detail'; 
+	protected $table = 'PD_TRANSPORT_SHIP_DETAIL'; 
 } 

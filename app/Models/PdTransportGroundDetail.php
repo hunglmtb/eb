@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class PdTransportGroundDetail extends DynamicModel 
 { 
-	protected $table = 'pd_transport_ground_detail'; 
+	protected $table = 'PD_TRANSPORT_GROUND_DETAIL'; 
 } 

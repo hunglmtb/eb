@@ -5,6 +5,11 @@ use App\Http\Controllers\CodeController;
 use App\Models\PdCargo;
 use App\Models\PdVoyage;
 use App\Models\PdVoyageDetail;
+use App\Models\PdTransitCarrier;
+use App\Models\PdShipPortInformation;
+use App\Models\PdTransportPipelineDetail;
+use App\Models\PdTransportShipDetail;
+use App\Models\PdTransportGroundDetail;
 use Illuminate\Http\Request;
 
 class CargoVoyageController extends CodeController {
@@ -23,7 +28,6 @@ class CargoVoyageController extends CodeController {
     	$mdl 				= "App\Models\\$mdlName";
     	$pdCargo 			= PdCargo::getTableName();
     	 
-//     	\DB::enableQueryLog();
     	$dataSet = $mdl::join($pdCargo,
 			    			"$dcTable.CARGO_ID",
 			    			'=',
@@ -36,7 +40,6 @@ class CargoVoyageController extends CodeController {
 				    			"$dcTable.ID as DT_RowId",
 				    			"$dcTable.*") 
   		    			->get();
-//  		\Log::info(\DB::getQueryLog());
  		    			
     	return ['dataSet'=>$dataSet];
     }
@@ -58,15 +61,6 @@ class CargoVoyageController extends CodeController {
     public function getVoyageData($id,$facility,$properties){
     	$pdVoyage						= PdVoyage::getTableName();
     	$pdVoyageDetail					= PdVoyageDetail::getTableName();
-    	
-    	/* $sSQL="SELECT a.ID, 
-    	$fields, 
-    	b.SCHEDULE_UOM VOYAGE_SCHEDULE_UOM 
-    	FROM pd_voyage_detail a, 
-    	pd_voyage b 
-    	WHERE a.VOYAGE_ID=b.ID 
-    	and b.ID=$vid"; */
-    	 
     	$dataSet = PdVoyageDetail::join($pdVoyage,
 						    			"$pdVoyageDetail.VOYAGE_ID",
 						    			'=',
@@ -75,9 +69,99 @@ class CargoVoyageController extends CodeController {
 				    			->select(
 				    					"$pdVoyageDetail.*",
 				    					"$pdVoyage.SCHEDULE_UOM as VOYAGE_SCHEDULE_UOM",
-				    					"$pdVoyageDetail.ID as DT_RowId"
+				    					"$pdVoyageDetail.ID as DT_RowId",
+										"$pdVoyageDetail.ID as $pdVoyageDetail"
 				    					)
 		    					->get();
     	return $dataSet;
+    }
+    
+    public function gentransport(Request $request){
+    	$postData 			= $request->all();
+    	$voyage_id			= $postData['VOYAGE_ID'];
+
+    	$pdVoyageDetail		= PdVoyageDetail::getTableName();
+    	$pdVoyage			= PdVoyage::getTableName();
+    	$pdTransitCarrier	= PdTransitCarrier::getTableName();
+    	$dataSet = PdVoyageDetail::join($pdVoyage,
+						    			"$pdVoyageDetail.VOYAGE_ID",
+						    			'=',
+						    			"$pdVoyage.ID")
+				    			->join($pdTransitCarrier,
+						    			"$pdVoyage.CARRIER_ID",
+						    			'=',
+						    			"$pdTransitCarrier.ID")
+				    			->where("$pdVoyage.ID",'=',$voyage_id)
+				    			->orderBy("$pdVoyageDetail.ID")
+				    			->select(
+				    					"$pdVoyage.CODE as VOYAGE_CODE",
+				    					"$pdVoyage.NAME as VOYAGE_NAME",
+				    					"$pdVoyage.QUANTITY_TYPE as VOYAGE_QTY_TYPE",
+				    					"$pdTransitCarrier.TRANSIT_TYPE",
+				    					"$pdVoyageDetail.*")
+		    					->get();
+    	
+    	try
+    	{
+    		$resultTransaction = \DB::transaction(function () use ($dataSet,$voyage_id){
+    			$attributes = ['VOYAGE_ID'	=> $voyage_id];
+    			foreach($dataSet as $ro){
+    				$attributes['PARCEL_NO']	= $ro->PARCEL_NO;
+    				switch ($ro->TRANSIT_TYPE) {
+    					case 3:
+    						$pdTransportShipDetail			= PdTransportShipDetail::where($attributes)->first();
+    						if (!$pdTransportShipDetail) {
+    							$values						= ['VOYAGE_ID'	=> $voyage_id];
+    							$values['CODE']				= "SH_$ro->VOYAGE_CODE"."_$ro->PARCEL_NO";
+    							$values['NAME']	 			= "SH_$ro->VOYAGE_NAME"."_$ro->PARCEL_NO";
+    							$values['CARGO_ID']			= $ro->CARGO_ID;
+    							$values['PARCEL_NO']		= $ro->PARCEL_NO;
+    							$values['RECEIPT_QTY']		= $ro->LOAD_QTY;
+    							$values['QTY_TYPE']			= $ro->VOYAGE_QTY_TYPE;
+    							$values['QTY_UOM']			= $ro->LOAD_UOM;
+    				    
+    							$pdTransportShipDetail		= PdTransportShipDetail::insert($values);
+    							$pdShipPortInformation		= PdShipPortInformation::insert($attributes);
+    						}
+    						break;
+    			
+    					case 4:
+    						$pdTransportPipelineDetail		= PdTransportPipelineDetail::where($attributes)->first();
+    						if (!$pdTransportPipelineDetail) {
+    							$values						= ['VOYAGE_ID'	=> $voyage_id];
+    							$values['CODE']				= "PP_$ro->VOYAGE_CODE"."_$ro->PARCEL_NO";
+    							$values['NAME']	 			= "PP_$ro->VOYAGE_NAME"."_$ro->PARCEL_NO";
+    							$values['CARGO_ID']			= $ro->CARGO_ID;
+    							$values['PARCEL_NO']		= $ro->PARCEL_NO;
+    							$values['QUANTITY']			= $ro->LOAD_QTY;
+    							$values['QUANTITY_UOM']		= $ro->LOAD_UOM;
+    			
+    							$pdTransportPipelineDetail	= PdTransportPipelineDetail::insert($values);
+    						}
+    						break;
+    			
+    					default:
+    						$pdTransportGroundDetail		= PdTransportGroundDetail::where($attributes)->first();
+    						if (!$pdTransportGroundDetail) {
+    							$values						= ['VOYAGE_ID'	=> $voyage_id];
+    							$values['CODE']				= "GR_$ro->VOYAGE_CODE"."_$ro->PARCEL_NO";
+    							$values['NAME']	 			= "GR_$ro->VOYAGE_NAME"."_$ro->PARCEL_NO";
+    							$values['CARGO_ID']			= $ro->CARGO_ID;
+    							$values['PARCEL_NO']		= $ro->PARCEL_NO;
+    							$values['QUANTITY']			= $ro->LOAD_QTY;
+    							$values['QUANTITY_UOM']		= $ro->LOAD_UOM;
+    			
+    							$pdTransportGroundDetail	= PdTransportGroundDetail::insert($values);
+    						}
+    						break;
+    				}
+    			}
+    		});
+    	}
+	    catch (\Exception $e)
+	    {
+    		return response()->json('error when insert data');
+	    }
+	    return response()->json('success');
     }
 }

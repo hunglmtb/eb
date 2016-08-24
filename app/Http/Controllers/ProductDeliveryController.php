@@ -104,9 +104,9 @@ class ProductDeliveryController extends CodeController {
 						['id'=>'date_end','name'=>'To date']),
 		);
 	
-		$contractAttributes = PdCodeContractAttribute::all();
+// 		$contractAttributes = PdCodeContractAttribute::all();
 		return view ( 'front.cargoaction.cargovoyage',['filters'=>$filterGroups,
-				'contractAttributes'=>$contractAttributes
+// 				'contractAttributes'=>$contractAttributes
 		]);
 	}
 }
