@@ -618,7 +618,7 @@ var actions = {
 									return "";
 								}
 								if (data2.constructor.name == "Date") { 
-									return moment.utc(data2).format(configuration.time.DATETIME_FORMAT);
+									return moment(data2).format(configuration.time.DATETIME_FORMAT);
 //									return moment(data2).format("MM/DD/YYYY HH:mm");
 								}
 								return moment.utc(data2,configuration.time.DATETIME_FORMAT_UTC).format(configuration.time.DATETIME_FORMAT);
@@ -846,6 +846,9 @@ var actions = {
 			            }
 			        } );
 			    },
+			    language: {
+		            "info": "Showing _TOTAL_ entries",
+		        }
 				/* initComplete: function () {
 					var cls = this.api().columns();
 		            cls.every( function () {

@@ -784,7 +784,8 @@ class FormulaHelpers {
     		$cqst = CodeQltySrcType::getTableName();
     		$qdata = QltyData::getTableName();
     		
-    		$row= QltyData::with(['CodeQltySrcType' => function ($query) use ($object_type_code) {
+    		$row= QltyData::getQualityRow($object_id,$object_type_code,$occur_date);
+    		/* $row= QltyData::with(['CodeQltySrcType' => function ($query) use ($object_type_code) {
 														    $query->where('CODE', '=', $object_type_code);
 														
 														}])
@@ -792,8 +793,8 @@ class FormulaHelpers {
      					->whereDate("$qdata.EFFECTIVE_DATE", '<=', $occur_date)
  				     	->select("$qdata.ID")
  				     	->orderBy("$qdata.EFFECTIVE_DATE",'desc')
- 						->first();
- 						
+ 						->first(); */
+ 					
     		//Find composition %Mol
 //     		$sSQL="select a.ID from qlty_data a, code_qlty_src_type b where a.SRC_ID='$object_id' and a.SRC_TYPE=b.ID and b.CODE='$object_type_code' and a.EFFECTIVE_DATE<=STR_TO_DATE('$occur_date', '%m/%d/%Y') order by a.EFFECTIVE_DATE desc limit 1";
     		if($row)
@@ -826,7 +827,7 @@ class FormulaHelpers {
     								
 // 				\Log::info(\DB::getQueryLog());
 				
-    			if($row)
+    			if($qdltDatas)
     			{
     				$MolWt_C7	=$qdltDatas->M_C7;
     				$gamma_C7	=$qdltDatas->G_C7;
