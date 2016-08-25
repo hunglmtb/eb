@@ -603,8 +603,9 @@ class CodeController extends EBController {
     				$rs[] = $selectData;
     				break;
     			case 'CARRIER_ID' :
+    			case 'PD_TRANSIT_CARRIER_ID' :
     				$selectData = ['id'=>'PdTransitCarrier','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				if ($dcTable==\App\Models\PdVoyage::getTableName()) 
+    				if ($dcTable==\App\Models\PdVoyage::getTableName()||$dcTable==\App\Models\PdCargoLoad::getTableName()) 
     					$selectData['data'] = PdTransitCarrier::all();
     				else
     					$selectData['data'] = PdTransitCarrier::where('TRANSIT_TYPE',1)->get();
@@ -683,6 +684,7 @@ class CodeController extends EBController {
     			case 'REQUEST_QTY_UOM' :
     			case 'SCHEDULE_UOM' :
     			case 'ATTRIBUTE_UOM' :
+    			case 'LOAD_UOM' :
     				$selectData = ['id'=>'PdCodeMeasUom','targets'=>$i,'COLUMN_NAME'=>$columnName];
     				$selectData['data'] = \App\Models\PdCodeMeasUom::all();
     				$rs[] = $selectData;
@@ -781,6 +783,28 @@ class CodeController extends EBController {
     				$selectData['data'] = \App\Models\PdContractTemplate::all();
     				$rs[] = $selectData;
     				break;
+	    		case 'DEMURRAGE_EBO' :
+	    			$selectData = ['id'=>'PdCodeDemurrageEbo','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = \App\Models\PdCodeDemurrageEbo::all();
+	    			$rs[] = $selectData;
+	    			break;
+    			case 'SURVEYOR_BA_ID' :
+    				$selectData = ['id'=>'BaAddress','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = \App\Models\BaAddress::where('SOURCE',15)->get();
+    				$rs[] = $selectData;
+    				break;
+	    		case 'WITNESS_BA_ID1' :
+		    	case 'WITNESS_BA_ID2' :
+	    			$selectData = ['id'=>'BaAddress','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = \App\Models\BaAddress::where('SOURCE',4)->get();
+	    			$rs[] = $selectData;
+	    			break;
+    			case 'ACTIVITY_ID' :
+    				$selectData = ['id'=>'PdCodeLoadActivity','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = \App\Models\PdCodeLoadActivity::all();
+    				$rs[] = $selectData;
+    				break;
+	    			
     		}
     		$i++;
     	}

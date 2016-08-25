@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\PdCodeContractAttribute;
+use App\Models\PdCodeLoadActivity;
 
 class ProductDeliveryController extends CodeController {
 	
@@ -107,6 +108,18 @@ class ProductDeliveryController extends CodeController {
 // 		$contractAttributes = PdCodeContractAttribute::all();
 		return view ( 'front.cargoaction.cargovoyage',['filters'=>$filterGroups,
 // 				'contractAttributes'=>$contractAttributes
+		]);
+	}
+	
+	public function cargoload() {
+		$filterGroups = array(	'productionFilterGroup'	=>[2			=>'Storage'],
+				'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
+						['id'=>'date_end','name'=>'To date']),
+		);
+		
+		$contractAttributes = PdCodeLoadActivity::orderBy('ORDER')->get();
+		return view ( 'front.cargoaction.cargoload',['filters'=>$filterGroups,
+				'contractAttributes'=>$contractAttributes
 		]);
 	}
 }

@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class PdCodeLoadActivity extends DynamicModel 
 { 
-	protected $table = 'pd_code_load_activity'; 
+	protected $table = 'PD_CODE_LOAD_ACTIVITY'; 
 } 

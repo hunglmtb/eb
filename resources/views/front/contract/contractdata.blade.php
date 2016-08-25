@@ -14,7 +14,7 @@
 <script>
 	actions.loadUrl = "/contractdata/load";
 	actions.saveUrl = "/contractdata/save";
-	actions['idNameOfDetail'] = ['CONTRACT_ID_INDEX', 'ATTRIBUTE_ID_INDEX'];
+	actions['idNameOfDetail'] = ['CONTRACT_ID_INDEX', 'ATTRIBUTE_ID_INDEX','ID'];
 
 	addingOptions.keepColumns = ['BEGIN_DATE','END_DATE','CONTRACT_TEMPLATE','CONTRACT_TYPE','CONTRACT_PERIOD','CONTRACT_EXPENDITURE'];
 
@@ -25,6 +25,7 @@
 		addingRow['ATTRIBUTE_ID'] 		= selectRow.CODE;
 		addingRow['CONTRACT_ID'] 		= selectRow.NAME;
 		addingRow['ATTRIBUTE_ID_INDEX'] = selectRow.ID;
+		addingRow['CONTRACT_ID_INDEX'] 	= currentContractId;
 		addingRow['CONTRACT_ID_INDEX'] 	= currentContractId;
 		return addingRow;
 	};

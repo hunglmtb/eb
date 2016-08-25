@@ -111,7 +111,7 @@ var xmenu=
 					{"code":"","name":"Cargo Action","title":"","link":"/home/pd","menus":
 						[
 							{"name":"Cargo Voyage","title":"Cargo Voyage","link":"/pd/cargovoyage"},
-							{"name":"Cargo Load","title":"Cargo Load","link":"#"},
+							{"name":"Cargo Load","title":"Cargo Load","link":"/pd/cargoload"},
 							{"name":"Cargo Unload","title":"","link":"#"},
 							{"name":"Voyage Marine","title":"","link":"#"},
 							{"name":"Voyage Ground","title":"","link":"#"},

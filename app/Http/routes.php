@@ -193,6 +193,12 @@ Route::post('voyage/load', 				'Cargo\CargoVoyageController@loadDetail');
 Route::post('voyage/save', 				'Cargo\CargoVoyageController@save');
 Route::post('voyage/gentransport', 		'Cargo\CargoVoyageController@gentransport');
 
+Route::get('pd/cargoload',				['uses' =>'ProductDeliveryController@cargoload',	'middleware' => 'checkRight:PD_CARGO_ACTION_LOAD']);
+Route::post('cargoload/load',			['uses' =>'Cargo\CargoLoadController@load',			'middleware' => 'saveWorkspace']);
+Route::post('cargoload/save', 			'Cargo\CargoLoadController@save');
+Route::post('timesheet/load',			['uses' =>'Cargo\CargoLoadController@loadDetail',			'middleware' => 'saveWorkspace']);
+Route::post('timesheet/save', 			'Cargo\CargoLoadController@save');
+
 Route::get('pd/contractdata',			['uses' =>'ProductDeliveryController@contractdata','middleware' => 'checkRight:PD_CONTRACT_ADMIN_DATA']);
 Route::post('contractdata/load',		['uses' =>'Contract\ContractDataController@load','middleware' => 'saveWorkspace']);
 Route::post('contractdata/save', 		'Contract\ContractDataController@save');

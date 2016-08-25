@@ -85,8 +85,6 @@
 								            errQtyNotMatch=(total!=currentQTY);
 									        $( api.columns(4).footer() ).css("background",(errQtyNotMatch?"#ffaaaa":"#aaffaa"));
 									        $( api.columns(5).footer() ).html(errQtyNotMatch?((total>currentQTY?"> ":"< ")+currentQTY+" <img src='../img/e.png' align='absmiddle' height=16>"):"");
-// 								    	 	$("#sum_qty_value").css("background",(errQtyNotMatch?"#ffaaaa":"#aaffaa"));
-// 								    	 	$("#qtyMatching").html(errQtyNotMatch?((total>currentQTY?"> ":"< ")+currentQTY+" <img src='../img/e.png' align='absmiddle' height=16>"):"");
 				        	}
 					}
 				};

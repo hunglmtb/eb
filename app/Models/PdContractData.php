@@ -33,11 +33,16 @@ use App\Models\EbBussinessModel;
 	{
 		$pdContractData 				= static ::getTableName();
 		$pdCodeContractAttribute		= PdCodeContractAttribute::getTableName();
-		 
+		$pdContractQtyFormula			= PdContractQtyFormula::getTableName();
+		
 		$result = PdContractData::join($pdCodeContractAttribute,
 				"$pdContractData.ATTRIBUTE_ID",
 				'=',
 				"$pdCodeContractAttribute.ID")
+				->leftJoin($pdContractQtyFormula,
+						"$pdCodeContractAttribute.FORMULA_ID",
+						'=',
+						"$pdContractQtyFormula.ID")
 				->whereIn("$pdContractData.ID",$updatedIds)
 				->select(
 						"$pdContractData.*",
@@ -47,8 +52,8 @@ use App\Models\EbBussinessModel;
 						"$pdCodeContractAttribute.ID as $pdContractData",
 						"$pdCodeContractAttribute.NAME as CONTRACT_ID",
 						"$pdCodeContractAttribute.CODE as ATTRIBUTE_ID",
-						"$pdCodeContractAttribute.FORMULA_ID",
-						"$pdCodeContractAttribute.ID as ID"
+						"$pdCodeContractAttribute.ID as ID",
+				    	"$pdContractQtyFormula.NAME as FORMULA"
 						)
 				->get();
 		

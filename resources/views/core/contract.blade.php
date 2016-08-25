@@ -93,11 +93,10 @@
 							});
 						  	return filters.length<=0
 						});
-//            	    	attributeData = contractAttributes;
            	    	
+					var properties = typeof(editBox.getEditTableColumns) == "function"?editBox.getEditTableColumns(tab):[{title:'CODE',data:'CODE',width:80},{title:'NAME',data:'NAME',width:205}];
 					subData = {	dataSet			: attributeData,
-								properties		: [{title:'CODE',data:'CODE',width:80},
-					           	    				{title:'NAME',data:'NAME',width:205}]
+								properties		: properties
 					          };
 					etbl = renderTable(tab,subData,options);
 				};
