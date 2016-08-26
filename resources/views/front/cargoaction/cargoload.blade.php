@@ -41,11 +41,13 @@
 								 	};
 
 	oAfterTable = actions.afterDataTable;
+	var currentBox;
 	actions.afterDataTable = function (table,tab){
 		 oAfterTable(table,tab);
 		 if(tab='{{$detailTableTab}}'){
 			var box = $("#toolbar_"+tab).find('#box_select_activity_set').first();
 			box = box.length>0?box:$("#box_select_activity_set").clone();
+			currentBox = box;
 			 jQuery('<button/>', {
 				    id: 'more_'+tab,
 				    title: 'Load activity set',
@@ -65,7 +67,7 @@
 	};
 
 	function setActivitySet(id){
-		$("#toolbar_"+tab).find('#box_select_activity_set').hide("slide", { direction: "down" }, 100);
+		currentBox.hide("slide", { direction: "down" }, 100);
 		showWaiting();
 	    $.ajax({
 			url: '/timesheet/activities',
@@ -95,6 +97,11 @@
 	            });
 				data.updatedData['{{$detailTableTab}}'] = filterData;
 				actions.saveSuccess(data);
+
+				$.each(filterData, function( index, rowData ) {
+					$('#'+rowData['DT_RowId']).effect("highlight", {}, 5000);
+	            });
+	            
 			},
 			error: function(data) {
 				hideWaiting();
@@ -102,6 +109,17 @@
 			}
 		});
 
+	}
+
+	editBox['saveFloatDialogSucess'] = function(data,id){
+		actions.saveSuccess(data);
+		otable = $('#table_{{$detailTableTab}}').DataTable();
+		$.each(otable.data(), function( i, rowData ) {
+			var id = rowData['DT_RowId'];
+			if ((typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1)) {
+				table.row($('#'+id)).remove().draw(false);
+			}
+		});
 	}
 								 	
 </script>

@@ -53,6 +53,7 @@ var intVal = function ( i ) {
 
 			var tbbody = $('#table_'+tab);
 	 		tbbody.tableHeadFixer({"left" : 1,head: false,});
+			$('#'+addingRow['DT_RowId']).effect("highlight", {}, 5000);
         }
 	};
 	
