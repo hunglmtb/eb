@@ -53,11 +53,6 @@ class ContractDataController extends CodeController {
     	return response()->json(['PdContractData' => $results]);
 	}
 	
-	/* public function saveDetail(Request $request){
-		return $this->save($request);
-	} */
-    
-    
     public function getContractData($id,$templateId,$properties){
     	$pdContractData					= PdContractData::getTableName();
     	$pdContractTemplateAttribute	= PdContractTemplateAttribute::getTableName();

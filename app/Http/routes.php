@@ -198,6 +198,7 @@ Route::post('cargoload/load',			['uses' =>'Cargo\CargoLoadController@load',			'm
 Route::post('cargoload/save', 			'Cargo\CargoLoadController@save');
 Route::post('timesheet/load',			['uses' =>'Cargo\CargoLoadController@loadDetail',			'middleware' => 'saveWorkspace']);
 Route::post('timesheet/save', 			'Cargo\CargoLoadController@save');
+Route::post('timesheet/activities', 	'Cargo\CargoLoadController@activities');
 
 Route::get('pd/contractdata',			['uses' =>'ProductDeliveryController@contractdata','middleware' => 'checkRight:PD_CONTRACT_ADMIN_DATA']);
 Route::post('contractdata/load',		['uses' =>'Contract\ContractDataController@load','middleware' => 'saveWorkspace']);

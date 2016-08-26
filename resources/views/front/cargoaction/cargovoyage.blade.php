@@ -97,11 +97,6 @@
 		return addingRow;
 	}
 	
- 	actions['initDeleteObject']  = function (tab,id, rowData) {
-		 if(tab=='{{$detailTableTab}}') return {'ID':id, VOYAGE_ID : rowData.VOYAGE_ID};
-		return {'ID':id};
-	 };
-
 	 var errQtyNotMatch=false;
 	 editBox['notValidatedData'] = function(editId) {
 		 if(errQtyNotMatch){

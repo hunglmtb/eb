@@ -27,11 +27,6 @@ use App\Models\PdVoyage;
 		return ['ID'				=> $newData['ID']];
 	}
 	
-	public static function deleteWithConfig($mdlData) {
-		$valuesIds = array_column($mdlData, 'ID');;
-		static::whereIn('ID', $valuesIds)->delete();
-	}
-	
 	public static function findManyWithConfig($updatedIds){
 		$pdVoyage						= PdVoyage::getTableName();
 		$pdVoyageDetail					= static::getTableName();

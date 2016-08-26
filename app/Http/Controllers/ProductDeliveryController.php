@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\PdCodeContractAttribute;
 use App\Models\PdCodeLoadActivity;
+use App\Models\TerminalActivitySet;
 
 class ProductDeliveryController extends CodeController {
 	
@@ -118,8 +119,11 @@ class ProductDeliveryController extends CodeController {
 		);
 		
 		$contractAttributes = PdCodeLoadActivity::orderBy('ORDER')->get();
+// 		$sql="select a.ID SET_ID,a.NAME SET_NAME from TERMINAL_ACTIVITY_SET a where a.LOAD_UNLOAD=1";
+		$activities = TerminalActivitySet::where('LOAD_UNLOAD','=',1)->select(['ID as SET_ID','NAME as SET_NAME'])->get();
 		return view ( 'front.cargoaction.cargoload',['filters'=>$filterGroups,
-				'contractAttributes'=>$contractAttributes
+				'contractAttributes'=>$contractAttributes,
+				'activities'=>$activities,
 		]);
 	}
 }
