@@ -20,7 +20,7 @@ use App\Models\EbBussinessModel;
 							'IS_LOAD'];
 	
 	public static function getKeyColumns(&$newData,$occur_date,$postData) {
-		$newData['IS_LOAD']		= 1;
+// 		$newData['IS_LOAD']		= 1;
 		return ['PARENT_ID'		=> $newData['PARENT_ID'],
 				'ACTIVITY_ID'	=> $newData['ACTIVITY_ID']];
 	}

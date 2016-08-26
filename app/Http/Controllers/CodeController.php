@@ -605,7 +605,9 @@ class CodeController extends EBController {
     			case 'CARRIER_ID' :
     			case 'PD_TRANSIT_CARRIER_ID' :
     				$selectData = ['id'=>'PdTransitCarrier','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				if ($dcTable==\App\Models\PdVoyage::getTableName()||$dcTable==\App\Models\PdCargoLoad::getTableName()) 
+    				if ($dcTable==\App\Models\PdVoyage::getTableName()
+    						||$dcTable==\App\Models\PdCargoLoad::getTableName()
+    						||$dcTable==\App\Models\PdCargoUnload::getTableName()) 
     					$selectData['data'] = PdTransitCarrier::all();
     				else
     					$selectData['data'] = PdTransitCarrier::where('TRANSIT_TYPE',1)->get();

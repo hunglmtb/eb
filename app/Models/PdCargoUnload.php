@@ -1,8 +1,8 @@
 <?php 
 namespace App\Models; 
-use App\Models\DynamicModel; 
+use App\Models\EbBussinessModel; 
 
- class PdCargoUnload extends DynamicModel 
+ class PdCargoUnload extends EbBussinessModel 
 { 
 	protected $table 		= 'PD_CARGO_UNLOAD'; 
 	protected $dates 		= ['DATE_UNLOAD'];

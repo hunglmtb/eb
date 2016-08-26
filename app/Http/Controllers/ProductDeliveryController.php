@@ -119,9 +119,21 @@ class ProductDeliveryController extends CodeController {
 		);
 		
 		$contractAttributes = PdCodeLoadActivity::orderBy('ORDER')->get();
-// 		$sql="select a.ID SET_ID,a.NAME SET_NAME from TERMINAL_ACTIVITY_SET a where a.LOAD_UNLOAD=1";
 		$activities = TerminalActivitySet::where('LOAD_UNLOAD','=',1)->select(['ID as SET_ID','NAME as SET_NAME'])->get();
 		return view ( 'front.cargoaction.cargoload',['filters'=>$filterGroups,
+				'contractAttributes'=>$contractAttributes,
+				'activities'=>$activities,
+		]);
+	}
+	public function cargounload() {
+		$filterGroups = array(	'productionFilterGroup'	=>[2			=>'Storage'],
+				'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
+						['id'=>'date_end','name'=>'To date']),
+		);
+	
+		$contractAttributes = PdCodeLoadActivity::orderBy('ORDER')->get();
+		$activities = TerminalActivitySet::where('LOAD_UNLOAD','=',2)->select(['ID as SET_ID','NAME as SET_NAME'])->get();
+		return view ( 'front.cargoaction.cargounload',['filters'=>$filterGroups,
 				'contractAttributes'=>$contractAttributes,
 				'activities'=>$activities,
 		]);
