@@ -113,10 +113,10 @@ var xmenu=
 							{"name":"Cargo Voyage","title":"Cargo Voyage","link":"/pd/cargovoyage"},
 							{"name":"Cargo Load","title":"Cargo Load","link":"/pd/cargoload"},
 							{"name":"Cargo Unload","title":"Cargo Unload","link":"/pd/cargounload"},
-							{"name":"Voyage Marine","title":"","link":"#"},
-							{"name":"Voyage Ground","title":"","link":"#"},
-							{"name":"Voyage Pipeline","title":"","link":"#"},
-							{"name":"BL/MR","title":"","link":"#"},
+							{"name":"Voyage Marine","title":"Voyage Marine","link":"/pd/voyagemarine"},
+							{"name":"Voyage Ground","title":"Voyage Ground","link":"#"},
+							{"name":"Voyage Pipeline","title":"Voyage Pipeline","link":"#"},
+							{"name":"BL/MR","title":"BL/MR","link":"#"},
 						]
 					},
 				]

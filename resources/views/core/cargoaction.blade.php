@@ -128,13 +128,17 @@
 @stop
 @section('floatMoreBox')
 @parent
-<div id="box_select_activity_set" style="display:none;border:1px solid #888;position:absolute;width:250px;bottom:44px;left:120px;background:white">
-			<table border='0' style='width:100%' cellpadding='5' cellspacing='0'>
-				@foreach($activities as $activity )
-					<tr class='row_activity' style='cursor:pointer' onclick="setActivitySet({{$activity->SET_ID}})">
-					<td>{{$activity->SET_NAME}}</td>
-					</tr>
-		 		@endforeach
-			</table>
-	</div>
+	@if(isset($activities))
+		<div id="box_select_activity_set" style="display:none;border:1px solid #888;position:absolute;width:250px;bottom:44px;left:120px;background:white">
+				<table border='0' style='width:100%' cellpadding='5' cellspacing='0'>
+					@foreach($activities as $activity )
+						<tr class='row_activity' style='cursor:pointer' onclick="setActivitySet({{$activity->SET_ID}})">
+						<td>{{$activity->SET_NAME}}</td>
+						</tr>
+			 		@endforeach
+				</table>
+		</div>
+	@endif
 @stop
+
+

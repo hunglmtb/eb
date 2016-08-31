@@ -175,6 +175,7 @@ var intVal = function ( i ) {
 		};
 //		$(td).find('#edit_row_'+id).click(editFunction);
 		table.$('#edit_row_'+id).click(editFunction);
+		if(typeof(actions.addMoreHandle) == "function")actions.addMoreHandle(table,rowData,td,tab);
 	}
 
 	var renderTable = function (tab,subData,options,createdFirstCellColumnFunction) {

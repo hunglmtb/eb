@@ -687,6 +687,7 @@ class CodeController extends EBController {
     			case 'SCHEDULE_UOM' :
     			case 'ATTRIBUTE_UOM' :
     			case 'LOAD_UOM' :
+    			case 'QTY_UOM' :
     				$selectData = ['id'=>'PdCodeMeasUom','targets'=>$i,'COLUMN_NAME'=>$columnName];
     				$selectData['data'] = \App\Models\PdCodeMeasUom::all();
     				$rs[] = $selectData;
@@ -806,7 +807,19 @@ class CodeController extends EBController {
     				$selectData['data'] = \App\Models\PdCodeLoadActivity::all();
     				$rs[] = $selectData;
     				break;
-	    			
+		    	case 'VOYAGE_ID' :
+		    		$selectData = ['id'=>'PdVoyage','targets'=>$i,'COLUMN_NAME'=>$columnName];
+		    		$selectData['data'] = \App\Models\PdVoyage::all();
+		    		$rs[] = $selectData;
+		    		break;
+	    		case 'DEPART_PORT' :
+	    		case 'NEXT_DESTINATION_PORT' :
+    			case 'PORT_ID' :
+    			case 'ULLAGE_PORT' :
+	    			$selectData = ['id'=>'PdPort','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = \App\Models\PdPort::all();
+	    			$rs[] = $selectData;
+	    			break;
     		}
     		$i++;
     	}

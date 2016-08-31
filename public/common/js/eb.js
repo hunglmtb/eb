@@ -112,7 +112,7 @@ var actions = {
 	extraDataSetColumns : {},
 	extraDataSet 		: {},
 	loadSuccess 		: function(data){alert("success");},
-	loadError 			: function(data){alert(JSON.stringify(data.responseText));},
+	loadError 			: function(data){/*alert(JSON.stringify(data.responseText));*/alert('loading data error!');},
 	shouldLoad 			: function(data){return false;},
 	addingNewRowSuccess	: function(data,table,tab,isAddingNewRow){},
 	afterGotSavedData 	: function(data,table,key){},
