@@ -816,10 +816,17 @@ class CodeController extends EBController {
 	    		case 'NEXT_DESTINATION_PORT' :
     			case 'PORT_ID' :
     			case 'ULLAGE_PORT' :
+    			case 'ORIGIN_PORT' :
+    			case 'DESTINATION_PORT' :
 	    			$selectData = ['id'=>'PdPort','targets'=>$i,'COLUMN_NAME'=>$columnName];
 	    			$selectData['data'] = \App\Models\PdPort::all();
 	    			$rs[] = $selectData;
 	    			break;
+    			case 'FLOW_ID' :
+    				$selectData = ['id'=>'Flow','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = \App\Models\Flow::where("FACILITY_ID",'=',$facility_id)->get();
+    				$rs[] = $selectData;
+    				break;
     		}
     		$i++;
     	}

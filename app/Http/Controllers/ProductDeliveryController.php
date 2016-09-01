@@ -106,9 +106,7 @@ class ProductDeliveryController extends CodeController {
 						['id'=>'date_end','name'=>'To date']),
 		);
 	
-// 		$contractAttributes = PdCodeContractAttribute::all();
 		return view ( 'front.cargoaction.cargovoyage',['filters'=>$filterGroups,
-// 				'contractAttributes'=>$contractAttributes
 		]);
 	}
 	
@@ -149,4 +147,13 @@ class ProductDeliveryController extends CodeController {
 		]);
 	}
 	
+	public function voyageground() {
+		$filterGroups = array(	'productionFilterGroup'		=>[2			=>'Storage'],
+								'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
+																		['id'=>'date_end','name'=>'To date']),
+		);
+	
+		return view ( 'front.cargoaction.voyageground',['filters'=>$filterGroups,
+		]);
+	}
 }
