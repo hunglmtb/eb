@@ -15,7 +15,9 @@ class UserWorkspace extends DynamicModel
 							'W_DATE_END', 
 							'W_FLOW_PHASE',
 							'DATE_FORMAT',
-							'TIME_FORMAT'];
+							'TIME_FORMAT',
+							'DECIMAL_MARK'
+	];
 	
 	/**
 	 * One to Many relation

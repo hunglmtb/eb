@@ -217,6 +217,11 @@ Route::post('voyageground/load',		['uses' =>'Cargo\VoyageGroundController@load',
 Route::post('voyageground/save', 		['uses' =>'Cargo\VoyageGroundController@save',		'middleware' => 'checkRight:PD_CARGO_ACTION_GROUND']);
 Route::post('voyageground/gen', 		['uses' =>'Cargo\VoyageGroundController@genBLMR',	'middleware' => 'checkRight:PD_CARGO_ACTION_GROUND']);
 
+Route::get('pd/voyagepipeline',			['uses' =>'ProductDeliveryController@voyagepipeline',	'middleware' => 'checkRight:PD_CARGO_ACTION_PIPE']);
+Route::post('voyagepipeline/load',		['uses' =>'Cargo\VoyagePipelineController@load',		'middleware' => 'saveWorkspace']);
+Route::post('voyagepipeline/save', 		['uses' =>'Cargo\VoyagePipelineController@save',		'middleware' => 'checkRight:PD_CARGO_ACTION_PIPE']);
+Route::post('voyagepipeline/gen', 		['uses' =>'Cargo\VoyagePipelineController@genBLMR',		'middleware' => 'checkRight:PD_CARGO_ACTION_PIPE']);
+
 Route::get('pd/contractdata',			['uses' =>'ProductDeliveryController@contractdata','middleware' => 'checkRight:PD_CONTRACT_ADMIN_DATA']);
 Route::post('contractdata/load',		['uses' =>'Contract\ContractDataController@load','middleware' => 'saveWorkspace']);
 Route::post('contractdata/save', 		'Contract\ContractDataController@save');

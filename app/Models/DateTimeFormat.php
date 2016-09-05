@@ -12,10 +12,14 @@ class DateTimeFormat extends DynamicModel
 			
 									'TIME_FORMAT'	=>[	'HH:mm'			=>	'20:30',
 														'hh:mm A'		=>	'08:30 PM'],
+									'DECIMAL_MARK'	=>[	'dot'			=>	'1,245.38',
+														'comma'			=>	'1.245,38'],
 			);
 	
-	public static $defaultFormat = ['DATE_FORMAT'=>'DD/MM/YYYY',
-									'TIME_FORMAT'=>'HH:mm'];
+	public static $defaultFormat = ['DATE_FORMAT'	=>'DD/MM/YYYY',
+									'TIME_FORMAT'	=>'HH:mm',
+									'DECIMAL_MARK'	=>'dot'
+	];
 	
 	public static $timeFortmatPair =	['hh:mm A'	=>	'HH:ii P',
 										'HH:mm'		=>	'hh:ii',

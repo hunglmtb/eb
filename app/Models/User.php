@@ -95,13 +95,23 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 		return  UserWorkspace::updateOrCreate($columns, $newData);
 	}
 	
+	public function saveNumberFormat($numberformat){
+		$columns = ['USER_ID'=>$this->ID];
+		$newData = ['USER_ID'=>$this->ID,'USER_NAME'=>$this->username];
+		if (array_key_exists('DECIMAL_MARK', $numberformat)) $newData['DECIMAL_MARK']	=	$numberformat['DECIMAL_MARK'];
+		return  UserWorkspace::updateOrCreate($columns, $newData);
+	}
+	
+	
+	
 	public function configuration(){
 		$row	= 	UserWorkspace::where('USER_ID','=',$this->ID)
-						->select('DATE_FORMAT','TIME_FORMAT')
+						->select('DATE_FORMAT','TIME_FORMAT','DECIMAL_MARK')
 						->first();
 		$formatSetting = [];
-		$formatSetting['DATE_FORMAT'] = $row&&$row->DATE_FORMAT?$row->DATE_FORMAT:	DateTimeFormat::$defaultFormat['DATE_FORMAT'];
-		$formatSetting['TIME_FORMAT'] = $row&&$row->TIME_FORMAT?$row->TIME_FORMAT:	DateTimeFormat::$defaultFormat['TIME_FORMAT'];
+		$formatSetting['DATE_FORMAT'] 	= $row&&$row->DATE_FORMAT?$row->DATE_FORMAT:	DateTimeFormat::$defaultFormat['DATE_FORMAT'];
+		$formatSetting['TIME_FORMAT'] 	= $row&&$row->TIME_FORMAT?$row->TIME_FORMAT:	DateTimeFormat::$defaultFormat['TIME_FORMAT'];
+		$formatSetting['DECIMAL_MARK'] 	= $row&&$row->DECIMAL_MARK?$row->DECIMAL_MARK:	DateTimeFormat::$defaultFormat['DECIMAL_MARK'];
 		return $formatSetting;
 	}
 	
@@ -112,6 +122,7 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 		$formatSetting 		= 	$formatSetting?$formatSetting:DateTimeFormat::$defaultFormat;
 		$dateFormat 		= 	$formatSetting['DATE_FORMAT']?$formatSetting['DATE_FORMAT']:	DateTimeFormat::$defaultFormat['DATE_FORMAT'];
 		$timeFormat 		= 	$formatSetting['TIME_FORMAT']?$formatSetting['TIME_FORMAT']:	DateTimeFormat::$defaultFormat['TIME_FORMAT'];
+		$decimalMarkFormat 	= 	$formatSetting['DECIMAL_MARK']?$formatSetting['DECIMAL_MARK']:	DateTimeFormat::$defaultFormat['DECIMAL_MARK'];
 		$lowerDateFormat	= 	strtolower($dateFormat);
 		$carbonFormat		= 	\Helper::convertDate2CarbonFormat($dateFormat);
 		$jqueryFormat		= 	\Helper::convertDate2JqueryFormat($dateFormat);
@@ -137,9 +148,11 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 		];
 		$sample = DateTimeFormat::getSample($formatSetting);
 		
+		$numberFormat = ['DECIMAL_MARK' =>$decimalMarkFormat];
 		return [
 				'time'		=>	$timeFormatSet,
 				'picker'	=>	$picker,
+				'number'	=>	$numberFormat,
 				'sample'	=>	$sample,
 		];
 	}

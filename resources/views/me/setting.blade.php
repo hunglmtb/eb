@@ -2,10 +2,11 @@
 if (!isset($subMenus)) $subMenus = [];
 if (!isset($active)) $active =1;
 if (!isset($currentSubmenu)) $currentSubmenu ='';
-$configuration		=	$user->getConfiguration();
-$df = new \App\Models\DateTimeFormat;
-$dateformatSource	=	$df->getFormat('DATE_FORMAT');
-$timeformatSource	=	$df->getFormat('TIME_FORMAT');
+$configuration				=	$user->getConfiguration();
+$df 						= 	new \App\Models\DateTimeFormat;
+$dateformatSource			=	$df->getFormat('DATE_FORMAT');
+$timeformatSource			=	$df->getFormat('TIME_FORMAT');
+$decimalMarkFormatSource	=	$df->getFormat('DECIMAL_MARK');
 
 $currentSubmenu ='/me/setting';
 
@@ -39,8 +40,8 @@ $currentSubmenu ='/me/setting';
 			</tr>
 		</table>
 	</div>
-	
-	<h2 style="color:#378de5">setting date time format</h2>
+	<div id="datetimeDiv" style="float:left;padding:10px">
+		<h2 style="color:#378de5">setting date time format</h2>
 		<table border="0">
 			<tr>
 				<td width="120">Date format</td>
@@ -56,7 +57,21 @@ $currentSubmenu ='/me/setting';
 			</tr>
 		</table>
 	</div>
+	
+	<div id="datetimeDiv" style="float:left;padding:10px">
+		<h2 style="color:#378de5">Number configuration</h2>
+		<table border="0">
+			<tr>
+				<td width="120">Decimal mark</td>
+				<td><a href="#" id="decimalMark">{{$configuration["sample"]["DECIMAL_MARK"]}}</a></td>
+				<td width="60"></td>
+				<td><input type="button" style="width:120px;margin-top:10px" value="Commit" onclick="submitDecimalMarkConfiguration()"></td>
+			</tr>
+		</table>
+	</div>
+	
 </div>
+	
 <script>
 function submit(){
 	if($("#txt_old_password").val()==""){
@@ -112,6 +127,13 @@ $(function() {
         value: ["{{$configuration['time']['TIME_FORMAT']}}"],
         source:    timeformatSource, 
     });
+
+	var decimalMarkFormatSource =  <?php echo json_encode($decimalMarkFormatSource); ?>;
+	$('#decimalMark').editable({
+    	type : 'checklist',
+        value: ["{{$configuration['number']['DECIMAL_MARK']}}"],
+        source:    decimalMarkFormatSource, 
+    });
 });
 
 function submitDateTimeFormat(){
@@ -140,6 +162,31 @@ function submitDateTimeFormat(){
 		},
 		error: function(data) {
 			hideWaiting();
+		}
+	});
+}
+
+function submitDecimalMarkConfiguration(){
+	showWaiting();
+	numberformat = $('#decimalMark').editable('getValue',true);
+	numberformat = numberformat[0];
+	if(numberformat==null||numberformat==''){
+		numberformat = ["{{$configuration['number']['DECIMAL_MARK']}}"];
+	}
+	
+	$.ajax({
+		url: '/me/setting/save',
+		type: "post",
+		data: 	{
+					numberformat	:	{ DECIMAL_MARK	: numberformat }
+				},
+		success:function(data){
+			hideWaiting();
+			alert("update success");
+		},
+		error: function(data) {
+			hideWaiting();
+			console.log ( "submitDecimalMarkConfiguration error " );
 		}
 	});
 }

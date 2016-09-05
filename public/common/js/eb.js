@@ -345,7 +345,7 @@ var actions = {
 		return html+extraHtml;
 	},
 	applyEditable : function (tab,type,td, cellData, rowData, columnName,collection){
-		var successFunction = actions.getEditSuccessfn(tab,td, rowData, columnName,collection);
+		var successFunction = actions.getEditSuccessfn(tab,td, rowData, columnName,collection,type);
 		var  editable = {
 	    	    title: 'edit',
 	    	    emptytext: '',
@@ -358,7 +358,7 @@ var actions = {
 		case "number":
 		case "date":
 			editable['type'] = type;
-			editable['step'] = 'any';
+//			editable['step'] = 0.001;
 			editable['validate'] = function(value) {
 						    	        if($.trim(value) == '') {
 						    	            return 'This field is required';
@@ -372,7 +372,13 @@ var actions = {
 				editable['viewformat'] = configuration.picker.DATE_FORMAT;
 //				editable['viewformat'] = 'mm/dd/yyyy';
 			}
+			else if(type=='number') {
+				editable['type'] = "text";
+				if(configuration.number.DECIMAL_MARK=='comma') editable['tpl'] = "<input class='' type=\"text\" pattern=\"^[-]?[0-9]+([,][0-9]{1,20})?\">";
+				else  editable['tpl'] = "<input type=\"text\" pattern=\"^[-]?[0-9]+([\.][0-9]{1,20})?\">"; 
+			}
 			if (type=='number'&&this.historyUrl) {
+				
 				editable['extensionHandle'] = function() {
 												actions.extensionHandle(tab,columnName,rowData,false,successFunction,true);
 									    	  };
@@ -419,19 +425,40 @@ var actions = {
 		}	
 		$(td).editable(editable);
     	$(td).on("shown", function(e, editable) {
-    		  editable.input.$input.get(0).select();
     		  if(type=="timepicker") $(".table-condensed thead").css("visibility","hidden");
     		  $(".extension-buttons").css("display","none");
     		  if(type=="number") {
 					$( editable.input.$input.get(0) ).closest( ".editable-container" ).css("float","right");
 					if (actions.historyUrl) $(".extension-buttons").css("display","block");
+					
+					var val = editable.input.$input.val();
+					if(configuration.number.DECIMAL_MARK=='comma')
+						val = val.split(".").join("");
+					else val = val.split(",").join("");
+					editable.input.$input.val(val);
     		  }
+    		  editable.input.$input.get(0).select();
 //    		  if(type=="timepicker") $(".table-condensed th").text("");
+    	});
+    	
+    	$(td).on('save', function(e, params) {
+    	    if(type=="number") {
+    	    	value = params.newValue;
+    	    	if(value!=null){
+    	    		if(configuration.number.DECIMAL_MARK=='comma') value = parseFloat(value.replace(',','.'));
+					else value = parseFloat(value);
+    	    		var numberValue = value;
+					if(configuration.number.DECIMAL_MARK=='comma') value = value.toLocaleString('de-DE');
+					else value = value.toLocaleString("en-US");
+					params.newValue = value;
+					params.submitValue = numberValue;
+				}
+    	    }
     	});
 	},
 	applyLockedCellHistory	:	function (tab,type,td, cellData, rowData, columnName){
 		if(type=="number") {
-			var successFunction = actions.getEditSuccessfn(tab,td, rowData, columnName);
+			var successFunction = actions.getEditSuccessfn(tab,td, rowData, columnName,null,type);
 			var  editable = {
 					title			: 'edit',
 					emptytext		: '',
@@ -461,14 +488,14 @@ var actions = {
 			});
 		}
 	},
-	getEditSuccessfn  : function(tab, td, rowData, columnName,collection) {
+	getEditSuccessfn  : function(tab, td, rowData, columnName,collection,type) {
 		return function(response, newValue) {
-        	rowData = actions.putModifiedData(tab,columnName,newValue,rowData);
+        	rowData = actions.putModifiedData(tab,columnName,newValue,rowData,type);
         	rowData[columnName] = newValue;
         	var table = $('#table_'+tab).dataTable();
-			table.api().row( '#'+rowData['DT_RowId'] ).data(rowData);
         	$(td).css('color', 'red');
-        	table.api().draw(false);
+			table.api().row( '#'+rowData['DT_RowId'] ).data(rowData);
+//        	table.api().draw(false);
         	//dependence columns
         	actions.dominoColumns(columnName,newValue,tab,rowData,collection,table,td);
         	 /* var tabindex = $(this).attr('tabindex');
@@ -503,7 +530,7 @@ var actions = {
 		}
 		return actions.type.idName;
 	},
-	putModifiedData : function(tab,columnName,newValue,rowData){
+	putModifiedData : function(tab,columnName,newValue,rowData,type){
 		var table = $('#table_'+tab).dataTable();
 		var id = rowData['DT_RowId'];
 		var isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
@@ -516,8 +543,13 @@ var actions = {
 						               	 return e[actions.type.keyField] == rowData[actions.type.keyField];
 						                });
 //    	var columnName = table.settings()[0].aoColumns[col].data;
-    	if (newValue!=null&&newValue.constructor.name == "Date") {
-    		newValue = actions.getTimeValueBy(newValue,columnName,tab);
+    	if (newValue!=null) {
+    		if (newValue.constructor.name == "Date") {
+        		newValue = actions.getTimeValueBy(newValue,columnName,tab);
+    		}
+    		else if(type == "number") {
+        		newValue = parseFloat(newValue.replace(',','.'));
+    		}
 		}
     	if (result.length == 0) {
         	var editedData = {};
@@ -588,12 +620,18 @@ var actions = {
 			cell["render"] = function ( data2, type2, row ) {
 								value = actions.getNumberRender(columnName,data,data2, type2, row);
 								if(value==null){
-									var rendered = data2;
+									value = data2;
 									if(data2!=null&&data2!=''){
-										rendered = parseFloat(data2).toFixed(2);
-										if(isNaN(rendered)) return '';
+										if(configuration.number.DECIMAL_MARK=='comma') value = parseFloat(data2.replace(',','.'));
+										else value = parseFloat(data2);
+//										value = parseFloat(data2);//.toFixed(2);
+										if(isNaN(value)) return '';
+										value = Math.round(value * 100) / 100;
 									}
-									return rendered;
+								}
+								if(value!=null){
+									if(configuration.number.DECIMAL_MARK=='comma') value = value.toLocaleString('de-DE');
+									else value = value.toLocaleString("en-US"); 
 								}
 								return value;
 							};

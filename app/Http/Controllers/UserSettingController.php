@@ -13,14 +13,18 @@ class UserSettingController extends EBController {
 	
 	public function saveSetting(Request $request)
 	{
-		$postData = $request->all();
-		
-     	$dateformat = array_key_exists('dateformat',  $postData)?$postData['dateformat']:null;
-     	$timeformat = array_key_exists('timeformat',  $postData)?$postData['timeformat']:null;
-     	$currentUser = auth()->user();
-		if ($currentUser
-				&&($dateformat!=null||$timeformat!=null)) {
-			$currentUser->saveDateTimeFormat($dateformat,$timeformat);
+		$postData 		= $request->all();
+     	$dateformat 	= array_key_exists('dateformat',  	$postData)?$postData['dateformat']:null;
+     	$timeformat 	= array_key_exists('timeformat',  	$postData)?$postData['timeformat']:null;
+     	$numberformat 	= array_key_exists('numberformat',  $postData)?$postData['numberformat']:null;
+     	$currentUser 	= auth()->user();
+		if ($currentUser){
+			if (($dateformat!=null||$timeformat!=null)) {
+				$currentUser->saveDateTimeFormat($dateformat,$timeformat);
+			}
+			if (($numberformat!=null)) {
+				$currentUser->saveNumberFormat($numberformat);
+			}
 		}
 		else return response()->json(['empty post data']);
 		
