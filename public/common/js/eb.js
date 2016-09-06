@@ -374,7 +374,7 @@ var actions = {
 			}
 			else if(type=='number') {
 				editable['type'] = "text";
-				if(configuration.number.DECIMAL_MARK=='comma') editable['tpl'] = "<input class='' type=\"text\" pattern=\"^[-]?[0-9]+([,][0-9]{1,20})?\">";
+				if(configuration.number.DECIMAL_MARK=='comma') editable['tpl'] = "<input class='cellnumber' type=\"text\" pattern=\"^[-]?[0-9]+([,][0-9]{1,20})?\">";
 				else  editable['tpl'] = "<input type=\"text\" pattern=\"^[-]?[0-9]+([\.][0-9]{1,20})?\">"; 
 			}
 			if (type=='number'&&this.historyUrl) {
