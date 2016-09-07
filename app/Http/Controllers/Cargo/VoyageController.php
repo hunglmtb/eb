@@ -21,6 +21,7 @@ class VoyageController extends CodeController {
     	$mdl 			= "App\Models\\$mdlName";
     	 
     	$pdVoyage 		= PdVoyage::getTableName();
+    	\DB::enableQueryLog();
     	$dataSet = $mdl::join($pdVoyage,
     			"$dcTable.VOYAGE_ID",
     			'=',
@@ -33,8 +34,8 @@ class VoyageController extends CodeController {
     					"$dcTable.ID as DT_RowId",
     					"$dcTable.*")
     					->get();
-    
-    					return ['dataSet'=>$dataSet];
+    					\Log::info(\DB::getQueryLog());
+    	return ['dataSet'=>$dataSet];
     }
     
     public function getShipCargoBlmr($pid){

@@ -156,4 +156,14 @@ class ProductDeliveryController extends CodeController {
 		return view ( 'front.cargoaction.voyageground',['filters'=>$filterGroups,
 		]);
 	}
+	
+	public function voyagepipeline() {
+		$filterGroups = array(	'productionFilterGroup'		=>[2			=>'Storage'],
+								'dateFilterGroup'			=> array(['id'	=>'date_begin','name'=>'From date'],
+																		['id'=>'date_end','name'=>'To date']),
+		);
+	
+		return view ( 'front.cargoaction.voyagepipeline',['filters'=>$filterGroups,
+		]);
+	}
 }

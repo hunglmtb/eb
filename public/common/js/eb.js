@@ -495,6 +495,7 @@ var actions = {
         	var table = $('#table_'+tab).dataTable();
         	$(td).css('color', 'red');
 			table.api().row( '#'+rowData['DT_RowId'] ).data(rowData);
+			table.api().columns().footer().draw();
 //        	table.api().draw(false);
         	//dependence columns
         	actions.dominoColumns(columnName,newValue,tab,rowData,collection,table,td);
@@ -622,9 +623,7 @@ var actions = {
 								if(value==null){
 									value = data2;
 									if(data2!=null&&data2!=''){
-										if(configuration.number.DECIMAL_MARK=='comma') value = parseFloat(data2.replace(',','.'));
-										else value = parseFloat(data2);
-//										value = parseFloat(data2);//.toFixed(2);
+										value = parseFloat(data2);
 										if(isNaN(value)) return '';
 										value = Math.round(value * 100) / 100;
 									}

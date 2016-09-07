@@ -115,7 +115,7 @@ var xmenu=
 							{"name":"Cargo Unload","title":"Cargo Unload","link":"/pd/cargounload"},
 							{"name":"Voyage Marine","title":"Voyage Marine","link":"/pd/voyagemarine"},
 							{"name":"Voyage Ground","title":"Voyage Ground","link":"/pd/voyageground"},
-							{"name":"Voyage Pipeline","title":"Voyage Pipeline","link":"#"},
+							{"name":"Voyage Pipeline","title":"Voyage Pipeline","link":"/pd/voyagepipeline"},
 							{"name":"BL/MR","title":"BL/MR","link":"#"},
 						]
 					},
