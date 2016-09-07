@@ -31,6 +31,7 @@
 		templateId = id;
 	 		return 	{
 		 			id			: id,
+		 			tab			: 'PdCodeContractAttribute',
 		 		};
 	 	}
 

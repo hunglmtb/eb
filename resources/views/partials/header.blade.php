@@ -116,7 +116,7 @@ var xmenu=
 							{"name":"Voyage Marine","title":"Voyage Marine","link":"/pd/voyagemarine"},
 							{"name":"Voyage Ground","title":"Voyage Ground","link":"/pd/voyageground"},
 							{"name":"Voyage Pipeline","title":"Voyage Pipeline","link":"/pd/voyagepipeline"},
-							{"name":"BL/MR","title":"BL/MR","link":"#"},
+							{"name":"BL/MR","title":"BL/MR","link":"/pd/shipblmr"},
 						]
 					},
 				]

@@ -2,16 +2,19 @@
 namespace App\Http\Controllers\Contract;
 
 use App\Http\Controllers\CodeController;
-use App\Models\PdContractData;
 use App\Models\pdCodeContractAttribute;
-use App\Models\PdContractTemplateAttribute;
+use App\Models\PdContractData;
 use App\Models\PdContractQtyFormula;
-use Illuminate\Http\Request;
+use App\Models\PdContractTemplateAttribute;
 
 class ContractDataController extends CodeController {
     
+	public function __construct() {
+		parent::__construct();
+		$this->detailModel = "PdContractData";
+	}
+	
     public function getFirstProperty($dcTable){
-//     	$width = $dcTable==PdContractData::getTableName()?40:90;
 		return  ['data'=>$dcTable,'title'=>'','width'=> 50];
 	}
 	
@@ -27,8 +30,6 @@ class ContractDataController extends CodeController {
 //     	\DB::enableQueryLog();
     	$dataSet = $mdl::whereDate("$dcTable.BEGIN_DATE",'>=',$occur_date)
     					->whereDate("$dcTable.BEGIN_DATE",'<=',$date_end)
-    					/* ->whereDate("$dcTable.END_DATE",'>=',$occur_date)
-    					->whereDate("$dcTable.END_DATE",'<=',$date_end) */
 				    	->select(
 				    			"$dcTable.ID as $dcTable",
 				    			"$dcTable.ID as DT_RowId",
@@ -39,21 +40,8 @@ class ContractDataController extends CodeController {
     	return ['dataSet'=>$dataSet];
     }
     
-	public function loadDetail(Request $request){
-    	$postData 				= $request->all();
-    	$id 					= $postData['id'];
-     	$templateId 			= $postData['templateId'];
-     	
-    	$contractDetail 		= PdContractData::getTableName();
-    	$results 				= $this->getProperties($contractDetail);
-    	
-    	$dataSet 				= $this->getContractData($id,$templateId,$results['properties']);
-	    $results['dataSet'] 	= $dataSet;
-	    
-    	return response()->json(['PdContractData' => $results]);
-	}
-	
-    public function getContractData($id,$templateId,$properties){
+    public function getDetailData($id,$postData,$properties){
+    	$templateId 					= $postData['templateId'];
     	$pdContractData					= PdContractData::getTableName();
     	$pdContractTemplateAttribute	= PdContractTemplateAttribute::getTableName();
     	$pdCodeContractAttribute		= PdCodeContractAttribute::getTableName();

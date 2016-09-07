@@ -3,14 +3,16 @@ namespace App\Http\Controllers\Contract;
 
 use App\Http\Controllers\CodeController;
 use App\Models\pdCodeContractAttribute;
-use App\Models\PdContractData;
 use App\Models\PdContractTemplateAttribute;
-use Illuminate\Http\Request;
 
 class ContractTemplateController extends CodeController {
     
+	public function __construct() {
+		parent::__construct();
+		$this->detailModel = "PdContractTemplateAttribute";
+	}
+	
     public function getFirstProperty($dcTable){
-//     	$width = $dcTable==PdContractData::getTableName()?40:90;
 		return  ['data'=>$dcTable,'title'=>'','width'=> 50];
 	}
 	
@@ -37,25 +39,12 @@ class ContractTemplateController extends CodeController {
     	return ['dataSet'=>$dataSet];
     }
     
-	public function loadAttributes(Request $request){
-    	$postData 				= $request->all();
-    	$id 					= $postData['id'];
-    	$pdCodeContractAttribute= PdCodeContractAttribute::getTableName();
-    	$results 				= $this->getProperties($pdCodeContractAttribute);
-    	
-    	$dataSet 				= $this->getContractData($id,$results['properties']);
-	    $results['dataSet'] 	= $dataSet;
-	     
-    	return response()->json(['PdContractTemplateAttribute' => $results]);
-	}
-	
     
-    public function getContractData($id,$properties){
+    public function getDetailData($id,$postData,$properties){
     	$pdContractTemplateAttribute	= PdContractTemplateAttribute::getTableName();
     	$pdCodeContractAttribute		= PdCodeContractAttribute::getTableName();
     	
-    	$dataSet 						= PdContractTemplateAttribute
-    										::join($pdCodeContractAttribute,
+    	$dataSet 						= PdContractTemplateAttribute::join($pdCodeContractAttribute,
 									    			"$pdContractTemplateAttribute.ATTRIBUTE",
 									    			'=',
 									    			"$pdCodeContractAttribute.ID")

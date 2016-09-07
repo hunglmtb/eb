@@ -222,6 +222,12 @@ Route::post('voyagepipeline/load',		['uses' =>'Cargo\VoyagePipelineController@lo
 Route::post('voyagepipeline/save', 		['uses' =>'Cargo\VoyagePipelineController@save',		'middleware' => 'checkRight:PD_CARGO_ACTION_PIPE']);
 Route::post('voyagepipeline/gen', 		['uses' =>'Cargo\VoyagePipelineController@genBLMR',		'middleware' => 'checkRight:PD_CARGO_ACTION_PIPE']);
 
+Route::get('pd/shipblmr',				['uses' =>'ProductDeliveryController@shipblmr',			'middleware' => 'checkRight:PD_CARGO_ACTION_BLMR']);
+Route::post('shipblmr/load',			['uses' =>'Cargo\CargoShipblmrController@load',			'middleware' => 'saveWorkspace']);
+Route::post('shipblmr/save', 			['uses' =>'Cargo\CargoShipblmrController@save',			'middleware' => 'checkRight:PD_CARGO_ACTION_BLMR']);
+Route::post('shipblmrdetail/load',		['uses' =>'Cargo\CargoShipblmrController@loadDetail',	'middleware' => 'checkRight:PD_CARGO_ACTION_BLMR']);
+Route::post('shipblmrdetail/save',		['uses' =>'Cargo\CargoShipblmrController@save',			'middleware' => 'checkRight:PD_CARGO_ACTION_BLMR']);
+
 Route::get('pd/contractdata',			['uses' =>'ProductDeliveryController@contractdata','middleware' => 'checkRight:PD_CONTRACT_ADMIN_DATA']);
 Route::post('contractdata/load',		['uses' =>'Contract\ContractDataController@load','middleware' => 'saveWorkspace']);
 Route::post('contractdata/save', 		'Contract\ContractDataController@save');
@@ -233,10 +239,10 @@ Route::post('contractcalculate/load',		['uses' =>'Contract\ContractCalculateCont
 Route::post('contractcalculate/save', 		'Contract\ContractCalculateController@save');
 Route::post('contractcalculate/addyear', 		'Contract\ContractCalculateController@addyear');
 
-Route::get('pd/contracttemplate',			['uses' =>'ProductDeliveryController@contracttemplate','middleware' => 'checkRight:PD_CONTRACT_ADMIN_TEMP']);
-Route::post('contracttemplate/load',		['uses' =>'Contract\ContractTemplateController@load','middleware' 	=> 'saveWorkspace']);
-Route::post('contracttemplate/save', 		'Contract\ContractTemplateController@save');
-Route::post('contracttemplateattribute/load',		['uses' =>'Contract\ContractTemplateController@loadAttributes','middleware' 	=> 'saveWorkspace']);
+Route::get('pd/contracttemplate',					['uses' =>'ProductDeliveryController@contracttemplate','middleware' => 'checkRight:PD_CONTRACT_ADMIN_TEMP']);
+Route::post('contracttemplate/load',				['uses' =>'Contract\ContractTemplateController@load','middleware' 	=> 'saveWorkspace']);
+Route::post('contracttemplate/save', 				'Contract\ContractTemplateController@save');
+Route::post('contracttemplateattribute/load',		['uses' =>'Contract\ContractTemplateController@loadDetail','middleware' 	=> 'saveWorkspace']);
 Route::post('contracttemplateattribute/save', 		'Contract\ContractTemplateController@save');
 
 //----------admin

@@ -1,8 +1,17 @@
 <?php 
 namespace App\Models; 
-use App\Models\DynamicModel; 
+use App\Models\EbBussinessModel; 
 
- class ShipCargoBlmrData extends DynamicModel 
+ class ShipCargoBlmrData extends EbBussinessModel 
 { 
-	protected $table = 'ship_cargo_blmr_data'; 
+	protected $table 		= 'SHIP_CARGO_BLMR_DATA'; 
+	protected $dates 		= ['LAST_CALC_TIME'];
+	protected $fillable  	= ['BLMR_ID', 
+								'MEASURED_ITEM', 
+								'FORMULA_ID', 
+								'ITEM_VALUE', 
+								'ITEM_UOM', 
+								'LAST_CALC_TIME', 
+								'CALC_MESSAGE', 
+								'COMMENT'];
 } 

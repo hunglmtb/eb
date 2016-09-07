@@ -1,10 +1,10 @@
 <?php 
 namespace App\Models; 
-use App\Models\DynamicModel; 
+use App\Models\EbBussinessModel; 
 
- class ShipCargoBlmr extends DynamicModel 
+ class ShipCargoBlmr extends EbBussinessModel 
 { 
-	protected $table = 'SHIP_CARGO_BLMR';
+	protected $table 		= 'SHIP_CARGO_BLMR';
 	protected $dates 		= ['DATE_TIME'];
 	protected $fillable  	= [	'CARRIER_ID', 
 								'VOYAGE_ID', 

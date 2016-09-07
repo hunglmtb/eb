@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Cargo;
 use App\Http\Controllers\Cargo\VoyageController;
 use App\Models\PdShipPortInformation;
 use App\Models\PdTransportShipDetail;
-use Illuminate\Http\Request;
 
 class VoyageMarineController extends VoyageController {
     
 	public function __construct() {
 		parent::__construct();
+		$this->detailModel = "PdShipPortInformation";
 		$this->modelName = "App\Models\PdTransportShipDetail";
 		$this->parentType = "S";
 	}
@@ -22,22 +22,11 @@ class VoyageMarineController extends VoyageController {
 	}
 	
     
-	public function loadDetail(Request $request){
-    	$postData 				= $request->all();
-    	$id 					= $postData['id'];
-    	$pdShipPortInformation 	= PdShipPortInformation::getTableName();
-    	$results 				= $this->getProperties($pdShipPortInformation);
-    	$dataSet 				= $this->getTimesheetData($id,$results['properties']);
-	    $results['dataSet'] 	= $dataSet;
-	    
-    	return response()->json(['PdShipPortInformation' => $results]);
-	}
-	
-    public function getTimesheetData($id,$properties){
-    	 
+    public function getDetailData($id,$postData,$properties){
     	$pdShipPortInformation 			= PdShipPortInformation::getTableName();
     	$pdTransportShipDetail 			= PdTransportShipDetail::getTableName();
-    	$dataSet = PdShipPortInformation::join($pdTransportShipDetail,function ($query) use ($id,$pdShipPortInformation,$pdTransportShipDetail) {
+    	$dataSet 						= PdShipPortInformation::join($pdTransportShipDetail,function ($query) 
+    											use ($id,$pdShipPortInformation,$pdTransportShipDetail) {
 							    					$query->on("$pdShipPortInformation.VOYAGE_ID",'=',"$pdTransportShipDetail.VOYAGE_ID");
 							    					$query->on("$pdShipPortInformation.PARCEL_NO",'=',"$pdTransportShipDetail.PARCEL_NO");
 										    		$query->where("$pdTransportShipDetail.ID",'=',$id) ;

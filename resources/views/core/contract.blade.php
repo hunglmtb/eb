@@ -52,7 +52,7 @@
 						};
 					$("#floatMoreBox").dialog(dialogOptions);
 
-					tab = '{{$attributeTableTab}}';
+					tab = 'att_{{$attributeTableTab}}';
 					options = {
 			 					tableOption :	{
 								 						searching			: true,
@@ -173,5 +173,5 @@
 
 
 @section('floatMoreBoxContent')
-	<table id="table_{{$attributeTableTab}}" class="fixedtable nowrap display"></table>
+	<table id="table_att_{{$attributeTableTab}}" class="fixedtable nowrap display"></table>
 @stop

@@ -9,6 +9,11 @@ use Illuminate\Http\Request;
 
 class CargoLoadController extends CodeController {
     
+	public function __construct() {
+		parent::__construct();
+		$this->detailModel = "TerminalTimesheetData";
+	}
+	
     public function getFirstProperty($dcTable){
 		return  ['data'=>$dcTable,'title'=>'','width'=> 50];
 	}
@@ -38,18 +43,7 @@ class CargoLoadController extends CodeController {
     	return ['dataSet'=>$dataSet];
     }
     
-	public function loadDetail(Request $request){
-    	$postData 				= $request->all();
-    	$id 					= $postData['id'];
-    	$terminalTimesheetData 	= TerminalTimesheetData::getTableName();
-    	$results 				= $this->getProperties($terminalTimesheetData);
-    	$dataSet 				= $this->getTimesheetData($id,$results['properties']);
-	    $results['dataSet'] 	= $dataSet;
-	    
-    	return response()->json(['TerminalTimesheetData' => $results]);
-	}
-	
-    public function getTimesheetData($id,$properties){
+    public function getDetailData($id,$postData,$properties){
     	$terminalTimesheetData 			= TerminalTimesheetData::getTableName();
     	$dataSet = TerminalTimesheetData::where("$terminalTimesheetData.IS_LOAD",'=',1)
 						    			->where("$terminalTimesheetData.PARENT_ID",'=',$id)

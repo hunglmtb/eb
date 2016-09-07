@@ -50,7 +50,7 @@ class CodeController extends EBController {
 	protected $theorModel ;
 	protected $isApplyFormulaAfterSaving;
 	protected $extraDataSetColumns;
-	
+	protected $detailModel;
 	
 	public function __construct() {
 		parent::__construct();
@@ -117,6 +117,23 @@ class CodeController extends EBController {
 	        $results = array_merge($results, $data);
         }
     	return response()->json($results);
+    }
+    
+    public function loadDetail(Request $request){
+    	$postData 				= $request->all();
+    	$id 					= $postData['id'];
+    	$tab					= isset($postData['tab'])?$postData['tab']:$this->detailModel;
+    	$detailModel			= "App\Models\\$tab";
+    	$detailTable	 		= $detailModel::getTableName();
+    	$results 				= $this->getProperties($detailTable);
+    	$dataSet 				= $this->getDetailData($id,$postData,$results['properties']);
+    	$results['dataSet'] 	= $dataSet;
+    	 
+    	return response()->json([$this->detailModel => $results]);
+    }
+    
+    public function getDetailData($id,$postData,$properties){
+    	return [];
     }
     
     public function history(Request $request){
@@ -682,13 +699,14 @@ class CodeController extends EBController {
 	    			$selectData['data'] = CodeFlowPhase::all();
 	    			$rs[] = $selectData;
 	    			break;
-    			case 'REQUEST_UOM' :
-    			case 'NOMINATION_UOM' :
-    			case 'REQUEST_QTY_UOM' :
-    			case 'SCHEDULE_UOM' :
-    			case 'ATTRIBUTE_UOM' :
-    			case 'LOAD_UOM' :
-    			case 'QTY_UOM' :
+    			case 'REQUEST_UOM' 		:
+    			case 'NOMINATION_UOM' 	:
+    			case 'REQUEST_QTY_UOM' 	:
+    			case 'SCHEDULE_UOM' 	:
+    			case 'ATTRIBUTE_UOM' 	:
+    			case 'LOAD_UOM' 		:
+    			case 'QTY_UOM' 			:
+    			case 'ITEM_UOM' 		:
     				$selectData = ['id'=>'PdCodeMeasUom','targets'=>$i,'COLUMN_NAME'=>$columnName];
     				$selectData['data'] = \App\Models\PdCodeMeasUom::all();
     				$rs[] = $selectData;

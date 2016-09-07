@@ -24,7 +24,7 @@ class VoyageController extends CodeController {
     	$mdl 			= "App\Models\\$mdlName";
     	 
     	$pdVoyage 		= PdVoyage::getTableName();
-    	\DB::enableQueryLog();
+//     	\DB::enableQueryLog();
     	$dataSet = $mdl::join($pdVoyage,
     			"$dcTable.VOYAGE_ID",
     			'=',
@@ -37,7 +37,7 @@ class VoyageController extends CodeController {
     					"$dcTable.ID as DT_RowId",
     					"$dcTable.*")
     					->get();
-    					\Log::info(\DB::getQueryLog());
+//     					\Log::info(\DB::getQueryLog());
     	return ['dataSet'=>$dataSet];
     }
     

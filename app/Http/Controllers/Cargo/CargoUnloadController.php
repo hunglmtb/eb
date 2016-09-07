@@ -31,7 +31,7 @@ class CargoUnloadController extends CargoLoadController {
     	return ['dataSet'=>$dataSet];
     }
     
-    public function getTimesheetData($id,$properties){
+    public function getDetailData($id,$postData,$properties){
     	$terminalTimesheetData 			= TerminalTimesheetData::getTableName();
     	$dataSet = TerminalTimesheetData::where("$terminalTimesheetData.IS_LOAD",'=',0)
 						    			->where("$terminalTimesheetData.PARENT_ID",'=',$id)

@@ -14,6 +14,11 @@ use Illuminate\Http\Request;
 
 class CargoVoyageController extends CodeController {
     
+	public function __construct() {
+		parent::__construct();
+		$this->detailModel = "PdVoyageDetail";
+	}
+	
     public function getFirstProperty($dcTable){
 		return  ['data'=>$dcTable,'title'=>'','width'=> 50];
 	}
@@ -44,24 +49,11 @@ class CargoVoyageController extends CodeController {
     	return ['dataSet'=>$dataSet];
     }
     
-	public function loadDetail(Request $request){
-    	$postData 				= $request->all();
-    	$id 					= $postData['id'];
-     	$facility	 			= $postData['Facility'];
-     	
+    public function getDetailData($id,$postData,$properties){
+    	$facility	 			= $postData['Facility'];
+		$pdVoyage				= PdVoyage::getTableName();
     	$pdVoyageDetail			= PdVoyageDetail::getTableName();
-    	$results 				= $this->getProperties($pdVoyageDetail);
-    	
-    	$dataSet 				= $this->getVoyageData($id,$facility,$results['properties']);
-	    $results['dataSet'] 	= $dataSet;
-	    
-    	return response()->json(['PdVoyageDetail' => $results]);
-	}
-	
-    public function getVoyageData($id,$facility,$properties){
-    	$pdVoyage						= PdVoyage::getTableName();
-    	$pdVoyageDetail					= PdVoyageDetail::getTableName();
-    	$dataSet = PdVoyageDetail::join($pdVoyage,
+    	$dataSet 				= PdVoyageDetail::join($pdVoyage,
 						    			"$pdVoyageDetail.VOYAGE_ID",
 						    			'=',
 						    			"$pdVoyage.ID")
