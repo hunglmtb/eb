@@ -6,19 +6,15 @@ class VoyagePipelineController extends VoyageController {
     
 	public function __construct() {
 		parent::__construct();
-		$this->modelName = "App\Models\PdTransportGroundDetail";
-		$this->parentType = "G";
-	}
-	
-	public function getFirstProperty($dcTable){
-		return  ['data'=>$dcTable,'title'=>'BL/MR','width'=> 60];
+		$this->modelName = "App\Models\PdTransportPipelineDetail";
+		$this->parentType = "P";
 	}
 	
 	public function getUpdateFields($shipCargoBlmr,$transportType){
 		return array(
-				"$shipCargoBlmr.ITEM_VALUE" => \DB::raw("ifnull($transportType.ADJUSTED_QUANTITY,$transportType.QUANTITY)"),
+				"$shipCargoBlmr.ITEM_VALUE" => \DB::raw("$transportType.QUANTITY"),
 				"$shipCargoBlmr.ITEM_UOM" 	=> \DB::raw("$transportType.QUANTITY_UOM"),
-				"$shipCargoBlmr.DATE_TIME" 	=> \DB::raw("$transportType.BEGIN_LOADING_TIME"),
+				"$shipCargoBlmr.DATE_TIME" 	=> \DB::raw("$transportType.BEGIN_TRANSIT_TIME"),
 		);
 	}
 	
@@ -34,9 +30,9 @@ class VoyagePipelineController extends VoyageController {
 				"$pdVoyage.LIFTING_ACCOUNT"         ,
 				"$storage.PRODUCT as PRODUCT_TYPE"    ,
 // 				"$transportType.QTY_TYPE as MEASURED_ITEM"  ,
-				\DB::raw("ifnull($transportType.ADJUSTED_QUANTITY,$transportType.QUANTITY)  as ITEM_VALUE"),
+				"$transportType.QUANTITY as ITEM_VALUE"       ,
 				"$transportType.QUANTITY_UOM as ITEM_UOM"       ,
-				"$transportType.BEGIN_LOADING_TIME as DATE_TIME"  ,
+				"$transportType.BEGIN_TRANSIT_TIME as DATE_TIME"  ,
 				// 				'COMMENT'        => 'null 'COMMENT'             ,
 		];
 	}

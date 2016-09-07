@@ -2,7 +2,6 @@
 namespace App\Http\Controllers\Cargo;
 
 use App\Http\Controllers\CodeController;
-use App\Models\PdTransportShipDetail;
 use App\Models\PdVoyage;
 use App\Models\ShipCargoBlmr;
 use App\Models\Storage;
@@ -11,6 +10,10 @@ use Illuminate\Http\Request;
 class VoyageController extends CodeController {
     protected $modelName;
     protected $parentType;
+    
+    public function getFirstProperty($dcTable){
+    	return  ['data'=>$dcTable,'title'=>'BL/MR','width'=> 60];
+    }
     
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	$storage_id		= $postData['Storage'];

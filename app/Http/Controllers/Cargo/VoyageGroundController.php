@@ -10,10 +10,6 @@ class VoyageGroundController extends VoyageController {
 		$this->parentType = "G";
 	}
 	
-	public function getFirstProperty($dcTable){
-		return  ['data'=>$dcTable,'title'=>'BL/MR','width'=> 60];
-	}
-	
 	public function getUpdateFields($shipCargoBlmr,$transportType){
 		return array(
 				"$shipCargoBlmr.ITEM_VALUE" => \DB::raw("ifnull($transportType.ADJUSTED_QUANTITY,$transportType.QUANTITY)"),

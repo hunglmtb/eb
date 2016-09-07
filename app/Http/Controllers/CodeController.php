@@ -604,13 +604,14 @@ class CodeController extends EBController {
     				break;
     			case 'CARRIER_ID' :
     			case 'PD_TRANSIT_CARRIER_ID' :
+    			case 'CONNECTING_CARRIER' :
+    				if ($dcTable==\App\Models\PdCargoNomination::getTableName()) break;
     				$selectData = ['id'=>'PdTransitCarrier','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				if ($dcTable==\App\Models\PdVoyage::getTableName()
-    						||$dcTable==\App\Models\PdCargoLoad::getTableName()
-    						||$dcTable==\App\Models\PdCargoUnload::getTableName()) 
-    					$selectData['data'] = PdTransitCarrier::all();
-    				else
+    				if ($dcTable==\App\Models\RunTicketFdcValue::getTableName()
+    						||$dcTable==\App\Models\RunTicketValue::getTableName()) 
     					$selectData['data'] = PdTransitCarrier::where('TRANSIT_TYPE',1)->get();
+    				else
+    					$selectData['data'] = PdTransitCarrier::all();
     				$rs[] = $selectData;
     				break;
     			case 'BA_ID' :
