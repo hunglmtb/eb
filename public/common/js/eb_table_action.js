@@ -38,8 +38,8 @@ var intVal = function ( i ) {
 			
 			if(typeof(doMore) == "function"){
 				addingRow = doMore(addingRow);
-				$.each(columns, function( i, vl ) {
-					actions.putModifiedData(tab,vl.data,addingRow[vl.data],addingRow);
+				$.each(columns, function( i, cvalue ) {
+					if(addingRow[cvalue.data]!='') actions.putModifiedData(tab,cvalue.data,addingRow[cvalue.data],addingRow);
 		        });
 			}
 			
@@ -89,11 +89,12 @@ var intVal = function ( i ) {
 	};
 	actions.createdFirstCellColumn  = function (td, cellData, rowData, row, col) {
 		$(td).css('z-index','1');
+		var otable =$(this).DataTable();
 		var table =$(this).dataTable();
 		var tableId = table.attr('id');
 	    var splits = tableId.split("_");
    		var tab = splits[1];
- 		createdFirstCellColumnByTable(table,rowData,td,tab);
+   		actions.createdFirstCellColumnByTable(otable,rowData,td,tab);
     };
     
     actions['initDeleteObject']  = function (tab,id, rowData) {
@@ -129,53 +130,7 @@ var intVal = function ( i ) {
 				});
 			}
 		}
-		createdFirstCellColumnByTable(table,rowData,td,tab);
-	}
-
-	function createdFirstCellColumnByTable(table,rowData,td,tab){
-		var id = rowData['DT_RowId'];
-		var isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
-
-		var deleteFunction = function(){
-			var r = table.fnGetPosition(td)[0];
-		    var rowData = table.api().data()[ r];
-   			var recordData = actions.deleteData;
-	   		if (!(tab in recordData)) {
-	    		recordData[tab] = [];
-	    	}
-	    	//remove in postdata
-        	var eData = recordData[tab];
-        	if(isAdding) {
-		    	var editedData = actions.editedData[tab];
-		    	if(editedData!=null){
-		        		var result = $.grep(editedData, function(e){ 
-		               	 return e[actions.type.keyField] == rowData[actions.type.keyField];
-		                });
-				    if (result.length > 0) {
-	//					    	result[0]['deleted'] = true;
-				    	editedData.splice( $.inArray(result[0], editedData), 1 );
-				    }
-		    	}
-		   	}
-        	else{
-        		deleteObject = actions.initDeleteObject(tab,id,rowData);
-		    	eData.push(deleteObject);
-        	}
-	        	//remove on table
-    		table.api().rows( r).remove().draw( false );
-		};
-		$(td).find('#delete_row_'+id).click(deleteFunction);
-		$('#delete_row_'+id).click(deleteFunction);
-
-		var editFunction = function(e){
-			e.preventDefault();
-			var r = table.fnGetPosition(td)[0];
-		    var rowData = table.api().data()[ r];
-		    editBox.editRow(id,rowData);
-		};
-//		$(td).find('#edit_row_'+id).click(editFunction);
-		table.$('#edit_row_'+id).click(editFunction);
-		if(typeof(actions.addMoreHandle) == "function")actions.addMoreHandle(table,rowData,td,tab);
+		actions.createdFirstCellColumnByTable(table,rowData,td,tab);
 	}
 
 	var renderTable = function (tab,subData,options,createdFirstCellColumnFunction) {

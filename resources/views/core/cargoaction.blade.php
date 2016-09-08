@@ -55,7 +55,6 @@
 				})
 			.appendTo("#toolbar_"+tab);
 			box.appendTo($("#toolbar_"+tab));
-				
 		 }
 	};
 

@@ -227,6 +227,7 @@ Route::post('shipblmr/load',			['uses' =>'Cargo\CargoShipblmrController@load',		
 Route::post('shipblmr/save', 			['uses' =>'Cargo\CargoShipblmrController@save',			'middleware' => 'checkRight:PD_CARGO_ACTION_BLMR']);
 Route::post('shipblmrdetail/load',		['uses' =>'Cargo\CargoShipblmrController@loadDetail',	'middleware' => 'checkRight:PD_CARGO_ACTION_BLMR']);
 Route::post('shipblmrdetail/save',		['uses' =>'Cargo\CargoShipblmrController@save',			'middleware' => 'checkRight:PD_CARGO_ACTION_BLMR']);
+Route::post('shipblmrdetail/cal',		['uses' =>'Cargo\CargoShipblmrController@cal',			'middleware' => 'checkRight:PD_CARGO_ACTION_BLMR']);
 
 Route::get('pd/contractdata',			['uses' =>'ProductDeliveryController@contractdata','middleware' => 'checkRight:PD_CONTRACT_ADMIN_DATA']);
 Route::post('contractdata/load',		['uses' =>'Contract\ContractDataController@load','middleware' => 'saveWorkspace']);

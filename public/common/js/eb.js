@@ -492,11 +492,11 @@ var actions = {
 		return function(response, newValue) {
         	rowData = actions.putModifiedData(tab,columnName,newValue,rowData,type);
         	rowData[columnName] = newValue;
-        	var table = $('#table_'+tab).dataTable();
+        	var table = $('#table_'+tab).DataTable();
         	$(td).css('color', 'red');
-			table.api().row( '#'+rowData['DT_RowId'] ).data(rowData);
-			table.api().columns().footer().draw();
-//        	table.api().draw(false);
+			table.row( '#'+rowData['DT_RowId'] ).data(rowData);
+			table.columns().footer().draw();
+//        	table.draw(false);
         	//dependence columns
         	actions.dominoColumns(columnName,newValue,tab,rowData,collection,table,td);
         	 /* var tabindex = $(this).attr('tabindex');
@@ -504,6 +504,53 @@ var actions = {
 	    };
 	},
 	extensionHandle		:	function(tab,columnName,rowData,limit,successFunction){
+	},
+	createdFirstCellColumnByTable : function(table,rowData,td,tab){
+		var id = rowData['DT_RowId'];
+		var isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
+
+		var deleteFunction = function(){
+			/*var r = table.fnGetPosition(td)[0];
+		    var rowData = table.api().data()[ r];*/
+		    var rowData = table.row('#'+id).data();
+   			var recordData = actions.deleteData;
+	   		if (!(tab in recordData)) {
+	    		recordData[tab] = [];
+	    	}
+	    	//remove in postdata
+        	var eData = recordData[tab];
+        	if(isAdding) {
+		    	var editedData = actions.editedData[tab];
+		    	if(editedData!=null){
+		        		var result = $.grep(editedData, function(e){ 
+		               	 return e[actions.type.keyField] == rowData[actions.type.keyField];
+		                });
+				    if (result.length > 0) {
+	//					    	result[0]['deleted'] = true;
+				    	editedData.splice( $.inArray(result[0], editedData), 1 );
+				    }
+		    	}
+		   	}
+        	else{
+        		deleteObject = actions.initDeleteObject(tab,id,rowData);
+		    	eData.push(deleteObject);
+        	}
+	        	//remove on table
+        	table.row('#'+id).remove().draw( false );
+		};
+//		$(td).find('#delete_row_'+id).click(deleteFunction);
+		table.$('#delete_row_'+id).click(deleteFunction);
+
+		var editFunction = function(e){
+			e.preventDefault();
+//			var r = table.fnGetPosition(td)[0];
+//		    var rowData = table.api().data()[ r];
+		    var rowData = table.row('#'+id).data();
+		    editBox.editRow(id,rowData);
+		};
+//		$(td).find('#edit_row_'+id).click(editFunction);
+		table.$('#edit_row_'+id).click(editFunction);
+		if(typeof(actions.addMoreHandle) == "function")actions.addMoreHandle(table,rowData,td,tab);
 	},
 	dominoColumnSuccess	:	function(data,dependenceColumnNames,rowData,tab){
 		$.each(dependenceColumnNames, function( i, dependence ) {

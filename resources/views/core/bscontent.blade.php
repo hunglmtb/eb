@@ -112,10 +112,13 @@ if (!isset($isAction)) $isAction =false;
 										tdata[pkey] = value[pkey];
 									}
 								}
-								row.data(tdata).draw();
+ 								row.data(tdata).draw();
+ 								var otd =  null;
 								$.each($(row.node()).find('td'), function( index, td) {
 						        	$(td).css('color', '');
+						        	otd = td;
 						        });
+								actions.createdFirstCellColumnByTable(table,tdata,otd,key);
 							}
 							else{
 								value['DT_RowId'] = actions.getExistRowId(value,key);

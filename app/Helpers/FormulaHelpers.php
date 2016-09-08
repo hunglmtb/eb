@@ -337,10 +337,12 @@ class FormulaHelpers {
     	return $result;
     }
     
+    public static function doEvalFormula($formulaId){
+    	$formula 	= Formula::find($formulaId);
+    	return 		self::evalFormula($formula);
+    }
     
-    
-    
-    public static function evalFormula($formulaRow,$occur_date,  $show_echo = false){
+    public static function evalFormula($formulaRow,$occur_date = null,  $show_echo = false){
     	if(!$formulaRow)
     	{
     		return false;
@@ -350,6 +352,8 @@ class FormulaHelpers {
     	$flow_phase = $formulaRow->FLOW_PHASE;
     	$object_id = $formulaRow->OBJECT_ID;
     	$formula = $formulaRow->FORMULA;
+    	if (!$formula) 	throw new Exception("formula $formulaRow->NAME was empty. Please set it in formula table");
+    		
     	$foVars = $formulaRow->FoVar()->get();
     
     	/* if(!$object_id)

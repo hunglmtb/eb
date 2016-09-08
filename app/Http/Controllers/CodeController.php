@@ -846,6 +846,17 @@ class CodeController extends EBController {
     				$selectData['data'] = \App\Models\Flow::where("FACILITY_ID",'=',$facility_id)->get();
     				$rs[] = $selectData;
     				break;
+	    		case 'MEASURED_ITEM' :
+	    			$selectData = ['id'=>'PdCodeMeasItem','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = \App\Models\PdCodeMeasItem::all();
+	    			$rs[] = $selectData;
+	    			break;
+    			case 'FORMULA_ID' :
+    				$selectData = ['id'=>'Formula','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = \App\Models\Formula::where("GROUP_ID",'=',7)->get();
+    				$rs[] = $selectData;
+    				break;
+    			
     		}
     		$i++;
     	}

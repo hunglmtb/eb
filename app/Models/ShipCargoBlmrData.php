@@ -6,7 +6,7 @@ use App\Models\EbBussinessModel;
 { 
 	protected $table 		= 'SHIP_CARGO_BLMR_DATA'; 
 	protected $dates 		= ['LAST_CALC_TIME'];
-	protected $fillable  	= ['BLMR_ID', 
+	protected $fillable  	= [	'BLMR_ID', 
 								'MEASURED_ITEM', 
 								'FORMULA_ID', 
 								'ITEM_VALUE', 
@@ -14,4 +14,5 @@ use App\Models\EbBussinessModel;
 								'LAST_CALC_TIME', 
 								'CALC_MESSAGE', 
 								'COMMENT'];
+	
 } 

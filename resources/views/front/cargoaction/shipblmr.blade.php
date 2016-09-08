@@ -12,37 +12,87 @@
 <script>
 	actions.loadUrl = "/shipblmr/load";
 // 	actions.saveUrl = "/shipblmr/save";
-	actions['idNameOfDetail'] = ['CONTRACT_ID_INDEX', 'ATTRIBUTE_ID_INDEX','ID'];
+	actions['idNameOfDetail'] = ['BLMR_ID', 'ID'];
 
 	actions.isDisableAddingButton	= function (tab,table) {
 		return tab=="ShipCargoBlmr";
 	};
-	
-	addingOptions.keepColumns = ['BEGIN_DATE','END_DATE','CONTRACT_TEMPLATE','CONTRACT_TYPE','CONTRACT_PERIOD','CONTRACT_EXPENDITURE'];
 
-	currentContractId = 0;
-	editBox['filterField'] = 'ATTRIBUTE_ID';
+	actions.getAddButtonHandler = actions.getDefaultAddButtonHandler;
 	
-	editBox['addAttribute'] = function(addingRow,selectRow){
-		addingRow['ATTRIBUTE_ID'] 		= selectRow.CODE;
-		addingRow['CONTRACT_ID'] 		= selectRow.NAME;
-		addingRow['ATTRIBUTE_ID_INDEX'] = selectRow.ID;
-		addingRow['CONTRACT_ID_INDEX'] 	= currentContractId;
-		addingRow['CONTRACT_ID_INDEX'] 	= currentContractId;
+	addingOptions.keepColumns = ['MEASURED_ITEM','ITEM_UOM','FORMULA_ID'];
+
+	blmr_id = 0;
+
+	actions['doMoreAddingRow'] = function(addingRow){
+		addingRow['BLMR_ID'] 		= blmr_id;
+// 		addingRow['STORAGE_ID'] 	= voyageBundle.STORAGE_ID;
 		return addingRow;
+	}
+
+	actions.renderFirsEditColumn = function ( data, type, rowData ) {
+		var id = rowData['DT_RowId'];
+		isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
+		var html = '<a id="delete_row_'+id+'" class="actionLink">&nbsp;Delete</a>';
+		if(!isAdding){
+			html += '<a id="cal_row_'+id+'" class="actionLink">&nbsp;Calculate</a>';
+		}
+		else html = '<a id="delete_row_'+id+'" class="actionLink">Delete</a>';
+		return html;
+	};
+
+	actions['addMoreHandle']  = function ( table,rowData,td,tab) {
+		var id = rowData['DT_RowId'];
+		var moreFunction = function(e){
+		    postData = {id:id};
+		    docalculate(postData);
+		};
+//		$(td).find('#cal_row_'+id).click(editFunction);
+		table.$('#cal_row_'+id).click(moreFunction);
 	};
 
 	editBox.initExtraPostData = function (id,rowData){
-									currentContractId = id;
+										blmr_id = id;
 								 		return 	{
-									 		id			: id,
-									 		templateId	: rowData.CONTRACT_TEMPLATE};
+									 			id			: id,
+									 		};
 								 	};
 
- 	actions['initDeleteObject']  = function (tab,id, rowData) {
-		 if(tab=='{{$detailTableTab}}') return {'ID':id, CONTRACT_ID : rowData.CONTRACT_ID_INDEX};
-		return {'ID':id};
-	 };
+	docalculate = function (postData){
+		showWaiting();
+	    $.ajax({
+			url: '/shipblmrdetail/cal',
+			type: "post",
+			data: postData,
+			success:function(data){
+				console.log ( "send cal  success "/* +JSON.stringify(data) */);
+// 				alert("calculate success");
+				hideWaiting();
+				actions.saveSuccess(data);
+			},
+			error: function(data) {
+				alert("ERROR "+data['responseText']);
+				console.log ( "calculate error ");
+				hideWaiting();
+			}
+		});
+ 	};
+
+ 	oAfterTable = actions.afterDataTable;
+	actions.afterDataTable = function (table,tab){
+		 oAfterTable(table,tab);
+		 if(tab='{{$detailTableTab}}'){
+			 jQuery('<button/>', {
+				    id: 'more_'+tab,
+				    title: 'Cal. all',
+				    text: 'Cal. all'
+				}).on( 'click', function(e){
+					postData = {id : blmr_id, isAll:true};
+				    docalculate(postData);
+				})
+			.appendTo("#toolbar_"+tab);
+		 }
+	};
 </script>
 @stop
 
