@@ -4,27 +4,27 @@ use App\Models\EbBussinessModel;
 
  class EquipmentDataValue extends EbBussinessModel 
 { 
-	protected $table = 'EQUIPMENT_DATA_VALUE';
-	protected $primaryKey = 'ID';
-	protected $dates = ['OCCUR_DATE'];
+	protected $table 	= 'EQUIPMENT_DATA_VALUE';
+	protected $primaryKey 	= 'ID';
+	protected $dates 		= ['OCCUR_DATE'];
 	
-	protected $fillable  = ['EQUIPMENT_ID', 
-							'OCCUR_DATE', 
-							'TEMP', 
-							'PRESS', 
-							'EQP_ONLINE_HOURS', 
-							'EQP_OFFLINE_HOURS', 
-							'OFFLINE_REASON_CODE', 
-							'EQP_NOTE', 
-							'EQP_FUEL_CONS_TYPE', 
-							'EQP_CONS_QTY', 
-							'EQP_CONS_UOM', 
-							'EQP_GHG_REL_TYPE', 
-							'EQP_GHG_CONS_QTY', 
-							'EQP_GHG_UOM', 
-							'EQP_FUEL_CONS_RATE_DAY', 
-							'BEGIN_READING_VALUE', 
-							'END_READING_VALUE'];
+	protected $fillable  	= ['EQUIPMENT_ID', 
+								'OCCUR_DATE', 
+								'TEMP', 
+								'PRESS', 
+								'EQP_ONLINE_HOURS', 
+								'EQP_OFFLINE_HOURS', 
+								'OFFLINE_REASON_CODE', 
+								'EQP_NOTE', 
+								'EQP_FUEL_CONS_TYPE', 
+								'EQP_CONS_QTY', 
+								'EQP_CONS_UOM', 
+								'EQP_GHG_REL_TYPE', 
+								'EQP_GHG_CONS_QTY', 
+								'EQP_GHG_UOM', 
+								'EQP_FUEL_CONS_RATE_DAY', 
+								'BEGIN_READING_VALUE', 
+								'END_READING_VALUE'];
 	
 	public static function getKeyColumns(&$newData,$occur_date,$postData)
 	{

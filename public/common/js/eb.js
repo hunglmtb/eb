@@ -393,7 +393,7 @@ var actions = {
 			editable['viewformat'] = configuration.picker.DATETIME_FORMAT;
 //			editable['viewformat'] = 'mm/dd/yyyy hh:ii';
 			editable['datetimepicker'] 	= 	{
-								          		weekStart: 1,
+//								          		weekStart: 1,
 								          		minuteStep :5,
 								          		showMeridian : true,
 //								          		startView:1

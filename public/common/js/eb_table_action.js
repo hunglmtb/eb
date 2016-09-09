@@ -115,7 +115,7 @@ var intVal = function ( i ) {
 					dependencetd = $('#'+DT_RowId+" ."+dependence);
 					dependencetd.editable("destroy");
 				});
-				table.api().row( '#'+DT_RowId ).data(rowData);
+				table.row( '#'+DT_RowId ).data(rowData);
 				$.ajax({
 					url: source[columnName].url,
 					type: "post",

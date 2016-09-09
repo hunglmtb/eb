@@ -46,7 +46,7 @@ var xmenu=
 							{"name":"Comments","title":"Comments","link":"/fo/comment"},
 							{"name":"Equipment","title":"Equipment","link":"/fo/equipment"},
 							{"name":"Chemical","title":"Chemical","link":"/fo/chemical"},
-							{"name":"Personel","title":"Personel","link":"/fo/personnel"},
+							{"name":"Personnel","title":"Personnel","link":"/fo/personnel"},
 						]
 					},
 				]

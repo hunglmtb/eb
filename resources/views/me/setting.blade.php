@@ -21,7 +21,7 @@ $currentSubmenu ='/me/setting';
 	<h3><font color="gray">Title:</font> {{$user->NAME}}</h3>
 	<h3><font color="gray">Email:</font> {{$user->EMAIL}}</h3>
 	<h2 style="color:#378de5">Change password</h2>
-		<table border="0">
+		<table>
 			<tr>
 			<td width="120">Old password</td>
 			<td><input type="password" name="txt_old_password" id="txt_old_password" style="width:200px"></td>
@@ -40,9 +40,11 @@ $currentSubmenu ='/me/setting';
 			</tr>
 		</table>
 	</div>
-	<div id="datetimeDiv" style="float:left;padding:10px">
-		<h2 style="color:#378de5">setting date time format</h2>
-		<table border="0">
+	<div id="datetimeDiv" style="margin:10px;">
+		<!-- 
+			<div id="datetimeDiv" style="float:left;padding:10px">
+		<h2 style="color:#378de5">setting date time format</h2>-->
+		<table>
 			<tr>
 				<td width="120">Date format</td>
 				<td><a href="#" id="dateformat">{{$configuration["sample"]["DATE_FORMAT"]}}</a></td>
@@ -53,19 +55,24 @@ $currentSubmenu ='/me/setting';
 			</tr>
 			<tr>
 				<td width="120"></td>
-				<td><input type="button" style="width:120px;margin-top:10px" value="Commit" onclick="submitDateTimeFormat()"></td>
+				<td><input type="button" style="width:120px;margin-top:10px" value="Apply" onclick="submitDateTimeFormat()"></td>
 			</tr>
 		</table>
 	</div>
 	
-	<div id="datetimeDiv" style="float:left;padding:10px">
-		<h2 style="color:#378de5">Number configuration</h2>
-		<table border="0">
+	<div id="datetimeDiv" style="margin:10px;">
+		<!-- 
+			<div id="datetimeDiv" style="float:left;padding:10px">
+		<h2 style="color:#378de5">Number configuration</h2> -->
+		<table>
 			<tr>
 				<td width="120">Decimal mark</td>
 				<td><a href="#" id="decimalMark">{{$configuration["sample"]["DECIMAL_MARK"]}}</a></td>
 				<td width="60"></td>
-				<td><input type="button" style="width:120px;margin-top:10px" value="Commit" onclick="submitDecimalMarkConfiguration()"></td>
+			</tr>
+			<tr>
+				<td width="120"></td>
+				<td><input type="button" style="width:120px;margin-top:10px" value="Apply" onclick="submitDecimalMarkConfiguration()"></td>
 			</tr>
 		</table>
 	</div>
