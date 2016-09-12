@@ -476,11 +476,11 @@ menu["operation"]=[
 		{menutext:"Personnel",desc:"",url:"/fo/personnel"}
 	];
 menu["visual"]=[
-		{menutext:"Network Model",desc:"",url:"diagram"},
-		{menutext:"Data View",desc:"",url:"dataview"},
-		{menutext:"Report",desc:"",url:"workreport"},
-		{menutext:"Advanced Graph",desc:"",url:"graph"},
-		{menutext:"Workflow",desc:"",url:"workflow"},
+		{menutext:"Network Model",desc:"",url:"/diagram"},
+		{menutext:"Data View",desc:"",url:"/dataview"},
+		{menutext:"Report",desc:"",url:"/workreport"},
+		{menutext:"Advanced Graph",desc:"",url:"/graph"},
+		{menutext:"Workflow",desc:"",url:"/workflow"},
 		{menutext:"Task Manager",desc:"",url:"/taskman/?com=task"}
 	];
 menu["allocation"]=[

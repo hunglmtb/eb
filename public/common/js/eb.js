@@ -377,12 +377,12 @@ var actions = {
 				if(configuration.number.DECIMAL_MARK=='comma') editable['tpl'] = "<input class='cellnumber' type=\"text\" pattern=\"^[-]?[0-9]+([,][0-9]{1,20})?\">";
 				else  editable['tpl'] = "<input type=\"text\" pattern=\"^[-]?[0-9]+([\.][0-9]{1,20})?\">"; 
 			}
-			if (type=='number'&&this.historyUrl) {
+			/*if (type=='number'&&this.historyUrl) {
 				
 				editable['extensionHandle'] = function() {
 												actions.extensionHandle(tab,columnName,rowData,false,successFunction,true);
 									    	  };
-			}
+			}*/
 	    	break;
 	    	
 		case "datetimepicker":
@@ -426,10 +426,25 @@ var actions = {
 		$(td).editable(editable);
     	$(td).on("shown", function(e, editable) {
     		  if(type=="timepicker") $(".table-condensed thead").css("visibility","hidden");
-    		  $(".extension-buttons").css("display","none");
+//    		  $(".extension-buttons").css("display","none");
+    		  $("#more_actions").html("");
     		  if(type=="number") {
 					$( editable.input.$input.get(0) ).closest( ".editable-container" ).css("float","right");
-					if (actions.historyUrl) $(".extension-buttons").css("display","block");
+					if (actions.historyUrl){
+//						$(".extension-buttons").css("display","block");
+						var hid ='eb_' +tab+"_"+rowData.DT_RowId+"_"+columnName;
+						if( $('#'+hid).length ){
+						}
+						else{
+							var extensionButton = $("<div class=\"extension-buttons\"><img src=\"/common/css/images/hist.png\" height=\"16\" class=\"editable-extension\"></div>");
+							extensionButton.css("display","block");
+							extensionButton.attr( 'id', hid);
+							extensionButton.click(function(e){
+								actions.extensionHandle(tab,columnName,rowData,false,successFunction,true);
+							});
+							$("#more_actions").append(extensionButton);
+						}
+					}
 					
 					var val = editable.input.$input.val();
 					if(configuration.number.DECIMAL_MARK=='comma')
@@ -439,6 +454,11 @@ var actions = {
     		  }
     		  editable.input.$input.get(0).select();
 //    		  if(type=="timepicker") $(".table-condensed th").text("");
+    	});
+    	
+    	$(td).on('hidden', function(e, reason) {
+			var hid ='eb_' +tab+"_"+rowData.DT_RowId+"_"+columnName;
+    		$("#" +hid).remove();
     	});
     	
     	$(td).on('save', function(e, params) {
@@ -649,7 +669,31 @@ var actions = {
 		 	        	}
 		 				actions.applyEditable(tab,type,td, cellData, rowData, colName,collection);
 		 			}
-		 			else if (type=='number'&&actions.historyUrl)  actions.applyLockedCellHistory(tab,type,td, cellData, rowData, colName);
+		 			else if (type=='number'&&actions.historyUrl) {
+		 				$(td).click(function(e){
+		 					var hid ='eb_' +tab+"_"+rowData.DT_RowId+"_"+columnName;
+		 					if( $('#'+hid).length ){
+		 					}
+		 					else{
+		 						$("#more_actions").html("");
+		 						var extensionButton = $("<div class=\"extension-buttons\"><img src=\"/common/css/images/hist.png\" height=\"16\" class=\"editable-extension\"></div>");
+		 						extensionButton.css("display","block");
+		 						extensionButton.attr( 'id', hid);
+		 						extensionButton.attr('tabindex',-1);
+		 						extensionButton.blur(function() {
+		 							var hid ='eb_' +tab+"_"+rowData.DT_RowId+"_"+columnName;
+		 							$("#" +hid).remove();
+//				 		    		$(td ).removeAttr( "tabindex" );
+		 						});
+		 						extensionButton.click(function(e){
+		 							actions.extensionHandle(tab,columnName,rowData,false,null,true);
+//				 		    		$("#" +hid).remove();
+		 						});
+		 						$("#more_actions").append(extensionButton);
+		 						extensionButton.focus();
+		 					}
+		 				});
+		 			}
 			    };
 		}
 		switch(type){

@@ -13,6 +13,8 @@ if (!isset($isAction)) $isAction =false;
 				@foreach($tables as $key => $table )
 					<li id="{{$key}}"><a href="#tabs-{{$key}}"><font size="2">{{$table['name']}}</font></a></li>
 		 		@endforeach
+		 		<div id="more_actions">
+		 		</div>
 			</ul>
 			<div id="tabs_contents">
 				@foreach($tables as $key => $table )
