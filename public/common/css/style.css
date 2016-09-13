@@ -91,7 +91,8 @@ input[type="button"]:focus, button:focus {
 	color: #378de5;
 	font-size: 16pt;
 	font-weight: 550;
-	margin: 5px 0px;
+	margin-top: 15px;
+	margin-bottom: 5px;
 }
 
 .ui-dialog-title {

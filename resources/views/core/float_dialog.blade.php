@@ -7,6 +7,9 @@
 		editBox = {	fields : [],
 				enableRefresh:false,
 				hidenFields : [],
+				size	: 	{	height : 350,
+								width : 900,
+							},
 				};
 
 		editBox.closeEditWindow = function(close) {
@@ -29,8 +32,8 @@
 				editId		= postData.id;
 				var dialogOptions = {
 							editId:editId,
-							height: 350,
-							width: 900,
+							height	: editBox.size.height,
+							width	: editBox.size.width,
 							position: { my: 'top', at: 'top+150' },
 							modal: true,
 							title: title,
@@ -40,7 +43,7 @@
 									    });
 								    },
 						    open: function( event, ui ) {
-						    	if (typeof(editBox.saveDetail) == "function") {
+						    	if (typeof(editBox.saveDetail) == "function"&&typeof(editBox.saveUrl) != "undefined") {
 							        	var saveBtn = editBox.getSaveButton();
 										saveBtn.insertBefore('.ui-dialog-titlebar-close').click(function(e){
 											   e.preventDefault();

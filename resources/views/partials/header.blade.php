@@ -89,7 +89,7 @@ var xmenu=
 							{"name":"Contract Data","title":"Contract Data","link":"/pd/contractdata"},
 							{"name":"Contract Calculation","title":"Contract Calculation","link":"/pd/contractcalculate"},
 							{"name":"Contract Template","title":"Contract Template","link":"/pd/contracttemplate"},
-							{"name":"Cargo Program","title":"","link":"#"},
+							{"name":"Cargo Program","title":"Cargo Program","link":"/pd/contractprogram"},
 						]
 					},
 				]

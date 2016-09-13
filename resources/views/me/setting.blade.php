@@ -15,38 +15,47 @@ $currentSubmenu ='/me/setting';
 
 @section('main')
 <div class="rootMain {{$currentSubmenu}}">
-	<div style="margin:10px;">
-	<p class="function_title">USER INFORMATION</p>	
-	<h3><font color="gray">Fullname:</font>{{$user->FIRST_NAME}} {{$user->MIDDLE_NAME}} {{$user->LAST_NAME}}</h3>
-	<h3><font color="gray">Title:</font> {{$user->NAME}}</h3>
-	<h3><font color="gray">Email:</font> {{$user->EMAIL}}</h3>
-	<h2 style="color:#378de5">Change password</h2>
+	<div style="margin-left:10px;">
 		<table>
 			<tr>
-			<td width="120">Old password</td>
-			<td><input type="password" name="txt_old_password" id="txt_old_password" style="width:200px"></td>
+				<td colspan="2"><p class="function_title">USER INFORMATION</p>	</td>
 			</tr>
 			<tr>
-			<td width="120">New password</td>
+				<td><font color="gray">Fullname</font></td>
+				<td><b>{{$user->FIRST_NAME}} {{$user->MIDDLE_NAME}} {{$user->LAST_NAME}}</b></td>
+			</tr>
+			<tr>
+				<td><font color="gray">Title</font></td>
+				<td><b>{{$user->NAME}}</b></td>
+			</tr>
+			<tr>
+				<td><font color="gray">Email</font></td>
+				<td><b>{{$user->EMAIL}}</b></td>
+			</tr>
+			<tr>
+				<td colspan="2"><p class="function_title">Change password</p></td>
+			</tr>
+			<tr>
+				<td>Old password</td>
+				<td><input type="password" name="txt_old_password" id="txt_old_password" style="width:200px"></td>
+			</tr>
+			<tr>
+			<td>New password</td>
 			<td><input type="password" name="txt_new_password" id="txt_new_password" style="width:200px"></td>
 			</tr>
 			<tr>
-			<td width="120">Confim password</td>
+			<td>Confim password</td>
 			<td><input type="password" name="txt_confirm_password" id="txt_confirm_password" style="width:200px"></td>
 			</tr>
 			<tr>
-			<td width="120"></td>
-			<td><input type="button" style="width:120px;margin-top:10px" value="Submit" onclick="submit()"></td>
+			<td></td>
+			<td><input type="button" style="width:120px;margin-top:5px" value="Apply" onclick="submit()"></td>
 			</tr>
-		</table>
-	</div>
-	<div id="datetimeDiv" style="margin:10px;">
-		<!-- 
-			<div id="datetimeDiv" style="float:left;padding:10px">
-		<h2 style="color:#378de5">setting date time format</h2>-->
-		<table>
 			<tr>
-				<td width="120">Date format</td>
+				<td colspan="2"><p class="function_title">Change Date/Time Format</p></td>
+			</tr>			
+			<tr>
+				<td>Date format</td>
 				<td><a href="#" id="dateformat">{{$configuration["sample"]["DATE_FORMAT"]}}</a></td>
 			</tr>
 			<tr>
@@ -54,29 +63,25 @@ $currentSubmenu ='/me/setting';
 				<td><a href="#" id="timeformat">{{$configuration["sample"]["TIME_FORMAT"]}}</a></td>
 			</tr>
 			<tr>
-				<td width="120"></td>
-				<td><input type="button" style="width:120px;margin-top:10px" value="Apply" onclick="submitDateTimeFormat()"></td>
+				<td></td>
+				<td><input type="button" style="width:120px;margin-top:5px" value="Apply" onclick="submitDateTimeFormat()"></td>
 			</tr>
-		</table>
-	</div>
-	
-	<div id="datetimeDiv" style="margin:10px;">
-		<!-- 
-			<div id="datetimeDiv" style="float:left;padding:10px">
-		<h2 style="color:#378de5">Number configuration</h2> -->
-		<table>
+			
 			<tr>
-				<td width="120">Decimal mark</td>
+				<td colspan="2"><p class="function_title">Change Decimal Mark</p></td>
+			</tr>
+			
+			<tr>
+				<td >Decimal mark</td>
 				<td><a href="#" id="decimalMark">{{$configuration["sample"]["DECIMAL_MARK"]}}</a></td>
-				<td width="60"></td>
 			</tr>
 			<tr>
-				<td width="120"></td>
-				<td><input type="button" style="width:120px;margin-top:10px" value="Apply" onclick="submitDecimalMarkConfiguration()"></td>
+				<td></td>
+				<td><input type="button" style="width:120px;margin-top:5px" value="Apply" onclick="submitDecimalMarkConfiguration()"></td>
 			</tr>
+			
 		</table>
 	</div>
-	
 </div>
 	
 <script>

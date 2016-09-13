@@ -7,8 +7,9 @@ use Carbon\Carbon;
 class Helper {
 	public static function filter($option=null) {
 		if ($option==null) return;
-		$model='App\\Models\\'.$option['id'];
-		$collection = $option['collection'];
+		$model			='App\\Models\\'.$option['id'];
+		$collection		= array_key_exists('collection', $option)?$option['collection']:false;
+		
 		if (!$collection) {
 			if ( array_key_exists('getMethod', $option)) {
 				$getMethod = $option['getMethod'];
@@ -90,6 +91,7 @@ class Helper {
     			case 'date_end':
     			case 'f_date_from':
     			case 'f_date_to':
+    			case 'txtCargoDate':
     				$configuration = auth()->user()->getConfiguration();
     				$format = $configuration['time']['DATE_FORMAT_CARBON'];//'m/d/Y';
     				if ($value) {

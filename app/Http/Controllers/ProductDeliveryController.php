@@ -100,6 +100,14 @@ class ProductDeliveryController extends CodeController {
 		]);
 	}
 	
+	public function contractprogram() {
+		$filterGroups = array(	'productionFilterGroup'	=> [2			=> 'Storage'],
+								'dateFilterGroup'		=> array(	['id'=>'date_begin','name'=>'From date'	],
+																	['id'=>'date_end',	'name'=>'To date'	]),
+		);
+		return view ( 'front.contract.contractprogram',['filters'=>$filterGroups]);
+	}
+	
 	public function cargovoyage() {
 		$filterGroups = array(	'productionFilterGroup'	=>[2			=>'Storage'],
 				'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],

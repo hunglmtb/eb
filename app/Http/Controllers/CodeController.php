@@ -856,7 +856,17 @@ class CodeController extends EBController {
     				$selectData['data'] = \App\Models\Formula::where("GROUP_ID",'=',7)->get();
     				$rs[] = $selectData;
     				break;
-    			
+	    		case 'PROGRAM_TYPE' :
+	    			$selectData = ['id'=>'PdCodeProgramType','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = \App\Models\PdCodeProgramType::all();
+	    			$rs[] = $selectData;
+	    			break;
+    			case 'RUN_FREQUENCY' :
+    				$selectData = ['id'=>'PdCodeRunFrequency','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = \App\Models\PdCodeRunFrequency::all();
+    				$rs[] = $selectData;
+    				break;
+    				
     		}
     		$i++;
     	}

@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class PdCodeRunFrequency extends DynamicModel 
 { 
-	protected $table = 'pd_code_run_frequency'; 
+	protected $table = 'PD_CODE_RUN_FREQUENCY'; 
 } 

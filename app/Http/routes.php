@@ -246,6 +246,12 @@ Route::post('contracttemplate/save', 				'Contract\ContractTemplateController@sa
 Route::post('contracttemplateattribute/load',		['uses' =>'Contract\ContractTemplateController@loadDetail','middleware' 	=> 'saveWorkspace']);
 Route::post('contracttemplateattribute/save', 		'Contract\ContractTemplateController@save');
 
+Route::get('pd/contractprogram',			['uses' =>'ProductDeliveryController@contractprogram',		'middleware' => 'checkRight:PD_CONTRACT_ADMIN_PROG']);
+Route::post('contractprogram/load',			['uses' =>'Contract\ContractProgramController@load',		'middleware' => 'saveWorkspace']);
+Route::post('contractprogram/save', 		['uses' =>'Contract\ContractProgramController@save',		'middleware' => 'checkRight:PD_CONTRACT_ADMIN_PROG']);
+Route::post('contractprogram/open',			['uses' =>'Contract\ContractProgramController@open',		'middleware' => 'checkRight:PD_CONTRACT_ADMIN_PROG']);
+Route::post('gen_cargo_entry/calculate', 	['uses' =>'Contract\ContractProgramController@calculate']);
+
 //----------admin
 Route::get('am/users', 'AdminController@_index');
 Route::post('am/loadData', 'AdminController@getData');
