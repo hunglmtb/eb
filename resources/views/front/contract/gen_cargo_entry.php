@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- <script src="/common/js/numericInput.min.js"></script> -->
-<div style="padding:10px">
+<div style="padding:10px;float: left;">
 <b><font size="2">Cargo No. Nomenclature</font></b>
 <table cellpadding="5">
 <tr>
@@ -23,14 +23,14 @@
 <hr>
 <table id="tableInfo" cellpadding="3">
 <tr>
-	<td>Liffting Account</td>
-	<td>Priority</td>
-	<td>Quantity Type</td>
-	<td>1st Cargo Date</td>
-	<td>Avg. Qty. per Cargo</td>
-	<td>UOM</td>
-	<td>Adjust Time</td>
-	<td>Tolerance</td>
+	<td><b>Liffting Account</b></td>
+	<td><b>Priority</b></td>
+	<td><b>Quantity Type</b></td>
+	<td><b>1st Cargo Date</b></td>
+	<td><b>Avg. Qty. per Cargo</b></td>
+	<td><b>UOM</b></td>
+	<td><b>Adjust Time</b></td>
+	<td><b>Tolerance</b></td>
 </tr>
 <tr>
 	<td><?php Helper::filter(['id'=>'PdLiftingAccount']);?>
@@ -51,15 +51,25 @@
 </tr>
 </table>
 <br>
-<div>
-	Contract attribute
-	<?php Helper::filter(['id'=>'PdContractQtyFormula']);?>
-	Value
-<input type="text" style="width:100px" name="txtAttrValue" id="txtAttrValue" class="_numeric"> 
+<div style="float: left;width: 100%;" >
+	<div style="margin: auto;display: block;width: 600px;">
+		<div class="filter" style="line-height: 30px;">
+			Contract attribute
+		</div>
+		<?php Helper::filter(['id'=>'PdContractQtyFormula']);?>
+		<div class="filter" style="line-height: 30px;">
+			Value
+		</div>
+		<div class="filter" >
+			<input type="text" style="clear: both;width:100px;" name="txtAttrValue" id="txtAttrValue" class="_numeric"> 
+		</div>
+	</div>
 </div>
-<br>
-<br>
-<button onclick="gen()" style="width:200px;height:40px;">Generate Cargo Entry</button>
+
+<div style="float: left;width: 100%;" >
+	<button onclick="gen()" style="width:200px;height:40px;margin: auto;display: block;">Generate Cargo Entry</button>
+</div>
+    
 </div>
 <script>
 function calAttrValue(){
@@ -76,7 +86,10 @@ function calAttrValue(){
 			data: postData,
 			success:function(data){
 				console.log ( "send calAttrValue  success "/* +JSON.stringify(data) */);
-				$("#txtAttrValue").val(data);
+				value = ""+data;
+				if(configuration.number.DECIMAL_MARK=='comma') 
+					value = value.replace('.',',');
+				$("#txtAttrValue").val(value);
 // 				alert(JSON.stringify(data));
 				hideWaiting();
 			},
@@ -120,7 +133,7 @@ function gen(){
 		$("#txtQty").focus();
 		return;
 	}
-	var qty=parseInt($("#txtAttrValue").val());
+	var qty=parseInt($("#txtAttrValue").val().replace(',','.'));
 	if(!(qty>0)){
 		alert("Please input quantity");
 		$("#txtAttrValue").focus();
@@ -135,33 +148,35 @@ function gen(){
 		if(!confirm("Do you want to create cargo entries?"))
 			return;
 	}
-	postRequest( 
-	             "gen_cargo_entry.php?act=gen",
-	             {
-					 code1st:$("#txt_1stcode").val(),
-					 year1:$("#txt_year1").val(),
-					 code2nd:$("#txt_2ndcode").val(),
-					 year:$("#txt_year").val(),
-					 month:$("#txt_day").val(),
-					 day:$("#txt_month").val(),
-					 seq:$("#txt_seqno").val(),
-					 liftacc:$("#PdLiftingAccount").val(),
-					 priority:$("#PdCodeCargoPriority").val(),
-					 qtytype:$("#PdCodeCargoQtyType").val(),
-					 date1st:$("#txtCargoDate").val(),
-					 avgqty:$("#txtQty").val().replace(',','.'),
-					 uom:$("#PdCodeMeasUom").val(),
-					 adjtime:$("#PdCodeTimeAdj").val(),
-					 tolerance:$("#PdCodeQtyAdj").val(),
-					 contract_id:'<?php echo $contract_id;?>',
-					 storage_id:'<?php echo $storage_id;?>',
-					 qty:$("#txtAttrValue").val().replace(',','.')
-				 },
-	             function(data) {
-					 _alert(data);
-	             }
-	          );
-	
+
+	sendAjax('/gen_cargo_entry/gen',
+			{
+				 code1st		:$("#txt_1stcode").val(),
+				 year1		:$("#txt_year1").val(),
+				 code2nd		:$("#txt_2ndcode").val(),
+				 year		:$("#txt_year").val(),
+				 month		:$("#txt_day").val(),
+				 day		:$("#txt_month").val(),
+				 seq		:$("#txt_seqno").val(),
+				 PdLiftingAccount		:$("#PdLiftingAccount").val(),
+				 PdCodeCargoPriority		:$("#PdCodeCargoPriority").val(),
+				 PdCodeCargoQtyType		:$("#PdCodeCargoQtyType").val(),
+				 date1st		:$("#txtCargoDate").val(),
+				 avgqty		:$("#txtQty").val().replace(',','.'),
+				 PdCodeMeasUom		:$("#PdCodeMeasUom").val(),
+				 PdCodeTimeAdj		:$("#PdCodeTimeAdj").val(),
+				 PdCodeQtyAdj						:$("#PdCodeQtyAdj").val(),
+				 contract_id			:'<?php echo $contract_id;?>',
+				 PdContractQtyFormula	:'<?php echo $storage_id;?>',
+				 qty		:$("#txtAttrValue").val().replace(',','.')
+			 },
+		     function(data) {
+				 _alert(data);
+		     },
+		     function(data) {
+				 _alert("generate unsuccessfully");
+		     }
+     );
 }
 
 if(configuration.number.DECIMAL_MARK=='comma') 

@@ -251,6 +251,7 @@ Route::post('contractprogram/load',			['uses' =>'Contract\ContractProgramControl
 Route::post('contractprogram/save', 		['uses' =>'Contract\ContractProgramController@save',		'middleware' => 'checkRight:PD_CONTRACT_ADMIN_PROG']);
 Route::post('contractprogram/open',			['uses' =>'Contract\ContractProgramController@open',		'middleware' => 'checkRight:PD_CONTRACT_ADMIN_PROG']);
 Route::post('gen_cargo_entry/calculate', 	['uses' =>'Contract\ContractProgramController@calculate']);
+Route::post('gen_cargo_entry/gen', 			['uses' =>'Contract\ContractProgramController@gen',			'middleware' => 'checkRight:PD_CONTRACT_ADMIN_PROG']);
 
 //----------admin
 Route::get('am/users', 'AdminController@_index');

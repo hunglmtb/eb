@@ -65,7 +65,7 @@ function postRequest(target,variables,completedFunc,container)
     $.post(target,variables,function(data){hideWaiting();completedFunc(data);});
 }
 
-function sendAjax(url,param, func)
+function sendAjax(url,param, func,error)
 {
     return $.ajax({
   		beforeSend: function(){
@@ -80,8 +80,9 @@ function sendAjax(url,param, func)
     		func(_data);
 		},
 		error: function(_data){
-    		hideWaiting(); 
-    		alert(_data + 'error');
+    		hideWaiting();
+    		if(typeof(error) == "function") func(error);
+    		else alert(_data + 'error');
 		}
 	});    
 }
