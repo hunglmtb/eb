@@ -49,10 +49,6 @@
 
 	editBox.editGroupSuccess = function(data,id){
 		var detailTab 	= '{{$detailTableTab}}';
-		/* options = editBox.getEditTableOption(tab);
-		subData = data[tab];
-		etbl = renderTable(tab,subData,options,actions.createdFirstCellColumn);
-		if(etbl!=null) actions.afterDataTable(etbl,tab); */
 		$("#"+detailTab).html(data);
 	}
 

@@ -3,7 +3,9 @@ if (!isset($filters['extra'])) {
 	$filters['extra'] = [];
 }
 
-$enableButton = isset($filterGroups['enableButton'])?$filterGroups['enableButton']:true;
+// die("keke");
+$enableButton 		= isset($filterGroups['enableButton'])?	$filterGroups['enableButton']	:true;
+$enableSaveButton 	= isset($filters['enableSaveButton'])?	$filters['enableSaveButton']	:true;
 
 if (array_key_exists('productionFilterGroup', $filters)) {
 	$mapping = ['LoProductionUnit'		=> 	array('filterName'	=>'Production Unit',
@@ -72,7 +74,7 @@ $( document ).ready(function() {
 	@endforeach
 	@if($enableButton)
 		<div class="action_filter">
-			@if(!auth()->user()->hasRight('DATA_READONLY'))
+			@if(!auth()->user()->hasRight('DATA_READONLY')&&$enableSaveButton)
 				<input type="button" value="Save" name="B3" id = "buttonSave" onClick="actions.doSave(true)" style="width: 85px;foat:left; height: 26px">
 			@endif
 			<input type="button" value="Load data" id="buttonLoadData" name="B33"

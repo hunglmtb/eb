@@ -127,7 +127,7 @@ var xmenu=
 						[
 							{"name":"Demurrage/EBO","title":"Demurrage/EBO","link":"/demurrageebo"},
 							{"name":"Cargo Documents","title":"Cargo Documents","link":"/cargodocuments"},
-							{"name":"Cargo Status","title":"Cargo Status","link":"#"},
+							{"name":"Cargo Status","title":"Cargo Status","link":"/pd/cargostatus"},
 						]
 					},
 				]

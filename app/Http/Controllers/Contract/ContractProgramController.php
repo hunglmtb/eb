@@ -125,33 +125,6 @@ class ContractProgramController extends CodeController {
 		    				"CONTRACT_ID"   => $contract_id,
 		    		]);
 		    		
-		    		/* $sql="delete from pd_cargo where code='$code'";
-		    		mysql_query($sql) or die("fail: ".$sql."-> error:".mysql_error());
-		    	
-		    		$sql="insert into pd_cargo
-		    		"CODE" 
-		    		"NAME" 
-		    		"LIFTING_ACCT"
-		    		"STORAGE_ID" 
-		    		"REQUEST_DATE" 
-		    		"REQUEST_QTY" 
-		    		"REQUEST_UOM" 
-		    		"PRIORITY" 
-		    		"QUANTITY_TYPE" 
-		    		"CONTRACT_ID"
-		    				) 
-		    		values
-		    		('$code',
-		    		'$code',
-		    		'$liftacc',
-		    		'$storage_id',
-		    		DATE_ADD('".toDateString($date1st)."',INTERVAL $dateadd MONTH),
-		    		'$avgqty',
-		    		$uom,
-		    		$priority,
-		    		$qtytype,
-		    		$contract_id)"; */
-		    		
 		    		$num++;
 		    		$requestDate = $requestDate->addMonths(6);
 		    		if($exit) break;

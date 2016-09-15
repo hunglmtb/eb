@@ -231,8 +231,8 @@ class CodeController extends EBController {
     	if ($firstProperty) {
 	    	$properties->prepend($firstProperty);
     	}
-    	$uoms = $this->getUoms($properties,$facility_id,$dcTable);
     	$locked = $this->isLocked($dcTable,$occur_date,$facility_id);
+    	$uoms = $this->getUoms($properties,$facility_id,$dcTable,$locked);
     	
     	$results = ['properties'	=>$properties,
 	    			'uoms'			=>$uoms,
@@ -503,7 +503,7 @@ class CodeController extends EBController {
 	}
 	
     
-    public function getUoms($properties = null,$facility_id,$dcTable=null)
+    public function getUoms($properties = null,$facility_id,$dcTable=null,$locked = false)
     {
     	$uoms = [];
     	$model = null;
@@ -622,7 +622,7 @@ class CodeController extends EBController {
     			case 'CARRIER_ID' :
     			case 'PD_TRANSIT_CARRIER_ID' :
     			case 'CONNECTING_CARRIER' :
-    				if ($dcTable==\App\Models\PdCargoNomination::getTableName()) break;
+    				if ($dcTable==\App\Models\PdCargoNomination::getTableName()&&!$locked) break;
     				$selectData = ['id'=>'PdTransitCarrier','targets'=>$i,'COLUMN_NAME'=>$columnName];
     				if ($dcTable==\App\Models\RunTicketFdcValue::getTableName()
     						||$dcTable==\App\Models\RunTicketValue::getTableName()) 

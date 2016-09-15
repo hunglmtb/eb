@@ -16,8 +16,10 @@ class CargoEntryController extends CodeController {
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	
-    	$date_end 		= $postData['date_end'];
-    	$date_end 		= \Helper::parseDate($date_end);
+    	$date_end 		= array_key_exists('date_end',  $postData)?$postData['date_end']:null;
+    	if ($date_end) {
+	    	$date_end 		= \Helper::parseDate($date_end);
+    	}
     	
     	$mdlName = $postData[config("constants.tabTable")];
     	$mdl = "App\Models\\$mdlName";
@@ -26,21 +28,23 @@ class CargoEntryController extends CodeController {
     	$pdCargoNomination = PdCargoNomination::getTableName();
     	 
 //     	\DB::enableQueryLog();
-    	$dataSet = $mdl::join($storage,"$dcTable.STORAGE_ID", '=', "$storage.ID")
+    	$query 	= $mdl::join($storage,"$dcTable.STORAGE_ID", '=', "$storage.ID")
     					->leftJoin($pdCargoNomination,"$pdCargoNomination.CARGO_ID", '=', "$dcTable.ID")
     					->where(["$storage.FACILITY_ID" => $facility_id])
-    					->whereDate("$dcTable.REQUEST_DATE",'<=',$date_end)
-    					->whereDate("$dcTable.REQUEST_DATE",'>=',$occur_date)
+//     					->whereDate("$dcTable.REQUEST_DATE",'<=',$date_end)
+//     					->whereDate("$dcTable.REQUEST_DATE",'>=',$occur_date)
 				    	->select(
 				    			"$dcTable.ID as $dcTable",
 				    			"$dcTable.ID as DT_RowId",
 				    			"$pdCargoNomination.ID as IS_NOMINATED",
-				    			"$dcTable.*") 
+				    			"$dcTable.*");
 //   		    			->orderBy('EFFECTIVE_DATE')
-  		    			->get();
+//   		    			->get();
+  		if ($date_end) 		$query->whereDate("$dcTable.REQUEST_DATE",'<=',$date_end);
+  		if ($occur_date) 	$query->whereDate("$dcTable.REQUEST_DATE",'>=',$occur_date);
+  		$dataSet = $query->get();
 //  		\Log::info(\DB::getQueryLog());
- 		    			
-    	return ['dataSet'=>$dataSet,
+  		return ['dataSet'=>$dataSet,
 //     			'objectIds'=>$objectIds
     	];
     }
