@@ -31,8 +31,6 @@ class CargoEntryController extends CodeController {
     	$query 	= $mdl::join($storage,"$dcTable.STORAGE_ID", '=', "$storage.ID")
     					->leftJoin($pdCargoNomination,"$pdCargoNomination.CARGO_ID", '=', "$dcTable.ID")
     					->where(["$storage.FACILITY_ID" => $facility_id])
-//     					->whereDate("$dcTable.REQUEST_DATE",'<=',$date_end)
-//     					->whereDate("$dcTable.REQUEST_DATE",'>=',$occur_date)
 				    	->select(
 				    			"$dcTable.ID as $dcTable",
 				    			"$dcTable.ID as DT_RowId",

@@ -12,6 +12,10 @@ class CargoStatusController extends CargoEntryController {
 		return  ['data'=>'ID','title'=>'','width'=>60];
 	}
 	
+	public function isLocked($dcTable,$occur_date,$facility_id){
+		return true;
+	}
+	
 	public function loadDetail(Request $request){
 		$postData 				= $request->all();
 		$id 					= $postData['id'];
@@ -31,14 +35,14 @@ class CargoStatusController extends CargoEntryController {
 		$columnModel			= $tab=="PdCargoLoad"||$tab=="PdCargoUnload"?"App\Models\TerminalTimesheetData":$detailModel;
 		$detailTable	 		= $detailModel::getTableName();
 		$columnTable	 		= $columnModel::getTableName();
-		$properties 			= $this->getOriginProperties($columnTable);
+		/* $properties 			= $this->getOriginProperties($columnTable);
 		$locked 				= true;
 		$uoms 					= $this->getUoms($properties,null,$columnTable,$locked);
 		$results 				= ['properties'		=>$properties,
 									'uoms'			=>$uoms,
 									'locked'		=>$locked
-									];
-		
+									]; */
+		$results 				= $this->getProperties($columnTable,null,null,$postData);
 		$dataSet				= [];
 		switch ($tab) {
 			case "PdCargoNomination":
