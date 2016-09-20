@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class PdDocumentSet extends DynamicModel 
 { 
-	protected $table = 'pd_document_set'; 
+	protected $table = 'PD_DOCUMENT_SET'; 
 } 

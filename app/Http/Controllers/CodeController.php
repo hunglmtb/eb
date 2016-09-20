@@ -513,7 +513,7 @@ class CodeController extends EBController {
     	$rs = [];
     	 
     	foreach($properties as $property ){
-    		$columnName = $property['data'];
+    		$columnName = is_array($property)&&array_key_exists('data', $property)?$property['data']:$property->data;
     		switch ($columnName){
     			case 'PRESS_UOM' :
     				$withs[] = 'CodePressUom';

@@ -126,7 +126,7 @@ var xmenu=
 					{"code":"","name":"Cargo Management","title":"","link":"/home/pd","menus":
 						[
 							{"name":"Demurrage/EBO","title":"Demurrage/EBO","link":"/demurrageebo"},
-							{"name":"Cargo Documents","title":"Cargo Documents","link":"/cargodocuments"},
+							{"name":"Cargo Documents","title":"Cargo Documents","link":"/pd/cargodocuments"},
 							{"name":"Cargo Status","title":"Cargo Status","link":"/pd/cargostatus"},
 						]
 					},

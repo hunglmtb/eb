@@ -399,3 +399,6 @@ table.dataTable thead .sorting_desc {
     /* bottom: 4px; */
     z-index: -1;
 }
+.withAuto{
+	width: auto;
+}

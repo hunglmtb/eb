@@ -253,6 +253,13 @@ Route::post('contractprogram/open',			['uses' =>'Contract\ContractProgramControl
 Route::post('gen_cargo_entry/calculate', 	['uses' =>'Contract\ContractProgramController@calculate']);
 Route::post('gen_cargo_entry/gen', 			['uses' =>'Contract\ContractProgramController@gen',			'middleware' => 'checkRight:PD_CONTRACT_ADMIN_PROG']);
 
+
+Route::get('pd/cargodocuments',			['uses' =>'ProductDeliveryController@cargodocuments',	'middleware' => 'checkRight:PD_CARGO_MAN_DOC']);
+Route::post('cargodocuments/load',		['uses' =>'Cargo\CargoDocumentsController@load',		'middleware' => 'saveWorkspace']);
+Route::post('documentset/load', 		['uses' =>'Cargo\CargoDocumentsController@loadDetail',	'middleware' => 'checkRight:PD_CARGO_MAN_DOC']);
+Route::post('documentset/save', 		['uses' =>'Cargo\CargoDocumentsController@save',		'middleware' => 'checkRight:PD_CARGO_MAN_DOC']);
+Route::post('documentset/activities', 	['uses' =>'Cargo\CargoDocumentsController@activities',	'middleware' => 'checkRight:PD_CARGO_MAN_DOC']);
+
 Route::get('pd/cargostatus',			['uses' =>'ProductDeliveryController@cargostatus',	'middleware' => 'checkRight:PD_CARGO_MAN_STATUS']);
 Route::post('cargostatus/load',			['uses' =>'Cargo\CargoStatusController@load',		'middleware' => 'saveWorkspace']);
 Route::post('cargostatus/detail', 		['uses' =>'Cargo\CargoStatusController@loadDetail',	'middleware' => 'checkRight:PD_CARGO_MAN_STATUS']);
@@ -427,7 +434,3 @@ Route::get('demurrageebo',			['uses' =>'ProductDeliveryController@demurrageebo',
 Route::post('demurragreebo/load',	['uses' =>'Cargo\DemurrageeboController@load','middleware' => 'saveWorkspace']);
 Route::post('demurragreebo/save', 		'Cargo\DemurrageeboController@saveDemurrage');
 Route::post('demurragreebo/loadsrc', 		'Cargo\DemurrageeboController@loadsrc');
-
-Route::get('cargodocuments',		['uses' =>'ProductDeliveryController@cargodocuments','middleware' => 'checkRight:PD_CARGO_MAN_DOC']);
-Route::post('cargodocuments/load',	['uses' =>'Cargo\CargoDocumentsController@load','middleware' => 'saveWorkspace']);
-

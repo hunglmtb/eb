@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class PdCodeNumber extends DynamicModel 
 { 
-	protected $table = 'pd_code_number'; 
+	protected $table = 'PD_CODE_NUMBER'; 
 } 

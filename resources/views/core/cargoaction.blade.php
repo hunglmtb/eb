@@ -1,5 +1,5 @@
 <?php
-	$detailTableTab = 'TerminalTimesheetData';
+	$detailTableTab = isset($detailTableTab)?$detailTableTab:'TerminalTimesheetData';
 	$attributeTableTab = 'PdCodeLoadActivity';
 	$isAction = true;
 ?>
@@ -19,7 +19,7 @@
 	editBox['filterField'] = 'ACTIVITY_ID';
 	
 	editBox['addAttribute'] = function(addingRow,selectRow){
-		addingRow['ACTIVITY_ID'] 		= selectRow.CODE;
+		addingRow[editBox['filterField']] 		= selectRow.CODE;
 		addingRow['PARENT_ID'] 			= parentId;
 		addingRow['IS_LOAD'] 			= {{$isLoad}};
 		return addingRow;
@@ -58,26 +58,31 @@
 		 }
 	};
 
+	editBox['renderGotData'] = function(tab,data){
+		return data;
+	};
+
 	function setActivitySet(id){
 		currentBox.hide("slide", { direction: "down" }, 100);
 		showWaiting();
 	    $.ajax({
-			url: '/timesheet/activities',
+			url: editBox.activitiesUrl,
 			type: "post",
 			data: {id:id},
 			success:function(data){
-				hideWaiting( "send  timesheet/activities success ");
-				console.log ( "send  timesheet/activities success ");
-				updatedData = data.updatedData['{{$detailTableTab}}'];
-				otable = $('#table_{{$detailTableTab}}').DataTable();
-				tableData =  otable.data();
-				filterData = [];
+				hideWaiting();
+				console.log ( "send  "+editBox.activitiesUrl+" success ");
+				var updatedData = data.updatedData['{{$detailTableTab}}'];
+				var otable = $('#table_{{$detailTableTab}}').DataTable();
+				var tableData =  otable.data();
+				var filterData = [];
+				var unionData = [];
 				$.each(updatedData, function( index, value ) {
 					filters = $.grep(tableData,function(element,index) {
-					  	return element['ACTIVITY_ID']==value.ACTIVITY_ID;
+					  	return element[editBox['filterField'] ]==value[editBox['filterField']];
 					});
 					
-					if(filters.length<=0){
+					if(filters.length<=0||(typeof filters[0]['DT_RowId']=="string"&& filters[0]['DT_RowId'].startsWith("NEW_RECORD_DT_RowId_"))){
 						value['PARENT_ID'] 			= parentId;
 						value['START_TIME'] 		= '';
 						value['END_TIME'] 			= '';
@@ -86,19 +91,19 @@
 						value['DT_RowId'] 			= 'NEW_RECORD_DT_RowId_'+(index++);
 						value['ID'] 				= value['DT_RowId'];
 						filterData.push(value);
+						unionData.push(value['DT_RowId'] );
 					}
 	            });
 				data.updatedData['{{$detailTableTab}}'] = filterData;
 				actions.saveSuccess(data);
-
-				$.each(filterData, function( index, rowData ) {
-					$('#'+rowData['DT_RowId']).effect("highlight", {}, 5000);
+				$.each(unionData, function( index, DT_RowId ) {
+					$('#'+DT_RowId).effect("highlight", {}, 5000);
 	            });
 	            
 			},
 			error: function(data) {
 				hideWaiting();
-				console.log ( "timesheet/activities error: ");
+				console.log ( "send  "+editBox.activitiesUrl+" error ");
 			}
 		});
 
@@ -122,7 +127,9 @@
 @parent
 <script>
 // 	editBox.loadUrl = "/timesheet/load";
-	editBox.saveUrl = '/timesheet/save';
+	editBox.saveUrl 		= '/timesheet/save';
+	editBox.activitiesUrl 	= '/timesheet/activities';
+	
 </script>
 @stop
 @section('floatMoreBox')

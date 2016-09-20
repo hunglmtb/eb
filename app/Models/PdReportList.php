@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class PdReportList extends DynamicModel 
 { 
-	protected $table = 'pd_report_list'; 
+	protected $table = 'PD_REPORT_LIST'; 
 } 

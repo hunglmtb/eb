@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use App\Models\PdCodeContractAttribute;
 use App\Models\PdCodeLoadActivity;
 use App\Models\TerminalActivitySet;
+use App\Models\PdDocumentSet;
+use App\Models\PdReportList;
 
 class ProductDeliveryController extends CodeController {
 	
@@ -52,10 +54,17 @@ class ProductDeliveryController extends CodeController {
 	
 	public function cargodocuments() {
 		$filterGroups = array(	'productionFilterGroup'	=>[2			=>'Storage'],
-				'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
-						['id'=>'date_end','name'=>'To date']),
+								'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
+																['id'=>'date_end','name'=>'To date']),
 		);
-		return view ( 'front.cargoadmin.cargodocuments',['filters'=>$filterGroups]);
+		
+		$contractAttributes = PdReportList::orderBy('ORDER')->get();
+		$activities = PdDocumentSet::select(['ID as SET_ID','NAME as SET_NAME'])->get();
+		return view ( 	'front.cargomanagement.cargodocuments',
+						['filters'			=> $filterGroups,
+ 						'contractAttributes'=> $contractAttributes,
+						'activities'		=> $activities,
+		]);
 	}
 	
 	public function contractdata() {

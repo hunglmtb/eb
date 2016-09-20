@@ -106,7 +106,7 @@
 				</tr>
 				<tr>
 					<td valign='top'>
-						<div id="table_{{$table['name']}}_containerdiv" style='height:100%;overflow:visible'>
+						<div id="table_{{$table['name']}}_containerdiv" style='height:100%;overflow: hidden;'>
 							<table id="table_{{$table['name']}}" class="fixedtable nowrap display">
 							</table>
 						</div>

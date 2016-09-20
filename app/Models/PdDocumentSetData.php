@@ -1,8 +1,14 @@
 <?php 
 namespace App\Models; 
-use App\Models\DynamicModel; 
+use App\Models\EbBussinessModel; 
 
- class PdDocumentSetData extends DynamicModel 
+ class PdDocumentSetData extends EbBussinessModel 
 { 
-	protected $table = 'pd_document_set_data'; 
+	protected $table = 'PD_DOCUMENT_SET_DATA'; 
+	
+	public function PdDocumentSetContactData()
+	{
+		return $this->hasMany('App\Models\PdDocumentSetContactData', "DOCUMENT_SET_DATA_ID", "ID");
+		
+	}
 } 
