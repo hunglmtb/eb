@@ -119,6 +119,8 @@ class EbBussinessModel extends DynamicModel {
 		$instance = null;
 		if ($values&&is_array($values)&&count($values)>0) {
 			$instance = static::firstOrNew($attributes);
+			if($instance->isNotAvailable($attributes)) return null;
+					
 			$instance->isAuto = $auto;
 			$oldValues = [];
 			foreach ( $values as $column => $value ) {
@@ -135,6 +137,10 @@ class EbBussinessModel extends DynamicModel {
 	
 	public static function calculateBeforeUpdateOrCreate(array &$attributes, array $values = []){
 		return $values;
+	}
+	
+	public function isNotAvailable($attributes){
+		return false;
 	}
 	
 	public static function updateWithFormularedValues($values,$object_id,$occur_date,$flow_phase) {

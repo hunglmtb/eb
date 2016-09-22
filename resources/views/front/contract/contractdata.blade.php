@@ -40,7 +40,7 @@
  	actions['initDeleteObject']  = function (tab,id, rowData) {
 		 if(tab=='{{$detailTableTab}}') return {'ID':id, CONTRACT_ID : rowData.CONTRACT_ID_INDEX};
 		return {'ID':id};
-	 };
+	};
 </script>
 @stop
 

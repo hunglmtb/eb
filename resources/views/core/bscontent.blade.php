@@ -98,7 +98,7 @@ if (!isset($isAction)) $isAction =false;
 		return shouldLoad;
 	};
 
-	actions.saveSuccess =  function(data){
+	actions.saveSuccess =  function(data,noDelete){
 		var postData = data.postData;
 		if(!jQuery.isEmptyObject(data.updatedData)){
 			for (var key in data.updatedData) {
@@ -130,14 +130,14 @@ if (!isset($isAction)) $isAction =false;
 			        });
 					actions.afterGotSavedData(data,table,key);
 				}
-				delete actions.editedData[key];
+				if(typeof(noDelete) === "undefined" || !noDelete ) delete actions.editedData[key];
 			}
 		}
 		else if(typeof(postData) !== "undefined" && (postData.hasOwnProperty('deleteData'))){
 			for (var key in postData.deleteData) {
 				table = $('#table_'+key).DataTable();
 				actions.afterGotSavedData(data,table,key);
-				delete actions.deleteData[key];
+				if(typeof(noDelete) === "undefined" || !noDelete ) delete actions.deleteData[key];
 			}
 		}
 		/* actions.editedData = {};

@@ -23,7 +23,7 @@ use App\Models\EbBussinessModel;
 	}
 	
 	public static function deleteWithConfig($mdlData) {
-		$valuesIds = array_column($mdlData, 'ID');;
+		$valuesIds = array_column($mdlData, 'ID');
 		$contractId = $mdlData[0]['CONTRACT_ID'];
 		static::where('CONTRACT_ID','=',$contractId)
 			->whereIn('ATTRIBUTE_ID', $valuesIds)->delete();

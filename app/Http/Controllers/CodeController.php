@@ -359,11 +359,12 @@ class CodeController extends EBController {
 		     			continue;
 		     		}
 		     		foreach($mdlData as $key => $newData ){
-		     			$columns = $mdl::getKeyColumns($newData,$occur_date,$postData);
- 		     			$mdlData[$key] = $newData;
-		     			$returnRecord = $mdl::updateOrCreateWithCalculating($columns, $newData);
+		     			$columns 			= $mdl::getKeyColumns($newData,$occur_date,$postData);
+		     			$originNewData		= $mdlData[$key];
+ 		     			$mdlData[$key] 		= $newData;
+		     			$returnRecord 		= $mdl::updateOrCreateWithCalculating($columns, $newData);
 		     			if ($returnRecord) {
-		     				$affectRecord = $returnRecord->updateDependRecords($occur_date,$newData,$postData);
+		     				$affectRecord 	= $returnRecord->updateDependRecords($occur_date,$originNewData,$postData);
 		     				$returnRecord->updateAudit($columns,$newData,$postData);
 			     			$ids[$mdlName][] = $returnRecord['ID'];
 			     			$resultRecords[$mdlName][] = $returnRecord;

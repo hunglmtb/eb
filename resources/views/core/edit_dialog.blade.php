@@ -3,7 +3,7 @@
 @section('editBoxParams')
 <script>
 	editBox['initSavingDetailData'] = function(editId,success) {
-		editData = {id:editId};
+		var editData = {id:editId};
 		$.each(editBox.fields, function( index, value ) {
 			editData[value] = actions.editedData[value];
    		 });
@@ -21,13 +21,13 @@
     			isEmpty= isEmpty&&(!actions.editedData.hasOwnProperty(value))&&(!actions.deleteData.hasOwnProperty(value));
        		 });
       		if(isEmpty) {
-        		alert('data is empty');
+        		alert('no change to commit');
         		return;
         	}
-    		editData = editBox.initSavingDetailData(editId);
+    		var editData = editBox.initSavingDetailData(editId);
 
     		if(!editData) {
-        		alert('data is empty');
+        		alert('no change to commit');
         		return;
         	}
         	if(editBox.notValidatedData(editId)) return;
@@ -55,7 +55,7 @@
     		});
     	}
     	else{
-    		alert('data is empty');
+    		alert('no change to commit');
     	}
     }
 </script>

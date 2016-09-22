@@ -20,11 +20,13 @@
 	
 	editBox['addAttribute'] = function(addingRow,selectRow){
 		addingRow[editBox['filterField']] 		= selectRow.CODE;
-		addingRow['PARENT_ID'] 			= parentId;
-		addingRow['IS_LOAD'] 			= {{$isLoad}};
+		addingRow['PARENT_ID'] 					= parentId;
+		addingRow['IS_LOAD'] 					= {{$isLoad}};
 		return addingRow;
 	};
 
+	editBox['addMoreActionButton'] = function(table,tab){
+	};
 	
 	editBox.initExtraPostData = function (id,rowData){
 										parentId = id;
@@ -33,8 +35,10 @@
 									 		};
 								 	};
 
-	oAfterTable = actions.afterDataTable;
+								 	
+	editBox['moreActionTitle'] 	= 'Load activity set';
 	var currentBox;
+	var oAfterTable					= actions.afterDataTable;
 	actions.afterDataTable = function (table,tab){
 		 oAfterTable(table,tab);
 		 if(tab='{{$detailTableTab}}'){
@@ -42,9 +46,9 @@
 			box = box.length>0?box:$("#box_select_activity_set").clone();
 			currentBox = box;
 			 jQuery('<button/>', {
-				    id: 'more_'+tab,
-				    title: 'Load activity set',
-				    text: 'Load activity set'
+				    id		: 'more_'+tab,
+				    title	: editBox['moreActionTitle'],
+				    text	: editBox['moreActionTitle']
 				}).on( 'click', function(e){
 					if(box.is(":visible")){
 						box.hide("slide", { direction: "down" }, 100);
@@ -55,6 +59,8 @@
 				})
 			.appendTo("#toolbar_"+tab);
 			box.appendTo($("#toolbar_"+tab));
+			
+			editBox.addMoreActionButton(table,tab);
 		 }
 	};
 
@@ -83,19 +89,16 @@
 					});
 					
 					if(filters.length<=0||(typeof filters[0]['DT_RowId']=="string"&& filters[0]['DT_RowId'].startsWith("NEW_RECORD_DT_RowId_"))){
-						value['PARENT_ID'] 			= parentId;
-						value['START_TIME'] 		= '';
-						value['END_TIME'] 			= '';
-						value['COMMENT'] 			= '';
-						value['IS_LOAD'] 			= {{$isLoad}};
-						value['DT_RowId'] 			= 'NEW_RECORD_DT_RowId_'+(index++);
-						value['ID'] 				= value['DT_RowId'];
-						filterData.push(value);
-						unionData.push(value['DT_RowId'] );
+						var pvalue = value;
+						if(typeof(editBox["putFieldsData"]) == "function"){
+							pvalue = editBox.putFieldsData(value);
+						}
+						filterData.push(pvalue);
+						unionData.push(pvalue['DT_RowId'] );
 					}
 	            });
 				data.updatedData['{{$detailTableTab}}'] = filterData;
-				actions.saveSuccess(data);
+				actions.saveSuccess(data,true);
 				$.each(unionData, function( index, DT_RowId ) {
 					$('#'+DT_RowId).effect("highlight", {}, 5000);
 	            });
@@ -118,6 +121,18 @@
 				table.row($('#'+id)).remove().draw(false);
 			}
 		});
+	}
+
+	editBox['putFieldsData'] = function(value){
+		var pvalue 					= value;
+		pvalue['PARENT_ID'] 		= parentId;
+		pvalue['START_TIME'] 		= '';
+		pvalue['END_TIME'] 			= '';
+		pvalue['COMMENT'] 			= '';
+		pvalue['IS_LOAD'] 			= {{$isLoad}};
+		pvalue['DT_RowId'] 			= 'NEW_RECORD_DT_RowId_'+(index++);
+		pvalue['ID'] 				= value['DT_RowId'];
+		return pvalue;
 	}
 								 	
 </script>

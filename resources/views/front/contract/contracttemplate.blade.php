@@ -33,12 +33,7 @@
 		 			id			: id,
 		 			tab			: 'PdCodeContractAttribute',
 		 		};
-	 	}
-
-	/* actions['initDeleteObject']  = function (tab,id, rowData) {
-		 if(tab=='{{$detailTableTab}}') return {'ID':id, CONTRACT_TEMPLATE : rowData.CONTRACT_TEMPLATE};
-		return {'ID':id};
-	 }; */
+	}
 </script>
 @stop
 

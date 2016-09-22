@@ -111,7 +111,7 @@ class CargoDocumentsController extends CodeController {
 											'=',
 											"$pdReportList.ID")
 										->where("SET_ID",'=',$set_id)
- 										->select("$pdReportList.ID as ACTIVITY_ID","$pdReportList.CODE as CODE","$pdReportList.NAME")
+ 										->select("$pdReportList.ID as ID","$pdReportList.CODE as CODE","$pdReportList.NAME")
 										->get();
 		$results = ['updatedData'	=>[$this->detailModel	=> $dataSet],
 					'postData'		=>$postData];
