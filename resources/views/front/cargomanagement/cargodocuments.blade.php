@@ -190,7 +190,7 @@
 				var suoms		= [];
 				subData['uoms'] = suoms;
 				oselects 		= subData.selects;
-				osuoms 			= subData.suoms;
+				osuoms 			= typeof(subData.suoms) !== "undefined"?subData.suoms:[];
 				
 				var selects 	= typeof(subData.selects) !== "undefined"?subData.selects['BaAddress']:[];
 				$.each(set2, function( index, entry ) {
@@ -225,7 +225,7 @@
 										'DATA_METHOD'	: 	1,
 	 									'FIELD_ORDER'	: 	index*2+4
 					});
-					var sData 				= subData.suoms[0];
+					var sData 				= osuoms[0];
 					suoms.push({	COLUMN_NAME : originColumn,
 										data 	: sData,
 										id 		: originColumn,
