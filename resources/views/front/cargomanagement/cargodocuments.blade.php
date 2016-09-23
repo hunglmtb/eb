@@ -175,22 +175,23 @@
 	};
 	
 	editBox.editGroupSuccess = function(data,id){
-		tab 	= '{{$detailTableTab}}';
-		options = editBox.getEditTableOption(tab);
-		subData = data[tab];
+		tab 			= '{{$detailTableTab}}';
+		options 		= editBox.getEditTableOption(tab);
+		subData 		= data[tab];
 		$("#table_"+tab+"_containerdiv").html("<table id=\"table_"+tab+"\" class=\"fixedtable nowrap display\">");
-		dataSet 	= subData.dataSet;
+		dataSet 		= subData.dataSet;
+		oselects 		= subData.selects;
+		osuoms 			= typeof(subData.suoms) !== "undefined"?subData.suoms:[];
+		dproperties 	= $.extend(true, [], subData.properties); 
+		
 		if(dataSet.length>0){
 			var set = dataSet[0];
 			var secondaryField = '{{$secondaryField}}';
 			var set2 = set[secondaryField];
 			if(set2.length>0){
-				dproperties 	= $.extend(true, [], subData.properties); 
 				var properties 	= subData.properties;
 				var suoms		= [];
 				subData['uoms'] = suoms;
-				oselects 		= subData.selects;
-				osuoms 			= typeof(subData.suoms) !== "undefined"?subData.suoms:[];
 				
 				var selects 	= typeof(subData.selects) !== "undefined"?subData.selects['BaAddress']:[];
 				$.each(set2, function( index, entry ) {
