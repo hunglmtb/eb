@@ -192,7 +192,7 @@
 				oselects 		= subData.selects;
 				osuoms 			= subData.suoms;
 				
-				var selects 	= subData.selects['BaAddress'];
+				var selects 	= typeof(subData.selects) !== "undefined"?subData.selects['BaAddress']:[];
 				$.each(set2, function( index, entry ) {
 					var contractId = entry.CONTACT_ID;
 					var sel = $('<select id="select_contact_'+index+'" onchange="contractOnchage(this,'+contractId+','+index+');">');
