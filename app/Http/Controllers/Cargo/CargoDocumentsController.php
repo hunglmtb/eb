@@ -65,6 +65,7 @@ class CargoDocumentsController extends CodeController {
 					->where(["$pd_cargo.STORAGE_ID"	=> $storageId])
 					->whereDate('SCHEDULE_DATE', '>=', $occur_date)
 					->whereDate('SCHEDULE_DATE', '<=', $date_end)
+					->orderBy("DT_RowId")
 					->get($column);
 		
 		return ['dataSet'=>$dataSet];

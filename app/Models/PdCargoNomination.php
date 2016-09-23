@@ -41,7 +41,7 @@ use App\Exceptions\DataInputException;
 							'DEMURRAGE_CHARGE', 
 							'PARCEL_QTY'];
 	
-	public function checkAndSave($values) {
+	public function checkAndSave(&$values) {
 		$cargo_id 			= $values['CARGO_ID'];
 		$pdCargo			= PdCargo::getTableName();
 		$pdCargoNomination 	= PdCargoNomination::getTableName();

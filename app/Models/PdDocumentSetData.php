@@ -22,6 +22,11 @@ use App\Models\EbBussinessModel;
 					]);;
 	}
 	
+	public function isNotAvailable($attributes){
+		$entry = $this->find($attributes);
+		return $entry->count()<=0;
+	}
+	
 	public static function deleteWithConfig($mdlData) {
 		$valuesIds = array_values($mdlData);
 		\App\Models\PdDocumentSetContactData::whereIn('DOCUMENT_SET_DATA_ID', $valuesIds)->delete();		
@@ -40,13 +45,18 @@ use App\Models\EbBussinessModel;
 						if (!isset($cValues[$dindex])) {
 							$cValues[$dindex] = ["DOCUMENT_SET_DATA_ID"	=> $this->ID];
 						}
-						$cValues[$dindex][$column]	= $value==" "?null:$value;
+						
+						if(($value==" ")|| empty($value)){
+	 						$cValues[$dindex][$column]	= NULL;
+						}
+						else $cValues[$dindex][$column]	= $value;
 					}
 				}
 			}
 			
 			foreach ( $cValues as $dindex => $value ) {
 				if(!isset($value['CONTACT_ID'])||$value['CONTACT_ID']<=0) unset($cValues[$dindex]);
+				if(!isset($value['DOCUMENT_SET_DATA_ID'])||$value['DOCUMENT_SET_DATA_ID']<=0) unset($cValues[$dindex]);
 			}
 			
 			if(count($cValues)) {

@@ -162,7 +162,7 @@ class EbBussinessModel extends DynamicModel {
 	public function afterSaving($postData) {
 	}
 	
-	public function checkAndSave($values) {
+	public function checkAndSave(&$values) {
 		$this->fill($values)->save();
 		return $this;
 	}

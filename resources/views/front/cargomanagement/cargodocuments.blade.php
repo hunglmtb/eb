@@ -37,35 +37,47 @@
 	editBox['filterField'] = 'CODE';
 	
 	var addContactData = function(addingRow){
+		addingRow['{{$secondaryField}}'] = [];
      	var table 	= $('#table_PdDocumentSetData').DataTable();
 		var columns = table.settings()[0].aoColumns;
 		$.each(columns, function( index, column ) {
 			var key = column.data;
 			if(key.startsWith("ORGINAL_ID")||key.startsWith("NUMBER_COPY")){
 				addingRow[key] =  " ";
+				if(key.startsWith("ORGINAL_ID")){
+			 		addingRow = pushContactEntry(addingRow);
+				}
 			}
 	   	});
 		
 		return addingRow;
 	};
 
+	var pushContactEntry =  function(entry){
+		if(typeof(entry['{{$secondaryField}}']) === "undefined") entry['{{$secondaryField}}'] = [];
+		var dtid = 'NEW_RECORD_DT_RowId_'+(index++);
+		entry['{{$secondaryField}}'].push({
+				DOCUMENT_SET_DATA_ID	: entry.ID,
+				CONTACT_ID				: 0,	
+				DT_RowId				: dtid,
+				ID						: dtid,
+				NUMBER_COPY				: null,
+				ORGINAL_ID				: null
+			});
+		return entry;
+	}
 
+		
 	var addContactHandle =  function(e){
 			var table 	= $('#table_PdDocumentSetData').DataTable();
 			var ddataSet = [];
 			$.each(table.data(), function( dIndex, dEntry ) {
-				var dtid = 'NEW_RECORD_DT_RowId_'+(index++);
-				dEntry.pd_document_set_contact_data.push({
-// 					DOCUMENT_SET_DATA_ID	:
-					CONTACT_ID				: "",	
-					DT_RowId				: dtid,
-					ID						: dtid,
-					NUMBER_COPY				: null,
-					ORGINAL_ID				: null
-					});
+				dEntry = pushContactEntry(dEntry);
 				ddataSet.push(dEntry);
 		   	});
 
+// 			var editedData = actions.editedData["PdDocumentSetContactData"];
+			
 			var ddata = {
 							PdDocumentSetData : {
 												properties 	: dproperties,
@@ -105,8 +117,12 @@
 					};
 		return {'ID':id};
 	};
-	
+
+	var dproperties;
+	var oselects;
+	var osuoms;
 	var dataSet;
+	
 	contractOnchage = function(select,originContractId,oindex){
 		var tab = "PdDocumentSetContactData";
 		var secondaryField = '{{$secondaryField}}';
@@ -127,6 +143,7 @@
 				    	eData.push(deleteObject);
 					}
 			   	});
+				dEntry["CONTACT_ID-"+oindex]	=  null;
 		   	});
 		}
 		else{
@@ -138,18 +155,25 @@
 	    	}
 
 			$.each(dataSet, function( dIndex, dEntry ) {
-				$.each(dEntry[secondaryField], function( index, value ) {
-					if(oindex==index){
-			            actions.putModifiedData(tab,'CONTACT_ID',select.value,value);
-					}
-			   	});
+				dEntry["CONTACT_ID-"+oindex]	=  select.value;
+				var isAdding = typeof( dEntry['DT_RowId']) === 'string' && dEntry.DT_RowId.indexOf('NEW_RECORD_DT_RowId') > -1;
+				if(isAdding){
+		            actions.putModifiedData("PdDocumentSetData","CONTACT_ID-"+oindex,	select.value,dEntry);
+		            actions.putModifiedData("PdDocumentSetData","ORGINAL_ID-"+oindex,	dEntry["ORGINAL_ID-"+oindex],	dEntry);
+		            actions.putModifiedData("PdDocumentSetData","NUMBER_COPY-"+oindex,	dEntry["NUMBER_COPY-"+oindex],	dEntry);
+				}
+				else{
+					$.each(dEntry[secondaryField], function( vindex, value ) {
+						if(oindex==vindex){
+				            actions.putModifiedData(tab,'CONTACT_ID',select.value,value);
+	 			            actions.putModifiedData(tab,'DOCUMENT_SET_DATA_ID',dEntry.ID,value);
+						}
+				   	});
+				}
 		   	});
 		}
 	};
 	
-	var dproperties;
-	var oselects;
-	var osuoms;
 	editBox.editGroupSuccess = function(data,id){
 		tab 	= '{{$detailTableTab}}';
 		options = editBox.getEditTableOption(tab);
@@ -221,8 +245,14 @@
 					$.each(dEntry[secondaryField], function( index, value ) {
 						var originColumn 			= "ORGINAL_ID-"+index;
 						var numberCopyColumn 		= "NUMBER_COPY-"+index;
-						dEntry[originColumn] 		= value.ORGINAL_ID;
-						dEntry[numberCopyColumn] 	= value.NUMBER_COPY;
+						dEntry[originColumn] 		= 	(typeof(dEntry[originColumn]) !== "undefined"
+														&&dEntry[originColumn] !== ""
+														&&dEntry[originColumn] !== null)?
+														dEntry[originColumn]:value.ORGINAL_ID;
+						dEntry[numberCopyColumn] 	= 	(typeof(dEntry[numberCopyColumn]) !== "undefined"
+															&&dEntry[numberCopyColumn] !== ""
+															&&dEntry[numberCopyColumn] !== null)?
+															dEntry[numberCopyColumn]:value.NUMBER_COPY;
 				   	});
 			   	});
 			}
@@ -241,7 +271,7 @@
 			
 			$.each(pdDocumentSetData, function( index, value ) {
 				if(typeof(value) !== "undefined" ){
-					var isAdding = typeof value.DT_RowId === 'string' && value.DT_RowId.indexOf('NEW_RECORD_DT_RowId') > -1;
+					var isAdding = typeof( value['DT_RowId']) === 'string' && value.DT_RowId.indexOf('NEW_RECORD_DT_RowId') > -1;
 					for (var key in value) {
 						if(key.startsWith("ORGINAL_ID")||key.startsWith("NUMBER_COPY")){
 							var parts = key.split("-");
@@ -251,6 +281,7 @@
 								if(!isAdding){
 									tab		= "PdDocumentSetContactData";
 									rowData	= getPdDocumentSetContractData(dindex,value.DT_RowId);
+									if(rowData==null) break;
 									vl		= value[key];
 								}
 								else if(key.startsWith("ORGINAL_ID")){
@@ -275,6 +306,7 @@
 		var secondaryField = '{{$secondaryField}}';
      	var table 	= $('#table_PdDocumentSetData').DataTable();
 		var rowData = table.row('#'+DT_RowId).data();
+		if(typeof(rowData) === "undefined" ) return null;
 		var entry 	= rowData[secondaryField];
 		return entry[index];
 	}
