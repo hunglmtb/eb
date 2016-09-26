@@ -20,6 +20,11 @@
 	
 	actions['idNameOfDetail'] 	= ['ID','VOYAGE_ID', 'DOCUMENT_ID','CARGO_ID','PARCEL_NO','LIFTING_ACCOUNT'];
 	actions.type.keyField 		= 'DT_RowId';
+
+// 	actions.type.saveKeyField 	= function (model){
+// 		return 'DT_RowId';
+// 	};
+	
 	editBox['moreActionTitle'] 	= 'Add report set';
 	var currentRowData;
 	editBox.initExtraPostData = function (id,rowData){
@@ -153,7 +158,10 @@
 	        		if(typeof(value) !== "undefined" && oindex==value.index) delete eData[index];
 			   	});
 	    	}
-
+	    	
+	     	/* var table 	= $('#table_PdDocumentSetData').DataTable();
+			var dtst = table.data(); */
+			
 			$.each(dataSet, function( dIndex, dEntry ) {
 				dEntry["CONTACT_ID-"+oindex]	=  select.value;
 				var isAdding = typeof( dEntry['DT_RowId']) === 'string' && dEntry.DT_RowId.indexOf('NEW_RECORD_DT_RowId') > -1;
@@ -337,13 +345,15 @@
 
 
 	editBox['putFieldsData'] = function(value){
+		var rid 						= 'NEW_RECORD_DT_RowId_'+(index++);
 		var addingRow 					= value;
-		addingRow['DT_RowId'] 			= 'NEW_RECORD_DT_RowId_'+(index++);
+		addingRow['DOCUMENT_ID'] 		= value['ID'];
+		addingRow['DT_RowId'] 			= rid;
+ 		addingRow['ID'] 				= rid;
 		addingRow['VOYAGE_ID'] 			= currentRowData.voyageId;       
 		addingRow['CARGO_ID'] 			= currentRowData.cargoId;        
 		addingRow['PARCEL_NO'] 			= currentRowData.parcelNo;       
 		addingRow['LIFTING_ACCOUNT'] 	= currentRowData.lifftingAcount; 
-		addingRow['DOCUMENT_ID'] 		= value['ID'];
 		addingRow 						= addContactData(addingRow);
 
 		var table 	= $('#table_PdDocumentSetData').DataTable();
