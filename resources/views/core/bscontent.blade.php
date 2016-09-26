@@ -128,16 +128,18 @@ if (!isset($isAction)) $isAction =false;
 							}
 						}
 			        });
-					actions.afterGotSavedData(data,table,key);
+					if(typeof(noDelete) === "undefined" || !noDelete ) actions.afterGotSavedData(data,table,key);
 				}
 				if(typeof(noDelete) === "undefined" || !noDelete ) delete actions.editedData[key];
 			}
 		}
 		else if(typeof(postData) !== "undefined" && (postData.hasOwnProperty('deleteData'))){
 			for (var key in postData.deleteData) {
-				table = $('#table_'+key).DataTable();
-				actions.afterGotSavedData(data,table,key);
-				if(typeof(noDelete) === "undefined" || !noDelete ) delete actions.deleteData[key];
+				if(typeof(noDelete) === "undefined" || !noDelete ) {
+					table = $('#table_'+key).DataTable();
+					actions.afterGotSavedData(data,table,key);
+					delete actions.deleteData[key];
+				}
 			}
 		}
 		/* actions.editedData = {};

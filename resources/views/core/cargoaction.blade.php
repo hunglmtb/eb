@@ -88,7 +88,9 @@
 					  	return element[editBox['filterField'] ]==value[editBox['filterField']];
 					});
 					
-					if(filters.length<=0||(typeof filters[0]['DT_RowId']=="string"&& filters[0]['DT_RowId'].startsWith("NEW_RECORD_DT_RowId_"))){
+					if(filters.length<=0
+// 							||(typeof filters[0]['DT_RowId']=="string"&& filters[0]['DT_RowId'].startsWith("NEW_RECORD_DT_RowId_"))
+							){
 						var pvalue = value;
 						if(typeof(editBox["putFieldsData"]) == "function"){
 							pvalue = editBox.putFieldsData(value);
