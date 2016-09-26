@@ -218,7 +218,7 @@ var xmenu=
 					{"code":"","name":"System Configuration","title":"","link":"/home/sc","menus":
 						[
 							{"name":"Fields Config","title":"Fields Config","link":"/fieldsconfig"},
-							{"name":"Table Data","title":"Table Data","link":"#"},
+							{"name":"Table Data","title":"Table Data","link":"/tabledata/index.php"},
 							{"name":"Tags Mapping","title":"TAG MAPPING CONFIG","link":"/tagsMapping"},
 							{"name":"View Config","title":"View Config","link":"/viewconfig"},
 							{"name":"Formula Editor","title":"Formula Editor","link":"/formula"},
