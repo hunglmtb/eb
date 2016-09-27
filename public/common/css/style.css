@@ -402,3 +402,15 @@ table.dataTable thead .sorting_desc {
 .withAuto{
 	width: auto;
 }
+#table_PdCargo .n_qty,#table_PdCargo .b_qty {
+	background-clip: content-box;
+    background-color: #ffbbbb;
+}
+#table_PdCargo .flow_qty{
+	background-clip: content-box;
+    background-color: #bbffbb;
+}	
+#table_PdCargo .cal_qty {
+	background-clip: content-box;
+    background-color: #ffff88;
+}	

@@ -16,6 +16,12 @@ var enableSelect = function(dependentIds, value) {
 
 var registerOnChange = function(id, dependentIds,more) {
 	$('#'+id).change(function(e){
+		var ccontinue = false;
+		$.each(dependentIds, function( dindex, dvalue ) {
+			ccontinue = ccontinue|| $("#"+dvalue).is(":visible");
+		});
+		if(!ccontinue) return;
+		
 		enableSelect(dependentIds,'disabled');
 		bundle = {};
 		if (more!=null&&more.length>0) {

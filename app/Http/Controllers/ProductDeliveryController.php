@@ -54,6 +54,7 @@ class ProductDeliveryController extends CodeController {
 	
 	public function cargodocuments() {
 		$filterGroups = array(	'productionFilterGroup'	=>[2			=>'Storage'],
+								'enableSaveButton'		=> 	false,
 								'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
 																['id'=>'date_end','name'=>'To date']),
 		);
@@ -66,6 +67,20 @@ class ProductDeliveryController extends CodeController {
 						'activities'		=> $activities,
 		]);
 	}
+	
+	public function liftaccdailybalance() {
+		$filterGroups = array(	'productionFilterGroup'	=>	[	2			=>'Storage',
+//  																['name'=>'PdLiftingAccount',		'independent'=>false,'getMethod'=>'getPreosObjectType'],
+																'Storage'			=>'PdLiftingAccount',
+															],
+								'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
+																['id'=>'date_end','name'=>'To date']),
+								'enableSaveButton'		=> 	false,
+//  								'extra' 				=> 	['Storage'],
+		);
+		return view ( 'front.cargomonitoring.liftaccdailybalance',['filters'=>$filterGroups]);
+	}
+	
 	
 	public function contractdata() {
 		$filterGroups = array(	'productionFilterGroup'	=>[2			=>'Storage'],

@@ -75,7 +75,8 @@ return [
 										'EnergyUnit'			=>	array('filterName'	=>'Energy Unit',
 																		'name'			=>'EnergyUnit'),
 										'Storage'				=>	array('filterName'	=>'Storage',
-																		'name'			=>'Storage'),
+																		'name'			=>'Storage',
+																		'dependences'	=>['PdLiftingAccount']),
 										'IntObjectType'			=>	array('filterName'	=>'Object Type',
 																		'name'			=>'IntObjectType',
 																		'dependences'	=>['ObjectName'],
@@ -135,6 +136,11 @@ return [
 										'CodeInjectPoint'		=>	array('filterName'	=>'Object Type',
 																		'name'			=>'CodeInjectPoint',
 																		'id'			=>'CodeInjectPoint'),
+										'PdLiftingAccount'		=>	array('filterName'	=>'	Lifting Acct',
+																		'name'			=>'PdLiftingAccount',
+										),
+				
+				
 										/* 'PdContract'			=>	array('filterName'	=>'Contract',
 																		'name'			=>'PdContract',
 																		'id'			=>'PdContract'), */
