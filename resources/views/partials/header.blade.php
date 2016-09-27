@@ -136,8 +136,8 @@ var xmenu=
 				[
 					{"code":"","name":"Cargo Monitoring","title":"","link":"/home/pd","menus":
 						[
-							{"name":"LIFTING ACCT DAILY BALANCE","title":"","link":"#"},
-							{"name":"LIFTING ACCT MONTHLY DATA","title":"","link":"#"},
+							{"name":"LIFTING ACCT DAILY BALANCE","title":"LIFTING ACCT DAILY BALANCE","link":"/pd/liftaccdailybalance"},
+							{"name":"LIFTING ACCT MONTHLY DATA","title":"LIFTING ACCT MONTHLY DATA","link":"/pd/liftaccmonthlyadjust"},
 						]
 					},
 				]

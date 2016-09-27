@@ -111,9 +111,12 @@ class ProductionGroupComposer
 					    		ProductionGroupComposer::getFilterArray('Facility',$facilities,$currentFacility)
     							];
 	    
+	    $currentObject = $currentFacility;
 	    foreach($extras as $source => $model ){
 	    	$option = $this->getExtraOptions($productionFilterGroup,$model,$source);
-	    	$rs = ProductionGroupComposer::initExtraDependence($productionFilterGroup,$model,$currentFacility,$option);
+	    	if ($option&&array_key_exists($source, $option)&&array_key_exists("object", $option[$source])) 
+	    		$currentObject = $option[$source]["object"];
+	    	$rs = ProductionGroupComposer::initExtraDependence($productionFilterGroup,$model,$currentObject,$option);
 	    	$eCollection = $rs['collection'];
 	    	$modelName = $rs['model'];
 	    	$extraFilter = ProductionGroupComposer::getCurrentSelect ( $eCollection );
@@ -133,7 +136,10 @@ class ProductionGroupComposer
 // 			$mdl = 'App\Models\\' . $mdlName;
 // 			$eCollection = $mdl::getEntries ( $currentFacility->ID );
 			return [
-					$source =>['name'=>$mdlName,'id'=>$entry->ID]
+					$source =>[	'name'		=>$mdlName,
+								'id'		=>$entry->ID,
+								'object'	=>$entry
+					]
 			];
 		}
 		return null;

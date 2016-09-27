@@ -264,6 +264,11 @@ Route::get('pd/cargostatus',			['uses' =>'ProductDeliveryController@cargostatus'
 Route::post('cargostatus/load',			['uses' =>'Cargo\CargoStatusController@load',		'middleware' => 'saveWorkspace']);
 Route::post('cargostatus/detail', 		['uses' =>'Cargo\CargoStatusController@loadDetail',	'middleware' => 'checkRight:PD_CARGO_MAN_STATUS']);
 
+
+Route::get('pd/liftaccdailybalance',			['uses' =>'ProductDeliveryController@liftaccdailybalance',	'middleware' => 'checkRight:PD_CARGO_MON_DAILY_BAL']);
+Route::post('liftaccdailybalance/load',			['uses' =>'Cargo\LiftDailyController@load',					'middleware' => 'saveWorkspace']);
+
+
 //----------admin
 Route::get('am/users', 'AdminController@_index');
 Route::post('am/loadData', 'AdminController@getData');
