@@ -12,6 +12,16 @@ LIFTING ACCT DAILY BALANCE
 @section('adaptData')
 @parent
 <script>
+	$( document ).ready(function() {
+	    console.log( "ready!" );
+	    var onChangeFunction = function() {
+	    	actions.doLoad(true);
+	    };
+	    
+	    $( "#PdLiftingAccount" ).change(onChangeFunction);
+		actions.doLoad(true);
+	});
+
 	actions.loadUrl = "/liftaccdailybalance/load";
 // 	actions.saveUrl = "/liftaccdailybalance/save";
 	actions.type = {
@@ -22,12 +32,13 @@ LIFTING ACCT DAILY BALANCE
 				},
 			};
 
-	actions.renderFirsColumn = null;
+// 	actions.renderFirsColumn = null;
 	actions.getTableOption	= function(data){
 		return {tableOption :{
-								searching	: true,
-								sort		: false,
-								drawCallback: function ( settings ) { 
+								searching			: true,
+								sort				: false,
+								disableLeftFixer	: true,
+								drawCallback: function ( settings ) {
 						            var api = this.api();
 						            var rows = api.rows( {page:'current'} ).nodes();
 						            var last=null;
@@ -37,9 +48,9 @@ LIFTING ACCT DAILY BALANCE
 						            
 						            groups.each( function ( group, i ) {
 						            	var xdate 	= moment.utc(group,configuration.time.DATETIME_FORMAT_UTC);
-							            var month 	= xdate.months();
+							            var month 	= xdate.month();
 						                if ( last !== month ) {
-								            var year 	= xdate.years();
+								            var year 	= xdate.year();
 							                var dateString = moment.monthsShort()[month]+" "+year;
 						                    $(rows).eq( i ).before(
 						                        '<tr class="group"><td colspan="8"><b>'+dateString+'</b></td></tr>'
@@ -47,6 +58,9 @@ LIFTING ACCT DAILY BALANCE
 						                    last = month;
 						                }
 						            } );
+
+							        var table = $('#table_PdCargo').DataTable();
+							        actions.addClass2Header(table);
 						        },
 							},
 				invisible:[]};

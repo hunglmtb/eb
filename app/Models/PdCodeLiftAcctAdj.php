@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class PdCodeLiftAcctAdj extends DynamicModel 
 { 
-	protected $table = 'pd_code_lift_acct_adj'; 
+	protected $table = 'PD_CODE_LIFT_ACCT_ADJ'; 
 } 

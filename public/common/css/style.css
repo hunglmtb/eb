@@ -414,3 +414,57 @@ table.dataTable thead .sorting_desc {
 	background-clip: content-box;
     background-color: #ffff88;
 }	
+
+
+table.dataTable thead .n_qty,table.dataTable thead .b_qty {
+	background-color: #ffbbbb;
+}
+
+table.dataTable thead .flow_qty {
+	background-color: #bbffbb;
+}
+table.dataTable thead .cal_qty {
+	background-color: #ffff88;
+}
+
+table.dataTable thead .BAL_VOL,table.dataTable thead .ADJUST_VOL {
+	background-color: #a8e1f0;
+}
+
+table.dataTable thead .BAL_MASS,table.dataTable thead .ADJUST_MASS {
+	background-color: #FFcc99;
+}
+
+table.dataTable thead .BAL_ENERGY,table.dataTable thead .ADJUST_ENERGY {
+	background-color: #cff4a7;
+}
+
+table.dataTable thead .BAL_POWER,table.dataTable thead .ADJUST_POWER {
+	background-color: #ffff88;
+}
+
+#table_PdLiftingAccountMthData .BAL_VOL, 
+#table_PdLiftingAccountMthData .ADJUST_VOL {
+	background-clip: content-box;
+    background-color: #a8e1f0;
+}  
+
+#table_PdLiftingAccountMthData .BAL_MASS ,
+#table_PdLiftingAccountMthData .ADJUST_MASS  {
+	background-clip: content-box;
+    background-color: #FFcc99;
+}  
+
+
+#table_PdLiftingAccountMthData .BAL_ENERGY  ,
+#table_PdLiftingAccountMthData .ADJUST_ENERGY   {
+	background-clip: content-box;
+    background-color: #cff4a7;
+}  
+
+#table_PdLiftingAccountMthData .BAL_POWER   ,
+#table_PdLiftingAccountMthData .ADJUST_POWER    {
+	background-clip: content-box;
+    background-color: #ffff88;
+}  
+

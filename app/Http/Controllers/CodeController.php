@@ -867,6 +867,12 @@ class CodeController extends EBController {
     				$selectData['data'] = \App\Models\PdCodeRunFrequency::all();
     				$rs[] = $selectData;
     				break;
+	    		case 'ADJUST_CODE' :
+	    			$selectData = ['id'=>'PdCodeLiftAcctAdj','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = \App\Models\PdCodeLiftAcctAdj::all();
+	    			$rs[] = $selectData;
+	    			break;
+    				
     				
     		}
     		$i++;

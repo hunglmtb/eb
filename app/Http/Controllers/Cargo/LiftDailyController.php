@@ -13,9 +13,12 @@ use Carbon\Carbon;
 
 class LiftDailyController extends CodeController {
     
+	/* public function getFirstProperty($dcTable){
+		return  ['data'=>$dcTable,'title'=>'','width'=> 50];
+	} */
 	public function getProperties($dcTable,$facility_id=false,$occur_date=null,$postData=null){
 		$properties = collect([
- 				(object)['data' =>	'UOM',			'title' => 'UOM',			'width'	=>	70,'INPUT_TYPE'=>2,	'DATA_METHOD'=>5,'FIELD_ORDER'=>1],
+ 				(object)['data' =>	'UOM',			'title' => 'UOM',			'width'	=>	70,'INPUT_TYPE'=>2,		'DATA_METHOD'=>5,'FIELD_ORDER'=>1],
 				(object)['data' =>	"cargo_name",	'title' => 'Cargo',			'width'	=>	130,'INPUT_TYPE'=>1,	'DATA_METHOD'=>5,'FIELD_ORDER'=>2],
 				(object)['data' =>	"xdate",		'title' => 'Date',			'width'	=>	110,'INPUT_TYPE'=>3,	'DATA_METHOD'=>5,'FIELD_ORDER'=>3],
 				(object)['data' =>	"n_qty",		'title' => 'Nominated Qty',	'width'	=>	110,'INPUT_TYPE'=>2,	'DATA_METHOD'=>5,'FIELD_ORDER'=>4],
