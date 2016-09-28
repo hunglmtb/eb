@@ -330,6 +330,19 @@ var actions = {
 	renderFirsColumn : function ( data, type, rowData ) {
 		return actions.defaultRenderFirsColumn(data, type, rowData);
 	},
+	renderDatePicker : function (editable,columnName,cellData, rowData){
+		editable['viewformat'] = configuration.picker.DATE_FORMAT;
+		return editable;
+	},
+	renderDateFormat : function (data2,type2,row){
+		if (data2.constructor.name == "Date") { 
+			return moment.utc(data2).format(configuration.time.DATE_FORMAT);
+//			return moment(data2).format("MM/DD/YYYY");
+			
+		}
+		return moment.utc(data2,configuration.time.DATETIME_FORMAT_UTC).format(configuration.time.DATE_FORMAT);
+//		return moment(data2,"YYYY-MM-DD").format("MM/DD/YYYY");
+	},
 	defaultRenderFirsColumn : function ( data, type, rowData ) {
 		var html = "<div class='firstColumn'>"+data+"</div>";
 		var extraHtml = "<div class='extraFirstColumn'>";
@@ -372,16 +385,16 @@ var actions = {
 						    	    };
     	    editable['onblur'] = 'cancel';
 			if (type=='date') {
-				editable['onblur'] = 'submit';
-				editable['format'] = configuration.picker.DATE_FORMAT_UTC;
+				editable['onblur'] 	= 'submit';
+				editable['format'] 	= configuration.picker.DATE_FORMAT_UTC;
+				editable			= actions.renderDatePicker(editable,columnName,cellData, rowData); 
 //				editable['format'] = 'mm/dd/yyyy';
-				editable['viewformat'] = configuration.picker.DATE_FORMAT;
 //				editable['viewformat'] = 'mm/dd/yyyy';
 			}
 			else if(type=='number') {
 				editable['type'] = "text";
 				if(configuration.number.DECIMAL_MARK=='comma') editable['tpl'] = "<input class='cellnumber' type=\"text\" pattern=\"^[-]?[0-9]+([,][0-9]{1,20})?\">";
-				else  editable['tpl'] = "<input type=\"text\" pattern=\"^[-]?[0-9]+([\.][0-9]{1,20})?\">"; 
+				else  editable['tpl'] = "<input  class='cellnumber' type=\"text\" pattern=\"^[-]?[0-9]+([\.][0-9]{1,20})?\">"; 
 			}
 			/*if (type=='number'&&this.historyUrl) {
 				
@@ -402,6 +415,8 @@ var actions = {
 //								          		weekStart: 1,
 								          		minuteStep :5,
 								          		showMeridian : true,
+//								          		minViewMode	:1,
+//								          		maxViewMode	:3,
 //								          		startView:1
 								            };
 	    	break;
@@ -737,13 +752,7 @@ var actions = {
 								if (data2==null||data2=='') { 
 									return "";
 								}
-								if (data2.constructor.name == "Date") { 
-									return moment.utc(data2).format(configuration.time.DATE_FORMAT);
-//									return moment(data2).format("MM/DD/YYYY");
-									
-								}
-								return moment.utc(data2,configuration.time.DATETIME_FORMAT_UTC).format(configuration.time.DATE_FORMAT);
-//								return moment(data2,"YYYY-MM-DD").format("MM/DD/YYYY");
+								return actions.renderDateFormat(data2,type2,row);
 							};
 	    	break;
 		case "datetimepicker":
@@ -867,6 +876,15 @@ var actions = {
 				invisible:[]};
 		
 	},
+	addClass2Header: function(table){
+		var columns = table.settings()[0].aoColumns;
+		$.each(columns, function( index, column ) {
+			var header = table.columns(index).header();
+        	var columnName = column.data;
+        	$(header).addClass(columnName);
+	   	});
+		
+	},
 	initTableOption : function (tab,data,options,renderFirsColumn,createdFirstCellColumn){
 		if(typeof(data.uoms) == "undefined"||data.uoms==null){
 			data.uoms = [];
@@ -979,10 +997,12 @@ var actions = {
 			                $(this).addClass('selected');
 			            }
 			        } );
+			        
+			        actions.addClass2Header(table);
 			    },
 			    language: {
 		            "info": "Showing _TOTAL_ entries",
-		        }
+		        },
 				/* initComplete: function () {
 					var cls = this.api().columns();
 		            cls.every( function () {

@@ -70,22 +70,30 @@ class ProductDeliveryController extends CodeController {
 	
 	public function liftaccdailybalance() {
 		$filterGroups = array(	'productionFilterGroup'	=>	[	2			=>'Storage',
-//  																['name'=>'PdLiftingAccount',		'independent'=>false,'getMethod'=>'getPreosObjectType'],
-																'Storage'			=>'PdLiftingAccount',
+																'Storage'	=>'PdLiftingAccount',
 															],
 								'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
 																['id'=>'date_end','name'=>'To date']),
 								'enableSaveButton'		=> 	false,
-//  								'extra' 				=> 	['Storage'],
 		);
 		return view ( 'front.cargomonitoring.liftaccdailybalance',['filters'=>$filterGroups]);
 	}
 	
+	public function liftaccmonthlyadjust() {
+		$filterGroups = array(	'productionFilterGroup'	=>	[	2			=>'Storage',
+															'Storage'		=>'PdLiftingAccount',
+															],
+								'dateFilterGroup'		=> array(['id'	=>'date_begin',	'name'=>'From date'],
+																['id'	=>'date_end',	'name'=>'To date']),
+// 								'enableSaveButton'		=> 	false,
+		);
+		return view ( 'front.cargomonitoring.liftaccmonthlyadjust',['filters'=>$filterGroups]);
+	}
 	
 	public function contractdata() {
 		$filterGroups = array(	'productionFilterGroup'	=>[2			=>'Storage'],
-				'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
-						['id'=>'date_end','name'=>'To date']),
+							'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
+																['id'=>'date_end','name'=>'To date']),
 		);
 		
 		$contractAttributes = PdCodeContractAttribute::all();
