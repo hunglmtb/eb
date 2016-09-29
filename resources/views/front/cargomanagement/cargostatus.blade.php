@@ -35,11 +35,11 @@
 
 	$( document ).ready(function() {
 	    var onChangeFunction = function() {
-	    	actions.doLoad(true);
+		    if($('#Facility option').size()>0 ) actions.doLoad(true);
 	    };
 	    
 	    $( "#Facility" ).change(onChangeFunction);
-		actions.doLoad(true);
+// 		actions.doLoad(true);
 	});
 
 	actions.loadUrl = "/cargostatus/load";

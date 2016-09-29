@@ -14,11 +14,11 @@
 	$( document ).ready(function() {
 	    console.log( "ready!" );
 	    var onChangeFunction = function() {
-	    	actions.doLoad(true);
+		    if($('#PdContract option').size()>0 ) actions.doLoad(true);
 	    };
 	    
 	    $( "#PdContract" ).change(onChangeFunction);
-    	actions.doLoad(true);
+//     	actions.doLoad(true);
 	});
 
 	actions.loadUrl = "/contractcalculate/load";

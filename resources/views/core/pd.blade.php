@@ -10,3 +10,14 @@ $subMenus = [array('title' => 'CONTRACT ADMIN', 	'link' => ''),
 ];
 ?>
 @extends('core.bscontent',['subMenus' => $subMenus])
+
+
+@section('adaptData')
+@parent
+<script>
+	$( document ).ready(function() {
+	    console.log( "ready!" );
+ 		actions.doLoad(true);
+	});
+</script>	
+@stop
