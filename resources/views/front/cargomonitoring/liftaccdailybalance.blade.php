@@ -15,11 +15,11 @@ LIFTING ACCT DAILY BALANCE
 	$( document ).ready(function() {
 	    console.log( "ready!" );
 	    var onChangeFunction = function() {
-	    	actions.doLoad(true);
+		    if($('#PdLiftingAccount option').size()>0 ) actions.doLoad(true);
 	    };
 	    
 	    $( "#PdLiftingAccount" ).change(onChangeFunction);
-		actions.doLoad(true);
+// 		actions.doLoad(true);
 	});
 
 	actions.loadUrl = "/liftaccdailybalance/load";

@@ -446,6 +446,9 @@ var actions = {
 		}	
 		$(td).editable(editable);
     	$(td).on("shown", function(e, editable) {
+    		  var val = editable.input.$input.val();
+    		  if(val.trim()=="")editable.input.$input.val('');
+    		  val = editable.input.$input.val();
     		  if(type=="timepicker") $(".table-condensed thead").css("visibility","hidden");
 //    		  $(".extension-buttons").css("display","none");
     		  $("#more_actions").html("");
@@ -467,7 +470,6 @@ var actions = {
 						}
 					}
 					
-					var val = editable.input.$input.val();
 					if(configuration.number.DECIMAL_MARK=='comma')
 						val = val.split(".").join("");
 					else val = val.split(",").join("");
@@ -721,6 +723,7 @@ var actions = {
 		case "text":
 			if(columnName=='UOM'){
 				cell["render"] = function ( data2, type2, row ) {
+					if (data2==null||data2=='') return "&nbsp";
 					var rendered = data2;
 					if(data2==null){
 						rendered = row.DEFAULT_UOM;
@@ -728,9 +731,14 @@ var actions = {
 					return rendered;
 				};
 			}
+			else cell["render"] = function ( data2, type2, row ) {
+									if (data2==null||data2=='') return "&nbsp";
+									return data2;
+								};
 	    	break;
 		case "number":
 			cell["render"] = function ( data2, type2, row ) {
+								if (data2==null||data2=='') return "&nbsp";
 								value = actions.getNumberRender(columnName,data,data2, type2, row);
 								if(value==null){
 									value = data2;
@@ -749,17 +757,13 @@ var actions = {
 	    	break;
 		case "date":
 			cell["render"] = function ( data2, type2, row ) {
-								if (data2==null||data2=='') { 
-									return "";
-								}
+								if (data2==null||data2=='') return "&nbsp";
 								return actions.renderDateFormat(data2,type2,row);
 							};
 	    	break;
 		case "datetimepicker":
 			cell["render"] = function ( data2, type2, row ) {
-								if (data2==null||data2=='') { 
-									return "";
-								}
+								if (data2==null||data2=='') return "&nbsp";
 								if (data2.constructor.name == "Date") { 
 									return moment(data2).format(configuration.time.DATETIME_FORMAT);
 //									return moment(data2).format("MM/DD/YYYY HH:mm");
@@ -770,9 +774,7 @@ var actions = {
 	    	break;
 		case "timepicker":
 			cell["render"] = function ( data2, type2, row ) {
-								if (data2==null||data2=='') { 
-									return "";
-								}
+								if (data2==null||data2=='') return "&nbsp";
 								if (data2.constructor.name == "Date") { 
 									return moment.utc(data2).format(configuration.time.TIME_FORMAT);
 //									return moment(data2).format("hh:mm A");
@@ -784,6 +786,7 @@ var actions = {
 		case "checkbox":
 //			cell["className"] = 'select-checkbox';
 			cell["render"] = function ( data2, type2, row ) {
+								if (data2==null||data2=='') return "&nbsp";
 								checked = data2?'checked':'';
 								return '<div  class="checkboxCell" ><input class="cellCheckboxInput" type="checkbox" value="'+data2+'"size="15" '+checked+'></div>';
 							};
@@ -799,6 +802,7 @@ var actions = {
 	    	break;
 		case "select":
 			cell["render"] = function ( data2, type2, row ) {
+					if (data2==null||data2=='') return "&nbsp";
  	        		collection = actions.getExtraDataSetColumn(data,cindex,row);
 		     		if(collection!=null){
 		     			var result = $.grep(collection, function(e){
