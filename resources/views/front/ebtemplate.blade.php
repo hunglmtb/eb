@@ -501,7 +501,7 @@ menu["delivery"]=[
 		{menutext:"CONTRACT ADMIN",desc:"",url:"/pd/contractdata"},
 		{menutext:"CARGO ADMIN",desc:"",url:"/pd/cargoentry"},
 		{menutext:"CARGO ACTION",desc:"",url:"/pd/cargovoyage"},
-		{menutext:"CARGO MANAGEMENT",desc:"",url:"/demurrageebo"},
+		{menutext:"CARGO MANAGEMENT",desc:"",url:"/pd/demurrageebo"},
 		{menutext:"CARGO<br>MONITORING",desc:"",url:"/pd/liftaccdailybalance"},
 //		{menutext:"VOYAGE GROUND",desc:"",url:"../pd/?func=voyageground"},
 //		{menutext:"VOYAGE PIPELINE",desc:"",url:"../pd/?func=voyagepipeline"}

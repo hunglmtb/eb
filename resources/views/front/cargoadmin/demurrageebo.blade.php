@@ -1,8 +1,8 @@
 <?php
-	$currentSubmenu ='/demurrageebo';
+	$currentSubmenu ='/pd/demurrageebo';
 	$tables = ['PdDemurageEbo'	=>['name'=>'Load']];
 	
-	$isAction = true;
+	$isAction = false;
 ?>
 
 @extends('core.pd')

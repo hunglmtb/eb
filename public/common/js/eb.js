@@ -785,6 +785,7 @@ var actions = {
 	    	break;
 		case "checkbox":
 //			cell["className"] = 'select-checkbox';
+
 			cell["render"] = function ( data2, type2, row ) {
 								if (data2==null||data2=='') return "&nbsp";
 								checked = data2?'checked':'';
@@ -798,6 +799,8 @@ var actions = {
  					fn = actions.getEditSuccessfn(tab,td, rowData, columnName,collection);
  					fn(null,$(this).is(':checked')?1:0);
  				});
+ 				var disabled = data.locked||!(actions.isEditable(data.properties[col],rowData,data.rights));
+ 				$(td).find(".cellCheckboxInput").prop('disabled', disabled);
 		    };
 	    	break;
 		case "select":

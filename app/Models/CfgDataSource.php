@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class CfgDataSource extends DynamicModel 
 { 
-	protected $table = 'cfg_data_source'; 
+	protected $table = 'CFG_DATA_SOURCE'; 
 } 
