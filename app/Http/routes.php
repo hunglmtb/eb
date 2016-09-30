@@ -254,6 +254,11 @@ Route::post('gen_cargo_entry/calculate', 	['uses' =>'Contract\ContractProgramCon
 Route::post('gen_cargo_entry/gen', 			['uses' =>'Contract\ContractProgramController@gen',			'middleware' => 'checkRight:PD_CONTRACT_ADMIN_PROG']);
 
 
+Route::get('pd/demurrageebo',			['uses' =>'ProductDeliveryController@demurrageebo','middleware' => 'checkRight:PD_CARGO_MAN_DEMUR']);
+Route::post('demurragreebo/load',		['uses' =>'Cargo\DemurrageeboController@load','middleware' => 'saveWorkspace']);
+Route::post('demurragreebo/save', 		'Cargo\DemurrageeboController@saveDemurrage');
+Route::post('demurragreebo/loadsrc', 	'Cargo\DemurrageeboController@loadsrc');
+
 Route::get('pd/cargodocuments',			['uses' =>'ProductDeliveryController@cargodocuments',	'middleware' => 'checkRight:PD_CARGO_MAN_DOC']);
 Route::post('cargodocuments/load',		['uses' =>'Cargo\CargoDocumentsController@load',		'middleware' => 'saveWorkspace']);
 Route::post('documentset/load', 		['uses' =>'Cargo\CargoDocumentsController@loadDetail',	'middleware' => 'checkRight:PD_CARGO_MAN_DOC']);
@@ -437,8 +442,3 @@ Route::post('pi', 'InterfaceController@pi');
 Route::get('dataloader', 'InterfaceController@_indexDataloader');
 Route::post('gettablefieldsall', 'InterfaceController@getTableFieldsAll');
 Route::post('doimportdataloader', 'InterfaceController@doImportDataLoader');
-
-Route::get('demurrageebo',			['uses' =>'ProductDeliveryController@demurrageebo','middleware' => 'checkRight:PD_CARGO_MAN_DEMUR']);
-Route::post('demurragreebo/load',	['uses' =>'Cargo\DemurrageeboController@load','middleware' => 'saveWorkspace']);
-Route::post('demurragreebo/save', 		'Cargo\DemurrageeboController@saveDemurrage');
-Route::post('demurragreebo/loadsrc', 		'Cargo\DemurrageeboController@loadsrc');

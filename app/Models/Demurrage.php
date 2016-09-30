@@ -3,5 +3,5 @@ namespace App\Models;
 
  class Demurrage extends DynamicModel 
 { 
-	protected $table = 'demurrage'; 
+	protected $table = 'DEMURRAGE'; 
 } 

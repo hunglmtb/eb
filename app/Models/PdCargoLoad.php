@@ -26,4 +26,11 @@ use App\Models\EbBussinessModel;
 								'COMMENT', 
 								'NOMINATION_ID'];	
 	
+	public function Demurrage(){
+		return $this->hasMany('App\Models\Demurrage', "CARGO_ID", "CARGO_ID");
+	}
+	public function PdContractData(){
+		return $this->hasMany('App\Models\PdContractData', "ATTRIBUTE_ID", "DEMURRAGE_EBO");
+	}
+	
 } 
