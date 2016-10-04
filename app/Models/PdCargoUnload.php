@@ -1,8 +1,8 @@
 <?php 
 namespace App\Models; 
-use App\Models\EbBussinessModel; 
+use App\Models\PdCargoActionModel; 
 
- class PdCargoUnload extends EbBussinessModel 
+ class PdCargoUnload extends PdCargoActionModel 
 { 
 	protected $table 		= 'PD_CARGO_UNLOAD'; 
 	protected $dates 		= ['DATE_UNLOAD'];
@@ -25,4 +25,5 @@ use App\Models\EbBussinessModel;
 								'WITNESS_BA_ID2', 
 								'COMMENT', 
 								'NOMINATION_ID'];
+	
 } 

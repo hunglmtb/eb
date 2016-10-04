@@ -759,7 +759,7 @@ class CodeController extends EBController {
 	    			$selectData['data'] = \App\Models\PdCodeTransitType::all();
 	    			$rs[] = $selectData;
 	    			break;
-    			case 'ACTIVITY_NAME' :
+    			/* case 'ACTIVITY_NAME' :
     				$selectData = ['id'=>'ID','targets'=>$i,'COLUMN_NAME'=>'NAME'];
     				$sql = "";
     				$sql .= " SELECT ID, NAME FROM pd_code_load_activity a where exists (select 1 from PD_CARGO_LOAD b join TERMINAL_TIMESHEET_DATA  c ON ( b.ID = c.PARENT_ID AND c.IS_LOAD = 1 ) where c.ACTIVITY_ID = a.ID)";
@@ -769,7 +769,7 @@ class CodeController extends EBController {
 					$tmp = \DB::select($sql);					
     				$selectData['data'] = $tmp;
     				$rs[] = $selectData;
-    				break;
+    				break; */
     			case 'CARGO_ID' :
     				$selectData = ['id'=>'PdCargo','targets'=>$i,'COLUMN_NAME'=>$columnName];
     				$selectData['data'] = \App\Models\PdCargo::all();
@@ -823,6 +823,7 @@ class CodeController extends EBController {
 	    			$rs[] = $selectData;
 	    			break;
     			case 'ACTIVITY_ID' :
+    			case 'ACTIVITY_NAME' :
     				$selectData = ['id'=>'PdCodeLoadActivity','targets'=>$i,'COLUMN_NAME'=>$columnName];
     				$selectData['data'] = \App\Models\PdCodeLoadActivity::all();
     				$rs[] = $selectData;

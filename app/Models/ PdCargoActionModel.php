@@ -1,8 +1,8 @@
 <?php 
 namespace App\Models; 
-use App\Models\PdCargoActionModel; 
+use App\Models\EbBussinessModel; 
 
- class PdCargoLoad extends PdCargoActionModel 
+ class PdCargoLoad extends EbBussinessModel 
 { 
 	protected $table 		= 'PD_CARGO_LOAD'; 
 	protected $dates 		= ['DATE_LOAD'];
@@ -25,5 +25,16 @@ use App\Models\PdCargoActionModel;
 								'WITNESS_BA_ID2', 
 								'COMMENT', 
 								'NOMINATION_ID'];	
+	
+	public function Demurrage(){
+		return $this->hasMany('App\Models\Demurrage', "CARGO_ID", "CARGO_ID");
+	}
+	public function PdContractData(){
+		return $this->hasMany('App\Models\PdContractData', "ATTRIBUTE_ID", "DEMURRAGE_EBO");
+	}
+	
+	public function TerminalTimesheetData(){
+		return $this->hasMany('App\Models\TerminalTimesheetData', "PARENT_ID", "ID");
+	}
 	
 } 
