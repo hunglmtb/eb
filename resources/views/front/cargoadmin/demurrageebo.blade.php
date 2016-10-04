@@ -2,7 +2,7 @@
 	$currentSubmenu ='/pd/demurrageebo';
 	$tables = ['PdDemurageEbo'	=>['name'=>'Load']];
 	
-	$isAction = false;
+	$isAction = true;
 ?>
 
 @extends('core.pd')
@@ -24,10 +24,51 @@ DEMURRAGE/EBO
 					},
 				};
 
-	source['ACTIVITY_NAME']	={	dependenceColumnName	:	['START_TIME', 'END_TIME', 'ELAPSE_TIME'],
-			url						: 	'/demurragreebo/loadsrc'
+	actions.renderFirsColumn  =  actions.defaultRenderFirsColumn;
+	actions.isDisableAddingButton	= function (tab,table) {
+		return true;
+	};
+	
+	actions.getUomCollection = function(collection,columnName,rowData){
+		if(columnName=="ACTIVITY_NAME") {
+			var rs = [];
+			var cls = rowData['terminal_timesheet_data'];
+			$.each(cls, function( i, vl ) {
+				 var result = $.grep(collection, function(e){
+									return e['ID'] == vl.ACTIVITY_ID;
+								});
+				if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined") rs.push(result[0]);
+            });
+			return rs;
+		}
+		return collection;
+	}
+	source['ACTIVITY_NAME']	=	{	dependenceColumnName	:	['START_TIME', 'END_TIME', 'ELAPSE_TIME'],
+									url						: 	null
 		};
 
+	actions.dominoColumns = function(columnName,newValue,tab,rowData,collection,table,td){
+ 		if(columnName=='ACTIVITY_NAME') {
+ 			var table = $('#table_PdDemurageEbo').DataTable();
+			var cls = rowData['terminal_timesheet_data'];
+
+			var result = $.grep(cls, function(e){
+								return e['ACTIVITY_ID'] == newValue;
+							});
+			if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined"){
+	 	    	var row = table.row( '#'+rowData['DT_RowId']);
+				rowData['START_TIME'] 		= result[0]['START_TIME'];
+				rowData['END_TIME'] 		= result[0]['END_TIME'];
+				rowData['ELAPSE_TIME'] 		= result[0]['ELAPSE_TIME'];
+				rowData['RATE_HOUR'] 		= result[0]['RATE_HOUR'];
+				rowData['AMOUNT'] 			= result[0]['AMOUNT'];
+				rowData['OVERRIDE_AMOUNT'] 	= result[0]['OVERRIDE_AMOUNT'];
+				row.data(rowData).draw();
+			}
+	           
+		}
+	}
+/*
 	source.initRequest = function(tab,columnName,newValue,collection, rowData){
 		postData = actions.loadedData[tab];
 		srcData = {						
@@ -48,10 +89,6 @@ DEMURRAGE/EBO
     	row = table.row( '#'+rowData['DT_RowId']);
 		row.data(rowData).draw(false);
 			
-	};
-
-	actions.isDisableAddingButton	= function (tab,table) {
-		return true;
 	};
 
 	$(function(){
@@ -87,5 +124,6 @@ DEMURRAGE/EBO
 			}); 
 		});
 	});
+	*/
 </script>
 @stop

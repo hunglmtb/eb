@@ -17,6 +17,7 @@ class ProductDeliveryController extends CodeController {
 		$filterGroups = array(	'productionFilterGroup'	=>[		2		=>'Storage'],								
 								'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
 																['id'=>'date_end','name'=>'To date']),
+								'enableSaveButton'		=> 	false,
 						);
 		return view ( 'front.cargoadmin.demurrageebo',['filters'=>$filterGroups]);
 	}

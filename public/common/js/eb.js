@@ -787,9 +787,11 @@ var actions = {
 //			cell["className"] = 'select-checkbox';
 
 			cell["render"] = function ( data2, type2, row ) {
-								if (data2==null||data2=='') return "&nbsp";
+//								if (data2==null||data2=='') return "&nbsp";
 								checked = data2?'checked':'';
-								return '<div  class="checkboxCell" ><input class="cellCheckboxInput" type="checkbox" value="'+data2+'"size="15" '+checked+'></div>';
+				 				var disabled = data.locked||!(actions.isEditable(data.properties[cindex],row,data.rights));
+				 				disabled = disabled?"disabled":''; 
+								return '<div  class="checkboxCell" ><input '+disabled+' class="cellCheckboxInput" type="checkbox" value="'+data2+'"size="15" '+checked+'></div>';
 							};
 			cell["createdCell"] = function (td, cellData, rowData, row, col) {
 				colName = data.properties[col].data;
@@ -892,6 +894,9 @@ var actions = {
 	   	});
 		
 	},
+	getUomCollection: function(collection,columnName,rowData){
+		return collection;
+	},
 	initTableOption : function (tab,data,options,renderFirsColumn,createdFirstCellColumn){
 		if(typeof(data.uoms) == "undefined"||data.uoms==null){
 			data.uoms = [];
@@ -935,7 +940,7 @@ var actions = {
 			        	    emptytext: '',
 			        	    value:cellData,
 			        	    showbuttons:false,
-			        	    source: collection,
+			        	    source: actions.getUomCollection(collection,columnName,rowData),
 			        	    success: actions.getEditSuccessfn(tab,td, rowData, columnName,collection),
 			        	});
 		 			}
