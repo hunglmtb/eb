@@ -86,7 +86,8 @@ class FieldsConfigController extends Controller {
 		}
 		
 		//Xoa
-		$re_full = CfgFieldProps::where(['TABLE_NAME'=>$table])->get(['COLUMN_NAME']);
+		CfgFieldProps::where(['TABLE_NAME'=>$table])->whereNotIn('COLUMN_NAME',$fields)->delete();
+		/* $re_full = CfgFieldProps::where(['TABLE_NAME'=>$table])->get(['COLUMN_NAME']);
 		foreach ($re_full as $row_full)
 		{
 			$del = true;
@@ -99,7 +100,7 @@ class FieldsConfigController extends Controller {
 			if ($del == true) {
 				CfgFieldProps::where(['TABLE_NAME'=>$table, 'COLUMN_NAME'=>$row_full->COLUMN_NAME]);
 			}
-		}
+		} */
 		
 		return response ()->json ( 'ok' );
 	}

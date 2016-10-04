@@ -125,6 +125,8 @@ var _fieldconfig = {
 						$("#save, #reset").button();
 					}
 				});
+				$('#change_field').text('Change field');
+				
 			}else{
 				$('#change_field').text('OK');
 				$("#add, #remove, #up, #down").css("visibility", "visible");

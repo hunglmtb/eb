@@ -1167,12 +1167,12 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 										<td onClick="loadDiagram()" width="60" class="xbutton">Load</td>
 										<td id="buttonSave" onMouseOut="$('#buttonSaveAs').hide();"
 											onMouseOver="$('#buttonSaveAs').show();" width="60"
-											class="xbutton"><span id="buttonSave_text"
-											onClick="saveDiagram()">Save</span>
+											class="xbutton">
+											<span class="xbutton" id="buttonSave_text" onClick="saveDiagram()">Save</span>
 											<div class="xbutton"
 												style="padding: 5px; display: none; position: absolute; width: 64px; z-index: 101; margin-left: 0px; margin-top: 4px; border: 2px solid #666"
 												id="buttonSaveAs">
-												<span onClick="saveDiagram('a')">Save As</span>
+												<span class="xbutton" onClick="saveDiagram('a')">Save As</span>
 											</div></td>
 										<td onClick="buttonActionClick('print')" width="60"
 											class="xbutton">Print</td>
