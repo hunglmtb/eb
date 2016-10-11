@@ -1,5 +1,12 @@
 <?php
 $currentSubmenu = '/formula';
+$filterbeginDate = ['name'	=> "Begin date",
+					'id'	=> "txtBeginDate",
+					];
+$filterEndDate = ['name'	=> "End date",
+					'id'	=> "txtEndDate",
+					];
+
 ?>
 
 @extends('core.bsconfig')
@@ -86,8 +93,8 @@ $(function(){
 
 	var d = new Date();
 	$("#test_formula_occur_date").val(""+zeroFill(1+d.getMonth(),2)+"/01/"+d.getFullYear());
-	$('#txtBeginDate, #txtEndDate').val(""+zeroFill(1+d.getMonth(),2)+"/01/"+d.getFullYear());
-	$( "#test_formula_occur_date, #txtBeginDate, #txtEndDate" ).datepicker({
+// 	$('#txtEndDate').val(""+zeroFill(1+d.getMonth(),2)+"/01/"+d.getFullYear());
+	$( "#test_formula_occur_date" ).datepicker({
 	    changeMonth:true,
 	     changeYear:true,
 	     dateFormat:"mm/dd/yy"
@@ -307,14 +314,19 @@ var _formula = {
 				str += "	<td>"+checkValue(data[i].TABLE_NAME,"")+"</td>";
 				str += "	<td>"+checkValue(data[i].VALUE_COLUMN,"")+"</td>";
 				str += "	<td><span id='Q_Formula_"+data[i].ID+"' style='word-wrap: break-word;'>"+checkValue(data[i].FORMULA,"")+"</span></td>";
-				str += "	<td><span id='Q_BeginDate_"+data[i].ID+"'>"+checkValue(data[i].BEGIN_DATE,"")+"</span></td>";
-				str += "	<td><span id='Q_EndDate_"+data[i].ID+"'>"+checkValue(data[i].END_DATE,"")+"</span></td>";
+				str += "	<td><span id='Q_BeginDate_"+data[i].ID+"'>"+this.formatDate(checkValue(data[i].BEGIN_DATE,""))+"</span></td>";
+				str += "	<td><span id='Q_EndDate_"+data[i].ID+"'>"+this.formatDate(checkValue(data[i].END_DATE,""))+"</span></td>";
 				str += "	<td><span id='Q_Comment_"+data[i].ID+"'>"+checkValue(data[i].COMMENT,"")+"</span></td>";
 				str += "</tr>";
 			}
 			$('#bodyFormulasList').html(str);
 		},
-		
+		formatDate : function(dateString){
+			var date = dateString!=""? moment.utc(dateString,configuration.time.DATETIME_FORMAT_UTC)
+											.format(configuration.time.DATE_FORMAT)
+									:dateString;
+			return date;
+		},
 		loadVarsList : function(formula_id, formula_name)
 		{
 			if(_formula.current_formula_id==formula_id) return;
@@ -462,8 +474,8 @@ var _formula = {
 				$("#txtStaticValue").val($("#"+pre+"StaticValue_"+formula_id).text());
 				$("#txtOrder").val($("#"+pre+"Order_"+formula_id).html());
 				$("#txtFormula").val($("#"+pre+"Formula_"+formula_id).text());
-				$("#txtBeginDate").val($("#"+pre+"BeginDate_"+formula_id).html());
-				$("#txtEndDate").val($("#"+pre+"EndDate_"+formula_id).html());
+ 				$("#txtBeginDate").val($("#"+pre+"BeginDate_"+formula_id).html());
+ 				$("#txtEndDate").val($("#"+pre+"EndDate_"+formula_id).html());
 				$("#txtTableName").val($("#"+pre+"TableName_"+formula_id).html());
 				$("#txtValueColumn").val($("#"+pre+"ValueColumn_"+formula_id).html());
 				$("#txtIDColumn").val($("#"+pre+"IDColumn_"+formula_id).html());
@@ -858,14 +870,16 @@ var _formula = {
 											</tr>
 											<tr id="trBeginDate" height=22>
 												<td>Begin date</td>
-												<td><input type="text" id="txtBeginDate" name="txtBeginDate"
-													style="width: 180px" size="20"></td>
+												<td>
+												{{ Helper::selectDate($filterbeginDate)}}
+												</td>
 												<td>&nbsp;</td>
 											</tr>
 											<tr id="trEndDate" height=22>
 												<td>End date</td>
-												<td><input type="text" id="txtEndDate" name="txtEndDate"
-													style="width: 180px" size="20"></td>
+												<td>
+													{{ Helper::selectDate($filterEndDate)}}
+												</td>
 												<td>&nbsp;</td>
 											</tr>
 											<tr>

@@ -87,11 +87,19 @@ class Helper {
 	
 		$htmlFilter = '';
 		switch ($id) {
-    			case 'date_begin':
+    			/* case 'date_begin':
     			case 'date_end':
     			case 'f_date_from':
     			case 'f_date_to':
     			case 'txtCargoDate':
+    				break; */
+    			case 'cboFilterBy':
+    					$htmlFilter = 	"<div class=\"filter\"><div><b>$name</b>".
+			    							'</div><select id="'.$id.'" name="'.$name.'">';
+    					$htmlFilter .= "<option value = 'SAMPLE_DATE'>Sample Date</option><option value = 'TEST_DATE'>Test Date</option><option value = 'EFFECTIVE_DATE'>Effective Date</option>";
+						$htmlFilter .= '</select></div>';
+    					break;
+    			default:
     				$configuration = auth()->user()->getConfiguration();
     				$format = $configuration['time']['DATE_FORMAT_CARBON'];//'m/d/Y';
     				if ($value) {
@@ -113,15 +121,6 @@ class Helper {
 						$extra = is_array($extra)&&count($extra)>0?",['".implode("','", $extra)."']":'';
 						$htmlFilter.= "<script>registerOnChange('$id',['".implode("','", $dependences)."']$extra)</script>";
 					}
-									
-    				break;
-    				case 'cboFilterBy':
-    					$htmlFilter = 	"<div class=\"filter\"><div><b>$name</b>".
-			    							'</div><select id="'.$id.'" name="'.$name.'">';
-    					$htmlFilter .= "<option value = 'SAMPLE_DATE'>Sample Date</option><option value = 'TEST_DATE'>Test Date</option><option value = 'EFFECTIVE_DATE'>Effective Date</option>";
-						$htmlFilter .= '</select></div>';
-    					break;
-    			default:
     				break;
     		}
 		

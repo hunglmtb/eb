@@ -128,26 +128,21 @@ class FormulaController extends Controller {
 				$sLO.=($sLO==""?"":"<br>").$rowLO->OBJECT_NAME;
 			}
 			
-			if(!is_null($row->BEGIN_DATE))
-				$row['BEGIN_DATE'] = Carbon::createFromFormat('Y-m-d',$row->BEGIN_DATE)->format('m/d/Y');
-			if(!is_null($row->END_DATE))
-				$row['END_DATE'] = Carbon::createFromFormat('Y-m-d',$row->END_DATE)->format('m/d/Y');
-			
 			if(count($rowLO) > 0){
-				$row['PRODUCTION_UNIT_ID'] = $rowLO->PRODUCTION_UNIT_ID;
-				$row['AREA_ID'] = $rowLO->AREA_ID;
-				$row['FACILITY_ID'] = $rowLO->FACILITY_ID;
-				$row['sLO'] = $sLO;
+				$row->PRODUCTION_UNIT_ID = $rowLO->PRODUCTION_UNIT_ID;
+				$row->AREA_ID= $rowLO->AREA_ID;
+				$row->FACILITY_ID= $rowLO->FACILITY_ID;
+				$row->sLO = $sLO;
 			}else{
-				$row['PRODUCTION_UNIT_ID'] = "";
-				$row['AREA_ID'] = "";
-				$row['FACILITY_ID'] = "";
-				$row['sLO'] = "";
+				$row->PRODUCTION_UNIT_ID = "";
+				$row->AREA_ID= "";
+				$row->FACILITY_ID= "";
+				$row->sLO= "";
 			}
-			array_push($result, $row);
+// 			array_push($result, $row);
 		} 
 		
-		return response ()->json ( $result );
+		return response ()->json ( $formula );
 	}
 	
 	public function getVarList(Request $request){
@@ -219,7 +214,7 @@ class FormulaController extends Controller {
 		$data = $request->all ();
 		
 		$objname = "";
-		if(count($data['cboObjName']) > 0){
+		if(is_array($data['cboObjName'])&&count($data['cboObjName']) > 0){
 			foreach ($data['cboObjName'] as $selectedOption)
 			    $objname.= ($objname==""?"":",").$selectedOption;
 		}
@@ -245,11 +240,11 @@ class FormulaController extends Controller {
 				$param['ALLOC_TYPE'] = $data['cboAllocType'];
 				$param['FORMULA'] = $data['txtFormula'];
 				
-				if($data['txtBeginDate'] != "")
-					$param['BEGIN_DATE'] = Carbon::createFromFormat('m/d/Y',$data['txtBeginDate'])->format('Y-m-d');
 				
-				if($data['txtEndDate'] != "")
-					$param['END_DATE'] = Carbon::createFromFormat('m/d/Y',$data['txtEndDate'])->format('Y-m-d');
+				$begin_date = $data ['txtBeginDate'];
+				if ($begin_date != "") $param['BEGIN_DATE'] = \Helper::parseDate($begin_date);
+				$end_date = $data ['txtEndDate'];
+				if ($end_date != "") $param['END_DATE'] = \Helper::parseDate($end_date);
 				
 				$condition = array (
 						'ID' => -1
@@ -278,13 +273,6 @@ class FormulaController extends Controller {
 				else
 					$str = "";
 				
-				$begin_date = $data ['txtBeginDate'];
-				if ($begin_date != "")
-					$begin_date = Carbon::createFromFormat('m/d/Y',$begin_date)->format('Y-m-d');
-				
-				$end_date = $data ['txtEndDate'];
-				if ($end_date != "")
-					$end_date = Carbon::createFromFormat('m/d/Y',$end_date)->format('Y-m-d');
 				
 				$p = [
 					'NAME'=>$data['txtFormulaName'],
@@ -299,9 +287,13 @@ class FormulaController extends Controller {
 					'FLOW_PHASE'=>$data['cboFlowPhase'],
 					'ALLOC_TYPE'=>$data['cboAllocType'],
 					'FORMULA'=>$data['txtFormula'],
-					'BEGIN_DATE'=>$begin_date,
-					'END_DATE'=>$end_date
+// 					'BEGIN_DATE'=>$begin_date,
+// 					'END_DATE'=>$end_date
 				];
+				$begin_date = $data ['txtBeginDate'];
+				if ($begin_date != "") $p['BEGIN_DATE'] = \Helper::parseDate($begin_date);
+				$end_date = $data ['txtEndDate'];
+				if ($end_date != "") $p['END_DATE'] = \Helper::parseDate($end_date);
 				
 				Formula::where(['ID'=>$formula_id])->update($p);
 			}

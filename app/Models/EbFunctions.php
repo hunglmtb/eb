@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class EbFunctions extends DynamicModel 
 { 
-	protected $table = 'eb_functions'; 
+	protected $table = 'EB_FUNCTIONS'; 
 } 
