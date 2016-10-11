@@ -103,15 +103,15 @@ $.ajaxSetup({
 				title: "Help on this screen",
 			});
 		if(help==""){
-			if (typeof func_code == 'undefined'){
+			if (typeof func_code == 'undefined' || func_code == ""){
 				$("#boxHelp").html("No data");
 				return;
 			}
 			$("#boxHelp").html('<img class="center_content" src="/wf/images/loading.gif">');
-			$.get("/common/act.php?act=get_help&func_code="+func_code,function(data){
-				help="1";
+			$.get("/help/"+func_code,function(data){
+// 				help="1";
 				if(data=="") data="No help!";
-				$("#boxHelp").html(data);
+				$("#boxHelp").html(data['HELP']);
 			});
 		}
 	}

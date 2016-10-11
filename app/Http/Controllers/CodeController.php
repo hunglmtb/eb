@@ -39,6 +39,7 @@ use App\Models\Personnel;
 use App\Models\StandardUom;
 use App\Models\Tank;
 use App\Models\CustomizeDateCollection;
+use App\Models\EbFunctions;
 
 class CodeController extends EBController {
 	 
@@ -981,5 +982,11 @@ class CodeController extends EBController {
     
     	return response()->json(['dataSet'=>$dataSet,
     			'postData'=>$postData]);
+    }
+    
+    public function help($name){
+//     	echo getOneValue("select HELP from eb_functions where CODE='$func_code'");
+    	$help = EbFunctions::where("CODE",$name)->select("HELP")->first();
+    	return response()->json($help);
     }
 }

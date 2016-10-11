@@ -16,6 +16,7 @@ class CheckRight {
 		// Perform action
 		$user = auth()->user();
 		if ($user&&$user->containRight($right)) {
+			$request->route()->setParameter('rightCode', $right);
 			return $next($request);		
 		}
 		if ($request->ajax()) return response('Unauthorized:You has not right to access', 401);

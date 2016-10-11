@@ -1,5 +1,8 @@
 <?php 
-$configuration	=	auth()->user()->getConfiguration(); 
+$configuration	= auth()->user()->getConfiguration();
+$request 		= request();
+$parameters 	= $request->route()->parameters();
+$rightCode		= isset($parameters['rightCode'])?$parameters['rightCode']:"";
 ?>
 
 <!DOCTYPE html>
@@ -25,6 +28,7 @@ $configuration	=	auth()->user()->getConfiguration();
 <script type="text/javascript" src="/common/js/dataTables.fixedColumns.min.js"></script>
 <script type='text/javascript'>
 var configuration =  <?php echo json_encode($configuration); ?>;
+var func_code='{{$rightCode}}';
 </script>
 <script type="text/javascript" src="/common/js/utils.js"></script>
 <script src="/common/js/jquery-ui.js"></script>

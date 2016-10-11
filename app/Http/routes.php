@@ -277,6 +277,8 @@ Route::get('pd/liftaccmonthlyadjust',			['uses' =>'ProductDeliveryController@lif
 Route::post('liftaccmonthlyadjust/load',		['uses' =>'Cargo\LiftMonthlyController@load',				'middleware' => 'saveWorkspace']);
 Route::post('liftaccmonthlyadjust/save', 		['uses' =>'Cargo\LiftMonthlyController@save',				'middleware' => 'checkRight:PD_CARGO_MON_MONTHLY_DATA']);
 
+Route::get('help/{name}',			['uses' =>'CodeController@help']);
+
 //----------admin
 Route::get('am/users', 'AdminController@_index');
 Route::post('am/loadData', 'AdminController@getData');
