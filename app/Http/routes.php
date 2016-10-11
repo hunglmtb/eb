@@ -87,7 +87,7 @@ Route::post('code/load',['uses' =>'FlowController@load','middleware' => 'saveWor
 Route::post('code/save', 'FlowController@save');
 Route::post('code/history', 'FlowController@history');
 
-Route::get('dc/eu', 'ProductManagementController@eu');
+// Route::get('dc/eu', 'ProductManagementController@eu');
 Route::get('dc/eu',['uses' =>'ProductManagementController@eu','middleware' => 'checkRight:FDC_EU']);
 Route::post('eu/load',['uses' =>'EuController@load','middleware' => 'saveWorkspace']);
 Route::post('eu/save', 'EuController@save');
@@ -280,7 +280,7 @@ Route::post('liftaccmonthlyadjust/save', 		['uses' =>'Cargo\LiftMonthlyControlle
 Route::get('help/{name}',			['uses' =>'CodeController@help']);
 
 //----------admin
-Route::get('am/users', 'AdminController@_index');
+Route::get('am/users',	['uses' =>'AdminController@_index',	'middleware' => 'checkRight:ADMIN_USERS']);
 Route::post('am/loadData', 'AdminController@getData');
 Route::post('am/selectedID', 'AdminController@selectedID');
 Route::post('am/loadUserList', 'AdminController@getUsersList');
@@ -290,29 +290,29 @@ Route::get('am/new', 'AdminController@addUser');
 Route::post('am/save', 'AdminController@addNewUser');
 Route::post('am/updateUser', 'AdminController@updateUser');
 
-Route::get('am/roles', 'AdminController@_indexRoles');
+Route::get('am/roles',	['uses' =>'AdminController@_indexRoles',	'middleware' => 'checkRight:ADMIN_ROLES']);
 Route::post('am/editRoles', 'AdminController@editRole');
 Route::post('am/addRoles', 'AdminController@addRole');
 Route::post('am/deleteRoles', 'AdminController@deleteRole');
 Route::post('am/loadRightsList', 'AdminController@loadRightsList');
 Route::post('am/removeOrGrant', 'AdminController@removeOrGrant');
 
-Route::get('am/audittrail', 'AdminController@_indexAudittrail');
+Route::get('am/audittrail',	['uses' =>'AdminController@_indexAudittrail',	'middleware' => 'checkRight:ADMIN_AUDIT']);
 Route::post('am/loadAudittrail', 'AdminController@loadAudittrail');
 
-Route::get('am/validatedata', 'AdminController@_indexValidatedata');
+Route::get('am/validatedata',	['uses' =>'AdminController@_indexValidatedata',	'middleware' => 'checkRight:ADMIN_VALIDATE']);
 Route::post('am/loadValidateData', 'AdminController@loadValidateData');
 Route::post('am/validateData', 'AdminController@validateData');
 
-Route::get('am/approvedata', 'AdminController@_indexApprove');
+Route::get('am/approvedata',	['uses' =>'AdminController@_indexApprove',	'middleware' => 'checkRight:ADMIN_APPROVE']);
 Route::post('am/loadApproveData', 'AdminController@loadApproveData');
 Route::post('am/approveData', 'AdminController@ApproveData');
 
-Route::get('am/lockdata', 'AdminController@_indexLockData');
+Route::get('am/lockdata',	['uses' =>'AdminController@_indexLockData',	'middleware' => 'checkRight:ADMIN_DATA_LOCKING']);
 Route::post('am/loadLockData', 'AdminController@loadLockData');
 Route::post('am/lockData', 'AdminController@lockData');
 
-Route::get('am/userlog', 'AdminController@_indexUserlog');
+Route::get('am/userlog',	['uses' =>'AdminController@_indexUserlog',	'middleware' => 'checkRight:ADMIN_USER_LOG']);
 Route::post('am/loadUserLog', 'AdminController@loadUserLog');
 
 Route::get('am/editGroup', 'AdminController@_indexEditGroup');
@@ -326,7 +326,7 @@ Route::post('am/gethelp', 'AdminController@gethelp');
 Route::post('am/savehelp', 'AdminController@savehelp');
 
 //========== DATA VISUALIZATION
-Route::get('diagram', 'DVController@_indexDiagram');
+Route::get('diagram',['uses' =>'DVController@_indexDiagram','middleware' => 'checkRight:VIS_NETWORK_MODEL']);
 Route::post('getdiagram', 'DVController@getdiagram');
 Route::get('loaddiagram/{id}', 'DVController@loaddiagram');
 Route::post('savediagram', 'DVController@savediagram');
@@ -336,7 +336,8 @@ Route::post('onChangeObj', 'DVController@onChangeObj');
 Route::post('getSurveillanceSetting', 'DVController@getSurveillanceSetting');
 Route::post('getValueSurveillance', 'DVController@getValueSurveillance');
 Route::post('uploadImg', 'DVController@uploadImg');
-Route::get('workflow', 'DVController@_indexWorkFlow');
+
+Route::get('workflow',['uses' =>'DVController@_indexWorkFlow','middleware' => 'checkRight:VIS_WORKFLOW']);
 Route::post('getListWorkFlow', 'DVController@getListWorkFlow');
 Route::post('getXMLCodeWF', 'DVController@getXMLCodeWF');
 Route::post('workflowSave', 'DVController@workflowSave');
@@ -350,7 +351,8 @@ Route::post('stopWorkFlow', 'DVController@stopWorkFlow');
 Route::post('runWorkFlow', 'DVController@runWorkFlow');
 Route::post('getKey', 'DVController@getKey');
 Route::resource('runAlloc', 'RunController@runAlloc');
-Route::get('workreport', 'ReportController@_index');
+
+Route::get('workreport',['uses' =>'ReportController@_index','middleware' => 'checkRight:VIS_REPORT']);
 Route::get('loadWfShow', 'wfShowController@loadData');
 Route::post('reLoadtTmworkflow', 'wfShowController@reLoadtTmworkflow');
 Route::post('finish_workflowtask', 'wfShowController@finish_workflowtask');
@@ -358,7 +360,7 @@ Route::post('upFile', 'DVController@uploadFile');
 Route::post('openTask', 'wfShowController@openTask');
 Route::post('countWorkflowTask', 'wfShowController@countWorkflowTask');
 
-Route::get('graph', 'graphController@_index');
+Route::get('graph',['uses' =>'graphController@_index','middleware' => 'checkRight:VIS_ADVGRAPH']);
 Route::post('loadVizObjects', 'graphController@loadVizObjects');
 Route::post('loadEUPhase', 'graphController@loadEUPhase');
 Route::get('loadchart/{param}/{minvalue}/{maxvalue}/{date_begin}/{date_end}/{input}', 'graphController@loadChart');
@@ -367,7 +369,7 @@ Route::post('deleteChart', 'graphController@deleteChart');
 Route::post('saveChart', 'graphController@saveChart');
 Route::post('getProperty', 'graphController@getProperty');
 
-Route::get('viewconfig', 'ViewConfigController@_indexViewConfig');
+Route::get('viewconfig',['uses' =>'ViewConfigController@_indexViewConfig','middleware' => 'checkRight:CF_VIEW_CONFIG']);
 Route::post('loadPlotObjects', 'ViewConfigController@loadPlotObjects');
 Route::post('getTableFields', 'ViewConfigController@getTableFields');
 Route::post('getListPlotItems', 'ViewConfigController@getListPlotItems');
@@ -375,11 +377,11 @@ Route::post('deletePlotItems', 'ViewConfigController@deletePlotItems');
 Route::post('savePlotItems', 'ViewConfigController@savePlotItems');
 Route::post('genView', 'ViewConfigController@genView');
 
-Route::get('allocrun', 'AllocationController@_index');
+Route::get('allocrun',['uses' =>'AllocationController@_index','middleware' => 'checkRight:ALLOC_RUN']);
 Route::post('getJobsRunAlloc', 'AllocationController@getJobsRunAlloc');
 Route::post('run_runner', 'AllocationController@run_runner');
 
-Route::get('allocset', 'AllocationController@_indexconfig');
+Route::get('allocset',['uses' =>'AllocationController@_indexconfig','middleware' => 'checkRight:ALLOC_CONFIG']);
 Route::post('addJob', 'AllocationController@addJob');
 Route::post('addrunner', 'AllocationController@addrunner');
 Route::post('getrunnerslist', 'AllocationController@getrunnerslist');
@@ -393,14 +395,14 @@ Route::get('loadjobdiagram/{id}', 'AllocationController@loaddiagram');
 Route::post('editJob', 'AllocationController@editJob');
 Route::post('saveEditRunner', 'AllocationController@saveEditRunner');
 
-Route::get('fieldsconfig', 'FieldsConfigController@_index');
+Route::get('fieldsconfig',['uses' =>'FieldsConfigController@_index','middleware' => 'checkRight:CONFIG_FIELDS']);
 Route::post('getColumn', 'FieldsConfigController@getColumn');
 Route::post('saveconfig', 'FieldsConfigController@saveconfig');
 Route::post('chckChange', 'FieldsConfigController@chckChange');
 Route::post('getprop', 'FieldsConfigController@getprop');
 Route::post('saveprop', 'FieldsConfigController@saveprop');
 
-Route::get('formula', 'FormulaController@_index');
+Route::get('formula',['uses' =>'FormulaController@_index','middleware' => 'checkRight:CONFIG_FORMULA']);
 Route::post('editgroupname', 'FormulaController@editGroupName');
 Route::post('addgroupname', 'FormulaController@addGroupName');
 Route::post('deletegroup', 'FormulaController@deleteGroup');
@@ -413,7 +415,7 @@ Route::post('testformula', 'FormulaController@testformula');
 Route::post('deletevar', 'FormulaController@deletevar');
 Route::post('savevarsorder', 'FormulaController@saveVarsOrder');
 
-Route::get('dataview', 'DataViewController@_index');
+Route::get('dataview',['uses' =>'DataViewController@_index','middleware' => 'checkRight:VIS_DATA_VIEW']);
 Route::post('getsql', 'DataViewController@getsql');
 Route::post('loaddataview', 'DataViewController@loaddata');
 Route::post('deletesql', 'DataViewController@deletesql');
@@ -421,11 +423,11 @@ Route::post('checksql', 'DataViewController@checkSQL');
 Route::get('downloadExcel/{sql}', 'DataViewController@downloadExcel');
 Route::post('savesql', 'DataViewController@savesql');
 
-Route::get('importdata', 'InterfaceController@_index');
+Route::get('importdata',['uses' =>'InterfaceController@_index','middleware' => 'checkRight:INT_IMPORT_DATA']);
 Route::post('getimportsetting', 'InterfaceController@getImportSetting');
 Route::post('doimport', 'InterfaceController@doImport');
 
-Route::get('sourceconfig', 'InterfaceController@_indexConfig');
+Route::get('sourceconfig',['uses' =>'InterfaceController@_indexConfig','middleware' => 'checkRight:INT_SOURCE_CONFIG']);
 Route::post('saveimportsetting', 'InterfaceController@saveImportSetting');
 Route::post('deletesetting', 'InterfaceController@deleteSetting');
 Route::post('renamesetting', 'InterfaceController@renameSetting');
@@ -441,6 +443,6 @@ Route::post('renametagset', 'InterfaceController@renameTagSet');
 Route::post('deletetagset', 'InterfaceController@deleteTagSet');
 Route::post('pi', 'InterfaceController@pi');
 
-Route::get('dataloader', 'InterfaceController@_indexDataloader');
+Route::get('dataloader',['uses' =>'InterfaceController@_indexDataloader','middleware' => 'checkRight:INT_DATA_LOADER']);
 Route::post('gettablefieldsall', 'InterfaceController@getTableFieldsAll');
 Route::post('doimportdataloader', 'InterfaceController@doImportDataLoader');

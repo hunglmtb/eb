@@ -53,9 +53,9 @@ var xmenu=
 			},
 			{"blocks":
 				[
-					{"code":"","name":"Allocation","title":"","link":"/home/allocation","menus":
+					{"code":"","name":"Allocation","title":"Allocation","link":"/home/allocation","menus":
 						[
-							{"name":"Run Allocation","title":"","link":"/allocrun"},
+							{"name":"Run Allocation","title":"Run Allocation","link":"/allocrun"},
 						]
 					},
 				]

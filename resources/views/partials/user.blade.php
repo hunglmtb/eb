@@ -110,7 +110,14 @@ $.ajaxSetup({
 			$("#boxHelp").html('<img class="center_content" src="/wf/images/loading.gif">');
 			$.get("/help/"+func_code,function(data){
 // 				help="1";
-				if(data=="") data="No help!";
+				if(typeof data == 'undefined'
+						|| data==""
+						||jQuery.isEmptyObject(data) 
+						|| data.length<=0
+						|| typeof data.HELP == 'undefined'
+						|| data.HELP == ""
+						) 
+					data = {HELP	: "No help!"};
 				$("#boxHelp").html(data['HELP']);
 			});
 		}
