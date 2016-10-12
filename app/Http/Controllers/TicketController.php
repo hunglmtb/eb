@@ -27,7 +27,6 @@ class TicketController extends CodeController {
     	
     	$object_id 		= $postData['Tank'];
     	$date_end 		= $postData['date_end'];
-//     	$date_end 		= Carbon::parse($date_end);
     	$date_end		= \Helper::parseDate($date_end);
     	 
     	$tank = Tank::getTableName();

@@ -584,10 +584,22 @@ class AdminController extends Controller {
 	}
 	
 	public function _indexAudittrail() {
-	
 		$userRole = UserRole::where(['ACTIVE'=>1])->get(['ID','NAME']);
+		$filterGroups = array(
+								'productionFilterGroup'	=> [],
+								'dateFilterGroup'		=> array(
+																['id'=>'date_begin','name'=>'From Date'],
+																['id'=>'date_end','name'=>'To Date'],
+															),
+								'frequenceFilterGroup'	=> [['name'		=> 'IntObjectType',
+															'default'	=> ['ID'=>0,'NAME'=>'All']
+															]],
+								'enableSaveButton'		=> 	false,
+		);
 		
-		return view ( 'admin.audittrail', ['userRole'=>$userRole]);
+		return view ( 'admin.audittrail',['filters'=>$filterGroups,
+										'userRole'=>$userRole
+		]);
 	}
 	
 	public function loadAudittrail(Request $request){
@@ -606,7 +618,7 @@ class AdminController extends Controller {
 		
 		$result = array();
 		
-		\DB::enableQueryLog();
+// 		\DB::enableQueryLog();
 		$loadAudittrail = DB::table($auditTrail.' AS a')
 		->leftjoin($codeAuditReason.' AS b', 'a.REASON', '=', 'b.ID')
 		->where(['a.FACILITY_ID' => $data['FACILITY_ID']])
@@ -615,7 +627,7 @@ class AdminController extends Controller {
 		->where('TABLE_NAME', 'like', $objectType)
 		->select(['ACTION', 'WHO', 'WHEN', 'TABLE_NAME', 'COLUMN_NAME', 'RECORD_ID', 'OBJECT_DESC', 'OLD_VALUE', 'NEW_VALUE', 'b.NAME AS REASON'])
 		->get();
-		\Log::info(\DB::getQueryLog());
+// 		\Log::info(\DB::getQueryLog());
 		
 		foreach ($loadAudittrail as $v){
 			$v->WHEN = date('m-d-Y', strtotime($v->WHEN));

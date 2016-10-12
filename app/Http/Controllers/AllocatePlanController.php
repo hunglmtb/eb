@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class AllocatePlanController extends CodeController {
 	
@@ -62,12 +61,10 @@ class AllocatePlanController extends CodeController {
 			$object_id 		= 	$postData['ObjectName'];
 			$source_type 	= 	$postData['IntObjectTypeName'];
 			$occur_date 	= 	$postData['date_begin'];
-// 			$occur_date 	= 	Carbon::parse($occur_date);
     		$occur_date		= 	\Helper::parseDate($occur_date);
 			$date_from		=	$occur_date;
 			$date_to 		= 	$postData['date_end'];
 			$date_to		= 	\Helper::parseDate($date_to);
-// 			$date_to 		= 	Carbon::parse($date_to);
 				
 			$obj_id_prefix	=	$source_type;
 			$field_prefix	=	$source_type;
@@ -108,7 +105,8 @@ class AllocatePlanController extends CodeController {
 		$source_type 	= 	$postData['IntObjectTypeName'];
     	$date_from		=	$occur_date;
     	$date_to 		= 	$postData['date_end'];
-    	$date_to 		= 	Carbon::parse($date_to);
+	    $date_to 		= 	\Helper::parseDate($date_to);
+//     	$date_to 		= 	Carbon::parse($date_to);
     	
     	if($object_id<=0)return response("Object Name $object_id not okay", 401);
     	

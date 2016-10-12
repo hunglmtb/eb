@@ -1,5 +1,6 @@
 <script type="text/javascript">
 var ebtoken = $('meta[name="_token"]').attr('content');
+var jsFormat = configuration['picker']['DATE_FORMAT_JQUERY'];//'mm/dd/yy';
 
 $.ajaxSetup({
 	headers: {
@@ -9,7 +10,6 @@ $.ajaxSetup({
 
 $(function(){
 	var listControl = <?php echo json_encode($listControls);?>;
-	
 	adminControl.init(listControl);	
 
 	//if($('#cboObjectType').length > 0){
@@ -69,9 +69,9 @@ var adminControl = {
 		$('#control').html(cbo);
 
 		$( "#begin_date , #end_date" ).datepicker({
-			changeMonth:true,
-			changeYear:true,
-			dateFormat:"mm/dd/yy"
+			changeMonth	:	true,
+			changeYear	:	true,
+			dateFormat	:	jsFormat
 		}); 
 
 		$("#ProductionUnit, #Area").change(function() {   
