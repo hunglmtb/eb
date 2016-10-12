@@ -875,8 +875,9 @@ var actions = {
 		return tblWdth+extendWidth;
 	},
 	getTableHeight:function(tab){
-		headerOffset = $('#ebTabHeader').offset();
-		hhh = $(document).height() - (headerOffset?(headerOffset.top):0) - $('#ebTabHeader').outerHeight() - $('#ebFooter').outerHeight() - 100;
+		headerOffset = $('#tabs').offset();
+		var bonus = $('#ebTabHeader').is(':visible')?100:66;
+		hhh = $(document).height() - (headerOffset?(headerOffset.top):0) - $('#ebTabHeader').outerHeight() - $('#ebFooter').outerHeight() - bonus;
 		tHeight = ""+hhh+'px';
 		return tHeight;
 	},

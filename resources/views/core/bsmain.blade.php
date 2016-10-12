@@ -26,8 +26,9 @@ if (!isset($currentSubmenu)) $currentSubmenu ='';
 	<!-- <script src="/jqueryui-editable/js/jqueryui-editable.js"></script> -->
 	<script src="/common/js/tableHeadFixer.js"></script>
 
-	<script src="/common/js/moment.js"></script>
-	<script src="/common/js/bootstrap.js"></script>
+<!-- 	<script src="/common/js/moment.js"></script>
+ -->	
+ 	<script src="/common/js/bootstrap.js"></script>
 	<script src="/common/js/bootstrap-datetimepicker.js"></script>
 	<script src="/common/js/bootstrap-editable.js"></script>
 	<!-- <script src="/common/js/datetime.js"></script> -->

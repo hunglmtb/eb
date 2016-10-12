@@ -13,7 +13,6 @@ $subMenus = [
 @section('script')
 	<link rel="stylesheet" href="/common/css/common.css"/>
 	<script src="/common/js/jquery-2.1.3.js"></script>
-	<script src="/common/js/moment.js"></script>
 @stop	
 @section('main')
 <div id="content">

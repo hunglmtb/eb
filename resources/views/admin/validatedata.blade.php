@@ -1,5 +1,6 @@
 <?php
 $currentSubmenu = '/am/validatedata';
+$configuration	= isset($configuration)?$configuration:auth()->user()->getConfiguration();
 
 $listControls = [ 
 		'LoProductionUnit' => array (
@@ -41,13 +42,15 @@ $listControls = [
 		'begin_date' => array (
 				'label' => 'From Date (<span style="font-size:9px; color: red;">for validate All</span>)',
 				'ID' => 'begin_date',
-				'TYPE' => 'DATE' 
+				'TYPE' 		=> 'DATE',
+				'FORMAT'	=> $configuration['time']['DATE_FORMAT_CARBON'],
 		),
 		
 		'end_date' => array (
-				'label' => 'To Date (<span style="font-size:9px; color: red;">for validate All</span>)',
-				'ID' => 'end_date',
-				'TYPE' => 'DATE' 
+				'label' 	=> 'To Date (<span style="font-size:9px; color: red;">for validate All</span>)',
+				'ID' 		=> 'end_date',
+				'TYPE' 		=> 'DATE',
+				'FORMAT'	=> $configuration['time']['DATE_FORMAT_CARBON'],
 		) ,
 		
 		'validateData' => array(
@@ -100,18 +103,18 @@ var _validatedata = {
 				str += '	<td class="vcolumn35"><input class="chckbox" table_name = '+data[i].TABLE_NAME+' name='+data[i].ID +' type="checkbox" ' + (data[i].T_ID) + '></td>';
 				str += '	<td class="vcolumn205" id="table_name_'+i+'">'+ checkValue(data[i].TABLE_NAME,'') +'</td>';
 				str += '	<td class="vcolumn205">'+ checkValue(data[i].FRIENDLY_NAME,'') +'</td>';
-				str += '	<td class="vcolumn165"><input type="text" id="txtDateFrom_'+i+'" value="'+checkValue(data[i].DATE_FROM,'')+'"/></td>';
-				str += '	<td class="vcolumn165"><input type="text" id="txtDateTo_'+i+'" value="'+checkValue(data[i].DATE_TO,'')+'"/></td>'; 
+				str += '	<td class="vcolumn165"><input type="text" id="txtDateFrom_'+i+'" value="'+formatDate(checkValue(data[i].DATE_FROM,''))+'"/></td>';
+				str += '	<td class="vcolumn165"><input type="text" id="txtDateTo_'+i+'" value="'+formatDate(checkValue(data[i].DATE_TO,''))+'"/></td>'; 
 				str += '	<td class="vcolumn105"><input type="button" onclick="_validatedata.validateData('+i+')" value="Validate" class="btnValidate"/></td>';
 				str += '</tr>';
 			}
 
 			$('#bodyList').html(str);
 
-			 $( "input[type='text']" ).datepicker({
-				changeMonth:true,
-				changeYear:true,
-				dateFormat:"mm/dd/yy"
+			$( "input[type='text']" ).datepicker({
+				changeMonth	:true,
+				changeYear	:true,
+				dateFormat	:jsFormat
 			}); 
 
 			
@@ -154,8 +157,8 @@ var _validatedata = {
 
 			if(!confirm("Are you sure to validate all data of facility "+$("#Facility option:selected").text()+"?")) return;
 
-			var dateFrom = $('#begin_date').val().replace('-','/');
-			var dateTo = $('#end_date').val().replace('-','/');
+			var dateFrom = $('#begin_date').val();//.replace('-','/');
+			var dateTo = $('#end_date').val();//.replace('-','/');
 			param = {
 					'FACILITY_ID' : $('#Facility').val(),
 					'DATE_FROM' : dateFrom,

@@ -60,9 +60,6 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 		->select('USER_WORKSPACE.*','FACILITY.AREA_ID', 'LO_AREA.PRODUCTION_UNIT_ID')
 		->get()->first();
 		
-// 		$wp->W_DATE_BEGIN = Carbon::parse($wp->W_DATE_BEGIN);
-// 		$wp->W_DATE_END = Carbon::parse($wp->W_DATE_END);
-	
 // 		\Log::info(\DB::getQueryLog());
 	
 		return $wp;
@@ -74,13 +71,11 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 		$columns = ['USER_ID'=>$this->ID];
 		$newData = ['USER_ID'=>$this->ID,'USER_NAME'=>$this->username];
 		if ($date_begin) {
-//  			$date_begin = Carbon::parse($date_begin);
  			$date_begin = \Helper::parseDate($date_begin);
 			$newData['W_DATE_BEGIN']=$date_begin;
 		}
 		if ($facility_id) $newData['W_FACILITY_ID']=$facility_id;
 		if ($date_end) {
-//  			$date_end 	= Carbon::parse($date_end);
  			$date_end 	= \Helper::parseDate($date_end);
  			$newData['W_DATE_END']=$date_end;
 		}

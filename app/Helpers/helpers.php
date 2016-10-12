@@ -219,6 +219,7 @@ class Helper {
 	
 	public static function parseDate($dateString)
 	{
+		if (is_null($dateString))  return "";
 		$formatSetting 		= 	session('configuration');
 		$formatSetting 		= 	$formatSetting?$formatSetting:\App\Models\DateTimeFormat::$defaultFormat;
 		$dateFormat 		= 	$formatSetting['DATE_FORMAT'];

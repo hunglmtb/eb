@@ -1,5 +1,6 @@
 <?php
 $currentSubmenu = '/am/userlog';
+$configuration	= isset($configuration)?$configuration:auth()->user()->getConfiguration();
 
 $listControls = [ 		
 		'USER' => array (
@@ -11,13 +12,15 @@ $listControls = [
 		'begin_date' => array (
 				'label' => 'Login from date',
 				'ID' => 'begin_date',
-				'TYPE' => 'DATE' 
+				'TYPE' => 'DATE' ,
+				'FORMAT'	=> $configuration['time']['DATE_FORMAT_CARBON'],
 		),
 		
 		'end_date' => array (
 				'label' => 'To date',
 				'ID' => 'end_date',
-				'TYPE' => 'DATE' 
+				'TYPE' => 'DATE' ,
+				'FORMAT'	=> $configuration['time']['DATE_FORMAT_CARBON'],
 		) ,
 		
 		'loadData' => array(
@@ -41,8 +44,8 @@ $(function(){
 
 var _userLog = {
 		loadData : function (){
-			var dateFrom = $('#begin_date').val().replace('-', '/');
-			var dateTo = $('#end_date').val().replace('-', '/');
+			var dateFrom = $('#begin_date').val();//.replace('-', '/');
+			var dateTo = $('#end_date').val();//.replace('-', '/');
 			param = {
 				'DATE_FROM' : dateFrom,
 				'DATE_TO' : dateTo,
@@ -66,8 +69,8 @@ var _userLog = {
 				} 
 				str += '<tr class='+ cssClass +'>';
 				str += '	<td class="vcolumn205">'+ checkValue(data[i].USERNAME,'') +'</td>';
-				str += '	<td class="vcolumn205">'+ checkValue(data[i].LOGIN_TIME,'') +'</td>';
-				str += '	<td class="vcolumn205">'+ checkValue(data[i].LOGOUT_TIME,'') +'</td>';
+				str += '	<td class="vcolumn205">'+ formatDateTime(checkValue(data[i].LOGIN_TIME,'')) +'</td>';
+				str += '	<td class="vcolumn205">'+ formatDateTime(checkValue(data[i].LOGOUT_TIME,'')) +'</td>';
 				str += '	<td class="vcolumn205">'+ checkValue(data[i].IP,'') +'</td>';
 				str += '</tr>';
 			}

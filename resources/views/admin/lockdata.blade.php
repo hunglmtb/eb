@@ -1,5 +1,6 @@
 <?php
 $currentSubmenu = '/am/lockdata';
+$configuration	= isset($configuration)?$configuration:auth()->user()->getConfiguration();
 
 $listControls = [ 
 		'LoProductionUnit' => array (
@@ -41,7 +42,8 @@ $listControls = [
 		'begin_date' => array (
 				'label' => 'Lock Date (<span style="font-size:10px; color: red;">for lock All</span>)',
 				'ID' => 'begin_date',
-				'TYPE' => 'DATE' 
+				'TYPE' => 'DATE',
+				'FORMAT'	=> $configuration['time']['DATE_FORMAT_CARBON'],
 		),
 		
 		'lockData' => array(
@@ -95,7 +97,7 @@ var _lock = {
 				str += '	<td class="vcolumn35"><input class="chckbox" table_name = '+data[i].TABLE_NAME+' name='+data[i].ID +' type="checkbox" ' + (data[i].T_ID) + '></td>';
 				str += '	<td class="vcolumn205" id="table_name_'+i+'">'+ checkValue(data[i].TABLE_NAME,'') +'</td>';
 				str += '	<td class="vcolumn205">'+ checkValue(data[i].FRIENDLY_NAME,'') +'</td>';
-				str += '	<td class="vcolumn165"><input type="text" id="txtDateFrom_'+i+'" value="'+checkValue(data[i].LOCK_DATE,'')+'"/></td>';
+				str += '	<td class="vcolumn165"><input type="text" id="txtDateFrom_'+i+'" value="'+formatDate(checkValue(data[i].LOCK_DATE,''))+'"/></td>';
 				str += '	<td class="vcolumn105"><input type="button" onclick="_lock.lockData('+i+')" value="Lock" class="btnValidate"/></td>';
 				str += '</tr>';
 			}
@@ -105,7 +107,7 @@ var _lock = {
 			 $( "input[type='text']" ).datepicker({
 				changeMonth:true,
 				changeYear:true,
-				dateFormat:"mm/dd/yy"
+				dateFormat	:jsFormat
 			}); 
 
 			
@@ -147,7 +149,7 @@ var _lock = {
 
 			if(!confirm("Are you sure to lock all data of facility "+$("#Facility option:selected").text()+"?")) return;
 
-			var dateFrom = $('#begin_date').val().replace('-','/');
+			var dateFrom = $('#begin_date').val();//.replace('-','/');
 			param = {
 					'FACILITY_ID' : $('#Facility').val(),
 					'DATE_FROM' : dateFrom,

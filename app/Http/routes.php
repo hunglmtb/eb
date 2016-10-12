@@ -297,8 +297,8 @@ Route::post('am/deleteRoles', 'AdminController@deleteRole');
 Route::post('am/loadRightsList', 'AdminController@loadRightsList');
 Route::post('am/removeOrGrant', 'AdminController@removeOrGrant');
 
-Route::get('am/audittrail',	['uses' =>'AdminController@_indexAudittrail',	'middleware' => 'checkRight:ADMIN_AUDIT']);
-Route::post('am/loadAudittrail', 'AdminController@loadAudittrail');
+Route::get('am/audittrail',		['uses' =>'AdminController@_indexAudittrail',	'middleware' => 'checkRight:ADMIN_AUDIT']);
+Route::post('am/loadAudittrail',['uses' =>'Admin\AuditController@load',			'middleware' => 'saveWorkspace']);
 
 Route::get('am/validatedata',	['uses' =>'AdminController@_indexValidatedata',	'middleware' => 'checkRight:ADMIN_VALIDATE']);
 Route::post('am/loadValidateData', 'AdminController@loadValidateData');
