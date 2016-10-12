@@ -130,8 +130,14 @@ class AdminController extends Controller {
 				
 			}else{
 				if($listControl['TYPE'] == 'DATE'){
-					$now = Carbon::now('Europe/London');
-					$listControl['default'] = date('m/d/Y', strtotime($now));				
+// 					$value = Carbon::now('Europe/London');
+					$value 	= Carbon::now();
+					if (isset($listControl['FORMAT'])) {
+						$format = $listControl['FORMAT'];
+						$value	=$value->format($format);
+						$listControl['default'] = $value;				
+					}
+					else $listControl['default'] = date('m/d/Y', strtotime($value));				
 					$result [$listControl ['ID']] = $listControl;
 				}else{
 					$result [$listControl ['ID']] = $listControl;
@@ -602,7 +608,7 @@ class AdminController extends Controller {
 		]);
 	}
 	
-	public function loadAudittrail(Request $request){
+	/* public function loadAudittrail(Request $request){
 		
 		$data = $request->all();
 		$auditTrail = AuditTrail::getTableName();
@@ -637,7 +643,7 @@ class AdminController extends Controller {
 		return response ()->json ( array (
 				'result' => $result
 		) );
-	}
+	} */
 	
 	public function _indexValidatedata(){
 		return view ( 'admin.validatedata');
@@ -666,7 +672,7 @@ class AdminController extends Controller {
 			$group = '';
 		}
 		
-		\DB::enableQueryLog();
+// 		\DB::enableQueryLog();
 		$loadValidateData = DB::table($intMapTable.' AS a')
 		->leftjoin($auditValidateTable.' AS b', function ($join) use ($facility_id){
 			$join->on('a.TABLE_NAME', '=', 'b.TABLE_NAME')
@@ -679,7 +685,7 @@ class AdminController extends Controller {
 		})
 		->select(['b.ID AS T_ID', 'a.ID', 'a.TABLE_NAME', 'a.FRIENDLY_NAME', 'b.DATE_FROM', 'b.DATE_TO'])
 		->get();
-		\Log::info(\DB::getQueryLog());
+// 		\Log::info(\DB::getQueryLog());
 		
 		foreach ($loadValidateData as $v){
 		
@@ -689,12 +695,6 @@ class AdminController extends Controller {
 					continue;
 			}
 		
-			if(!is_null($v->DATE_FROM)){
-				$v->DATE_FROM = date('m-d-Y', strtotime($v->DATE_FROM));
-			}
-			if(!is_null($v->DATE_TO)){
-				$v->DATE_TO = date('m-d-Y', strtotime($v->DATE_TO));
-			}
 			$v->T_ID = ($v->T_ID?"checked":"");
 		
 			array_push($result, $v);
@@ -713,7 +713,10 @@ class AdminController extends Controller {
 		if((auth()->user() != null)){
 			$current_username = auth()->user()->username;
 		}
-		
+		$obj['DATE_FROM'] 	= \Helper::parseDate($data['DATE_FROM']);
+		$obj['DATE_TO'] 	= \Helper::parseDate($data['DATE_TO']);
+		$obj['USER_ID'] = $current_username; 
+		$obj['FACILITY_ID'] = $data['FACILITY_ID'];
 		foreach ($table_names as $table){
 		
 			$condition = array(
@@ -722,10 +725,6 @@ class AdminController extends Controller {
 			);
 			
 			$obj['TABLE_NAME'] = $table;
-			$obj['DATE_FROM'] = Carbon::parse($data['DATE_FROM']);
-			$obj['DATE_TO'] = Carbon::parse($data['DATE_TO']); 
-			$obj['USER_ID'] = $current_username; 
-			$obj['FACILITY_ID'] = $data['FACILITY_ID'];
 			
 			//\DB::enableQueryLog();
 			AuditValidateTable::updateOrCreate($condition,$obj);
@@ -751,7 +750,7 @@ class AdminController extends Controller {
 			$group = '';
 		}
 		
-		\DB::enableQueryLog();
+// 		\DB::enableQueryLog();
 		$loadValidateData = DB::table($intMapTable.' AS a')
 		->leftjoin($auditValidateTable.' AS b', function ($join) use ($facility_id){
 			$join->on('a.TABLE_NAME', '=', 'b.TABLE_NAME')
@@ -764,7 +763,7 @@ class AdminController extends Controller {
 		})
 		->select(['b.ID AS T_ID', 'a.ID', 'a.TABLE_NAME', 'a.FRIENDLY_NAME', 'b.DATE_FROM', 'b.DATE_TO'])
 		->get();
-		\Log::info(\DB::getQueryLog());
+// 		\Log::info(\DB::getQueryLog());
 		
 		foreach ($loadValidateData as $v){
 		
@@ -774,13 +773,7 @@ class AdminController extends Controller {
 					continue;
 			}
 		
-			if(!is_null($v->DATE_FROM)){
-				$v->DATE_FROM = date('m-d-Y', strtotime($v->DATE_FROM));
-			}
-			if(!is_null($v->DATE_TO)){
-				$v->DATE_TO = date('m-d-Y', strtotime($v->DATE_TO));
-			}
-			$v->T_ID = ($v->T_ID?"checked":"");
+			$v->T_ID = ($v->T_ID?"checked":""); 
 		
 			array_push($result, $v);
 		}
@@ -817,7 +810,7 @@ class AdminController extends Controller {
 			$group = '';
 		}
 	
-		\DB::enableQueryLog();
+// 		\DB::enableQueryLog();
 		$loadApproveData = DB::table($intMapTable.' AS a')
 		->leftjoin($auditApproveTable.' AS b', function ($join) use ($facility_id){
 			$join->on('a.TABLE_NAME', '=', 'b.TABLE_NAME')
@@ -830,7 +823,7 @@ class AdminController extends Controller {
 		})
 		->select(['b.ID AS T_ID', 'a.ID', 'a.TABLE_NAME', 'a.FRIENDLY_NAME', 'b.DATE_FROM', 'b.DATE_TO'])
 		->get();
-		\Log::info(\DB::getQueryLog());
+// 		\Log::info(\DB::getQueryLog());
 	
 		foreach ($loadApproveData as $v){
 	
@@ -840,12 +833,6 @@ class AdminController extends Controller {
 					continue;
 			}
 	
-			if(!is_null($v->DATE_FROM)){
-				$v->DATE_FROM = date('m-d-Y', strtotime($v->DATE_FROM));
-			}
-			if(!is_null($v->DATE_TO)){
-				$v->DATE_TO = date('m-d-Y', strtotime($v->DATE_TO));
-			}
 			$v->T_ID = ($v->T_ID?"checked":"");
 	
 			array_push($result, $v);
@@ -864,23 +851,18 @@ class AdminController extends Controller {
 		if((auth()->user() != null)){ 
 			$current_username = auth()->user()->ID;
 		}
-	
+		$obj['DATE_FROM'] 	= \Helper::parseDate($data['DATE_FROM']);
+		$obj['DATE_TO'] 	= \Helper::parseDate($data['DATE_TO']);
+		$obj['USER_ID'] 	= $current_username;
+		$obj['FACILITY_ID'] = $data['FACILITY_ID'];
+		
 		foreach ($table_names as $table){
-	
 			$condition = array(
 					'TABLE_NAME'=>$table,
 					'FACILITY_ID'=>$data['FACILITY_ID']
 			);
-				
 			$obj['TABLE_NAME'] = $table;
-			$obj['DATE_FROM'] = date('Y-m-d', strtotime($data['DATE_FROM']));
-			$obj['DATE_TO'] = date('Y-m-d', strtotime($data['DATE_TO']));
-			$obj['USER_ID'] = $current_username;
-			$obj['FACILITY_ID'] = $data['FACILITY_ID'];
-				
-			\DB::enableQueryLog();
 			AuditApproveTable::updateOrCreate($condition,$obj);
-			\Log::info(\DB::getQueryLog());
 		}
 		
 		$objType_id = $data['OBJECTTYPE'];
@@ -902,7 +884,6 @@ class AdminController extends Controller {
 			$group = '';
 		}
 		
-		\DB::enableQueryLog();
 		$loadApproveData = DB::table($intMapTable.' AS a')
 		->leftjoin($auditApproveTable.' AS b', function ($join) use ($facility_id){
 			$join->on('a.TABLE_NAME', '=', 'b.TABLE_NAME')
@@ -915,7 +896,6 @@ class AdminController extends Controller {
 		})
 		->select(['b.ID AS T_ID', 'a.ID', 'a.TABLE_NAME', 'a.FRIENDLY_NAME', 'b.DATE_FROM', 'b.DATE_TO'])
 		->get();
-		\Log::info(\DB::getQueryLog());
 		
 		foreach ($loadApproveData as $v){
 		
@@ -925,12 +905,6 @@ class AdminController extends Controller {
 					continue;
 			}
 		
-			if(!is_null($v->DATE_FROM)){
-				$v->DATE_FROM = date('m-d-Y', strtotime($v->DATE_FROM));
-			}
-			if(!is_null($v->DATE_TO)){
-				$v->DATE_TO = date('m-d-Y', strtotime($v->DATE_TO));
-			}
 			$v->T_ID = ($v->T_ID?"checked":"");
 		
 			array_push($result, $v);
@@ -968,7 +942,6 @@ class AdminController extends Controller {
 			$group = '';
 		}
 	
-		\DB::enableQueryLog();
 		$loadlockTable = DB::table($intMapTable.' AS a')
 		->leftjoin($lockTable.' AS b', function ($join) use ($facility_id){
 			$join->on('a.TABLE_NAME', '=', 'b.TABLE_NAME')
@@ -981,20 +954,14 @@ class AdminController extends Controller {
 		})
 		->select(['b.ID AS T_ID', 'a.ID', 'a.TABLE_NAME', 'a.FRIENDLY_NAME', 'b.LOCK_DATE'])
 		->get();
-		\Log::info(\DB::getQueryLog());
 	
 		foreach ($loadlockTable as $v){
-	
 			if($group){
 	
 				if (strpos($group,",$v->TABLE_NAME,") === false)
 					continue;
 			}
 	
-			if(!is_null($v->LOCK_DATE)){
-				$v->LOCK_DATE = date('m-d-Y', strtotime($v->LOCK_DATE));
-			}
-			
 			$v->T_ID = ($v->T_ID?"checked":"");
 	
 			array_push($result, $v);
@@ -1009,21 +976,16 @@ class AdminController extends Controller {
 		$data = $request->all();
 		$table_names = explode(',',$data['TABLE_NAMES']);
 	
+		$obj['LOCK_DATE'] 	= \Helper::parseDate($data['DATE_FROM']);
+		$obj['USER_ID'] = $data['USER_ID'];
+		$obj['FACILITY_ID'] = $data['FACILITY_ID'];
 		foreach ($table_names as $table){
-	
 			$condition = array(
 					'TABLE_NAME'=>$table,
 					'FACILITY_ID'=>$data['FACILITY_ID']
 			);
-	
 			$obj['TABLE_NAME'] = $table;
-			$obj['LOCK_DATE'] = date('Y-m-d', strtotime($data['DATE_FROM']));
-			$obj['USER_ID'] = $data['USER_ID'];
-			$obj['FACILITY_ID'] = $data['FACILITY_ID'];
-	
-			\DB::enableQueryLog();
 			LockTable::updateOrCreate($condition,$obj);
-			\Log::info(\DB::getQueryLog());
 		}
 	
 		$objType_id = $data['OBJECTTYPE'];
@@ -1045,7 +1007,6 @@ class AdminController extends Controller {
 			$group = '';
 		}
 	
-		\DB::enableQueryLog();
 		$loadlockTable = DB::table($intMapTable.' AS a')
 		->leftjoin($lockTable.' AS b', function ($join) use ($facility_id){
 			$join->on('a.TABLE_NAME', '=', 'b.TABLE_NAME')
@@ -1058,7 +1019,6 @@ class AdminController extends Controller {
 		})
 		->select(['b.ID AS T_ID', 'a.ID', 'a.TABLE_NAME', 'a.FRIENDLY_NAME', 'b.LOCK_DATE'])
 		->get();
-		\Log::info(\DB::getQueryLog());
 	
 		foreach ($loadlockTable as $v){
 	
@@ -1068,10 +1028,6 @@ class AdminController extends Controller {
 					continue;
 			}
 	
-			if(!is_null($v->LOCK_DATE)){
-				$v->LOCK_DATE = date('m-d-Y', strtotime($v->LOCK_DATE));
-			}
-			
 			$v->T_ID = ($v->T_ID?"checked":"");
 	
 			array_push($result, $v);
@@ -1087,17 +1043,14 @@ class AdminController extends Controller {
 	}
 	
 	public function loadUserLog(Request $request){
-	
 		$data = $request->all();
-	
-		$date_from = Carbon::createFromFormat('m/d/Y',$data['DATE_FROM'])->format('Y-m-d');
-		$date_to = Carbon::createFromFormat('m/d/Y',$data['DATE_TO'])->format('Y-m-d');
+		$date_from 	= \Helper::parseDate($data['DATE_FROM']);
+		$date_to 	= \Helper::parseDate($data['DATE_TO']);
 		$username = trim($data['USERNAME']);
 		$result = array();
 	
 		$logUser = LogUser::getTableName();
 	
-		\DB::enableQueryLog();
 		$loadUserLog = DB::table($logUser.' AS a')
 		->whereDate('a.LOGIN_TIME', '>=', $date_from)
 		->whereDate('a.LOGIN_TIME', '<=', $date_to)
@@ -1108,23 +1061,9 @@ class AdminController extends Controller {
 		})
 		->select(['a.USERNAME', 'a.LOGIN_TIME', 'a.LOGOUT_TIME', 'a.IP'])
 		->get();
-		\Log::info(\DB::getQueryLog());
-	
-		foreach ($loadUserLog as $v){
-	
-			if(!is_null($v->LOGIN_TIME)){
-				$v->LOGIN_TIME = $v->LOGIN_TIME;
-			}
-			
-			if(!is_null($v->LOGOUT_TIME)){
-				$v->LOGOUT_TIME = $v->LOGOUT_TIME;
-			}
-	
-			array_push($result, $v);
-		}
 	
 		return response ()->json ( array (
-				'result' => $result
+				'result' => $loadUserLog
 		) );
 	}
 	

@@ -314,18 +314,12 @@ var _formula = {
 				str += "	<td>"+checkValue(data[i].TABLE_NAME,"")+"</td>";
 				str += "	<td>"+checkValue(data[i].VALUE_COLUMN,"")+"</td>";
 				str += "	<td><span id='Q_Formula_"+data[i].ID+"' style='word-wrap: break-word;'>"+checkValue(data[i].FORMULA,"")+"</span></td>";
-				str += "	<td><span id='Q_BeginDate_"+data[i].ID+"'>"+this.formatDate(checkValue(data[i].BEGIN_DATE,""))+"</span></td>";
-				str += "	<td><span id='Q_EndDate_"+data[i].ID+"'>"+this.formatDate(checkValue(data[i].END_DATE,""))+"</span></td>";
+				str += "	<td><span id='Q_BeginDate_"+data[i].ID+"'>"+formatDate(checkValue(data[i].BEGIN_DATE,""))+"</span></td>";
+				str += "	<td><span id='Q_EndDate_"+data[i].ID+"'>"+formatDate(checkValue(data[i].END_DATE,""))+"</span></td>";
 				str += "	<td><span id='Q_Comment_"+data[i].ID+"'>"+checkValue(data[i].COMMENT,"")+"</span></td>";
 				str += "</tr>";
 			}
 			$('#bodyFormulasList').html(str);
-		},
-		formatDate : function(dateString){
-			var date = dateString!=""? moment.utc(dateString,configuration.time.DATETIME_FORMAT_UTC)
-											.format(configuration.time.DATE_FORMAT)
-									:dateString;
-			return date;
 		},
 		loadVarsList : function(formula_id, formula_name)
 		{

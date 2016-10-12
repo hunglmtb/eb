@@ -191,6 +191,20 @@ function checkValue(sValue, valueDefault){
 	return result;
 }
 
+function formatDate(dateString){
+	var date = dateString!=""? moment.utc(dateString,configuration.time.DATETIME_FORMAT_UTC)
+									.format(configuration.time.DATE_FORMAT)
+							:dateString;
+	return date;
+}
+
+function formatDateTime(dateString){
+	var date = dateString!=""? moment.utc(dateString,configuration.time.DATETIME_FORMAT_UTC)
+									.format(configuration.time.DATETIME_FORMAT)
+							:dateString;
+	return date;
+}
+
 function validateNumber(selector) {
 	var regex = /^-?[0-9]{1,5}$/;
 	if(!regex.test($(selector).val())) {

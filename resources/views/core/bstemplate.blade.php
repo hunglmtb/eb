@@ -1,5 +1,5 @@
 <?php 
-$configuration	= auth()->user()->getConfiguration();
+$configuration	= isset($configuration)?$configuration:auth()->user()->getConfiguration();
 $request 		= request();
 $parameters 	= $request->route()->parameters();
 $rightCode		= isset($parameters['rightCode'])?$parameters['rightCode']:"";
@@ -30,6 +30,7 @@ $rightCode		= isset($parameters['rightCode'])?$parameters['rightCode']:"";
 var configuration =  <?php echo json_encode($configuration); ?>;
 var func_code='{{$rightCode}}';
 </script>
+<script src="/common/js/moment.js"></script>
 <script type="text/javascript" src="/common/js/utils.js"></script>
 <script src="/common/js/jquery-ui.js"></script>
 @yield('script')
