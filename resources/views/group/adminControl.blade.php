@@ -1,6 +1,6 @@
 <script type="text/javascript">
 var ebtoken = $('meta[name="_token"]').attr('content');
-var jsFormat = configuration['picker']['DATE_FORMAT_JQUERY'];//'mm/dd/yy';
+// var jsFormat = configuration['picker']['DATE_FORMAT_JQUERY'];//'mm/dd/yy';
 
 $.ajaxSetup({
 	headers: {

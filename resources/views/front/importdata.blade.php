@@ -43,14 +43,20 @@ $(function(){
 		}
 	})
 
-	var d = new Date();
-	$("#date_begin").val(""+zeroFill(1+d.getMonth(),2)+"/"+zeroFill(d.getDate(),2)+"/"+d.getFullYear()+" 00:00");
-	$("#date_end").val(""+zeroFill(1+d.getMonth(),2)+"/"+zeroFill(d.getDate(),2)+"/"+d.getFullYear()+" 23:59");
+// 	var d = new Date();
+	var dt = moment().format(configuration.time.DATETIME_FORMAT);
+	$("#date_begin").val(dt);
+	$("#date_end").val(dt);
+// 	$("#date_begin").val(""+zeroFill(1+d.getMonth(),2)+"/"+zeroFill(d.getDate(),2)+"/"+d.getFullYear()+" 00:00");
+// 	$("#date_end").val(""+zeroFill(1+d.getMonth(),2)+"/"+zeroFill(d.getDate(),2)+"/"+d.getFullYear()+" 23:59");
+	var jsTimeFormat = configuration['time']['TIME_FORMAT'].replace('A','TT').replace('a','tt');
+	
 	$( "#date_begin, #date_end" ).datetimepicker({
-	    changeMonth:true,
-	    changeYear:true,
-	    dateFormat:"mm/dd/yy",
-		timeFormat: "HH:mm"
+	    changeMonth	:true,
+	    changeYear	:true,
+	    //format		:configuration['time']['DATETIME_FORMAT']
+ 	    dateFormat	: jsFormat,
+ 		timeFormat	: jsTimeFormat //"HH:mm"
 	});
 
 	$('#cboImportSettings').change();
@@ -311,9 +317,9 @@ var _importdata = {
 							id="cbDateAll" type="checkbox"><label for="cbDateAll"><strong></strong></label></td>
 					</tr>
 					<tr>
-						<td><input id='date_begin' style='width: 120px;' type='text'
+						<td><input id='date_begin' style='width: 180px;' type='text'
 							name='date_begin' size='10'></td>
-						<td><input id='date_end' style='width: 120px;' type='text'
+						<td><input id='date_end' style='width: 180px;' type='text'
 							name='date_end' size='10'></td>
 						<td width="140"><select id="cboMethod" style="width: 140px;"
 							size="1" name="cboMethod">

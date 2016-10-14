@@ -1,6 +1,6 @@
 //inline editable
 //turn to inline mode
-$.fn.editable.defaults.mode = 'inline';
+if(typeof($.fn.editable) !== "undefined") $.fn.editable.defaults.mode = 'inline';
 
 var ebtoken = $('meta[name="_token"]').attr('content');
 $.ajaxSetup({

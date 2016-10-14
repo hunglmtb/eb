@@ -106,7 +106,6 @@ class AllocatePlanController extends CodeController {
     	$date_from		=	$occur_date;
     	$date_to 		= 	$postData['date_end'];
 	    $date_to 		= 	\Helper::parseDate($date_to);
-//     	$date_to 		= 	Carbon::parse($date_to);
     	
     	if($object_id<=0)return response("Object Name $object_id not okay", 401);
     	
