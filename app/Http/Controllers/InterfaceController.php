@@ -236,8 +236,10 @@ class InterfaceController extends Controller {
 		$rowStart = $files['rowStart'];
 		$rowFinish = $files['rowFinish'];
 		$cal_method = $files['cal_method'];
-		$date_begin = $files['date_begin'];
-		$date_end = $files['date_end'];
+		$date_begin 	= $files['date_begin'];
+		$date_begin 	= \Helper::parseDate($date_begin);
+		$date_end 		= $files['date_end'];
+		$date_end	 	= \Helper::parseDate($date_end);
 		$update_db = $files['update_db'];
 		$path = "";
 		$tmpFilePath = '/fileUpload/';
@@ -299,8 +301,10 @@ class InterfaceController extends Controller {
 						$statusCode="Y";
 						try{
 							$time = $sheet->rangeToArray($timeColumn.$row)[0][0];
-							$date = $this->proDate($time);
-							if(strtotime($date) >= strtotime($date_begin) && strtotime($date) <= strtotime($date_end)){
+							$carbonDate = $this->proDate($time);
+							$date = $carbonDate->format('m/d/Y');
+// 							if(strtotime($date) >= strtotime($date_begin) && strtotime($date) <= strtotime($date_end)){
+							if($carbonDate&&$carbonDate->gte($date_begin) && $date_end->gte($carbonDate)){
 								$tagID = $sheet->rangeToArray($tagColumn.$row)[0][0];
 								//$arr['tag'] = $tag[0][0];						
 								$value = $sheet->rangeToArray($valueColumn.$row)[0][0];
@@ -343,9 +347,10 @@ class InterfaceController extends Controller {
 								}
 								else
 								{
-									$time = strtotime($date);
-									$Y = date('Y',$time);
-									if($Y=="1970")
+// 									$time = strtotime($date);
+// 									$Y = date('Y',$time);
+									$Y = $carbonDate->year;
+									if($Y==1970)
 									{
 										$hasError=true;
 										$statusCode="NWD";
@@ -391,10 +396,17 @@ class InterfaceController extends Controller {
 							
 										if(!$hasError)
 										{
+											/* $wheres 	= [	$objIDField		=> $r[OBJECT_ID],
+															"OCCUR_DATE"	=> $date,
+															];
+											$attributes = [];
+											$values 	= []; */
+											
 											$objIDField=$this->getObjectIDFiledName($table_name);
 											$sF="";
 											$sV="";
-											$sWhere="$objIDField=$r[OBJECT_ID] and OCCUR_DATE=DATE('$date')";
+											$dateString = $date->format('m/d/Y');
+											$sWhere="$objIDField=$r[OBJECT_ID] and OCCUR_DATE=DATE($dateString)";
 											if(substr($table_name,0,12)=="ENERGY_UNIT_")
 											{
 												$sWhere.=" and FLOW_PHASE=$r[FLOW_PHASE] and EVENT_TYPE=$r[EVENT_TYPE]";
@@ -402,6 +414,11 @@ class InterfaceController extends Controller {
 												$sV.=",$r[FLOW_PHASE]";
 												$sF.=",EVENT_TYPE";
 												$sV.=",$r[EVENT_TYPE]";
+												/* 
+												$wheres["FLOW_PHASE"] 		= $r[FLOW_PHASE];
+												$wheres["EVENT_TYPE"] 		= $r[EVENT_TYPE];
+												$attributes["FLOW_PHASE"] 	= $r[FLOW_PHASE];
+												$wheres["FLOW_PHASE"] 		= $r[FLOW_PHASE]; */
 											}
 											if($table_name=="ENERGY_UNIT_DATA_ALLOC")
 											{
@@ -410,6 +427,13 @@ class InterfaceController extends Controller {
 												$sV.=",$r[ALLOC_TYPE]";
 											}
 											
+											/* if($update_db){
+												$entry 	= DB::table($table_name)->updateOrCreate($attributes,$values);
+												if ($entry->wasRecentlyCreated)	$tags_addnew++;
+												else $tags_override++;
+											}
+											$tags_loaded++; */
+												
 											$tmp = DB::select("select ID from `$table_name` where $sWhere");
 											if(count($tmp) > 0)
 											{
@@ -556,7 +580,8 @@ class InterfaceController extends Controller {
 		if (strlen ( $m ) == 2 && strlen ( $d ) == 2 && strlen ( $y ) == 4) {
 			$date = $m . "/" . $d . "/" . $y;
 		}
-		$date = Carbon::createFromFormat('m/d/Y', $date)->format('m/d/Y');
+// 		$date = Carbon::createFromFormat('m/d/Y', $date)->format('m/d/Y');
+		$date = Carbon::createFromFormat('m/d/Y', $date);
 		return $date;
 	}
 	

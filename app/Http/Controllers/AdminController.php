@@ -608,43 +608,6 @@ class AdminController extends Controller {
 		]);
 	}
 	
-	/* public function loadAudittrail(Request $request){
-		
-		$data = $request->all();
-		$auditTrail = AuditTrail::getTableName();
-		$codeAuditReason = CodeAuditReason::getTableName();
-		$beginDate = Carbon::parse($data['BEGIN']);
-		$endDate = Carbon::parse($data['END']);
-		
-		if($data['OBJECTTYPE'] != 'All'){
-			$objectType = strtoupper(str_replace(' ','_',$data['OBJECTTYPE'])).'_%';
-		}else{
-			$objectType = '%';
-		}
-		
-		$result = array();
-		
-// 		\DB::enableQueryLog();
-		$loadAudittrail = DB::table($auditTrail.' AS a')
-		->leftjoin($codeAuditReason.' AS b', 'a.REASON', '=', 'b.ID')
-		->where(['a.FACILITY_ID' => $data['FACILITY_ID']])
-		->whereDate('a.WHEN', '>=', $beginDate)
-		->whereDate('a.WHEN', '<=', $endDate)
-		->where('TABLE_NAME', 'like', $objectType)
-		->select(['ACTION', 'WHO', 'WHEN', 'TABLE_NAME', 'COLUMN_NAME', 'RECORD_ID', 'OBJECT_DESC', 'OLD_VALUE', 'NEW_VALUE', 'b.NAME AS REASON'])
-		->get();
-// 		\Log::info(\DB::getQueryLog());
-		
-		foreach ($loadAudittrail as $v){
-			$v->WHEN = date('m-d-Y', strtotime($v->WHEN));
-			array_push($result, $v);
-		}
-		
-		return response ()->json ( array (
-				'result' => $result
-		) );
-	} */
-	
 	public function _indexValidatedata(){
 		return view ( 'admin.validatedata');
 	}

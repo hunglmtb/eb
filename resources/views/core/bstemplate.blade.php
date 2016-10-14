@@ -29,6 +29,7 @@ $rightCode		= isset($parameters['rightCode'])?$parameters['rightCode']:"";
 <script type='text/javascript'>
 var configuration =  <?php echo json_encode($configuration); ?>;
 var func_code='{{$rightCode}}';
+var jsFormat = configuration['picker']['DATE_FORMAT_JQUERY'];//'mm/dd/yy';
 </script>
 <script src="/common/js/moment.js"></script>
 <script type="text/javascript" src="/common/js/utils.js"></script>
