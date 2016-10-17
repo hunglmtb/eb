@@ -237,9 +237,9 @@ class InterfaceController extends Controller {
 		$rowFinish = $files['rowFinish'];
 		$cal_method = $files['cal_method'];
 		$date_begin 	= $files['date_begin'];
-		$date_begin 	= \Helper::parseDate($date_begin);
+		$date_begin 	= Carbon::parse($date_begin);
 		$date_end 		= $files['date_end'];
-		$date_end	 	= \Helper::parseDate($date_end);
+		$date_end	 	= Carbon::parse($date_end);
 		$update_db = $files['update_db'];
 		$path = "";
 		$tmpFilePath = '/fileUpload/';
@@ -300,7 +300,8 @@ class InterfaceController extends Controller {
 						$err="";
 						$statusCode="Y";
 						try{
-							$time = $sheet->rangeToArray($timeColumn.$row)[0][0];
+							$rowData = $sheet->rangeToArray($timeColumn.$row);
+							$time = $rowData[0][0];
 							$carbonDate = $this->proDate($time);
 							$date = $carbonDate->format('m/d/Y');
 // 							if(strtotime($date) >= strtotime($date_begin) && strtotime($date) <= strtotime($date_end)){
@@ -497,13 +498,13 @@ class InterfaceController extends Controller {
 					
 					$end_time=date('Y-m-d H:i:s');					
 					IntImportLog::where(['ID'=>$log_id])
-					->update([
-						'END_TIME'=>$end_time, 
-						'TAGS_READ'=>$tags_read, 
-						'TAGS_LOADED'=>$tags_loaded, 
-						'TAGS_REJECTED'=>$tags_rejected, 
-						'TAGS_OVERRIDE'=>$tags_override
-					]);
+								->update([
+									'END_TIME'=>$end_time, 
+									'TAGS_READ'=>$tags_read, 
+									'TAGS_LOADED'=>$tags_loaded, 
+									'TAGS_REJECTED'=>$tags_rejected, 
+									'TAGS_OVERRIDE'=>$tags_override
+								]);
 					
 					$str .= "<h3>Import log</h3>";
 					$str .= "<input type='button' style='display:none' value='Back' onclick=\"document.location.href='/doimport';\" />";
@@ -580,8 +581,8 @@ class InterfaceController extends Controller {
 		if (strlen ( $m ) == 2 && strlen ( $d ) == 2 && strlen ( $y ) == 4) {
 			$date = $m . "/" . $d . "/" . $y;
 		}
-// 		$date = Carbon::createFromFormat('m/d/Y', $date)->format('m/d/Y');
-		$date = Carbon::createFromFormat('m/d/Y', $date);
+		$date = Carbon::createFromFormat('m/d/Y h:i', $date);
+		$date->addYear(2000);
 		return $date;
 	}
 	
@@ -591,8 +592,8 @@ class InterfaceController extends Controller {
 		$connection_id = $data['connection_id'];
 		$tagset_id = $data['tagset_id'];
 		$cal_method = $data['cal_method'];
-		$date_begin = $data['date_begin'];
-		$date_end = $data['date_end'];
+		$date_begin 	= $data['date_begin'];
+		$date_end 		= $data['date_end'];
 		$update_db = $data['update_db'];
 		
 		$int_connection = IntConnection::where(['ID'=>$connection_id])->select('SERVER', 'USER_NAME', 'PASSWORD')->first();		
@@ -604,9 +605,6 @@ class InterfaceController extends Controller {
 		$ptags = $intTagSet->TAGS;
 		
 		$str = "";
-		
-		$date_begin = Carbon::createFromFormat('m/d/Y  H:i', $date_begin)->format('Y-m-d H:i:s');
-		$date_end = Carbon::createFromFormat('m/d/Y  H:i', $date_end )->format ( 'Y-m-d H:i:s' );
 		
 		if ($update_db && $cal_method == "all") {
 			return response ()->json ( "<font color='red'>Not allow inport data with method '<b>All</b>'</font>" );

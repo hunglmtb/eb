@@ -28,11 +28,9 @@ $currentSubmenu = '/importdata';
 @stop @section('content')
 <script src="/common/js/jquery.js"></script>
 <script src="/common/js/jquery-ui.js"></script>
-<script src="/common/js/utils.js"></script>
 <script src="/common/js/jquery-ui-timepicker-addon.js"></script>
+<link rel="stylesheet" href="/common/css/jquery-ui-timepicker-addon.css"/>
 
-<link rel="stylesheet" href="/common/css/jquery-ui.css" />
-<link rel="stylesheet" href="/common/css/style.css"/>
 <script type="text/javascript">
 
 $(function(){
@@ -56,7 +54,9 @@ $(function(){
 	    changeYear	:true,
 	    //format		:configuration['time']['DATETIME_FORMAT']
  	    dateFormat	: jsFormat,
- 		timeFormat	: jsTimeFormat //"HH:mm"
+ 		timeFormat	: jsTimeFormat, //"HH:mm",
+ 		showTimezone	: false,
+ 		showMicrosec	: null
 	});
 
 	$('#cboImportSettings').change();
@@ -132,8 +132,8 @@ var _importdata = {
 					        formData.append('rowStart', $('#rowStart').val());
 					        formData.append('rowFinish', $('#rowFinish').val());
 					        formData.append('cal_method', $('#cal_method').val()); 
-					        formData.append('date_begin', $('#date_begin').val()); 
-					        formData.append('date_end', $('#date_end').val());
+					        formData.append('date_begin', formatDateTimeUTC($('#date_begin').val())); 
+					        formData.append('date_end', formatDateTimeUTC($('#date_end').val()));
 					        formData.append('update_db', $('#update_db').val());    
 					    }
 

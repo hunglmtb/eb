@@ -204,6 +204,13 @@ function formatDateTime(dateString){
 							:dateString;
 	return date;
 }
+function formatDateTimeUTC(dateString){
+	var date = dateString!=""? moment.utc(dateString,configuration.time.DATETIME_FORMAT)
+									.format(configuration.time.DATETIME_FORMAT_UTC)
+							:dateString;
+	return date;
+}
+
 
 function validateNumber(selector) {
 	var regex = /^-?[0-9]{1,5}$/;
