@@ -468,3 +468,6 @@ table.dataTable thead .BAL_POWER,table.dataTable thead .ADJUST_POWER {
     background-color: #ffff88;
 }  
 
+#boxHelp strong{
+	font-size:26px;
+}
