@@ -378,11 +378,12 @@ class FormulaController extends Controller {
 			}
 		}
 		
-		if(!$occur_date) $occur_date=date("m/d/Y");
+		if(!$occur_date) $occur_date	=	Carbon::now();
+		else $occur_date	=	\Helper::parseDate($occur_date);
 		
 		$param = Formula::find($fid);
 		
-		$v = \FormulaHelpers::evalFormula($param, $occur_date);
+		$v = \FormulaHelpers::evalFormula($param, $occur_date,true);
 		
 		//echo $v;
 		return response ()->json ( $v);

@@ -343,44 +343,41 @@ class FormulaHelpers {
     }
     
     public static function evalFormula($formulaRow,$occur_date = null,  $show_echo = false){
-    	if(!$formulaRow)
-    	{
-    		return false;
+    	$logs = false;
+    	if(!$formulaRow){
+    		$logs = $show_echo?["error"		=> true,"reason"	=> "Formula is out of date range"]:false;
+			return $logs;
     	}
     	 
     	$fid = $formulaRow->ID;
     	$flow_phase = $formulaRow->FLOW_PHASE;
     	$object_id = $formulaRow->OBJECT_ID;
     	$formula = $formulaRow->FORMULA;
-    	if (!$formula) 	throw new Exception("formula $formulaRow->NAME was empty. Please set it in formula table");
+    	if (!$formula) 	{
+    		$logs = $show_echo?["error"		=> true,
+    				"reason"	=> "formula $formulaRow->NAME was empty. Please set it in formula table"]:false;
+    		if($show_echo)  return $logs;
+    		else throw new Exception("formula $formulaRow->NAME was empty. Please set it in formula table");
+    	}
     		
     	$foVars = $formulaRow->FoVar()->get();
-    
-    	/* if(!$object_id)
-    	 {
-    	 $object_id=getOneValue("select a.OBJECT_ID from FORMULA a where a.ID=$fid");
-    	 $object_id=explode(',',$object_id);
-    	 $object_id=$object_id[0];
-    	 } */
     	 
     	$CURRENT_DATE=date("Y-m-d");
-    	//     	$formula=getOneValue("select FORMULA from `FORMULA` where id='$fid'");
-    
-    	/* $sSQL="select a.*, case when (a.STATIC_VALUE like '%-%-%' or a.STATIC_VALUE = '@OCCUR_DATE') then 1 else 0 end IS_DATE from fo_var a where a.formula_id='$fid' order by a.`ORDER`";
-    	 $result=mysql_query($sSQL) or die (mysql_error()); */
     	$s="";
     	$i=0;
-    	$vars=array();
-    	$vvv=array();
-    	/* if($occur_date)
-    	{
-    		$sdate=explode("/",$occur_date);
-    		if(sizeof($sdate)>=3)
-    			$occur_date=$sdate[2]."-".$sdate[0]."-".$sdate[1];
-    	} */
-    	 
+    	$vars	= array();
+    	$vvv	= array();
+    	$logs	= [	"error"		=> false,
+    				"variables"	=> []
+    	];
+    	
     	foreach($foVars as $row ){
-    		 
+    		if($show_echo) {
+    			$logs["variables"][] =  ["content" => "Processing $row->NAME=$row->STATIC_VALUE ...",	"type" => "source"];
+    			$sqlLog 	=  null;
+    			$valueLog 	=  null;
+    		}
+    		
     		array_push($vvv,$row->NAME);
     		$row->STATIC_VALUE=str_replace("@OCCUR_DATE","'$occur_date'",$row->STATIC_VALUE);
     		$row->STATIC_VALUE=str_replace("@OBJECT_ID",$object_id,$row->STATIC_VALUE);
@@ -389,70 +386,65 @@ class FormulaHelpers {
     		$row->STATIC_VALUE=str_replace("#OIL#","1",$row->STATIC_VALUE);
     		$row->STATIC_VALUE=str_replace("#GAS#","2",$row->STATIC_VALUE);
     		$row->STATIC_VALUE=str_replace("#WATER#","3",$row->STATIC_VALUE);
-    		if(strpos($row->STATIC_VALUE,"#CODE_")!==false)
-    			$row->STATIC_VALUE=processFormulaCodeConstant($row->STATIC_VALUE);
-    
-    			if($row->IS_DATE>0)
-    			{
+    		if(strpos($row->STATIC_VALUE,"#CODE_")!==false) $row->STATIC_VALUE=processFormulaCodeConstant($row->STATIC_VALUE);
+    		if($row->IS_DATE>0){
     				$s='$'.$row->NAME."='$row->STATIC_VALUE';\$vs=\$$row->NAME;";
     				eval($s);
     				$vars[$row->NAME]=$vs;
-    			}
-    			else if(is_numeric($row->STATIC_VALUE))
-    			{
+    				if($show_echo) $valueLog=  ["content" 	=> "$row->NAME = $vs",	"type" 		=> "value"];
+    		}
+    		else if(is_numeric($row->STATIC_VALUE)){
     				$s='$'.$row->NAME."=$row->STATIC_VALUE;\$vs=\$$row->NAME;";
     				eval($s);
     				$vars[$row->NAME]=$vs;
-    			}
-    			else if(strpos($row->STATIC_VALUE,"[")>0)
-    			{
+    				if($show_echo) $valueLog=  ["content" 	=> "$row->NAME = $vs",	"type" 		=> "value"];
+    		}
+    		else if(strpos($row->STATIC_VALUE,"[")>0){
     				$i=strpos($row->STATIC_VALUE,"[");
     				$j=strpos($row->STATIC_VALUE,"]",$i);
-    				if($j>$i)
-    				{
+    				if($j>$i){
     					$ms=substr($row->STATIC_VALUE,0,$i);
     					$key=substr($row->STATIC_VALUE,$i+1,$j-$i-1);
     					$vs=explode("\r",$vars[$ms]);
     					$vl="";
-    					foreach($vs as $v)
-    					{
+    					foreach($vs as $v){
     						$vx=explode("=",$v);
-    						if(trim($vx[0])==$key)
-    						{
+    						if(trim($vx[0])==$key){
     							$vl=$vx[1];
     							break;
     						}
     					}
-    					if($vl)
-    					{
+    					if($vl){
     						$s='$'.$row->NAME."=$vl;\$vs=\$$row->NAME;";
     						eval($s);
     						$vars[$row->NAME]=$vs;
+    						if($show_echo) $valueLog=  ["content" 	=> "$row->NAME = $vs",	"type" 		=> "value"];
     					}
     				}
-    			}
-    			else if(substr($row->STATIC_VALUE,0,6)=="matlab")
-    			{
-    				$i=strpos($row->STATIC_VALUE,"(");
-    				$j=strpos($row->STATIC_VALUE,")",$i);
-    				if($j>$i)
-    				{
-    					$ms=explode(",",substr($row->STATIC_VALUE,$i+1,$j-$i-1));
-    					$args="";
-    					$matlab_code=$ms[0];
-    					for($i=1;$i<sizeof($ms);$i++)
-    					{
-    						$args.=($args==""?"":"%20").$vars[$ms[$i]];
-    					}
-    					$s="\$vs = file_get_contents('http://energybuilder.co/eb/matlab/$matlab_code/$matlab_code.php?act=get&a=".$args."', true);";
-    					//echo "xxxxx".$s;
-    					eval($s);
-    					$vars[$row->NAME]=$vs;
-    				}
-    				//$s="$m = file_get_contents('http://energybuilder.co/eb/matlab/test.php?act=get&a=1%204%202', true);
-    			}
-    			else if(substr($row->STATIC_VALUE,0,7)=="getData")
-    			{
+    		}
+    		else if (substr ( $row->STATIC_VALUE, 0, 6 ) == "matlab") {
+				$i = strpos ( $row->STATIC_VALUE, "(" );
+				$j = strpos ( $row->STATIC_VALUE, ")", $i );
+				if ($j > $i) {
+					$ms = explode ( ",", substr ( $row->STATIC_VALUE, $i + 1, $j - $i - 1 ) );
+					$args = "";
+					$matlab_code = $ms [0];
+					for($i = 1; $i < sizeof ( $ms ); $i ++) {
+						$args .= ($args == "" ? "" : "%20") . $vars [$ms [$i]];
+					}
+					$s = "\$vs = file_get_contents('http://energybuilder.co/eb/matlab/$matlab_code/$matlab_code.php?act=get&a=" . $args . "', true);";
+					// echo "xxxxx".$s;
+					eval ( $s );
+					$vars [$row->NAME] = $vs;
+					if ($show_echo)
+						$valueLog = [ 
+								"content" => "$row->NAME = $vs",
+								"type" => "value" 
+						];
+				}
+				// $s="$m = file_get_contents('http://energybuilder.co/eb/matlab/test.php?act=get&a=1%204%202', true);
+			} 
+    		else if(substr($row->STATIC_VALUE,0,7)=="getData"){
     				if($row->TABLE_NAME && $row->VALUE_COLUMN)
     				{
     					$j=strpos($row->STATIC_VALUE,"(");
@@ -466,6 +458,7 @@ class FormulaHelpers {
     						//echo "field: $field<br>";
     						$params=explode(",",substr($row->STATIC_VALUE,$j+1,$k-$j-1));
     						$where = [];
+    						$whereDate	= [];
     						$swhere = false;
     						foreach ($params as $param)
     						{
@@ -509,8 +502,8 @@ class FormulaHelpers {
 	    							$sql.=" and $pp";
 //     								$swhere.=" and $pp";
 	    							if($whereItem[0]=="OCCUR_DATE"||$whereItem[0]=="EFFECTIVE_DATE"){
-	    								$whereItem[2] = $occur_date;
-		    							$where[]=$whereItem;
+	    								$whereItem[2] 	= $occur_date;
+		    							$whereDate[]	= $whereItem;
 	    							}
 	    							else if (strpos($whereItem[0], 'month') !== false || strpos($whereItem[0], 'year') !== false) {
     									$swhere = $swhere?"$swhere and $pp":$pp;
@@ -522,12 +515,18 @@ class FormulaHelpers {
     							}
     						}
     						$sql .= " limit 100";
-//      						\DB::enableQueryLog();
+    						if($show_echo) $sqlLog=  ["content" 	=> $sql,	"type" 		=> "sql"];
+    						//      						\DB::enableQueryLog();
 //      						$getDataResult = DB::table($table)->where( \DB::raw($swhere))->select($field)->skip(0)->take(100)->get();
        						$queryField = DB::table($table)->where($where);
        						if ($swhere) {
        							$queryField->where( \DB::raw($swhere));
        						}
+       						
+       						foreach ($whereDate as $dkey => $dvalue){
+       							$queryField->whereDate($dvalue[0],$dvalue[1],$dvalue[2]);
+       						}
+       						
     						$getDataResult = $queryField->select($field)->skip(0)->take(100)->get();
 //      						\Log::info(\DB::getQueryLog());
     						unset($table);
@@ -542,6 +541,7 @@ class FormulaHelpers {
     						{
     							$s='$'.$row->NAME."='null';\$vs=\$$row->NAME;";
     							eval($s);
+    							if($show_echo) $valueLog=  ["content" 	=> "$row->NAME = $vs",	"type" 		=> "value"];
     						}
     						else if($num_rows==1)
     						{
@@ -552,6 +552,7 @@ class FormulaHelpers {
     								$stdvl = $sqlvalue->$field;
     								$s='$'.$row->NAME."='$stdvl';\$vs=\$$row->NAME;";
     								eval($s);
+    								if($show_echo) $valueLog=  ["content" 	=> "$row->NAME = $vs",	"type" 		=> "value"];
     							}
     							else
     							{
@@ -567,6 +568,7 @@ class FormulaHelpers {
     								//}
     								$s='$'.$row->NAME.'=$sqlarray;'."\$vs=\$$row->NAME;";
     								eval($s);
+    								if($show_echo) $valueLog=  ["content" 	=> "$row->NAME = $vs",	"type" 		=> "value"];
     							}
     						}
     						else
@@ -594,6 +596,7 @@ class FormulaHelpers {
     							}
     							$s='$'.$row->NAME.'=$sqlarray;'."\$vs=\$$row->NAME;";
     							eval($s);
+    							if($show_echo) $valueLog=  ["content" 	=> "$row->NAME is an array with $num_rows rows",	"type" 		=> "value"];
     						}
     
     						$vars[$row->NAME]=$vs;
@@ -603,8 +606,7 @@ class FormulaHelpers {
     					}
     				}
     			}
-    			else
-    			{
+    			else{
     				$v=$row->STATIC_VALUE;
     				$i=strpos($v,".");
     				if($i>0)
@@ -633,19 +635,27 @@ class FormulaHelpers {
     						$s='$'.$row->NAME."='$sqlvalue';\$vs=\$$row->NAME;";
     						eval($s);
     						$vars[$row->NAME]=$vs;
+    						if($show_echo) {
+    							$sqlLog		=  ["content" 	=> $sql,				"type" 		=> "sql"];
+    							$valueLog	=  ["content" 	=> "$row->NAME = $vs",	"type" 		=> "value"];
+    						}
     					}
     				}
     			}
+    			if($show_echo) {
+    				if($sqlLog) 	$logs["variables"][] 	= $sqlLog;
+    				if($valueLog) 	$logs["variables"][] 	= $valueLog;
+    			}
     	}
     
-    	/* while($row=mysql_fetch_array($result))
-    	 {} */
+    	if($show_echo) $logs["variables"][] =  ["content" => "Processing final expression ...",	"type" => "source"];
+    	 
     	$f=$formula;
     	$varsKey = [];
     	foreach($vvv as $key => $v)
     	{
     		//$f=str_replace($v,$vars[$v],$f);
-    		if(!$vars[$v]) $f=str_replace($v,"0",$f);
+    		if(!isset($vars[$v])||!$vars[$v]) $f=str_replace($v,"0",$f);
     		
     		else if(is_array($vars[$v])) {
     			$varsKey[$v] = $vars[$v];
@@ -658,14 +668,20 @@ class FormulaHelpers {
     	$f=str_replace("@DATE",$CURRENT_DATE,$f);
     
     	$s='$vf = '.$f.";";
+    	
+    	if($show_echo) $logs["variables"][] =  ["content" => $f,	"type" => "sql"];
+    	
+    	
     	if(!(self::php_syntax_error($s)))
     	{
       		set_error_handler("evalErrorHandler");
 	    	try {
     			eval($s);
+    			if($show_echo) $logs["variables"][] =  ["content" => "Final result: $vf",	"type" => "value"];
 	    	} catch( Exception $e ){
     			\Log::info("Exception with eval $s ".$e->getMessage());
 	    		$vf=null;
+    			if($show_echo) $logs["variables"][] =  ["content" => "Syntax error in final expression: $s",	"type" => "error"];
 	    	}
 	    		
   	    	restore_error_handler();
@@ -673,8 +689,10 @@ class FormulaHelpers {
     	else
     	{
     		$vf=null;
+    		if($show_echo) $logs["variables"][] =  ["content" => "Syntax error in final expression: $s",	"type" => "error"];
     	}
-    
+    	
+    	if($show_echo) return $logs;
     	return $vf;
     }
 
