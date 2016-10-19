@@ -101,6 +101,10 @@ $(function(){
 	     changeYear:true,
 	     dateFormat:jsFormat
 	});	
+
+	$('#cboObjType').change(function(e){
+		_formula.loadObjects();
+	});
 });
 
 var _formula = {
@@ -132,6 +136,7 @@ var _formula = {
 			}
 		},
 		loadObjects : function(){
+			$('#cboObjName').html("");
 			var objectType = $("#cboObjType").val();
 
 			param = {
