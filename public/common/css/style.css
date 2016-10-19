@@ -471,3 +471,6 @@ table.dataTable thead .BAL_POWER,table.dataTable thead .ADJUST_POWER {
 #boxHelp strong{
 	font-size:26px;
 }
+#test_log .sql,#test_log .value{
+	color:blue
+}

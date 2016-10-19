@@ -22,7 +22,8 @@ $filterEndDate = ['name'	=> "End date",
 	<b>Group</b>
 	<select id="cboFormulaGroups" onchange="_formula.loadFormulasList();">
 		@foreach($fo_group as $re)
-		<option value="{!!$re['ID']!!}">{!!$re['NAME']!!}</option> @endforeach
+		<option value="{!!$re['ID']!!}">{!!$re['NAME']!!}</option> 
+		@endforeach
 	</select>
 	
 	<button onclick="_formula.renameGroup()">Rename</button>
@@ -92,12 +93,13 @@ $(function(){
 	});
 
 	var d = new Date();
-	$("#test_formula_occur_date").val(""+zeroFill(1+d.getMonth(),2)+"/01/"+d.getFullYear());
+//  	$("#test_formula_occur_date").val(""+zeroFill(1+d.getMonth(),2)+"/01/"+d.getFullYear());
+//  	$("#test_formula_occur_date").val(formatDate(checkValue(data[i].DATE_FROM,'')));
 // 	$('#txtEndDate').val(""+zeroFill(1+d.getMonth(),2)+"/01/"+d.getFullYear());
 	$( "#test_formula_occur_date" ).datepicker({
 	    changeMonth:true,
 	     changeYear:true,
-	     dateFormat:"mm/dd/yy"
+	     dateFormat:jsFormat
 	});	
 });
 
@@ -577,42 +579,58 @@ var _formula = {
 					}
 				});			
 		},
-		testFormula : function(formula_id)
+		testFormula : function(id)
 		{
-			if(formula_id==undefined)
-				formula_id=_formula.current_formula_id;
+			if(id==undefined)
+				id=_formula.current_formula_id;
 			
-			if(formula_id>0) 
+			if(id<0) 
+				id=_formula.current_formula_id;
+			else
 			{
 				$("#test_formula_occur_date").val("");
+				_formula.current_formula_id=id;
 				$("#div_edit_date").hide();
-				$("#boxTest").dialog({
-					width: 900,
-					height: 500,
-					modal: true,
-					title: "Test formula"});
-
-				$("#test_formula").html($("#Q_Formula_"+formula_id).html());
-				$('#test_log').html("Processing...");
-
-				param = {
-					'fid' : formula_id,
-					'occur_date' : $("#test_formula_occur_date").val()
-				};		
-
-				sendAjaxNotMessage('/testformula', param, function(data){
-					if(data=="need_occur_date")
-					{
-						$("#test_formula_occur_date").val("");
-						$("#div_edit_date").show();
-						$('#test_log').html("Please select occur date");
-						//alert("Please select occur date");
-						$("#test_formula_occur_date").focus();
-					}
-					else
-						$('#test_log').html(data);
-				});		
 			}
+			$("#boxTest").dialog({
+				width: 900,
+				height: 500,
+				modal: true,
+				title: "Test formula"});
+
+			$("#test_formula").html($("#Q_Formula_"+id).html());
+			$('#test_log').html("Processing...");
+
+			param = {
+				'fid' : id,
+				'occur_date' : $("#test_formula_occur_date").val()
+			};	
+			
+			sendAjaxNotMessage('/testformula', param, function(data){
+				if(data=="need_occur_date")
+				{
+					$("#test_formula_occur_date").val("");
+					$("#div_edit_date").show();
+					$('#test_log').html("Please select occur date");
+					//alert("Please select occur date");
+					$("#test_formula_occur_date").focus();
+				}
+				else{
+					$('#test_log').html("");
+					var htmlLog = jQuery('<div/>', {});
+					if(data["error"]) htmlLog.text = data["reason"];
+					else {
+						$.each(data["variables"], function( index, value ) {
+							var lineLog = jQuery('<div/>', {
+							    text: value.content
+							});
+							lineLog.addClass(value.type);
+							lineLog.appendTo(htmlLog);
+						});
+					}
+					htmlLog.appendTo('#test_log');
+				}
+			});	
 		},
 		deleteVar : function(var_id)
 		{
