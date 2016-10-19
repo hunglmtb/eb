@@ -459,6 +459,8 @@ class FormulaHelpers {
     						$params=explode(",",substr($row->STATIC_VALUE,$j+1,$k-$j-1));
     						$where = [];
     						$whereDate	= [];
+    						$whereMonth	= [];
+    						$whereYear	= [];
     						$swhere = false;
     						foreach ($params as $param)
     						{
@@ -507,6 +509,14 @@ class FormulaHelpers {
 	    							}
 	    							else if (strpos($whereItem[0], 'month') !== false || strpos($whereItem[0], 'year') !== false) {
     									$swhere = $swhere?"$swhere and $pp":$pp;
+    									/* if (strpos($whereItem[0], 'month') !== false) {
+    										$whereItem[2] 	= $occur_date->month;
+	    									$whereMonth[] 	= $whereItem;
+    									}
+    									else {
+    										if (strpos($whereItem[0], 'year') !== false) $whereItem[2] = $occur_date->year;
+	    									$whereYear[] 	= $whereItem;
+    									} */
 	    							}
 	    							else {
 		    							$where[]=$whereItem;
@@ -527,6 +537,14 @@ class FormulaHelpers {
        							$queryField->whereDate($dvalue[0],$dvalue[1],$dvalue[2]);
        						}
        						
+       						foreach ($whereMonth as $mkey => $mvalue){
+       							$queryField->whereMonth($mvalue[0],$mvalue[1],$mvalue[2]);
+       						}
+       						
+       						foreach ($whereYear as $ykey => $yvalue){
+       							$queryField->whereYear($yvalue[0],$yvalue[1],$yvalue[2]);
+       						}
+       						 
     						$getDataResult = $queryField->select($field)->skip(0)->take(100)->get();
 //      						\Log::info(\DB::getQueryLog());
     						unset($table);
