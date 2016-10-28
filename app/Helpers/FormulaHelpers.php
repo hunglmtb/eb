@@ -289,7 +289,7 @@ class FormulaHelpers {
     	//     	\DB::enableQueryLog();
     	$foVars = FoVar::with('Formula')
     						->where($where)
-    						->whereIn('VALUE_COLUMN',$columns)
+//     						->whereIn('VALUE_COLUMN',$columns)
 //     						->select('AFFFECT_ID')
     						->get();
     	//     	\Log::info(\DB::getQueryLog());

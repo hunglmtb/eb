@@ -27,56 +27,56 @@ class graphController extends Controller {
 	}
 	
 	public function _index() {
-		$workSpace = $this->getWorkSpaceInfo();
+		$codeFlowPhase	= ["name"		=>	"CodeFlowPhase",
+							"source"	=>	"ObjectName" ];
+		$filterGroups = array(	'productionFilterGroup'	=>[	['name'			=>'CodeProductType',
+															'independent'	=>true,
+															'extra'			=> ["Facility","CodeProductType","IntObjectType"],
+															'dependences'	=>["ObjectName",
+																				$codeFlowPhase]],
+															['name'			=>'IntObjectType',
+															'independent'	=>true,
+															"getMethod"		=> "getGraphObjectType",
+															'extra'			=> ["Facility","CodeProductType","IntObjectType"],
+															'dependences'	=>[	"ObjectName",
+																				["name"		=>	"ObjectDataSource"],
+																				"ObjectTypeProperty",
+																				$codeFlowPhase
+																			]
+															]
+														],
+								'frequenceFilterGroup'	=> [	["name"			=> "ObjectName",
+																"getMethod"		=> "loadBy",
+																'dependences'	=> ["CodeFlowPhase"],
+																"source"		=> ['productionFilterGroup'=>["Facility","IntObjectType","CodeProductType"]]],
+																["name"			=> "ObjectDataSource",
+																"getMethod"		=> "loadBy",
+																"filterName"	=>	"Data source",
+																'dependences'	=> ["ObjectTypeProperty"],
+																"source"		=> ['productionFilterGroup'=>["IntObjectType"]]],
+																["name"			=> "ObjectTypeProperty",
+																"getMethod"		=> "loadBy",
+																"filterName"	=>	"Property",
+																"source"		=>  ['frequenceFilterGroup'=>["ObjectDataSource"]]],
+																["name"			=> "CodeFlowPhase",
+																"getMethod"		=> "loadBy",
+																"source"		=>  ['frequenceFilterGroup'=>["ObjectName"]]],
+																"CodeAllocType",
+																["name"			=>	"CodePlanType",
+																 "filterName"	=>	"Plan type",
+																],
+																["name"			=>	"CodeForecastType",
+																"filterName"	=>	"Forecast type",
+																]
+															],
+								'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
+																['id'=>'date_end','name'=>'To date']),
+								'enableButton'			=> false,
+								'FacilityDependentMore'	=> ["ObjectName","CodeFlowPhase"],
+								'extra' 				=> ['IntObjectType','CodeProductType']
+		);
 		
-		$facility = Facility::select('ID')->first();
-		$facility_id = $facility->ID;
-		
-		$dt = new \DateTime();
-		$date_begin = $dt->format('m/d/Y');
-		$date_end = $dt->format('m/d/Y');
-		
-		if(count($workSpace) > 0){
-						
-			if($workSpace->W_FACILITY_ID != null){
-				$facility_id = $workSpace->W_FACILITY_ID;
-			}
-			
-			if($workSpace->DATE_BEGIN != null){
-				$date_begin = $workSpace->DATE_BEGIN;
-			}
-			
-			if($workSpace->DATE_END != null){
-				$date_end = $workSpace->DATE_END;
-			}
-			
-			if($workSpace->PRODUCTION_UNIT_ID != null){
-				$production_unit_id = $workSpace->PRODUCTION_UNIT_ID;
-			}
-			
-			if($workSpace->AREA_ID != null){
-				$area_id = $workSpace->AREA_ID;
-			}
-		}
-		
-		$data = [
-			'facility_id'=>$facility_id,
-			'product_type' => 0,
-			'date_begin'=>$date_begin,
-			'date_end'=>$date_end,
-			'object_type'=>'FLOW'
-		];
-		
-		$code_alloc_type = CodeAllocType::all(['ID', 'NAME']);
-		$code_plan_type = CodePlanType::all(['ID', 'NAME']);
-		$code_forecast_type = CodeForecastType::all(['ID', 'NAME']);
-		
-		$datasource = $this->getDataSource('FLOW');			
-		
-		$tmp = $this->loadObjectname($data);
-		
-		return view ( 'front.graph',['result'=>$tmp, 'workSpace'=>$workSpace, 'code_alloc_type'=>$code_alloc_type, 
-				'code_plan_type'=>$code_plan_type, 'code_forecast_type'=>$code_forecast_type, 'datasource'=>$datasource]);
+		return view ( 'front.graph',['filters'			=> $filterGroups]);
 	}
 	
 	private function getDataSource($code){

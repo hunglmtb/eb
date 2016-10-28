@@ -14,7 +14,7 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function demurrageebo() {
-		$filterGroups = array(	'productionFilterGroup'	=>[		2		=>'Storage'],								
+		$filterGroups = array(	'productionFilterGroup'	=>[	'Facility'		=>'Storage'],								
 								'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
 																['id'=>'date_end','name'=>'To date']),
 								'enableSaveButton'		=> 	false,
@@ -23,7 +23,7 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function cargostatus() {
-		$filterGroups = array(	'productionFilterGroup'	=>[/* 2	=>'Storage' */],
+		$filterGroups = array(	'productionFilterGroup'	=>[/*'Facility'	=>'Storage' */],
 								'enableSaveButton'		=> 	false,
 		);
 		return view ( 'front.cargomanagement.cargostatus',['filters'=>$filterGroups]);
@@ -38,7 +38,7 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function cargonomination() {
-		$filterGroups = array(	'productionFilterGroup'	=>[2			=>'Storage'],
+		$filterGroups = array(	'productionFilterGroup'	=>['Facility'		=>'Storage'],
 								'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
 																['id'=>'date_end','name'=>'To date']),
 						);
@@ -46,7 +46,7 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function cargoschedule() {
-		$filterGroups = array(	'productionFilterGroup'	=>[2=>'Storage'],
+		$filterGroups = array(	'productionFilterGroup'	=>['Facility'=>'Storage'],
 				'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
 						['id'=>'date_end','name'=>'To date']),
 		);
@@ -54,7 +54,7 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function cargodocuments() {
-		$filterGroups = array(	'productionFilterGroup'	=>[2			=>'Storage'],
+		$filterGroups = array(	'productionFilterGroup'	=>['Facility'		=>'Storage'],
 								'enableSaveButton'		=> 	false,
 								'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
 																['id'=>'date_end','name'=>'To date']),
@@ -70,7 +70,7 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function liftaccdailybalance() {
-		$filterGroups = array(	'productionFilterGroup'	=>	[	2			=>'Storage',
+		$filterGroups = array(	'productionFilterGroup'	=>	['Facility'		=>'Storage',
 																'Storage'	=>'PdLiftingAccount',
 															],
 								'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
@@ -81,7 +81,7 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function liftaccmonthlyadjust() {
-		$filterGroups = array(	'productionFilterGroup'	=>	[	2			=>'Storage',
+		$filterGroups = array(	'productionFilterGroup'	=>	['Facility'		=>'Storage',
 															'Storage'		=>'PdLiftingAccount',
 															],
 								'dateFilterGroup'		=> array(['id'	=>'date_begin',	'name'=>'From date'],
@@ -92,7 +92,7 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function contractdata() {
-		$filterGroups = array(	'productionFilterGroup'	=>[2			=>'Storage'],
+		$filterGroups = array(	'productionFilterGroup'	=>['Facility'			=>'Storage'],
 							'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
 																['id'=>'date_end','name'=>'To date']),
 		);
@@ -129,7 +129,7 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function contracttemplate() {
-		$filterGroups = array(	'productionFilterGroup'	=>[2			=>'Storage'],
+		$filterGroups = array(	'productionFilterGroup'	=>['Facility'			=>'Storage'],
 								'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
 																['id'=>'date_end','name'=>'To date']),
 		);
@@ -141,7 +141,7 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function contractprogram() {
-		$filterGroups = array(	'productionFilterGroup'	=> [2			=> 'Storage'],
+		$filterGroups = array(	'productionFilterGroup'	=> ['Facility'			=> 'Storage'],
 								'dateFilterGroup'		=> array(	['id'=>'date_begin','name'=>'From date'	],
 																	['id'=>'date_end',	'name'=>'To date'	]),
 		);
@@ -149,9 +149,9 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function cargovoyage() {
-		$filterGroups = array(	'productionFilterGroup'	=>[2			=>'Storage'],
-				'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
-						['id'=>'date_end','name'=>'To date']),
+		$filterGroups = array(	'productionFilterGroup'	=>['Facility'			=>'Storage'],
+								'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
+																['id'=>'date_end','name'=>'To date']),
 		);
 	
 		return view ( 'front.cargoaction.cargovoyage',['filters'=>$filterGroups,
@@ -159,7 +159,7 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function cargoload() {
-		$filterGroups = array(	'productionFilterGroup'	=>[2			=>'Storage'],
+		$filterGroups = array(	'productionFilterGroup'	=>['Facility'			=>'Storage'],
 				'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
 						['id'=>'date_end','name'=>'To date']),
 		);
@@ -172,7 +172,7 @@ class ProductDeliveryController extends CodeController {
 		]);
 	}
 	public function cargounload() {
-		$filterGroups = array(	'productionFilterGroup'	=>[2			=>'Storage'],
+		$filterGroups = array(	'productionFilterGroup'	=>['Facility'			=>'Storage'],
 				'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
 						['id'=>'date_end','name'=>'To date']),
 		);
@@ -186,7 +186,7 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function voyagemarine() {
-		$filterGroups = array(	'productionFilterGroup'	=>[2			=>'Storage'],
+		$filterGroups = array(	'productionFilterGroup'	=>['Facility'			=>'Storage'],
 				'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
 						['id'=>'date_end','name'=>'To date']),
 		);
@@ -196,7 +196,7 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function voyageground() {
-		$filterGroups = array(	'productionFilterGroup'		=>[2			=>'Storage'],
+		$filterGroups = array(	'productionFilterGroup'		=>['Facility'			=>'Storage'],
 								'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
 																		['id'=>'date_end','name'=>'To date']),
 		);
@@ -206,7 +206,7 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function voyagepipeline() {
-		$filterGroups = array(	'productionFilterGroup'		=>[2			=>'Storage'],
+		$filterGroups = array(	'productionFilterGroup'		=>['Facility'			=>'Storage'],
 								'dateFilterGroup'			=> array(['id'	=>'date_begin','name'=>'From date'],
 																		['id'=>'date_end','name'=>'To date']),
 		);
@@ -217,7 +217,7 @@ class ProductDeliveryController extends CodeController {
 	
 	
 	public function shipblmr() {
-		$filterGroups = array(	'productionFilterGroup'		=>[2			=>'Storage'],
+		$filterGroups = array(	'productionFilterGroup'		=>['Facility'			=>'Storage'],
 								'dateFilterGroup'			=> array(['id'	=>'date_begin',	'name'=>'From date'],
 																	['id'	=>'date_end',	'name'=>'To date']),
 		);

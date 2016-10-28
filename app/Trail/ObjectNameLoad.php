@@ -19,6 +19,10 @@ trait ObjectNameLoad
 				$phaseType 		= $option['ExtensionPhaseType'];
 				$phaseTypeId 	= $phaseType['id'];
 			}
+			else if ( array_key_exists('CodeProductType', $option)) {
+				$phaseType 		= $option['CodeProductType'];
+				$phaseTypeId 	= $phaseType['id'];
+			}
 			else $phaseTypeId 	= 0;
 			
 			$mdlName 		= $objectType['name'];

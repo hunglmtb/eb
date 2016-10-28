@@ -12,9 +12,12 @@ class Helper {
 		
 		if (!$collection) {
 			if ( array_key_exists('getMethod', $option)) {
-				$getMethod = $option['getMethod'];
-				$collection = $model::$getMethod();
+				$getMethod 	= $option['getMethod'];
+				$params		= array_key_exists('filterData', $option)?$option['filterData']:null;
+				$collection = call_user_func("$model::$getMethod",$params);
+// 				$collection = $model::$getMethod();
 			}
+// 			else if(isset($option["source"])&&count($option["source"]))
 			else $collection = $model::all(['ID', 'NAME']);
 		}
 // 		$collection = $model::select(['ID', 'NAME'])->orderBy('NAME')->get();
@@ -31,7 +34,7 @@ class Helper {
 		$name			= array_key_exists('name', $option)?$option['name']:false;
 		$filterName 	= array_key_exists('filterName', $option)?$option['filterName']:$name;
 		
-		$htmlFilter 	= "<div class=\"filter $name\"><div><b>$filterName</b>".
+		$htmlFilter 	= "<div  class=\"filter $name\"><div><b id=\"title_$name\">$filterName</b>".
 							'</div>
 							<select id="'.$id.'" name="'.$name.'">';
 		if ($default) {
@@ -40,8 +43,9 @@ class Helper {
 	
 		$currentId = array_key_exists('currentId', $option)?$option['currentId']:'';
 		foreach($collection as $item ){
+			$fvalue = $item->ID!=""?$item->ID:(isset($item->CODE)?$item->CODE:"");
 			$htmlFilter .= '<option name="'.(isset($item->CODE)?$item->CODE:"")
-						.'" value="'.($item->ID).'"'.($currentId==$item->ID?'selected':'')
+						.'" value="'.$fvalue.'"'.($currentId!==$item->ID?'':'selected="selected"')
 						.'>'.($item->NAME).'</option>';
 				
 		}
@@ -64,12 +68,12 @@ class Helper {
 				} */
 			}
 			
-			if (count($dependences)>0
+			if (count($originDependences)>0
 					&&(!array_key_exists('single', $option)
 							||!$option['single'])) {
 				$extra = array_key_exists('extra', $option)&&count($option['extra'])>0?$option['extra']:null;
 				$extra = is_array($extra)&&count($extra)>0?",['".implode("','", $extra)."']":'';
-				$htmlFilter.= "<script>registerOnChange('$id',['".implode("','", $dependences)."']$extra)</script>";
+				$htmlFilter.= "<script>registerOnChange('$id',".json_encode($originDependences)."$extra)</script>";
 			}
 		}
 	
@@ -127,7 +131,6 @@ class Helper {
 	
 		echo $htmlFilter;
 	}
-	
 	
 	public static function checkLockedTable($dcTable,$occur_date,$facility_id) {
 // 		$mdl = "App\Models\\".$mdlName;

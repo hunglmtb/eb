@@ -2,25 +2,27 @@
 if (!isset($filters['extra'])) {
 	$filters['extra'] = [];
 }
-
-// die("keke");
+$functionName		= isset($functionName)?$functionName:"";
 $enableButton 		= isset($filterGroups['enableButton'])?	$filterGroups['enableButton']	:true;
 $enableSaveButton 	= isset($filters['enableSaveButton'])?	$filters['enableSaveButton']	:true;
 
 if (array_key_exists('productionFilterGroup', $filters)) {
+	$dependences = isset($filters['FacilityDependentMore'])?
+					array_merge($filters['FacilityDependentMore'],$filters['productionFilterGroup'])
+					:$filters['productionFilterGroup'];
 	$mapping = ['LoProductionUnit'		=> 	array('filterName'	=>'Production Unit',
 												'name'			=>'productionUnit',
-												'dependences'	=> array_merge(['LoArea','Facility'],$filters['productionFilterGroup']),
+												'dependences'	=> array_merge(['LoArea','Facility'],$dependences),
 	  											'extra'			=>$filters['extra'],
 											),
 				'LoArea'				=>	array('filterName'	=>'Area',
 												'name'			=>'area',
-												'dependences'	=> array_merge(['Facility'],$filters['productionFilterGroup']),
+												'dependences'	=> array_merge(['Facility'],$dependences),
 	  											'extra'			=>$filters['extra'],
 											),
 				'Facility'				=>	array('filterName'	=>'Facility',
 												'name'			=>'facility',
-												'dependences'	=>$filters['productionFilterGroup'],
+												'dependences'	=>$dependences,
 	  											'extra'			=>$filters['extra'],
 											)
 				];
@@ -50,12 +52,12 @@ $( document ).ready(function() {
     $( "#date_end" ).change(onChangeFunction);
 });
 </script>
-<div id="ebFilters" style="height:auto">
+<div id="ebFilters_{{$functionName}}" class="{{$functionName}}" style="height:auto">
 	@foreach( $filterGroups as $key => $filters )
 			@if($key=='productionFilterGroup')
 			<div class = "product_filter">
 				@foreach( $filters as $filter )
-					{{ Helper::buildFilter(array_merge($filter, $mapping[$filter['id']])) }}
+					{{ Helper::buildFilter(array_merge($mapping[$filter['id']],$filter)) }}
 				@endforeach
 			</div>
 			@elseif($key=='dateFilterGroup')
@@ -65,10 +67,11 @@ $( document ).ready(function() {
 				@endforeach
 			</div>
 			@elseif($key=='frequenceFilterGroup')
-			<div class = "product_filter">
+			<div id = "filterFrequence" class = "product_filter">
 				@foreach( $filters as $filter )
-					{{ Helper::filter(array_key_exists($filter['id'], $mapping)?array_merge($filter, $mapping[$filter['id']]):$filter) }}
+					{{ Helper::filter(array_key_exists($filter['id'], $mapping)?array_merge($mapping[$filter['id']],$filter):$filter) }}
 				@endforeach
+				@yield('frequenceFilterGroupMore')
 			</div>
 			@endif
 	@endforeach
