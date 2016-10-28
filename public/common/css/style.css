@@ -125,7 +125,7 @@ input[type="button"]:focus, button:focus {
 	width: 100%;
 }
 
-#tabs {
+#tabs,.clearBoth, #ebFilters_graph .CodeFlowPhase{
 	clear: both;
 }
 
@@ -217,7 +217,7 @@ table.dataTable {
 	font-size: 8pt;
 }
 
-.CodeAllocType {
+ .eu .CodeAllocType {
 	display: none
 }
 
@@ -473,4 +473,8 @@ table.dataTable thead .BAL_POWER,table.dataTable thead .ADJUST_POWER {
 }
 #test_log .sql,#test_log .value{
 	color:blue
+}
+
+.floatLeft {
+	float: left;
 }

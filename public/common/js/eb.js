@@ -8,33 +8,49 @@ $.ajaxSetup({
 		'X-XSRF-Token': ebtoken
 	}
 });
+
+var filters = {};
 var enableSelect = function(dependentIds, value) {
 	for (var i = 0; i < dependentIds.length; i++) {
 		$('#'+dependentIds[i]).prop('disabled', value);
+		if (!value&&typeof(filters.afterRenderingDependences) == "function") {
+			filters.afterRenderingDependences(dependentIds[i]);
+		}
 	}
 };
 
 var registerOnChange = function(id, dependentIds,more) {
 	$('#'+id).change(function(e){
+		if (typeof(filters.preOnchange) == "function") {
+			filters.preOnchange(id,dependentIds,more);
+		}
+		
 		var ccontinue = false;
+		var dependentSelects = [];
 		$.each(dependentIds, function( dindex, dvalue ) {
+			if (typeof dvalue === 'string' || dvalue instanceof String) dependentSelects.push(dvalue);
+			else if(typeof(dvalue["name"]) !== "undefined"
+				&&(typeof(dvalue["independent"]) === "undefined")
+					||!dvalue["independent"])
+				dependentSelects.push(dvalue["name"]);
+		});
+		$.each(dependentSelects, function( dindex, dvalue ) {
 			ccontinue = ccontinue|| $("#"+dvalue).is(":visible");
 		});
 		if(!ccontinue) return;
 		
-		enableSelect(dependentIds,'disabled');
+		enableSelect(dependentSelects,'disabled');
 		bundle = {};
 		if (more!=null&&more.length>0) {
 			$.each(more, function( i, value ) {
 				bundle[value] = {};
-//				bundle[value]['value'] = $("#"+value).val();
-				bundle[value]['name'] = $("#"+value).find(":selected").attr( "name");
-				bundle[value]['id'] = $("#"+value).val();
+				var name = $("#"+value).find(":selected").attr( "name");
+				var val = $("#"+value).val();
+				name = typeof(name) !== "undefined"?name:val;
+				bundle[value]['name'] 	= name;
+				bundle[value]['id'] 	= val;
 			});
 		}
-		/*extra = {};
-		extra[id] = bundle;*/
-
 		$.ajax({
 			url: '/code/list',
 			type: "post",
@@ -44,23 +60,26 @@ var registerOnChange = function(id, dependentIds,more) {
 				extra:bundle
 			},
 			success: function(results){
-				for (var i = 0; i < dependentIds.length; i++) {
-					$('#'+dependentIds[i]).html('');   // clear the existing options
-				}
+				$.each(dependentSelects, function( dindex, dvalue ) {
+					$('#'+dvalue).html('');   // clear the existing options
+				});
 				for (var i = 0; i < results.length; i++) {
 					$(results[i].collection).each(function(){
 						var option = $('<option />');
+						var name = typeof(this.CODE) !== "undefined"?this.CODE:this.NAME;
+						option.attr('name', name);
 						option.attr('value', this.ID).text(this.NAME);
 						$('#'+results[i].id).append(option);
 					});
 					$('#'+results[i].id).val(results[i].currentId);
 				}
 				
-				enableSelect(dependentIds,false);
+				enableSelect(dependentSelects,false);
 			},
 			error: function(data) {
-				alert(data.responseText);
-				enableSelect(dependentIds,false);
+				console.log(data.responseText);
+				alert("Could not get dropdown menu");
+//				enableSelect(dependentIds,false);
 			}
 		});
 	});

@@ -72,29 +72,42 @@ class CodeController extends EBController {
 			$unit = $mdl::find($options['value']);
 		}
 		
-		$results = [];
-		
+		$originUnit 	= $unit;
+		$results 		= [];
+		$currentUnits 	= [$type	=> $unit];
 		foreach($options['dependences'] as $model ){
 			$modelName = $model;
 			$currentId = null;
-			if ($unit!=null) {
-				$rs = ProductionGroupComposer::initExtraDependence($results,$model,$unit,$bunde);
+			$sourceUnit = $unit;
+			$isAdd		= true;
+			if (is_array($model)) {
+				if (array_key_exists("source", $model)) {
+					$currentSourceName = $model["source"];
+					$sourceUnit = array_key_exists($currentSourceName, $currentUnits)?$currentUnits[$currentSourceName]:$originUnit;
+				}
+				else $sourceUnit = $originUnit;
+				$modelName  = $model["name"];
+				$isAdd = !array_key_exists("independent", $model)||!$model["independent"];
+			}
+			
+			if ($sourceUnit!=null) {
+				$rs = ProductionGroupComposer::initExtraDependence($results,$model,$sourceUnit,$bunde);
 				$eCollection = $rs['collection'];
 				$modelName = $rs['model'];
 				$currentId = $rs['currentId'];
 			}
 			else  break;
-			if (array_key_exists($model,  config("constants.subProductFilterMapping"))&&
-					array_key_exists('default',  config("constants.subProductFilterMapping")[$model])) {
+			if (is_string($model) && array_key_exists($model,  config("constants.subProductFilterMapping"))&&
+				array_key_exists('default',  config("constants.subProductFilterMapping")[$model])) {
 				$eCollection[] = config("constants.subProductFilterMapping")[$model]['default'];
 			}
 			$unit = ProductionGroupComposer::getCurrentSelect ( $eCollection,$currentId );
+			$currentUnits[$modelName]	= $unit;
 			$filterArray = ProductionGroupComposer::getFilterArray ( $modelName, $eCollection, $unit );
-			$results [] = $filterArray;
+			if ($isAdd) $results [] = $filterArray;
 		}
 		
-		return response($results, 200) // 200 Status Code: Standard response for successful HTTP request
-			->header('Content-Type', 'application/json');
+		return response($results, 200)->header('Content-Type', 'application/json');
     }
     
     public function load(Request $request){

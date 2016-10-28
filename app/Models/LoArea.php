@@ -22,11 +22,7 @@ class LoArea extends DynamicModel
 	 *
 	 * @return Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
-	public function Facility($fields=null)
-	{
-		/* if ($fields!=null&&is_array($fields)) {
-			return $this->hasMany('App\Models\Facility', 'AREA_ID', 'ID')->select($fields);
-		} */
+	public function Facility($fields=null){
 		return $this->hasMany('App\Models\Facility', 'AREA_ID', 'ID');
 	}
 	

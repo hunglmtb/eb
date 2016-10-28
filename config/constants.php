@@ -1,54 +1,57 @@
 <?php
 
 $tab = array();
-$tab['FLOW'] =[
-		['NAME'=>'FDC VALUE', 'ID'=>'FlowDataFdcValue'],
-		['NAME'=>'STD VALUE', 'ID'=>'FlowDataValue'],
-		['NAME'=>'THEORETICAL', 'ID'=>'FlowDataTheor'],
-		['NAME'=>'ALLOCATION', 'ID'=>'FlowDataAlloc'],
-		['NAME'=>'COMPOSITION ALLOC', 'ID'=>'FlowCompDataAlloc'],
-		['NAME'=>'PLAN', 'ID'=>'FlowDataPlan'],
-		['NAME'=>'FORECAST', 'ID'=>'FlowDataForecast']
-];
+$tab['FLOW'] =collect([
+						(object)['NAME'=>'FDC VALUE', 'ID'=>'FlowDataFdcValue'],
+						(object)['NAME'=>'STD VALUE', 'ID'=>'FlowDataValue'],
+						(object)['NAME'=>'THEORETICAL', 'ID'=>'FlowDataTheor'],
+						(object)['NAME'=>'ALLOCATION', 'ID'=>'FlowDataAlloc'],
+						(object)['NAME'=>'COMPOSITION ALLOC', 'ID'=>'FlowCompDataAlloc'],
+						(object)['NAME'=>'PLAN', 'ID'=>'FlowDataPlan'],
+						(object)['NAME'=>'FORECAST', 'ID'=>'FlowDataForecast']
+				]);
 
-$tab['ENERGY_UNIT'] =[
-		['NAME'=>'FDC VALUE', 'ID'=>'EnergyUnitDataFdcValue'],
-		['NAME'=>'STD VALUE', 'ID'=>'EnergyUnitDataValue'],
-		['NAME'=>'THEORETICAL', 'ID'=>'EnergyUnitDataTheor'],
-		['NAME'=>'ALLOCATION', 'ID'=>'EnergyUnitDataAlloc'],
-		['NAME'=>'COMPOSITION ALLOC', 'ID'=>'EnergyUnitCompDataAlloc'],
-		['NAME'=>'PLAN', 'ID'=>'EnergyUnitDataPlan'],
-		['NAME'=>'FORECAST', 'ID'=>'EnergyUnitDataForecast']
-];
+$tab['ENERGY_UNIT'] 	= collect([
+								(object)['NAME'=>'FDC VALUE', 'ID'=>'EnergyUnitDataFdcValue'],
+								(object)['NAME'=>'STD VALUE', 'ID'=>'EnergyUnitDataValue'],
+								(object)['NAME'=>'THEORETICAL', 'ID'=>'EnergyUnitDataTheor'],
+								(object)['NAME'=>'ALLOCATION', 'ID'=>'EnergyUnitDataAlloc'],
+								(object)['NAME'=>'COMPOSITION ALLOC', 'ID'=>'EnergyUnitCompDataAlloc'],
+								(object)['NAME'=>'PLAN', 'ID'=>'EnergyUnitDataPlan'],
+								(object)['NAME'=>'FORECAST', 'ID'=>'EnergyUnitDataForecast']
+						]);
 
-$tab['STORAGE'] =[
-		['NAME'=>'TANK FDC', 'ID'=>'TankDataFdcValue'],
-		['NAME'=>'TANK VALUE', 'ID'=>'TankDataValue'],
-		['NAME'=>'TANK PLAN', 'ID'=>'TankDataPlan'],
-		['NAME'=>'TANK FORECAST', 'ID'=>'TankDataForecast'],
-		['NAME'=>'STORAGE VALUE', 'ID'=>'StorageDataValue'],
-		['NAME'=>'STORAGE PLAN', 'ID'=>'StorageDataPlan'],
-		['NAME'=>'STORAGE FORECAST', 'ID'=>'StorageDataForecast']
-];
+$tab['STORAGE'] 	=	collect([
+							(object)['NAME'=>'VALUE', 'ID'=>'StorageDataValue'],
+							(object)['NAME'=>'PLAN', 'ID'=>'StorageDataPlan'],
+							(object)['NAME'=>'FORECAST', 'ID'=>'StorageDataForecast']
+						]);
 
-$tab['TICKET'] =[
-		['NAME'=>'TICKET FDC', 'ID'=>'RunTicketFdcValue'],
-		['NAME'=>'TICKET VALUE', 'ID'=>'RunTicketFdcValue'],
-];
+$tab['TANK'] 	=	collect([
+		(object)['NAME'=>'FDC', 'ID'=>'TankDataFdcValue'],
+		(object)['NAME'=>'VALUE', 'ID'=>'TankDataValue'],
+		(object)['NAME'=>'PLAN', 'ID'=>'TankDataPlan'],
+		(object)['NAME'=>'FORECAST', 'ID'=>'TankDataForecast'],
+]);
 
-$tab['EU_TEST'] =[
-		['NAME'=>'FDC VALUE', 'ID'=>'EuTestDataFdcValue'],
-		['NAME'=>'STD VALUE', 'ID'=>'EuTestDataStdValue'],
-		['NAME'=>'DAY VALUE', 'ID'=>'EuTestDataValue'],
-];
+$tab['TICKET'] =collect([
+		(object)['NAME'=>'FDC', 'ID'=>'RunTicketFdcValue'],
+		(object)['NAME'=>'VALUE', 'ID'=>'RunTicketFdcValue'],
+]);
 
-$tab['DEFERMENT'] =[
-		['NAME'=>'DEFERMENT', 'ID'=>'Deferment']
-];
+$tab['EU_TEST'] =collect([
+		(object)['NAME'=>'EuTestDataFdcValue', 	'ID'=>'EuTestDataFdcValue'],
+		(object)['NAME'=>'EuTestDataStdValue', 	'ID'=>'EuTestDataStdValue'],
+		(object)['NAME'=>'EuTestDataValue', 	'ID'=>'EuTestDataValue'],
+]);
 
-$tab['QUALITY'] =[
-		['NAME'=>'QUALITY DATA', 'ID'=>'QltyData']
-];
+$tab['DEFERMENT'] =collect([
+		(object)['NAME'=>'DEFERMENT', 'ID'=>'Deferment']
+]);
+
+$tab['QUALITY'] =collect([
+		(object)['NAME'=>'QUALITY DATA', 'ID'=>'QltyData']
+]);
 
 return [
         'tabTable'					=> 'tabTable',
@@ -139,11 +142,6 @@ return [
 										'PdLiftingAccount'		=>	array('filterName'	=>'	Lifting Acct',
 																		'name'			=>'PdLiftingAccount',
 										),
-				
-				
-										/* 'PdContract'			=>	array('filterName'	=>'Contract',
-																		'name'			=>'PdContract',
-																		'id'			=>'PdContract'), */
 										],
 		'tab'							=>$tab
 		// etc

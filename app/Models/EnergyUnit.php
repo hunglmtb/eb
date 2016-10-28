@@ -40,4 +40,16 @@ class EnergyUnit extends DynamicModel
 		$entries = $query->get();
 		return $entries;
 	}
+	
+	public function CodeFlowPhase(){
+		$EuPhaseConfig 	 = EuPhaseConfig::getTableName();
+		$code_flow_phase = CodeFlowPhase::getTableName();
+		$eu_id 			= $this->ID;
+		$result 		=  CodeFlowPhase::whereHas("EuPhaseConfig",
+							function ($query) use($EuPhaseConfig,$eu_id) {
+								$query->where("$EuPhaseConfig.EU_ID",$eu_id);
+							})
+							->get(["$code_flow_phase.ID", "$code_flow_phase.NAME"] );
+		return $result;
+	}
 }
