@@ -7,7 +7,6 @@ class EnergyUnitDataFdcValue extends FeatureEuModel
 {
 	protected $table = 'ENERGY_UNIT_DATA_FDC_VALUE';
 	protected $primaryKey = 'ID';
-	protected $dates = ['DAYS_LAST_READ'];
 	
 	protected $fillable  = ['OCCUR_DATE',
 							'EU_ID',

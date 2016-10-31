@@ -363,7 +363,7 @@ Route::post('countWorkflowTask', 'wfShowController@countWorkflowTask');
 Route::get('graph',['uses' =>'graphController@_index','middleware' => 'checkRight:VIS_ADVGRAPH']);
 Route::post('loadVizObjects', 'graphController@loadVizObjects');
 Route::post('loadEUPhase', 'graphController@loadEUPhase');
-Route::get('loadchart/{param}/{minvalue}/{maxvalue}/{date_begin}/{date_end}/{input}', 'graphController@loadChart');
+Route::get('loadchart', 'graphController@loadChart');
 Route::post('listCharts', 'graphController@getListCharts');
 Route::post('deleteChart', 'graphController@deleteChart');
 Route::post('saveChart', 'graphController@saveChart');

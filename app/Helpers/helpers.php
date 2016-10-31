@@ -28,7 +28,8 @@ class Helper {
 	public static function buildFilter($option=null) {
 		if ($option == null) return;
 		$collection 	= $option['collection'];
-	
+		$currentUnit 	= $option['current'];
+		
 		$default		= array_key_exists('default', $option)?$option['default']:false;
 		$id				= array_key_exists('id', $option)?$option['id']:false;
 		$name			= array_key_exists('name', $option)?$option['name']:false;
@@ -45,7 +46,7 @@ class Helper {
 		foreach($collection as $item ){
 			$fvalue = $item->ID!=""?$item->ID:(isset($item->CODE)?$item->CODE:"");
 			$htmlFilter .= '<option name="'.(isset($item->CODE)?$item->CODE:"")
-						.'" value="'.$fvalue.'"'.($currentId!==$item->ID?'':'selected="selected"')
+						.'" value="'.$fvalue.'"'.($currentUnit&&$currentUnit==$item?'selected="selected"':'')
 						.'>'.($item->NAME).'</option>';
 				
 		}

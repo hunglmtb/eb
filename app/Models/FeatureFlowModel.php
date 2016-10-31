@@ -11,6 +11,7 @@ class FeatureFlowModel extends EbBussinessModel
 	protected $objectModel = 'Flow';
 	protected $excludeColumns = ['FLOW_ID','OCCUR_DATE'];
 	protected $disableUpdateAudit = false;
+	protected $dates = ['LAST_DATA_READ','OCCUR_DATE','STATUS_DATE'];
 	
 	public static function getKeyColumns(&$newData,$occur_date,$postData)
 	{

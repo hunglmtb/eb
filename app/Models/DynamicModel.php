@@ -51,6 +51,9 @@ class DynamicModel extends Model {
 		return with(new static)->getTable();
 	}
 	
+	public static function getDateFields(){
+		return with(new static)->getDates();
+	}
 	public static function getAll(){
 		$entries = static ::all();
 		return $entries;
