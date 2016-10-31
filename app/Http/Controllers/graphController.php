@@ -320,12 +320,12 @@ class graphController extends Controller {
 			$entity = ucwords($entity);
 			$entity = str_replace(' ', '', $entity);
 			
-			if(substr($entity, 0, strlen("EuTest")) === "EuTest")
+			if(strtolower(substr($entity, 0, strlen("EuTest"))) == "eutest")
 			{
 				$is_eutest=true;
 				$datefield="EFFECTIVE_DATE";
 			}
-			else if($entity=="Deferment"){
+			else if(strtolower($entity)=="deferment"){
 				$is_deferment=true;
 				$datefield="BEGIN_TIME";
 				$obj_type_id_field="DEFER_TARGET";
