@@ -12,7 +12,7 @@ class FeatureEuModel extends EbBussinessModel
 	protected $objectModel = 'EnergyUnit';
 	protected $excludeColumns = ['EU_ID','OCCUR_DATE','FLOW_PHASE'];
 	protected $disableUpdateAudit = false;
-	protected $dates = ['OCCUR_DATE'];
+	protected $dates = ['DAYS_LAST_READ','OCCUR_DATE','STATUS_DATE'];
 	
 	public static function getKeyColumns(&$newData,$occur_date,$postData){
 		if (array_key_exists(config("constants.euId"), $newData)) {

@@ -11,6 +11,30 @@ class IntObjectType extends DynamicModel
 	protected $table = 'INT_OBJECT_TYPE';
 	protected $primaryKey = 'ID';
 	
+	public function __construct($param=null) {
+		if (is_array($param)) {
+			parent::__construct($param);
+			if(array_key_exists("ID", $param)&&
+					array_key_exists("CODE", $param)&&
+					array_key_exists("NAME", $param)
+					){
+				$this->ID 	= $param["ID"];
+				$this->CODE = $param["CODE"];
+				$this->NAME = $param["NAME"];
+			}
+		}
+		else parent::__construct($param);
+	}
+	
+	public static function find($id){
+		if (is_string($id)) {
+			$objects = static ::getGraphObjectType();
+			$instance = $objects->where('CODE',$id)->first();
+			return $instance;
+		}
+		else return static ::find($id);
+	}
+	
 	public static function getPreosObjectType(){
 		$entries = static ::whereIn('CODE',['FLOW','ENERGY_UNIT','TANK','STORAGE'])->get();
 		return $entries;
@@ -18,11 +42,11 @@ class IntObjectType extends DynamicModel
 	
 	public static function getGraphObjectType($columns = array()){
 		return  collect([
-				(object)['ID' =>	'FLOW'			,'CODE' =>	'FLOW'			,'NAME' => 'Flow'    		],
-				(object)['ID' =>	'ENERGY_UNIT'	,'CODE' =>	'ENERGY_UNIT'	,'NAME' => 'Energy unit'	],
-				(object)['ID' =>	'TANK'			,'CODE' =>	'TANK'			,'NAME' => 'Tank'    		],
-				(object)['ID' =>	'STORAGE' 		,'CODE' =>	'STORAGE'		,'NAME' => 'Storage'    	],
-				(object)['ID' =>	'EU_TEST'		,'CODE' =>	'EU_TEST'		,'NAME' => 'Well test'    	],
+				new IntObjectType(['ID' =>	'FLOW'			,'CODE' =>	'FLOW'			,'NAME' => 'Flow'    		]),
+				new IntObjectType(['ID' =>	'ENERGY_UNIT'	,'CODE' =>	'ENERGY_UNIT'	,'NAME' => 'Energy unit'	]),
+				new IntObjectType(['ID' =>	'TANK'			,'CODE' =>	'TANK'			,'NAME' => 'Tank'    		]),
+				new IntObjectType(['ID' =>	'STORAGE' 		,'CODE' =>	'STORAGE'		,'NAME' => 'Storage'    	]),
+				new IntObjectType(['ID' =>	'EU_TEST'		,'CODE' =>	'EU_TEST'		,'NAME' => 'Well test'    	]),
 		]);
 	}
 	
@@ -32,8 +56,7 @@ class IntObjectType extends DynamicModel
 															'CODE'	=>	$option['IntObjectType']["name"],
 															'ID'	=>	$option['IntObjectType']["id"]]
 								];
-			$mdlName 		= "ObjectDataSource";
-			$mdl 			= \Helper::getModelName ( $mdlName);
+			$mdl 			= \Helper::getModelName ("ObjectDataSource");
 			return $mdl::loadBy($sourceData);
 		}
 		return null;

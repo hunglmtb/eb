@@ -6,7 +6,6 @@ use App\Models\FeatureFlowModel;
 class FlowDataAlloc extends FeatureFlowModel
 {
 	protected $table = 'FLOW_DATA_ALLOC';
-	
 	protected $primaryKey = 'ID';
 	protected $fillable  = ['FLOW_ID',
 							'OCCUR_DATE',

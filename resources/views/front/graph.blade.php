@@ -81,18 +81,20 @@ $functionName		= "graph";
 				break;
 			case "ObjectDataSource":
 				var objectDataSource = $('#ObjectDataSource').val();
-				objectDataSource=='EnergyUnitDataAlloc'?$('.CodeAllocType').show():$('.CodeAllocType').hide();
-				objectDataSource.endsWith("Plan")?$('.CodePlanType').show():$('.CodePlanType').hide();
-				objectDataSource.endsWith("Forecast")?$('.CodeForecastType').show():$('.CodeForecastType').hide();
-				if($("#CodeFlowPhase").is(":visible")) {
-					$('.CodePlanType').removeClass("clearBoth");
-					$('.CodeAllocType').removeClass("clearBoth");
-					$('.CodeForecastType').removeClass("clearBoth");
-				}
-				else {
-					$('.CodePlanType').addClass("clearBoth");
-					$('.CodeAllocType').addClass("clearBoth");
-					$('.CodeForecastType').addClass("clearBoth");
+				if(objectDataSource!=null){
+					objectDataSource=='EnergyUnitDataAlloc'?$('.CodeAllocType').show():$('.CodeAllocType').hide();
+					objectDataSource.endsWith("Plan")?$('.CodePlanType').show():$('.CodePlanType').hide();
+					objectDataSource.endsWith("Forecast")?$('.CodeForecastType').show():$('.CodeForecastType').hide();
+					if($("#CodeFlowPhase").is(":visible")) {
+						$('.CodePlanType').removeClass("clearBoth");
+						$('.CodeAllocType').removeClass("clearBoth");
+						$('.CodeForecastType').removeClass("clearBoth");
+					}
+					else {
+						$('.CodePlanType').addClass("clearBoth");
+						$('.CodeAllocType').addClass("clearBoth");
+						$('.CodeForecastType').addClass("clearBoth");
+					}
 				}
 				$("#tdObjectContainer").css({'height':($("#filterFrequence").height()+'px')});
 				break;
@@ -323,10 +325,16 @@ var _graph = {
 		var maxvalue = $("#txt_max").val();
 		if(maxvalue == "") maxvalue = null;
 		
-		var date_begin = $("#date_begin").val().replace(/\//g, '-');
-		var date_end = $("#date_end").val().replace(/\//g, '-');
-		var input = encodeURIComponent(_graph.getChartConfig());	
-		$("#frameChart").attr("src","/loadchart/"+title+"/"+minvalue+"/"+maxvalue+"/"+date_begin+"/"+date_end+"/"+input);
+		var date_begin = $("#date_begin").val();
+		var date_end = $("#date_end").val();
+		var input = encodeURIComponent(_graph.getChartConfig());
+		var iurl = "/loadchart?title="+title+
+								"&minvalue="+minvalue+
+								"&maxvalue="+maxvalue+
+								"&date_begin="+date_begin+
+								"&date_end="+date_end+
+								"&input="+input;	
+		$("#frameChart").attr("src",iurl);
 	},
 	newChart : function()
 	{

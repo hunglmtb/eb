@@ -107,12 +107,12 @@ class AdminController extends Controller {
 				} else {
 					if($ID != "USER"){
 						$listColumn = ['ID','NAME'];
-						
-						if($ID == 'IntObjectType'){
+						$tmps = $model::all ($listColumn);
+						/* if($ID == 'IntObjectType'){
 							$tmps = $model::where(['ACTIVE'=>1])->orderBy('ORDER','ASC')->get ($listColumn);
 						}else{
 							$tmps = $model::all ($listColumn);
-						}
+						} */
 					}else{
 						$listColumn = ['ID','USERNAME'];
 						$tmps = $model::all ($listColumn);

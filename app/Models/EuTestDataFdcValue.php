@@ -6,6 +6,7 @@ use App\Models\FeatureEuTestModel;
 { 
 	protected $table = 'EU_TEST_DATA_FDC_VALUE'; 
 	protected $primaryKey = 'ID';
+// 	protected $dates = ['EFFECTIVE_DATE','BEGIN_TIME','END_TIME'];
 	
 	public $fillable  = ['EU_ID',
 							 'BEGIN_TIME',

@@ -259,11 +259,19 @@ class graphController extends Controller {
 		return response ()->json ( ['result' => $tmp] );
 	}
 	
-	public function loadChart($title, $minvalue, $maxvalue, $date_begin, $date_end, $input){
+	public function loadChart(Request $request){
 		
-		$isrange=(is_numeric($minvalue) && $maxvalue>$minvalue);
-		$date_begin = Carbon::createFromFormat('m-d-Y',$date_begin)->format('Y-m-d');
-		$date_end = Carbon::createFromFormat('m-d-Y',$date_end)->format('Y-m-d');
+		$options 	= $request->only('title','minvalue', 'maxvalue','date_begin','date_end','input');
+		$title		= $options['title'];
+		$minvalue	= $options['minvalue'];
+		$maxvalue	= $options['maxvalue'];
+		$date_begin	= $options['date_begin'];
+		$date_end	= $options['date_end'];
+		$input		= $options['input'];
+		
+		$isrange	=(is_numeric($minvalue) && $maxvalue>$minvalue);
+		$date_begin = \Helper::parseDate($date_begin);
+		$date_end 	= \Helper::parseDate($date_end);
 		
 		$ss=explode(",",$input);
 		$k=0;
@@ -283,17 +291,13 @@ class graphController extends Controller {
 		
 			$datefield="OCCUR_DATE";
 			$is_eutest=false;
-			if(substr($xs[2], 0, strlen("EU_TEST")) === "EU_TEST")
-			{
-				$is_eutest=true;
-				$datefield="EFFECTIVE_DATE";
-			}
-			if($xs[0]=="TANK")
-				$obj_type_id_field="TANK_ID";
-			else if($xs[0]=="STORAGE")
-				$obj_type_id_field="STORAGE_ID";
-			else if($xs[0]=="FLOW")
-				$obj_type_id_field="FLOW_ID";
+			$is_deferment=false;
+			$obj_type_id_field  = null;
+			
+			if($xs[0]=="TANK") 			$obj_type_id_field="TANK_ID";
+			else if($xs[0]=="STORAGE") 	$obj_type_id_field="STORAGE_ID";
+			else if($xs[0]=="FLOW")		$obj_type_id_field="FLOW_ID";
+			else if($xs[0]=="EU_TEST") 	$obj_type_id_field="EU_ID";
 			else if($xs[0]=="ENERGY_UNIT"){
 				$obj_type_id_field="EU_ID";
 				$chart_type=$xs[5];
@@ -302,7 +306,9 @@ class graphController extends Controller {
 				$types=explode("~",$xs[4]);
 				$phase_type=$types[0];
 			}
+				
 		
+			if (!$obj_type_id_field) continue;
 			$pos=strpos($xs[3],"@");
 			if($pos>0)
 			{
@@ -313,6 +319,17 @@ class graphController extends Controller {
 			$entity = strtolower(str_replace('_', ' ', $table_name));
 			$entity = ucwords($entity);
 			$entity = str_replace(' ', '', $entity);
+			
+			if(strtolower(substr($entity, 0, strlen("EuTest"))) == "eutest")
+			{
+				$is_eutest=true;
+				$datefield="EFFECTIVE_DATE";
+			}
+			else if(strtolower($entity)=="deferment"){
+				$is_deferment=true;
+				$datefield="BEGIN_TIME";
+				$obj_type_id_field="DEFER_TARGET";
+			}
 			
 			$model = 'App\\Models\\' . $entity;
 					
@@ -332,10 +349,11 @@ class graphController extends Controller {
 			->whereDate ( $datefield, '<=',  $date_end )
 			->orderBy ( $datefield )
 			->take(300)
-			->get([$vfield.' AS V', DB::raw('DATE_FORMAT('.$datefield.', "%Y,%m-1,%d") AS D')]);
+			->get([$vfield.' AS V', "$datefield"]);
+			
 			//\Log::info ( \DB::getQueryLog () );
 			$i=0;
-			
+// 			DB::raw('DATE_FORMAT('.$datefield.', "%Y,%m-1,%d")');
 			if($k>0){
 				$strData .=",{";
 			}else{
@@ -354,8 +372,9 @@ class graphController extends Controller {
 				if($i>0){
 					$strData .= ",\r\n";
 				}
-							
-				$strData .= "[Date.UTC(".$row->D."), ".$row->V."]";
+				$dateTime 		= $row->$datefield;
+				$dateTimeText 	= sprintf("%d,%d,%d", $dateTime->year,$dateTime->month-1,$dateTime->day);
+				$strData .= "[Date.UTC(".$dateTimeText."), ".$row->V."]";
 				$i++;
 			}
 			$strData .="]}\r\n";
