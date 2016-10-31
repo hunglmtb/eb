@@ -105,6 +105,9 @@ $functionName		= "graph";
 
 @section('content')
 <style>
+#filterFrequence {
+	clear: both;
+}
 .alloc_type {
 	display: none
 }
@@ -313,6 +316,11 @@ var _graph = {
 	},
 	draw : function()
 	{
+		if($(".x_item").length<=0) {
+			alert("Please add object");
+			return;
+		}
+		
 		$("html, body").animate({ scrollTop: $(document).height() }, 1000);
 		document.getElementById("frameChart").contentWindow.document.write("<font family='Open Sans'>Generating chart...</font>");
 		
