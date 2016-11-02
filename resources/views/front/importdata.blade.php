@@ -135,7 +135,6 @@ var _importdata = {
 					        formData.append('date_begin', formatDateTimeUTC($('#date_begin').val())); 
 					        formData.append('date_end', formatDateTimeUTC($('#date_end').val()));
 					        formData.append('update_db', update_db);
-					        formData.append('sheetTimeFormat', $('#sheetTimeFormat').val());
 					    }
 
 						$.ajax({
@@ -303,23 +302,6 @@ var _importdata = {
 									echo "<option value='$i'>$i</option>";
 								}
 							?>
-							</select>
-							Date column format <select id="sheetTimeFormat" name="sheetTimeFormat">
-								<option value='Y-d-m' selected>Y-d-m</option>
-								<option value='m-d-Y'>m-d-Y</option>
-								<option value='d-m-Y'>d-m-Y</option>
-								<option value='Y-m-d'>Y-m-d</option>
-								
-								<option value='m/d/Y'>m/d/Y</option>
-								<option value='d/m/Y'>d/m/Y</option>
-								<option value='Y/m/d'>Y/m/d</option>
-								<option value='Y/d/m'>Y/d/m</option>
-								
-								
-								<option value='m:d:Y'>m:d:Y</option>
-								<option value='d:m:Y'>d:m:Y</option>
-								<option value='Y:m:d'>Y:m:d</option>
-								<option value='Y:d:m'>Y:d:m</option>
 							</select>
 							<br> <span
 							style="display: block; float: left; width: 80px; margin: 3px">Row
