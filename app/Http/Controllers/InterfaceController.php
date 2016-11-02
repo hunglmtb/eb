@@ -1,17 +1,18 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\IntImportSetting;
-use App\Models\IntImportLog;
-use App\Models\IntTagMapping;
 use App\Models\IntConnection;
+use App\Models\IntImportLog;
+use App\Models\IntImportSetting;
+use App\Models\IntTagMapping;
 use App\Models\IntTagSet;
 use App\Models\IntTagTrans;
 
+use Carbon\Carbon;
+use DB;
 use Excel;
 use Illuminate\Http\Request;
 use Input;
-use Carbon\Carbon;
-use DB;
+use PHPExcel_Shared_Date;
 use Schema;
 
 class InterfaceController extends Controller {
@@ -226,25 +227,46 @@ class InterfaceController extends Controller {
 		return response ()->json (['int_import_setting'=>$int_import_setting, 'id'=>$data['id']]);
 	}
 	
+	public function getCellValue($sheet,$cellName,$isDateTime=false){
+		$cellValue	= null;
+		$cell 		= $sheet->getCell($cellName);
+		if ($cell) {
+			$cellType	= $cell->getDataType();
+			$cellValue	= $cellType&&$cellType=="f"?
+						$cell->getOldCalculatedValue():
+						($isDateTime?$cell->getValue():($sheet->rangeToArray($cellName)[0][0]));
+			
+						/* $cell 		= $sheet->getCell($timeColumn.$row);
+						 $rowData 	= $sheet->rangeToArray($timeColumn.$row);
+						 $style		= $sheet->getParent()->getCellXfByIndex($cell->getXfIndex());
+						 $formatCode	= ($style && $style->getNumberFormat()) ?
+						 $style->getNumberFormat()->getFormatCode() :
+						 PHPExcel_Style_NumberFormat::FORMAT_GENERAL;
+						 $cvl 		= $cell->getOldCalculatedValue();
+						 $cvl 		= $cell->getValue(); */
+		}
+		return $cellValue;
+	}
+	
 	public function doImport() {		
-		$files = Input::all ();
-		
-		$tabIndex = $files['tabIndex'];
-		$tagColumn = $files['tagColumn'];
-		$timeColumn = $files['timeColumn'];
-		$valueColumn = $files['valueColumn'];
-		$rowStart = $files['rowStart'];
-		$rowFinish = $files['rowFinish'];
-		$cal_method = $files['cal_method'];
+		$files 			= Input::all ();
+		$tabIndex 		= $files['tabIndex'];
+		$tagColumn 		= $files['tagColumn'];
+		$timeColumn 	= $files['timeColumn'];
+		$valueColumn 	= $files['valueColumn'];
+		$rowStart 		= $files['rowStart'];
+		$rowFinish 		= $files['rowFinish'];
+		$cal_method 	= $files['cal_method'];
 		$date_begin 	= $files['date_begin'];
 		$date_begin 	= Carbon::parse($date_begin);
 		$date_end 		= $files['date_end'];
 		$date_end	 	= Carbon::parse($date_end);
-		$update_db = $files['update_db'];
-		$path = "";
-		$tmpFilePath = '/fileUpload/';
-		$error = false;
-		$str = "";
+		$update_db 		= $files['update_db'];
+		$update_db 		= $update_db==1;
+		$path 			= "";
+		$tmpFilePath 	= '/fileUpload/';
+		$error 			= false;
+		$str 			= "";
 		
 		if (count ( $files ) > 0) {
 			$file = $files['file'];
@@ -255,10 +277,17 @@ class InterfaceController extends Controller {
 			$data = [];
 			$file = $file->move ( public_path () . $tmpFilePath, $tmpFileName );
 			if ($file) {				
-				$path =  public_path () .$tmpFilePath . $tmpFileName;							
-				$xxx = Excel::load($path, function($reader) 
-						use ($data, $tagColumn, $timeColumn, $valueColumn, $tabIndex, $rowStart, $rowFinish, 
+				$path =  public_path () .$tmpFilePath . $tmpFileName;
+				ini_set('max_execution_time', 60);
+ 				$xxx = Excel::selectSheets($tabIndex)->load($path, function($reader) 
+ 						use ($data, $tagColumn, $timeColumn, $valueColumn, $tabIndex, $rowStart, $rowFinish, 
 							$date_begin, $date_end, $fileName, $update_db, $cal_method, $str, $path) {
+// 					$reader->calculate();
+// 					$results = $reader->get()->toArray();
+// 					$reader->skip($rowStart-1)->take($rowFinish-$rowStart+1);
+// 					$reader->setDateColumns(array($timeColumn));
+//  				$reader->formatDates(true,$timeFormat);
+// 					$reader->formatDates(true);
 					$objExcel = $reader->getExcel(); 
 					$sheet = $objExcel->getSheet(0);
 					$highestRow = $sheet->getHighestRow();
@@ -292,6 +321,7 @@ class InterfaceController extends Controller {
 					$datatype = "";
 					if(!$datatype) $datatype="NUMBER";
 					$db_schema = ENV('DB_DATABASE');
+					
 					for ($row = $rowStart; $row <= $rowFinish; $row++)
 					{
 						$arr = [];
@@ -300,28 +330,27 @@ class InterfaceController extends Controller {
 						$err="";
 						$statusCode="Y";
 						try{
-							$rowData = $sheet->rangeToArray($timeColumn.$row);
-							$time = $rowData[0][0];
-							$carbonDate = $this->proDate($time);
-							$date = $carbonDate->format('m/d/Y');
-// 							if(strtotime($date) >= strtotime($date_begin) && strtotime($date) <= strtotime($date_end)){
+ 							$dateTimeVL	= $this->getCellValue($sheet,$timeColumn.$row,true);
+							$unixTime	= PHPExcel_Shared_Date::ExcelToPHP($dateTimeVL);
+// 							$carbonDate = $this->proDate($time);
+ 							$carbonDate = Carbon::createFromTimestamp($unixTime);
+ 							$date 		= $carbonDate->format('m/d/Y');
 							if($carbonDate&&$carbonDate->gte($date_begin) && $date_end->gte($carbonDate)){
-								$tagID = $sheet->rangeToArray($tagColumn.$row)[0][0];
-								//$arr['tag'] = $tag[0][0];						
-								$value = $sheet->rangeToArray($valueColumn.$row)[0][0];
+// 								$tagID 	= $sheet->rangeToArray($tagColumn.$row)[0][0];
+// 								$sheet->rangeToArray($valueColumn.$row)[0][0];
+								$tagID 	= $this->getCellValue($sheet,$tagColumn.$row);
+								$value 	= $this->getCellValue($sheet,$valueColumn.$row);
 								//$arr['value'] = $value;
 								//$arr['time'] = $date;
 								//array_push($data, $arr);
 								
-								if(!$tagID && ($value!=="" || $date!==""))
-								{
+								if(!$tagID && ($value!=="" || $date!=="")){
 									$hasError=true;
 									$statusCode="NT";
 									$err="No tag";
 								}
 								
-								if($datatype=="NUMBER")
-								{
+								if($datatype=="NUMBER"){
 									if(!is_numeric($value))
 									{
 										$hasError=true;
@@ -406,7 +435,8 @@ class InterfaceController extends Controller {
 											$objIDField=$this->getObjectIDFiledName($table_name);
 											$sF="";
 											$sV="";
-											$dateString = $date->format('m/d/Y');
+// 											$dateString = $date->format('m/d/Y');
+											$dateString = $date;
 											$sWhere="$objIDField=$r[OBJECT_ID] and OCCUR_DATE=DATE($dateString)";
 											if(substr($table_name,0,12)=="ENERGY_UNIT_")
 											{
@@ -442,8 +472,7 @@ class InterfaceController extends Controller {
 												$sSQL="update `$table_name` set `$column_name`='$value' where ID=$rID";
 												$sSQL=str_replace("''","null",$sSQL);
 												$impSQL.=($impSQL?"<bt>":"").$sSQL;
-												if($update_db)
-												{
+												if($update_db){
 													DB::update($sSQL) or $html.="<td>".mysql_error()."</td>";
 													$tags_override++;
 												}
@@ -464,12 +493,8 @@ class InterfaceController extends Controller {
 									}
 								}
 							}
-							if($hasError)
-							{
-								$tags_rejected ++;
-							}
-							if($tagID!=="" && $value!=="" && $date!=="")
-							{								
+							if($hasError) $tags_rejected ++;
+							if($tagID&&$tagID!=="" && $value!=="" && $date!==""){								
 								$load_time=date('Y-m-d H:i:s');
 								IntTagTrans::insert([
 									'LOG_ID'=> $log_id,
@@ -536,7 +561,8 @@ class InterfaceController extends Controller {
 					$str .= "</tr> " . $html . "	</table>";
 					
 					$reader->select(['str'=>$str])->first();	
-				} );
+				});
+				ini_set('max_execution_time', 30);
 			} 
 		}
 		
