@@ -131,10 +131,11 @@ var _importdata = {
 					        formData.append('valueColumn', $('#valueColumn').val());     
 					        formData.append('rowStart', $('#rowStart').val());
 					        formData.append('rowFinish', $('#rowFinish').val());
-					        formData.append('cal_method', $('#cal_method').val()); 
+					        formData.append('cal_method', $('#cboMethod').val()); 
 					        formData.append('date_begin', formatDateTimeUTC($('#date_begin').val())); 
 					        formData.append('date_end', formatDateTimeUTC($('#date_end').val()));
-					        formData.append('update_db', $('#update_db').val());    
+					        formData.append('update_db', update_db);
+					        formData.append('sheetTimeFormat', $('#sheetTimeFormat').val());
 					    }
 
 						$.ajax({
@@ -147,6 +148,11 @@ var _importdata = {
 					        cache: false,
 					        success: function(data){
 					        	$('#logContent').html(data.columns.str);
+							},
+							error: function(data) {
+								console.log("doimport error");
+								alert("there are errors in importing");
+//								enableSelect(dependentIds,false);
 							}
 					    });
 					}
@@ -297,7 +303,25 @@ var _importdata = {
 									echo "<option value='$i'>$i</option>";
 								}
 							?>
-							</select><br> <span
+							</select>
+							Date column format <select id="sheetTimeFormat" name="sheetTimeFormat">
+								<option value='Y-d-m' selected>Y-d-m</option>
+								<option value='m-d-Y'>m-d-Y</option>
+								<option value='d-m-Y'>d-m-Y</option>
+								<option value='Y-m-d'>Y-m-d</option>
+								
+								<option value='m/d/Y'>m/d/Y</option>
+								<option value='d/m/Y'>d/m/Y</option>
+								<option value='Y/m/d'>Y/m/d</option>
+								<option value='Y/d/m'>Y/d/m</option>
+								
+								
+								<option value='m:d:Y'>m:d:Y</option>
+								<option value='d:m:Y'>d:m:Y</option>
+								<option value='Y:m:d'>Y:m:d</option>
+								<option value='Y:d:m'>Y:d:m</option>
+							</select>
+							<br> <span
 							style="display: block; float: left; width: 80px; margin: 3px">Row
 							start</span><input id="rowStart" name="rowStart"
 							style="width: 100px; margin: 3px;"> Row finish <input
