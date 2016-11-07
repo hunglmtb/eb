@@ -1,11 +1,7 @@
 <?php
 $currentSubmenu = '/allocset';
 ?>
-
 @extends('core.bsallocation')
-@section('title')
-<div class="title">CONFIG ALLOCATION</div>
-@stop 
 @section('group')
 <div id="controlSearch">
 

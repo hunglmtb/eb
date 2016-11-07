@@ -27,12 +27,12 @@ class IntObjectType extends DynamicModel
 	}
 	
 	public static function find($id){
-		if (is_string($id)) {
+		if (!is_numeric($id)) {
 			$objects = static ::getGraphObjectType();
 			$instance = $objects->where('CODE',$id)->first();
 			return $instance;
 		}
-		else return static ::find($id);
+		else  return static ::where('ID',$id)->first();
 	}
 	
 	public static function getPreosObjectType(){

@@ -239,7 +239,7 @@ var xmenu=
 					},
 					{"code":"","name":"Allocation","title":"","link":"/home/allocation","menus":
 						[
-							{"name":"Allocation Config","title":"Allocation Config","link":"/allocset"},
+							{"name":"Allocation Config","title":"CONFIG ALLOCATION","link":"/allocset"},
 						]
 					},
 				]
