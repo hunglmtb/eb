@@ -320,7 +320,8 @@ class InterfaceController extends Controller {
 					$html = "";
 					$datatype = "";
 					if(!$datatype) $datatype="NUMBER";
-					$db_schema = ENV('DB_DATABASE');
+// 					$db_schema = ENV('DB_DATABASE');
+					$db_schema="energy_builder";
 					
 					for ($row = $rowStart; $row <= $rowFinish; $row++)
 					{
@@ -340,132 +341,141 @@ class InterfaceController extends Controller {
 // 								$sheet->rangeToArray($valueColumn.$row)[0][0];
 								$tagID 	= $this->getCellValue($sheet,$tagColumn.$row);
 								$value 	= $this->getCellValue($sheet,$valueColumn.$row);
-								//$arr['value'] = $value;
-								//$arr['time'] = $date;
-								//array_push($data, $arr);
-								
-								if(!$tagID && ($value!=="" || $date!=="")){
+								if(!$tagID||$tagID==""){
 									$hasError=true;
-									$statusCode="NT";
-									$err="No tag";
-								}
-								
-								if($datatype=="NUMBER"){
-									if(!is_numeric($value))
-									{
-										$hasError=true;
-										$statusCode="NF";
-										$err="Not a number: $value";
+									if (($date&&$date!="")||($value&&$value!="")) {
+										$statusCode="NTG";
+										$err="No tag ID";
+									}
+									else {
+										$statusCode="NT";
+										$err="No tag";
 									}
 								}
-							//}
-							
-							if(!$hasError)
-							{
-								if(!$tagID)
-								{
-									$hasError=true;
-									$statusCode="NTG";
-									$err="No tag ID";
+								else if($datatype=="NUMBER" &&!is_numeric($value)){
+									$hasError = true;
+									$statusCode = "NF";
+									$err = "Not a number: $value";
 								}
 							
-								if(!$date)
-								{
-									$hasError=true;
-									$statusCode="ND";
-									$err="No date";
-								}
-								else
-								{
-// 									$time = strtotime($date);
-// 									$Y = date('Y',$time);
-									$Y = $carbonDate->year;
-									if($Y==1970)
-									{
+								if(!$hasError){
+									if((!$date||$date=="")){
 										$hasError=true;
-										$statusCode="NWD";
-										$err="Wrong date";
+										$statusCode="ND";
+										$err="No date";
 									}
-								}
+									else{
+										$Y = $carbonDate->year;
+										if($Y==1970){
+											$hasError=true;
+											$statusCode="NWD";
+											$err="Wrong date";
+										}
+									}
 							}
 							
-							$impSQL="";
-							if(!$hasError)
-							{
-								$r_t = IntTagMapping::where(['TAG_ID'=>$tagID])->select('*')->get();
-								if(count($r_t)<=0)
-								{
+							$impSQL	="";
+							$sqls	= [];
+							if(!$hasError){
+								$r_t = IntTagMapping::where(['TAG_ID'=>$tagID])->get();
+								if($r_t->count()<=0){
 									$hasError=true;
 									$statusCode="NG";
 									$err="Tag mapping not found";
 								}
-								else
-								{
-									foreach ($r_t as $r)
-									{
+								else{
+									foreach ($r_t as $r){
 										$table_name=strtoupper($r->TABLE_NAME);
 										$column_name=strtoupper($r->COLUMN_NAME);
-							
-										$cc = DB::select("SELECT TABLE_NAME FROM `INFORMATION_SCHEMA`.`TABLES` WHERE TABLE_SCHEMA='$db_schema' and `TABLE_NAME`='$table_name'");
-										if(!$cc)
-										{
-											$hasError=true;
-											$statusCode="NT";
-											$err="Table not found ($table_name)";
-										}
-										else
-										{
-											$cc = DB::select("SELECT COLUMN_NAME FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE TABLE_SCHEMA='$db_schema' and `TABLE_NAME`='$table_name' and COLUMN_NAME='$column_name'");
-											if(!$cc)
-											{
+										$cc = \DB::table('INFORMATION_SCHEMA.TABLES')
+													->where('TABLE_SCHEMA','=',$db_schema)
+													->where('TABLE_NAME','=',$table_name)
+													->select("TABLE_NAME")
+													->first();
+										if($cc){
+											$cc = \DB::table('INFORMATION_SCHEMA.COLUMNS')
+													->where('TABLE_SCHEMA','=',$db_schema)
+													->where('TABLE_NAME','=',$table_name)
+													->where('COLUMN_NAME','=',$column_name)
+													->select("COLUMN_NAME")
+													->first();
+											if(!$cc){
 												$hasError=true;
 												$statusCode="NC";
 												$err="Column not found ($column_name)";
 											}
 										}
-							
-										if(!$hasError)
-										{
-											/* $wheres 	= [	$objIDField		=> $r[OBJECT_ID],
-															"OCCUR_DATE"	=> $date,
+										else{
+											$hasError=true;
+											$statusCode="NT";
+											$err="Table not found ($table_name)";
+										}
+										if(!$hasError){
+											$objIDField	= $this->getObjectIDFiledName($table_name);
+											$values 	= [	$objIDField		=> $r->OBJECT_ID,
+// 															"OCCUR_DATE"	=> $carbonDate,
 															];
-											$attributes = [];
-											$values 	= []; */
+											$attributes	= [	$objIDField		=> $r->OBJECT_ID,
+// 															"OCCUR_DATE"	=> $carbonDate,
+															];
 											
-											$objIDField=$this->getObjectIDFiledName($table_name);
 											$sF="";
 											$sV="";
 // 											$dateString = $date->format('m/d/Y');
 											$dateString = $date;
-											$sWhere="$objIDField=$r[OBJECT_ID] and OCCUR_DATE=DATE($dateString)";
+// 											$sWhere="$objIDField=$r[OBJECT_ID] and OCCUR_DATE=DATE($dateString)";
 											if(substr($table_name,0,12)=="ENERGY_UNIT_")
 											{
-												$sWhere.=" and FLOW_PHASE=$r[FLOW_PHASE] and EVENT_TYPE=$r[EVENT_TYPE]";
+												$sWhere.=" and FLOW_PHASE=$r->FLOW_PHASE and EVENT_TYPE=$r->EVENT_TYPE";
 												$sF.=",FLOW_PHASE";
-												$sV.=",$r[FLOW_PHASE]";
+												$sV.=",$r->FLOW_PHASE";
 												$sF.=",EVENT_TYPE";
-												$sV.=",$r[EVENT_TYPE]";
-												/* 
-												$wheres["FLOW_PHASE"] 		= $r[FLOW_PHASE];
-												$wheres["EVENT_TYPE"] 		= $r[EVENT_TYPE];
-												$attributes["FLOW_PHASE"] 	= $r[FLOW_PHASE];
-												$wheres["FLOW_PHASE"] 		= $r[FLOW_PHASE]; */
+												$sV.=",$r->EVENT_TYPE";
+												
+												$attributes["FLOW_PHASE"] 	= $r->FLOW_PHASE;
+												$attributes["EVENT_TYPE"] 	= $r->EVENT_TYPE;
+												$values["FLOW_PHASE"] 		= $r->FLOW_PHASE;
+												$values["EVENT_TYPE"] 		= $r->EVENT_TYPE;
 											}
 											if($table_name=="ENERGY_UNIT_DATA_ALLOC")
 											{
-												$sWhere.=" and ALLOC_TYPE=$r[ALLOC_TYPE]";
+												$sWhere.=" and ALLOC_TYPE=$r->ALLOC_TYPE";
 												$sF.=",ALLOC_TYPE";
-												$sV.=",$r[ALLOC_TYPE]";
+												$sV.=",$r->ALLOC_TYPE";
+												
+												$attributes["ALLOC_TYPE"] 	= $r->ALLOC_TYPE;
+												$values["ALLOC_TYPE"] 		= $r->ALLOC_TYPE;
 											}
 											
-											/* if($update_db){
-												$entry 	= DB::table($table_name)->updateOrCreate($attributes,$values);
-												if ($entry->wasRecentlyCreated)	$tags_addnew++;
-												else $tags_override++;
+ 											$mdl	= \Helper::getModelName($table_name);
+											if($update_db){
+												$attributes["OCCUR_DATE"] 	= $carbonDate;
+												$values["OCCUR_DATE"] 		= $carbonDate;
+												$entry 	= $mdl::updateOrCreate($attributes,$values);
+												if ($entry->wasRecentlyCreated)	{
+													$tags_addnew++;
+													$sSQL="insert into `$table_name`(`$objIDField`,OCCUR_DATE,`$column_name`$sF) values($r->OBJECT_ID,'$date','$value'$sV)";
+												}
+												else {
+													$tags_override++;
+													$rID = $entry->ID;
+													$sSQL="update `$table_name` set `$column_name`='$value' where ID=$rID";
+												}
 											}
-											$tags_loaded++; */
-												
-											$tmp = DB::select("select ID from `$table_name` where $sWhere");
+											else{
+												$entry 	= $mdl::where($attributes)->whereDate("OCCUR_DATE","=",$carbonDate)->get();
+												if ($entry)	{
+													$sSQL="insert into `$table_name`(`$objIDField`,OCCUR_DATE,`$column_name`$sF) values($r->OBJECT_ID,'$date','$value'$sV)";
+												}
+												else {
+													$rID = $entry->ID;
+													$sSQL="update `$table_name` set `$column_name`='$value' where ID=$rID";
+												}
+											}
+											$sqls[]	= $sSQL;
+											$impSQL.=($impSQL?"<bt>":"").$sSQL;
+											$tags_loaded++; 
+											/* $tmp = DB::select("select ID from `$table_name` where $sWhere");
 											if(count($tmp) > 0)
 											{
 												$rID = $tmp[0]->ID;
@@ -488,13 +498,13 @@ class InterfaceController extends Controller {
 													$tags_addnew++;
 												}
 											}
-											$tags_loaded++;
+											$tags_loaded++; */
 										}
 									}
 								}
 							}
 							if($hasError) $tags_rejected ++;
-							if($tagID&&$tagID!=="" && $value!=="" && $date!==""){								
+							if($tagID&&$tagID!=="" && $value&&$value!=="" &&$date&& $date!==""){								
 								$load_time=date('Y-m-d H:i:s');
 								IntTagTrans::insert([
 									'LOG_ID'=> $log_id,

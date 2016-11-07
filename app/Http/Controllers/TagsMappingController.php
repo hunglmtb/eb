@@ -25,6 +25,9 @@ class TagsMappingController extends CodeController {
     	$mdlName = $postData[config("constants.tabTable")];
     	$mdl = "App\Models\\$mdlName";
 		$objectType=IntObjectType::find($object_type);
+		if (!$objectType) {
+			abort(501,"Object Name not exist");
+		}
 		$xtable=$objectType->CODE;
     	 
 	    $where = [
