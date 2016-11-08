@@ -1,11 +1,16 @@
 <?php
 if (!isset($currentSubmenu)) $currentSubmenu ='';
 ?>
+
+@section('ebfilter')
+	@include('group.production')
+@stop
+
 @extends('core.bstemplate',['subMenus' => array('pairs' => $subMenus, 'currentSubMenu' => $currentSubmenu)])
 @section('main')
 <div class="rootMain {{$currentSubmenu}}">
 	<div id="functionName" style="padding:10px 10px 10px 0px;font-size:16pt;display:none">@yield('funtionName')</div>
-	@include('group.production')
+	@yield('ebfilter')
 	<br>
 	@yield('content')
 </div>
@@ -40,4 +45,3 @@ if (!isset($currentSubmenu)) $currentSubmenu ='';
 @section('modalWindow')
 	@include('core.history')
 @stop
-

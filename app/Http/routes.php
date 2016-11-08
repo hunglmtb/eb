@@ -402,6 +402,9 @@ Route::post('chckChange', 'FieldsConfigController@chckChange');
 Route::post('getprop', 'FieldsConfigController@getprop');
 Route::post('saveprop', 'FieldsConfigController@saveprop');
 
+Route::get('loadtabledata',['uses' =>'DataViewController@tabledata','middleware' => 'checkRight:CONFIG_TABLE_DATA']);
+Route::get('pdtabledata',['uses' =>'DataViewController@pdtabledata','middleware' => 'checkRight:CONFIG_TABLE_DATA']);
+
 Route::get('formula',['uses' =>'FormulaController@_index','middleware' => 'checkRight:CONFIG_FORMULA']);
 Route::post('editgroupname', 'FormulaController@editGroupName');
 Route::post('addgroupname', 'FormulaController@addGroupName');

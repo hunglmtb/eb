@@ -26,6 +26,14 @@ class DataViewController extends Controller {
 		return view ( 'front.dataview', ['viewslist'=>$viewslist, 'sqllist'=>$sqllist, '_role'=>$role]);
 	}
 	
+	public function tabledata() {
+		return view ( 'admin.tabledata');
+	}
+	
+	public function pdtabledata() {
+		return view ( 'admin.pdtabledata');
+	}
+	
 	private function getSqlList(){
 		$sqllist = SqlList::where(['ENABLE'=>1])
 		->where ( function ($q) {
