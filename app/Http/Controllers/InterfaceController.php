@@ -451,6 +451,7 @@ class InterfaceController extends Controller {
 											if($update_db){
 												$attributes["OCCUR_DATE"] 	= $carbonDate;
 												$values["OCCUR_DATE"] 		= $carbonDate;
+												$values[$column_name] 		= $value;
 												$entry 	= $mdl::updateOrCreate($attributes,$values);
 												if ($entry->wasRecentlyCreated)	{
 													$tags_addnew++;
