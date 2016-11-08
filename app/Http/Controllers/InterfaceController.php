@@ -278,7 +278,7 @@ class InterfaceController extends Controller {
 			$file = $file->move ( public_path () . $tmpFilePath, $tmpFileName );
 			if ($file) {				
 				$path =  public_path () .$tmpFilePath . $tmpFileName;
-				ini_set('max_execution_time', 60);
+				ini_set('max_execution_time', 300);
  				$xxx = Excel::selectSheets($tabIndex)->load($path, function($reader) 
  						use ($data, $tagColumn, $timeColumn, $valueColumn, $tabIndex, $rowStart, $rowFinish, 
 							$date_begin, $date_end, $fileName, $update_db, $cal_method, $str, $path) {
@@ -423,10 +423,8 @@ class InterfaceController extends Controller {
 											$sV="";
 // 											$dateString = $date->format('m/d/Y');
 											$dateString = $date;
-// 											$sWhere="$objIDField=$r[OBJECT_ID] and OCCUR_DATE=DATE($dateString)";
 											if(substr($table_name,0,12)=="ENERGY_UNIT_")
 											{
-												$sWhere.=" and FLOW_PHASE=$r->FLOW_PHASE and EVENT_TYPE=$r->EVENT_TYPE";
 												$sF.=",FLOW_PHASE";
 												$sV.=",$r->FLOW_PHASE";
 												$sF.=",EVENT_TYPE";
@@ -439,7 +437,6 @@ class InterfaceController extends Controller {
 											}
 											if($table_name=="ENERGY_UNIT_DATA_ALLOC")
 											{
-												$sWhere.=" and ALLOC_TYPE=$r->ALLOC_TYPE";
 												$sF.=",ALLOC_TYPE";
 												$sV.=",$r->ALLOC_TYPE";
 												
@@ -476,30 +473,6 @@ class InterfaceController extends Controller {
 											$sqls[]	= $sSQL;
 											$impSQL.=($impSQL?"<bt>":"").$sSQL;
 											$tags_loaded++; 
-											/* $tmp = DB::select("select ID from `$table_name` where $sWhere");
-											if(count($tmp) > 0)
-											{
-												$rID = $tmp[0]->ID;
-												$sSQL="update `$table_name` set `$column_name`='$value' where ID=$rID";
-												$sSQL=str_replace("''","null",$sSQL);
-												$impSQL.=($impSQL?"<bt>":"").$sSQL;
-												if($update_db){
-													DB::update($sSQL) or $html.="<td>".mysql_error()."</td>";
-													$tags_override++;
-												}
-											}
-											else
-											{
-												$sSQL="insert into `$table_name`(`$objIDField`,OCCUR_DATE,`$column_name`$sF) values($r->OBJECT_ID,'$date','$value'$sV)";
-												$sSQL=str_replace("''","null",$sSQL);
-												$impSQL.=($impSQL?"<bt>":"").$sSQL;
-												if($update_db)
-												{
-													DB::insert($sSQL) or $html.="<td>".mysql_error()."</td>";
-													$tags_addnew++;
-												}
-											}
-											$tags_loaded++; */
 										}
 									}
 								}
