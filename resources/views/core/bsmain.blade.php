@@ -1,12 +1,14 @@
 <?php
 if (!isset($currentSubmenu)) $currentSubmenu ='';
+$enableFilter	= isset($enableFilter)?$enableFilter:true;
 ?>
 
-@section('ebfilter')
-	@include('group.production')
-@stop
-
 @extends('core.bstemplate',['subMenus' => array('pairs' => $subMenus, 'currentSubMenu' => $currentSubmenu)])
+@section('ebfilter')
+	@if($enableFilter)
+		@include('group.production')
+	@endif
+@stop
 @section('main')
 <div class="rootMain {{$currentSubmenu}}">
 	<div id="functionName" style="padding:10px 10px 10px 0px;font-size:16pt;display:none">@yield('funtionName')</div>
