@@ -1,14 +1,13 @@
 <?php
-include_once('/lib/db.php');
+// include_once('/lib/db.php');
 $RIGHT_CODE="CONFIG_TABLE_DATA";
-checkRight($RIGHT_CODE);
+// checkRight($RIGHT_CODE);
 $currentSubmenu ='/loadtabledata';
-
+if (!isset($subMenus)) $subMenus = [];
+$enableFilter = false;
 ?>
 
 @extends('core.bsmain',['subMenus' => $subMenus])
-@section('ebfilter')
-@stop
 
 @section('content')
 <script>
