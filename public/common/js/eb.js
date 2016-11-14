@@ -156,12 +156,14 @@ var actions = {
 							var params;
 							if (reLoadParams) {
 								params = {};
-								for (var key in javascriptFilterGroups) {
-									filterGroup = javascriptFilterGroups[key];
-									for (var jkey in filterGroup) {
-										entry = filterGroup[jkey];
-										if($('.'+entry.id).css('display') != 'none'){ 
-											   params[entry.id] = $('#'+entry.id).val();
+								if (typeof(javascriptFilterGroups) !== "undefined") {
+									for (var key in javascriptFilterGroups) {
+										filterGroup = javascriptFilterGroups[key];
+										for (var jkey in filterGroup) {
+											entry = filterGroup[jkey];
+											if($('.'+entry.id).css('display') != 'none'){ 
+												   params[entry.id] = $('#'+entry.id).val();
+											}
 										}
 									}
 								}
@@ -238,7 +240,7 @@ var actions = {
 						},
 	updateView 			: function(postData){
 							var noData = jQuery.isEmptyObject(postData);
-							if (!noData) {
+							if (!noData&&typeof(javascriptFilterGroups) !== "undefined") {
 								for (var key in javascriptFilterGroups) {
 									filterGroup = javascriptFilterGroups[key];
 									for (var jkey in filterGroup) {

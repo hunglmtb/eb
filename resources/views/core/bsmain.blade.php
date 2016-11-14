@@ -12,9 +12,8 @@ $enableFilter	= isset($enableFilter)?$enableFilter:true;
 @section('main')
 <div class="rootMain {{$currentSubmenu}}">
 	<div id="functionName" style="padding:10px 10px 10px 0px;font-size:16pt;display:none">@yield('funtionName')</div>
-	@yield('ebfilter')
-	<br>
-	@yield('content')
+	<div id="ebfilter" style="width:100%; clear:both">@yield('ebfilter')</div>
+	<div id="mainContent" style="width:100%; clear:both">@yield('content')</div>
 </div>
 @yield('adaptData')
 @stop
@@ -38,6 +37,8 @@ $enableFilter	= isset($enableFilter)?$enableFilter:true;
  	<script src="/common/js/bootstrap.js"></script>
 	<script src="/common/js/bootstrap-datetimepicker.js"></script>
 	<script src="/common/js/bootstrap-editable.js"></script>
+	<script src="/common/js/eb.js"></script>
+	
 	<!-- <script src="/common/js/datetime.js"></script> -->
 	
 <!-- 	<script src="/common/js/dataTables.select.min.js"></script>

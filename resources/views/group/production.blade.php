@@ -38,7 +38,6 @@ else{
 <script type='text/javascript'>
 var javascriptFilterGroups = <?php echo json_encode($filterGroups); ?>
 </script>
-<script src="/common/js/eb.js"></script>
 <script>
 $( document ).ready(function() {
     console.log( "ready!" );

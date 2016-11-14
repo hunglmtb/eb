@@ -1,18 +1,17 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\SqlList;
 use App\Models\SqlConditionFilter;
+use App\Models\SqlList;
 
-use Illuminate\Http\Request;
 use DB;
-use App\Models\User;
 use Excel;
+use Illuminate\Http\Request;
 
-class DataViewController extends Controller {
+class DataViewController extends EBController {
 	
 	public function __construct() {
-		$this->isReservedName = config('database.default')==='oracle';
+// 		$this->isReservedName = config('database.default')==='oracle';
 		$this->middleware ( 'auth' );
 	}
 	

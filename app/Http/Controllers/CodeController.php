@@ -111,23 +111,22 @@ class CodeController extends EBController {
     }
     
     public function load(Request $request){
-    	$postData = $request->all();
-     	$dcTable = $this->getWorkingTable($postData); 
-     	
-     	$facility_id = $postData['Facility'];
-     	$occur_date = null;
+    	$postData 		= $request->all();
+     	$dcTable 		= $this->getWorkingTable($postData); 
+     	$facility_id 	= array_key_exists('Facility',  $postData)?$postData['Facility']:null;
+     	$occur_date 	= null;
      	if (array_key_exists('date_begin',  $postData)){
 	     	$occur_date = $postData['date_begin'];
 	     	$occur_date = \Helper::parseDate($occur_date);
      	}
      	
- 		$results = $this->getProperties($dcTable,$facility_id,$occur_date,$postData);
-      	$data = $this->getDataSet($postData,$dcTable,$facility_id,$occur_date,$results);
-      	$secondaryData = $this->getSecondaryData($postData,$dcTable,$facility_id,$occur_date,$results);
+ 		$results 		= $this->getProperties($dcTable,$facility_id,$occur_date,$postData);
+      	$data 			= $this->getDataSet($postData,$dcTable,$facility_id,$occur_date,$results);
+      	$secondaryData 	= $this->getSecondaryData($postData,$dcTable,$facility_id,$occur_date,$results);
         $results['secondaryData'] = $secondaryData;
         $results['postData'] = $postData;
         if ($data&&is_array($data)) {
-	        $results = array_merge($results, $data);
+	        $results 	= array_merge($results, $data);
         }
     	return response()->json($results);
     }
