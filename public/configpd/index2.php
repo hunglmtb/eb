@@ -1,65 +1,39 @@
 <?php
-$currentSubmenu 					='loadtabledata';
-if (!isset($subMenus)) $subMenus 	= [];
-$enableFilter 						= false;
-if (!isset($active)) $active 		= 1;
-if (!isset($isAction)) $isAction 	= false;
-$tables 							= ['FlowDataFdcValue'	=>['name'=>'FDC VALUE']];
-
+include_once('../lib/db.php');
+$RIGHT_CODE="CONFIG_TABLE_DATA";
+checkRight($RIGHT_CODE);
 ?>
+<html>
 
-@extends('core.bsmain',['subMenus' => $subMenus])
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Energy Builder - Configuration</title>
+<link href="/common/css/style.css" rel="stylesheet">
+<script src="/common/js/jquery-1.9.1.js"></script> 
+</head>
 
-@section('adaptData')
-@parent
+<body style="margin:0; overflow-x:hidden">
+<?php
+//include('/tabledata/userbox.php');
+?>
+<div style="position: absolute; height: 32px; z-index: 1; left:350px; top:43px" id="submenu">
+	<ul id="css3menu0" class="topmenu">
+	<li class="topmenu"><a href="../fieldsconfig" style="height:21px;line-height:21px;">FIELDS CONFIG</a></li>
+	<li class="topmenu current_menu"><a href="#" style="height:21px;line-height:21px;">TABLES DATA</a></li>
+	<li class="topmenu"><a href="../configpd/index.php" style="height:21px;line-height:21px;">PD TABLES</a></li>
+	<li class="topmenu"><a href="../tagsMapping" style="height:21px;line-height:21px;">TAGS MAPPING</a></li>
+	<li class="topmenu"><a href="../formula" style="height:21px;line-height:21px;">FORMULA EDITOR</a></li>
+	<li class="topmenu"><a href="../viewconfig" style="height:21px;line-height:21px;">VIEW CONFIG</a></li>
+<!--
+	<li class="topmenu"><a href="../users/roles.php" style="height:21px;line-height:21px;">
+	ROLES</a></li>
+-->
+	</ul>
+</div>
 <script>
-	actions.loadUrl 		= "/loadtabledata/load";
-	actions.saveUrl 		= "/loadtabledata/save";
-	actions.type = {
-					idName:['ID'],
-					keyField:'ID',
-					saveKeyField : function (model){
-						return 'ID';
-						},
-					};
-
-	source.initRequest = function(tab,columnName,newValue,collection){
-		postData = actions.loadedData[tab];
-		srcData = {	name : columnName,
-					value : newValue,
-					Facility : postData['Facility'],
- 					target: source[columnName].dependenceColumnName,
-// 					srcType : srcType,
-				};
-		return srcData;
-	}
-
-	var renderFirsColumn = actions.renderFirsColumn;
-	actions.renderFirsColumn  = function ( data, type, rowData ) {
-		var html = renderFirsColumn(data, type, rowData );
-		var id = rowData['DT_RowId'];
-		isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
-		if(!isAdding){
-			html += '<a id="edit_row_'+id+'" class="actionLink">Edit</a>';
-		}
-		return html;
-	};
-
-	actions.tableChange = function(e){
-		var s=$("#listTables :selected").text();
-		if(s!="" && s!="undefined")
-		{
-			$("#tableHeaderName").html(s);
-// 			actions.doLoad(true);
-	 		$("#frameEdit").attr('src','tabledata/edittable.php?table='+s);
-		}
-	}
-</script>
-@stop
-
-@section('content')
-<script>
-function scopeChange(c){
+function scopeChange(c)
+{
 	var s="";
 	if(c) s=c; else s=$("#cboObjectScope").val();
 	if(s=="CODE")
@@ -458,6 +432,15 @@ function scopeChange(c){
 	}
 	$("#listTables").html(s);
 }
+function tableChange()
+{
+	var s=$("#listTables :selected").text();
+	if(s!="" && s!="undefined")
+	{
+		$("#tableHeaderName").html(s);
+		$("#frameEdit").attr('src','edittable.php?table='+s);
+	}
+}
 </script>
 <table border="0" cellpadding="10" cellspacing="0" width="100%" id="table2">
 	<tr>
@@ -496,8 +479,8 @@ function scopeChange(c){
 			</tr>
 			<tr>
 				<td height="440" valign="top">
-				<SELECT style="width:100%;height:100%" SIZE=5 name="listTables" id="listTables" onclick="actions.tableChange()">
-				</SELECT></td>
+				<SELECT style="width:100%;height:100%" SIZE=5 name="listTables" onclick="tableChange()" id="listTables">
+</SELECT></td>
 			</tr>
 		</table>
 		</td>
@@ -516,9 +499,7 @@ function scopeChange(c){
 	</tr>
 	<tr>
 		<td height="430">
-		 <iframe id="frameEdit" style="width:100%;height:100%;padding:0px;border:medium none; " name="I1"></iframe>
-		 
-		
+		<iframe id="frameEdit" style="width:100%;height:100%;padding:0px;border:medium none; " name="I1"></iframe>
 		</td>
 	</tr>
 </table>
@@ -526,6 +507,11 @@ function scopeChange(c){
 	</tr>
 </table>
 <script>
-	scopeChange();
+var func_code="<?php echo $RIGHT_CODE; ?>";
+scopeChange();
+$("#pageheader").load("../home/header.php?menu=config");
 </script>
-@stop
+<div style="text-align:center;padding:5px;color:#666"><font face="Arial" size="1">Copyright &copy; 2016 eDataViz LLC</font></div>
+</body>
+
+</html>

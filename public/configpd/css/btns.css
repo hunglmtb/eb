@@ -1,0 +1,38 @@
+.btn,.b-btn,.s-btn,.m-btn{display:inline-block;}
+.b-btn i,.b-btn span,.s-btn i,.s-btn span,.sb-btn i,.sb-btn span,.m-btn i,.m-btn span{display:block;font-style:normal;cursor:pointer;}
+.lte7 .btn,.lte7 .b-btn,.lte7 .s-btn,.lte7 .m-btn,.ie6 .b-btn i,.ie6 .b-btn span,.ie6 .s-btn i,.ie6 .s-btn span,.ie6 .sb-btn i,.ie6 .sb-btn span,.ie6 .m-btn i,.ie6 .m-btn span{display:inline;zoom:1;}
+/* = Buttons = */
+.btn, .m-btn { border: 1px solid #a3afb7; border-radius: 3px; margin: 0 10px 0 0; min-width: 90px; white-space: nowrap; text-align: center; border-color: #a3afb7; font-weight: 400; color: #5d6973; background: #dbe3e7 url(btn.png?11.0) repeat-x; background-clip: padding-box; box-shadow: inset 0 0 1px #fff, 0 1px 2px #d6d6d6; }
+.btn button { border: 0; margin: 0; padding: 0 8px; background: none; height: 28px; min-width: 100%; outline: 0; vertical-align: top; background: none; font-weight: 400; color: #5d6973; text-shadow: 0 1px 0 #fff; }
+.ie6 .btn button, .ie6 .m-btn { width: 90px; }
+.ie7 .btn button { min-width: 90px; }
+.ie8 .btn button { min-width: 74px; }
+.btn:hover, .m-btn:hover { border-color: #808287; color: #555; background-color: #ebf1f4; background-position: 0 -30px; box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 0 3px #fff; }
+.btn:active, .m-btn:active { border: 1px solid #a3afb7; background-color: #e5ebed; background-position: 0 -60px; box-shadow: inset 0 1px 2px #bdc3c6; }
+.btn:hover button { color: #555; }
+a.m-btn, a.m-btn:visited { text-decoration: none; color: #5d6973; }
+a.m-btn:hover, a.m-btn:active { color: #555; }
+.m-btn span { padding: 0 8px; height: 28px; line-height: 27px; }
+.btn.action, .m-btn.action { border-color: #86b0d8; color: #174a79; background-color: #d5e8f3; background-position: 0 -90px; box-shadow: inset 0 0 1px #eaf3f9, 0 1px 2px #d6d6d6; }
+.btn.action:hover, .m-btn.action:hover { border-color: #629bcf; color: #072e52; background-color: #dbeaf5; background-position: 0 -120px; box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 0 3px #f0f7fb; }
+.btn.action:active, .m-btn.action:active { border: 1px solid #76aadb; background-color: #d2e5f3; background-position: 0 -150px; box-shadow: inset 0 1px 2px #8db6d4; }
+.btn.action button, a.m-btn.action, a.m-btn.action:visited { text-decoration: none; color: #174a79; }
+.btn.action:hover button, a.m-btn.action:hover, a.m-btn.action:active { color: #072e52; }
+
+.btn.disabled, .btn.disabled:hover, .m-btn-disabled, .m-btn-disabled:hover, .action.m-btn-action-disabled, .action.m-btn-action-disabled:hover { border-color: #cbcbcb; color: #888; text-decoration: none; background-color: #e3e3e3; background-position: 0 -180px; box-shadow: inset 0 0 1px #fff, 0 1px 2px #d6d6d6; cursor: default; }
+.btn.disabled button, .btn.disabled:hover button, .m-btn-disabled span, .action.m-btn-action-disabled span { cursor: default; color: #888; }
+.btn .wait { padding: 1px 0 2px 20px; line-height: 23px; background: url(../img/indicator.gif?11.0) 0 50% no-repeat; }
+/* = Text with big icon = */
+.b-btn { margin: 0 3px 12px 0; font-size: 13px; line-height: 16px; text-decoration: none; text-align: center; vertical-align: top; color: #444; cursor: pointer; }
+a.b-btn,a.b-btn:visited,a.b-btn:hover,a.b-btn:active{text-decoration:none;color:#444;}
+.b-btn span{padding:34px 0 0;width:107px;background:url(../img/icons/big/default-button_32.gif?11.0) 50% 0 no-repeat;}
+/* = Text with small icon = */
+.s-btn,.sb-btn{margin:0 10px 0 0;font-size: 13px; line-height: 16px;vertical-align:bottom;white-space:nowrap;color:#0050b4;cursor:pointer;}
+.s-btn,a.s-btn,a.s-btn:visited,.sb-btn,a.sb-btn,a.sb-btn:visited{color:#0050b4;}
+a.s-btn:hover,a.s-btn:active,a.sb-btn:hover,a.sb-btn:active{color:#104382;}
+.s-btn span,.sb-btn span{padding:0 0 0 20px;height:16px;line-height:16px;background:url(../img/icons/small/default-button_16.gif?11.0) no-repeat;}
+.sb-btn{display:block;margin:0;}
+.sb-no-icon span {padding-left:0;background:none;}
+/* = Disabled text = */
+.btn-disabled,a.btn-disabled,a.btn-disabled:visited,a.btn-disabled:hover,a.btn-disabled:active{color:#888;cursor:default;text-decoration: none;}
+.btn-disabled i,.btn-disabled span{cursor:default;}
