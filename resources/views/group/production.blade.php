@@ -35,7 +35,12 @@ else{
 }
 
 ?>
+
 <script type='text/javascript'>
+if (typeof actions == "undefined") {
+	 document.write('<script type="text/javascript" src="'
+			    + '/common/js/eb.js' + '"></scr' + 'ipt>'); 
+}
 var javascriptFilterGroups = <?php echo json_encode($filterGroups); ?>
 </script>
 <script>

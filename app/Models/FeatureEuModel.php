@@ -63,6 +63,9 @@ class FeatureEuModel extends EbBussinessModel
 		return parent::updateOrCreate($attributes,$values);;
 	}
 	
+	public static function getObjects() {
+		return EnergyUnit::all();
+	}
 	
 	public function getVAttribute($value)
 	{

@@ -242,4 +242,13 @@ class EbBussinessModel extends DynamicModel {
 	public static function getCalculateFields() {
 		return null;
 	}
+	
+	
+	public static function getObjectTargets() {
+		return  collect([
+				(object)['value' =>	'KEEP_DISPLAY_VALUE','text' => 'Display origin value'      	],
+// 				(object)['value' =>	'NO_FORMAT'			,'text' => 'No format'    ],
+				(object)['value' =>	'TBD'				,'text' => 'To be defined'    ],
+		]);
+	}
 }

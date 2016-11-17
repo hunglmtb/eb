@@ -364,6 +364,9 @@ var actions = {
 		return moment.utc(data2,configuration.time.DATETIME_FORMAT_UTC).format(configuration.time.DATE_FORMAT);
 //		return moment(data2,"YYYY-MM-DD").format("MM/DD/YYYY");
 	},
+	validates : function (input,value,property){
+//		if(property)
+	},
 	defaultRenderFirsColumn : function ( data, type, rowData ) {
 		var html = "<div class='firstColumn'>"+data+"</div>";
 		var extraHtml = "<div class='extraFirstColumn'>";
@@ -384,7 +387,8 @@ var actions = {
 		extraHtml += "</div>";
 		return html+extraHtml;
 	},
-	applyEditable : function (tab,type,td, cellData, rowData, columnName,collection){
+	applyEditable : function (tab,type,td, cellData, rowData, property,collection){
+		var columnName = typeof property === 'string'?property:property.data;
 		var successFunction = actions.getEditSuccessfn(tab,td, rowData, columnName,collection,type);
 		var  editable = {
 	    	    title: 'edit',
@@ -398,7 +402,6 @@ var actions = {
 		case "number":
 		case "date":
 			editable['type'] = type;
-//			editable['step'] = 0.001;
 			editable['validate'] = function(value) {
 						    	        if($.trim(value) == '') {
 						    	            return 'This field is required';
@@ -414,15 +417,27 @@ var actions = {
 			}
 			else if(type=='number') {
 				editable['type'] = "text";
-				if(configuration.number.DECIMAL_MARK=='comma') editable['tpl'] = "<input class='cellnumber' type=\"text\" pattern=\"^[-]?[0-9]+([,][0-9]{1,20})?\">";
-				else  editable['tpl'] = "<input  class='cellnumber' type=\"text\" pattern=\"^[-]?[0-9]+([\.][0-9]{1,20})?\">"; 
+				if(configuration.number.DECIMAL_MARK=='comma') 
+					editable['tpl'] = "<input class='cellnumber' type=\"text\" pattern=\"^[-]?[0-9]+([,][0-9]{1,20})?\">";
+				else  
+					editable['tpl'] = "<input class='cellnumber' type=\"text\" pattern=\"^[-]?[0-9]+([\.][0-9]{1,20})?\">";
+				editable['validate'] = function(value) {
+					var strimValue = $.trim(value);
+	    	        if(strimValue == '') {
+	    	            return 'This field is required';
+	    	        }
+	    	        if(typeof property !== 'string'){
+	    	        	if(typeof(property.VALUE_MIN) !== "undefined"&&
+	    	        			property.VALUE_MIN != null &&
+	    	        			property.VALUE_MIN != "" &&
+	    	        			strimValue < property.VALUE_MIN) return 'This field need greater or equal '+property.VALUE_MIN;
+	    	        	if(typeof(property.VALUE_MAX) !== "undefined"&&
+	    	        			property.VALUE_MAX != null &&
+	    	        			property.VALUE_MAX != "" &&
+	    	        			strimValue > property.VALUE_MAX) return 'This field need less or equal '+property.VALUE_MAX;
+	    	        }
+	    	    };
 			}
-			/*if (type=='number'&&this.historyUrl) {
-				
-				editable['extensionHandle'] = function() {
-												actions.extensionHandle(tab,columnName,rowData,false,successFunction,true);
-									    	  };
-			}*/
 	    	break;
 	    	
 		case "datetimepicker":
@@ -689,6 +704,22 @@ var actions = {
 		return moment(newValue).format(configuration.time.DATETIME_FORMAT_UTC);
 //		return moment(newValue).format("YYYY-MM-DD HH:mm:ss");
 	},
+	isDisplayOriginValue : function(property,rowData){
+		var isKeep = false;
+		var objectExtension	= property.OBJECT_EXTENSION;
+		if(objectExtension!=null&&objectExtension!=""){
+			var objects = $.parseJSON(objectExtension);
+			var objectId = rowData[actions.type.idName[0]];
+			var extension = objects[objectId];
+			if(typeof(extension) == "object"){
+				var result = $.grep(extension, function(e){
+    				return e == "KEEP_DISPLAY_VALUE";
+     			});
+     			isKeep = typeof(result) !== "undefined" && result.length > 0;
+			}
+		}
+		return isKeep;
+	},
 	getCellType : function(data,type,cindex){
 		type = actions.extraDataSetColumns.hasOwnProperty(data.properties[cindex].data)?'select':type;
 		return type;
@@ -696,22 +727,37 @@ var actions = {
 	getCellProperty : function(data,tab,type,cindex){
 		var cell = {"targets"	: cindex};
 		type = actions.getCellType(data,type,cindex);
-		const columnName = data.properties[cindex].data;
+		var property 		= data.properties[cindex];
+		const columnName 	= property.data;
 		if (type!='checkbox') {
 			cell["createdCell"] = function (td, cellData, rowData, row, col) {
-					colName = data.properties[col].data;
+					var property 		= data.properties[col];
+					var objectExtension	= property.OBJECT_EXTENSION;
+					if(objectExtension!=null&&objectExtension!=""){
+						var objects = $.parseJSON(objectExtension);
+						var objectId = rowData[actions.type.idName[0]];
+						var extension = objects[objectId];
+						if(typeof(extension) == "object"){
+							$.each(extension, function( index, value ) {
+								if(typeof(value) == "string") $(td).addClass( value );
+								else if (typeof(value) == "object" && typeof(value.color) != "undefined" )
+									$(td).css("background-color","#"+value.color);
+							});
+						}
+					}
+
+					colName 			= property.data;
+					$(td).addClass( "contenBoxBackground");
+					$(td).addClass( "cell"+type );
 	 				$(td).addClass( colName );
-	 				$(td).addClass( "cell"+type );
-		 			if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)){
+		 			if(!data.locked&&actions.isEditable(property,rowData,data.rights)){
 		 				$(td).addClass( "editInline" );
-		 				colName = data.properties[col].data;
-//		 				$(td).addClass( colName );
 		 	        	var table = $('#table_'+tab).DataTable();
 		 	        	collection = null;
 		 	        	if(type=='select'){
 		 	        		collection = actions.getExtraDataSetColumn(data,cindex,rowData);
 		 	        	}
-		 				actions.applyEditable(tab,type,td, cellData, rowData, colName,collection);
+		 				actions.applyEditable(tab,type,td, cellData, rowData, property,collection);
 		 			}
 		 			else if (type=='number'&&actions.historyUrl) {
 		 				$(td).click(function(e){
@@ -764,9 +810,10 @@ var actions = {
 								if(value==null){
 									value = data2;
 									if(data2!=null&&data2!=''){
-										value = parseFloat(data2);
-										if(isNaN(value)) return '';
-										value = Math.round(value * 100) / 100;
+										var pvalue = parseFloat(data2);
+										if(isNaN(pvalue)) return '';
+										value = Math.round(pvalue * 100) / 100;
+										if(actions.isDisplayOriginValue(property,row))  value = pvalue;
 									}
 								}
 								if(value!=null){
