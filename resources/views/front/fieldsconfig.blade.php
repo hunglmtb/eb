@@ -1,5 +1,6 @@
 <?php
-$currentSubmenu = '/fieldsconfig';
+$currentSubmenu 		= '/fieldsconfig';
+$objectExtension 		= isset($objectExtension)?$objectExtension:[];
 ?>
 
 @extends('core.bsconfig')
@@ -46,9 +47,25 @@ $(function(){
 
 	$("#data_field_effected").change(function(){
 		_fieldconfig.data_field_effected_change();
-	});	
+	});
+
 	
 });
+
+function setColorPicker(element,target){
+	element.ColorPicker({
+		onSubmit: function(hsb, hex, rgb, el) {
+			$(el).val(hex);
+			$(el).ColorPickerHide();
+// 			target.css("background-color","#"+hex);
+			$(el).css("background-color","#"+hex);
+			$(el).css("color","#"+hex);
+		},
+		onBeforeShow: function () {
+			$(this).ColorPickerSetColor($(this).val());
+		}
+	});
+}
 
 var _fieldconfig = {
 
@@ -184,11 +201,12 @@ var _fieldconfig = {
 			   		'field_effected' : ""+fields+""	
 			}
 			
-			sendAjaxNotMessage('/getprop', param, function(data){
-				_fieldconfig.setData(data);
+			sendAjaxNotMessage('/getprop', param, function(respondData){
+				_fieldconfig.setData(respondData);
 			});
 		},
-		setData : function(data){
+		setData : function(respondData){
+			var data = respondData.data;
 			$('#caption').text(data[0].COLUMN_NAME);
 			$('#friendly_name').val(data[0].LABEL);
 			$('#FDC_WIDTH').val(data[0].FDC_WIDTH);
@@ -223,7 +241,142 @@ var _fieldconfig = {
 				$('#us_sr').prop('checked', false);
 			}
 
+			$("#objectExtension").html("");
+			$("#addObjectBtn").remove();
+			var objectExtensionSource = respondData.objectExtension;
+			if(objectExtensionSource.length>0){
+				var objectExtension	= data[0].OBJECT_EXTENSION;
+				_fieldconfig.objectExtensionTarget = respondData.objectExtensionTarget;
+				if(objectExtension!=null&&objectExtension!=""){
+					var objects = $.parseJSON(objectExtension);
+					$.each(objects, function( index, value ) {
+						_fieldconfig.addObjectExtension(objectExtensionSource,value,index);
+					});
+				}
+				
+				var addObjectBtn = $("<img id='addObjectBtn'></img>");
+				addObjectBtn.attr("src","/img/plus.png");
+				addObjectBtn.addClass("xclose floatRight");
+				addObjectBtn.click(function() {
+					_fieldconfig.addObjectExtension(objectExtensionSource,[],-1);
+				});
+				addObjectBtn.appendTo($("#extensionView"));
+			}
+			
 			$("#save, #reset").show();
+		},
+		objectExtensionTarget	: [],
+		addObjectExtension : function(objects,targets,value){
+			var li = $("<li></li>");
+			var del = $("<img></img>");
+			del.attr("src","../img/x.png");
+			del.addClass("xclose");
+			del.click(function() {
+				li.remove();
+			});
+			del.appendTo(li);
+			
+			var select = $("<select></select>");
+			$.each(objects, function( oindex, ovalue ) {
+				var option = $("<option></option>");
+				option.val(ovalue.ID);
+				option.text(ovalue.NAME);
+				option.appendTo(select);
+			});
+			select.val(value);
+			select.appendTo(li);
+
+			var colorObjects = $.grep(targets, function(e){ 
+  	 			return typeof(e) == "object" && typeof( e.color) != "undefined";
+   			});
+
+			if (colorObjects.length > 0){
+				var cellColor = colorObjects[0]["color"];
+				select.css("background-color","#"+cellColor);
+				select.attr("cell-color",cellColor);
+			}
+
+			var objectExtensionTarget = _fieldconfig.objectExtensionTarget;
+ 			
+			var span = $("<span></span>");
+			span.addClass("linkViewer");
+			span.editable({
+		    	type 		: 'checklist',
+		    	onblur		: 'ignore',
+		        value		: targets,
+		        source		: objectExtensionTarget,
+		        display		: function(value, sourceData) {
+				        	   //display checklist as comma-separated values
+				        	   var html = [],
+				        	       checked = $.fn.editableutils.itemsByValue(value, sourceData);
+				        	       
+				        	   if(checked.length) {
+				        	       $.each(checked, function(i, v) { html.push($.fn.editableutils.escape(v.text)); });
+				        	       $(this).text(html.join(', '));
+				        	   } else {
+				        	       $(this).text("pick rules"); 
+				        	   }
+				        	},
+		    });
+			span.on("shown", function(e, editable) {
+					var div = $("<div></div>");
+					var color = $("<input class='inputColor' type='text' maxlength='6' size='6' style='padding:2px;background: rgb(219, 68, 219);' >");
+					color.addClass("_colorpicker");
+					var evalue = span.editable('getValue',true);
+					var colorObjects = $.grep(evalue, function(e){ 
+          	 			return typeof(e) == "object" && typeof( e.color) != "undefined";
+           			});
+
+					if (colorObjects.length == 0){
+						color.css("color","#000000");
+						color.val("pick color");
+					}
+					else{
+						var cellColor = colorObjects[0]["color"];
+						color.css("background-color","#"+cellColor);
+						color.css("color","#"+cellColor);
+						color.val(cellColor);
+					}
+					
+					setColorPicker(color,span);
+					color.appendTo(div);
+					div.insertAfter($(editable.container.$form.get(0)).find(".editable-buttons").eq(0));
+					span.on('save', function(e, params) {
+						var cellColor = color.val();
+						select.css("background-color","#"+cellColor);
+						select.attr("cell-color",cellColor);
+						if(cellColor!="pick color"){
+							var ovalue = params.newValue;
+							var result = $.grep(ovalue, function(e){ 
+				              	 			return typeof(e) == "object" && typeof( e.color) != "undefined";
+				               			});
+							if (result.length == 0) 
+								ovalue.push({color	: cellColor});
+							else
+								result[0]["color"] = cellColor;
+						}
+
+					});
+	    	});
+			span.appendTo(li);
+			li.appendTo($("#objectExtension"));
+		},
+		buildObjectExtension	:  function(){
+			var objects = {};
+			$('#objectExtension li').each(function(i){
+				var objectId = $(this).find( "select" ).eq(0).val();
+				if(objectId!=null&&objectId!=""){
+					var targets 	= $(this).find( "span" ).eq(0).editable('getValue',true);
+					if(typeof(objects[objectId]) == "undefined") 
+						objects[objectId] = targets;
+					else 
+						objects[objectId] = arrayUnique(objects[objectId].concat(targets),
+												function(e1,e2){
+														return typeof(e1) == "object" && typeof(e2) == "object" && Object.keys(e1)[0] == Object.keys(e2)[0];
+												});
+				}
+			});
+			return objects;
 		},
 		reset : function()
 		{
@@ -248,7 +401,8 @@ var _fieldconfig = {
 				'us_gr' : $("#us_gr").is(':checked') ? 1 : 0,
 				'us_sr' : $("#us_sr").is(':checked') ? 1 : 0,
 				'is_mandatory' : $("#is_mandatory").is(':checked') ? 1 : 0,
-				'friendly_name' : $("#friendly_name").val()
+				'friendly_name' : $("#friendly_name").val(),
+				objectExtension	: _fieldconfig.buildObjectExtension(),
 			}
 			
 			sendAjax('/saveprop', param, function(data){
@@ -269,9 +423,7 @@ var _fieldconfig = {
 <body style="margin:0; overflow-x:hidden">
 <div id="wraper">
 	<table bgcolor="#E6E6E6" width="531px">
-    	<tr><td>
-    		<b>Table name</b>
-        </td></tr>
+    	<tr><td><b>Table name</b></td></tr>
         <tr><td>
             <select size="1" name="data_source" id="data_source" style="width:200px" onchange="_fieldconfig.data_source_change();_fieldconfig.reset();">
                @foreach($cfg_data_source as $re)
@@ -350,9 +502,22 @@ var _fieldconfig = {
                 <tr style="height:30px">
                   <td class="field">Use for:</td>
                   <td>
-                  	<input type="checkbox" name="us_data" id="us_data">Data capture<br>
-                    <input type="checkbox" name="us_gr" id="us_gr">Graph<br>
-                    <input type="checkbox" name="us_sr" id="us_sr">Surveillance
+	                  <div class="floatLeft" style="width: 25%;">
+	                  	<input type="checkbox" name="us_data" id="us_data">Data capture<br>
+	                    <input type="checkbox" name="us_gr" id="us_gr">Graph<br>
+	                    <input type="checkbox" name="us_sr" id="us_sr">Surveillance
+	                  </div>
+	                  <div class="floatLeft" id ="extensionView" style="width: 75%;">
+		                  <ul id="objectExtension" style="list-style-type: none;margin: 0;padding-left: 7px;">
+			              	@foreach($objectExtension as $extension)
+				              	<select >
+					              	@foreach($extension["object"] as $object)
+						              	<option value='{{$object->ID}}'>{{$object->NAME}}</option>
+									@endforeach
+								</select>
+							@endforeach
+		                  </ul>
+	                  </div>
                   </td>
                 </tr>
               </table>
@@ -384,4 +549,23 @@ var _fieldconfig = {
     </table>
 </div>
 </body>
+@stop
+
+
+@section('script')
+	<!-- <link href="/common/css/bootstrap.css" rel="stylesheet"/>
+	<link href="/common/css/bootstrap-responsive.css" rel="stylesheet"/>
+	<link href="/common/css/bootstrap-editable.css" rel="stylesheet"/>
+ 	<script src="/common/js/bootstrap.js"></script>
+	<script src="/common/js/bootstrap-editable.js"></script> -->
+	
+	<link href="/jqueryui-editable/css/jqueryui-editable.css" rel="stylesheet"/>
+	<script src="/jqueryui-editable/js/jqueryui-editable.js"></script>
+	
+	<link rel="stylesheet" media="screen" type="text/css" href="/common/colorpicker/css/colorpicker.css" />
+	<script type="text/javascript" src="/common/colorpicker/js/colorpicker.js"></script>
+	
+	<style>
+ 		._colorpicker{border:none;cursor:pointer}
+	</style>
 @stop

@@ -282,7 +282,9 @@ class CodeController extends EBController {
     			'VALUE_FORMAT',
     			'ID',
     			'FIELD_ORDER',
-    			'VALUE_MAX']);
+    			'VALUE_MAX',
+    			'OBJECT_EXTENSION'
+    	]);
     	return $properties;
     }
     

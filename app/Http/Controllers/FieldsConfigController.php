@@ -22,9 +22,9 @@ class FieldsConfigController extends Controller {
 		$cfg_input_type = CfgInputType::all('ID', 'NAME');
 		
 		return view ( 'front.fieldsconfig',[
-				'cfg_data_source' =>$cfg_data_source,
-				'code_data_method'=>$code_data_method,
-				'cfg_input_type'=>$cfg_input_type
+				'cfg_data_source' 		=> $cfg_data_source,
+				'code_data_method'		=> $code_data_method,
+				'cfg_input_type'		=> $cfg_input_type,
 		]);
 	}
 	
@@ -160,13 +160,17 @@ class FieldsConfigController extends Controller {
 	}
 	
 	public function getprop(Request $request){
-		$data = $request->all ();
-		$table = $data['table'];
-		$field = $data['field_effected'];
-		//\DB::enableQueryLog ();
-		$re_prop = CfgFieldProps::where(['TABLE_NAME'=>$table, 'COLUMN_NAME'=>$field])->select('*')->get();
-		//\Log::info ( \DB::getQueryLog () );
-		return response ()->json ($re_prop);
+		$data 					= $request->all ();
+		$table 					= $data['table'];
+		$field 					= $data['field_effected'];
+		$re_prop 				= CfgFieldProps::where(['TABLE_NAME'=>$table, 'COLUMN_NAME'=>$field])->select('*')->get();
+		$mdl					= \Helper::getModelName($table);
+		$objectExtension 		= method_exists($mdl,"getObjects")?$mdl::getObjects():[];
+		$objectExtensionTarget 	= method_exists($mdl,"getObjectTargets")?$mdl::getObjectTargets():[];
+		return response ()->json ([	"data"					=> $re_prop,
+									"objectExtension"		=> $objectExtension,
+									'objectExtensionTarget'	=> $objectExtensionTarget,
+		]);
 	}
 	
 	public function saveprop(Request $request){
@@ -203,10 +207,12 @@ class FieldsConfigController extends Controller {
 		if (isset ( $data ['friendly_name'] ) && count ( $fields ) == 1)
 			$param ['LABEL'] = $data ['friendly_name'];
 		
-		$param ['USE_FDC'] = $data ['us_data'];
+		$objectExtension = isset ( $data ['objectExtension'] )&&count($data ['objectExtension'])>0?json_encode($data ['objectExtension']):null;
+		$param['USE_FDC'] = $data ['us_data'];
 		$param['USE_DIAGRAM'] = $data['us_sr'];
 		$param['USE_GRAPH'] = $data['us_gr'];
 		$param['IS_MANDATORY'] = $data['is_mandatory'];
+		$param['OBJECT_EXTENSION'] = $objectExtension;
 	
 			//\DB::enableQueryLog ();
 		CfgFieldProps::where(['TABLE_NAME'=>$table])->whereIn('COLUMN_NAME', $fields)->update($param);

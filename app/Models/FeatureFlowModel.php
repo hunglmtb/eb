@@ -26,4 +26,8 @@ class FeatureFlowModel extends EbBussinessModel
 		return [static::$idField => $newData[static::$idField],
 				static::$dateField=>$occur_date];
 	}
+	
+	public static function getObjects() {
+		return Flow::all();
+	}
 }

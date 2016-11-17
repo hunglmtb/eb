@@ -294,7 +294,7 @@ table.dataTable {
 }
 .cellnumber {
 	text-align: right;
-	position: relative;
+	/* position: relative; */
 	overflow: hidden;
 }
 .editable-container{
@@ -477,4 +477,13 @@ table.dataTable thead .BAL_POWER,table.dataTable thead .ADJUST_POWER {
 
 .floatLeft {
 	float: left;
+}
+.floatRight {
+	float: right;
+}
+.linkViewer{
+    color: #378de5;
+}
+.contenBoxBackground{
+	background-clip: content-box;
 }
