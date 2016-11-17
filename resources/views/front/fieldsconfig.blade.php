@@ -60,6 +60,17 @@ function setColorPicker(element,target){
 // 			target.css("background-color","#"+hex);
 			$(el).css("background-color","#"+hex);
 			$(el).css("color","#"+hex);
+
+			var ovalue = target.editable('getValue',true);
+			var result = $.grep(ovalue, function(e){ 
+              	 			return typeof(e) == "object" && typeof( e.color) != "undefined";
+               			});
+			if (result.length == 0) 
+				ovalue.push({color:hex});
+			else
+				result[0]["color"] = hex;
+			
+			target.editable('setValue',ovalue,false);
 		},
 		onBeforeShow: function () {
 			$(this).ColorPickerSetColor($(this).val());
