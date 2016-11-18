@@ -512,8 +512,6 @@ var actions = {
 //    		  $(".extension-buttons").css("display","none");
     		  $("#more_actions").html("");
     		  if(type=="number") {
-				    val = rowData[columnName];
-	    		    val = Math.floor(val) == val && $.isNumeric(val)?Math.floor(val):val;
 					$( editable.input.$input.get(0) ).closest( ".editable-container" ).css("float","right");
 					if (actions.historyUrl){
 					//						$(".extension-buttons").css("display","block");
@@ -531,11 +529,17 @@ var actions = {
 						}
 					}
 					
-					if(typeof val == "string"){
-						if(configuration.number.DECIMAL_MARK=='comma')
-							val = val.split(".").join("");
-						else val = val.split(",").join("");
-					}
+					val = rowData[columnName];
+		    		val = Math.floor(val) == val && $.isNumeric(val)?Math.floor(val):val;
+		    		val = ""+val;
+		    		if(configuration.number.DECIMAL_MARK=='comma')
+		    			val = val.replace('.',',')
+//						val = val.split(".").join("");
+//					else val = val.split(",").join("");
+		    		/*
+					if(configuration.number.DECIMAL_MARK=='comma')
+						val = val.split(".").join("");
+					else val = val.split(",").join("");*/
 					editable.input.$input.val(val);
     		  }
     		  editable.input.$input.get(0).select();
