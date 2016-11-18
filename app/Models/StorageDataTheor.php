@@ -1,8 +1,8 @@
 <?php 
 namespace App\Models; 
-use App\Models\FeatureTankModel; 
+ 
 
- class StorageDataTheor extends FeatureTankModel 
+ class StorageDataTheor extends FeatureStorageModel 
 { 
 	protected $table = 'storage_data_theor'; 
 	public  static $ignorePostData = true;

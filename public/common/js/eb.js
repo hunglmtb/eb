@@ -9,6 +9,26 @@ $.ajaxSetup({
 	}
 });
 
+function arrayUnique(array,equalFunction) {
+    var a = array.concat();
+    for(var i=0; i<a.length; ++i) {
+        for(var j=i+1; j<a.length; ++j) {
+            if(a[i] === a[j] || (typeof equalFunction == "function" && equalFunction(a[i],a[j])))
+                a.splice(j--, 1);
+        }
+    }
+
+    return a;
+}
+
+function isInt(n){
+    return Number(n) === n && n % 1 === 0;
+}
+
+function isFloat(n){
+    return Number(n) === n && n % 1 !== 0;
+}
+
 var filters = {};
 var enableSelect = function(dependentIds, value) {
 	for (var i = 0; i < dependentIds.length; i++) {
@@ -427,14 +447,18 @@ var actions = {
 	    	            return 'This field is required';
 	    	        }
 	    	        if(typeof property !== 'string'){
-	    	        	if(typeof(property.VALUE_MIN) !== "undefined"&&
-	    	        			property.VALUE_MIN != null &&
-	    	        			property.VALUE_MIN != "" &&
-	    	        			strimValue < property.VALUE_MIN) return 'This field need greater or equal '+property.VALUE_MIN;
-	    	        	if(typeof(property.VALUE_MAX) !== "undefined"&&
-	    	        			property.VALUE_MAX != null &&
-	    	        			property.VALUE_MAX != "" &&
-	    	        			strimValue > property.VALUE_MAX) return 'This field need less or equal '+property.VALUE_MAX;
+	    	        	var minValue = typeof(property.VALUE_MIN) !== "undefined"&&
+					        			property.VALUE_MIN != null &&
+					        			property.VALUE_MIN != ""?
+					        			parseFloat(property.VALUE_MIN):-1*Number.MAX_VALUE;
+	    	        	var maxValue = typeof(property.VALUE_MAX) !== "undefined"&&
+					        			property.VALUE_MAX != null &&
+					        			property.VALUE_MAX != ""?
+					        			parseFloat(property.VALUE_MAX):Number.MAX_VALUE;
+	    	        	
+	    	        	if(minValue>=maxValue) return;
+	    	        	if(strimValue < minValue) return 'This field need greater or equal '+property.VALUE_MIN;
+	    	        	if(strimValue > maxValue) return 'This field need less or equal '+property.VALUE_MAX;
 	    	        }
 	    	    };
 			}
@@ -484,14 +508,15 @@ var actions = {
     	$(td).on("shown", function(e, editable) {
     		  var val = editable.input.$input.val();
     		  if(val.trim()=="")editable.input.$input.val('');
-    		  val = editable.input.$input.val();
     		  if(type=="timepicker") $(".table-condensed thead").css("visibility","hidden");
 //    		  $(".extension-buttons").css("display","none");
     		  $("#more_actions").html("");
     		  if(type=="number") {
+				    val = rowData[columnName];
+	    		    val = Math.floor(val) == val && $.isNumeric(val)?Math.floor(val):val;
 					$( editable.input.$input.get(0) ).closest( ".editable-container" ).css("float","right");
 					if (actions.historyUrl){
-//						$(".extension-buttons").css("display","block");
+					//						$(".extension-buttons").css("display","block");
 						var hid ='eb_' +tab+"_"+rowData.DT_RowId+"_"+columnName;
 						if( $('#'+hid).length ){
 						}
@@ -506,9 +531,11 @@ var actions = {
 						}
 					}
 					
-					if(configuration.number.DECIMAL_MARK=='comma')
-						val = val.split(".").join("");
-					else val = val.split(",").join("");
+					if(typeof val == "string"){
+						if(configuration.number.DECIMAL_MARK=='comma')
+							val = val.split(".").join("");
+						else val = val.split(",").join("");
+					}
 					editable.input.$input.val(val);
     		  }
     		  editable.input.$input.get(0).select();

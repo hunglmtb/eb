@@ -97,4 +97,8 @@ class FeatureTankModel extends EbBussinessModel
 		$entries = static ::where($wheres)->select('ID','NAME')->orderBy('NAME')->get();
 		return $entries;
 	}
+	
+	public static function getObjects() {
+		return Tank::all();
+	}
 }

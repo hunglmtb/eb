@@ -29,7 +29,7 @@ var xmenu=
 						[
 							{"name":"Flow stream","title":"Flow Data Capture","link":"/dc/flow"},
 							{"name":"Energy Unit","title":"Energy Unit Data Capture","link":"/dc/eu"},
-							{"name":"Tank & Storage","title":"Tank & Storage Data Capture","link":"/dc/storage"},
+							{"name":"Tank & Storage","title":"Tank & Storage","link":"/dc/storage"},
 							{"name":"Tank Ticket","title":"Tank Ticket Data Capture","link":"/dc/ticket"},
 							{"name":"Well Test","title":"Well Test Data Capture","link":"/dc/eutest"},
 							{"name":"Deferment","title":"Deferment Data Capture","link":"/dc/deferment"},

@@ -1,8 +1,8 @@
 <?php 
 namespace App\Models; 
-use App\Models\FeatureTankModel; 
+ 
 
- class StorageDataForecast extends FeatureTankModel 
+ class StorageDataForecast extends FeatureStorageModel 
 { 
 	protected $table = 'storage_data_forecast'; 
 	protected $objectModel = 'Storage';
