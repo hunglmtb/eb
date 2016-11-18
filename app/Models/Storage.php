@@ -1,11 +1,9 @@
 <?php
 
 namespace App\Models;
-use App\Models\FeatureTankModel;
 use App\Models\PdLiftingAccount;
 
-
-class Storage extends FeatureTankModel
+class Storage extends FeatureStorageModel
 {
 	protected $table = 'STORAGE';
 	

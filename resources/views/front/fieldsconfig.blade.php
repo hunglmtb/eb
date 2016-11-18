@@ -61,7 +61,7 @@ function setColorPicker(element,target){
 			$(el).css("background-color","#"+hex);
 			$(el).css("color","#"+hex);
 
-			var ovalue = target.editable('getValue',true);
+			/* var ovalue = target.editable('getValue',true);
 			var result = $.grep(ovalue, function(e){ 
               	 			return typeof(e) == "object" && typeof( e.color) != "undefined";
                			});
@@ -70,7 +70,7 @@ function setColorPicker(element,target){
 			else
 				result[0]["color"] = hex;
 			
-			target.editable('setValue',ovalue,false);
+			target.editable('setValue',ovalue,false); */
 		},
 		onBeforeShow: function () {
 			$(this).ColorPickerSetColor($(this).val());
@@ -315,6 +315,7 @@ var _fieldconfig = {
 		    	type 		: 'checklist',
 		    	onblur		: 'ignore',
 		        value		: targets,
+		        savenochange: true,
 		        source		: objectExtensionTarget,
 		        display		: function(value, sourceData) {
 				        	   //display checklist as comma-separated values
@@ -338,25 +339,35 @@ var _fieldconfig = {
           	 			return typeof(e) == "object" && typeof( e.color) != "undefined";
            			});
 
-					if (colorObjects.length == 0){
-						color.css("color","#000000");
-						color.val("pick color");
-					}
-					else{
+					if (colorObjects.length >0){
 						var cellColor = colorObjects[0]["color"];
 						color.css("background-color","#"+cellColor);
 						color.css("color","#"+cellColor);
 						color.val(cellColor);
 					}
+					else{
+						color.css("color","#000000");
+						color.val("pick color");
+					}
 					
 					setColorPicker(color,span);
 					color.appendTo(div);
+
+					var clearColor = $("<img></img>");
+					clearColor.attr("src","../img/x.png");
+					clearColor.addClass("xclose");
+					clearColor.click(function() {
+						color.css("color","#000000");
+						color.val("pick color");
+					});
+					clearColor.appendTo(div);
 					div.insertAfter($(editable.container.$form.get(0)).find(".editable-buttons").eq(0));
+					
 					span.on('save', function(e, params) {
 						var cellColor = color.val();
-						select.css("background-color","#"+cellColor);
-						select.attr("cell-color",cellColor);
-						if(cellColor!="pick color"){
+						if(cellColor!=""&&cellColor!="pick color"){
+							select.css("background-color","#"+cellColor);
+							select.attr("cell-color",cellColor);
 							var ovalue = params.newValue;
 							var result = $.grep(ovalue, function(e){ 
 				              	 			return typeof(e) == "object" && typeof( e.color) != "undefined";
@@ -366,7 +377,16 @@ var _fieldconfig = {
 							else
 								result[0]["color"] = cellColor;
 						}
+						else {
+							select.css("background-color","");
+							select.attr("cell-color","");
 
+							var evalue = span.editable('getValue',true);
+							evalue = $.grep(evalue, function(e){ 
+		          	 			return typeof(e) != "object" || typeof( e.color) == "undefined";
+		           			});
+							span.editable('setValue',evalue,false);
+						}
 					});
 	    	});
 			span.appendTo(li);

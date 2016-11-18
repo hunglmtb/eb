@@ -1,8 +1,8 @@
 <?php 
 namespace App\Models; 
-use App\Models\FeatureTankModel; 
+ 
 
- class StorageDataPlan extends FeatureTankModel 
+ class StorageDataPlan extends FeatureStorageModel 
 { 
 	protected $table = 'storage_data_plan'; 
 	protected $objectModel = 'Storage';
