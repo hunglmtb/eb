@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-use Carbon\Carbon;
 use App\Models\Tank;
 
 class TicketController extends CodeController {

@@ -14,4 +14,8 @@ class FeatureTicketModel extends EbBussinessModel
 		}
 		return $attributes;
 	}
+	
+	public static function getObjects() {
+		return Tank::where("ID",">",0)->orderBy("NAME")->get();
+	}
 }

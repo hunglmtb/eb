@@ -1003,4 +1003,11 @@ class CodeController extends EBController {
     	$help = $help?$help:"";
     	return response()->json($help);
     }
+    
+    public function filter(Request $request){
+    	$postData 		= $request->all();
+    	$filterGroups	= \Helper::getCommonGroupFilter();
+    	if(isset($filterGroups['dateFilterGroup'])) unset($filterGroups['dateFilterGroup']);
+    	return view ( 'group.production',['filters'			=> $filterGroups]);
+    }
 }

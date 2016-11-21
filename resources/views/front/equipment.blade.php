@@ -1,6 +1,6 @@
 <?php
 $currentSubmenu ='/fo/equipment';
-$tables = ['EquipmentDataValue'	=>['name'=>'DAY_VALUE']];
+$tables = ['EquipmentDataValue'	=>['name'=>'DATA VALUE']];
 ?>
 @extends('core.fo')
 

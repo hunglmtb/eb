@@ -249,4 +249,53 @@ class Helper {
 		return $value==null||$value==''||$value==false;
 	}
 	
+	public static function getCommonGroupFilter($options = null){
+		$codeFlowPhase	= ["name"		=>	"CodeFlowPhase",
+							"source"	=>	"ObjectName" ];
+		$filterGroups = array(	'productionFilterGroup'	=> [['name'			=>'CodeProductType',
+															'independent'	=>true,
+															'extra'			=> ["Facility","CodeProductType","IntObjectType"],
+															'dependences'	=>["ObjectName",
+																				$codeFlowPhase]],
+															['name'			=>'IntObjectType',
+															'independent'	=>true,
+															"getMethod"		=> "getGraphObjectType",
+															'extra'			=> ["Facility","CodeProductType","IntObjectType"],
+															'dependences'	=> ["ObjectName",
+																				["name"		=>	"ObjectDataSource"],
+																				"ObjectTypeProperty",
+																				$codeFlowPhase
+																				]
+															]],
+								'frequenceFilterGroup'	=> [	["name"			=> "ObjectName",
+																"getMethod"		=> "loadBy",
+																'dependences'	=> ["CodeFlowPhase"],
+																"source"		=> ['productionFilterGroup'=>["Facility","IntObjectType","CodeProductType"]]],
+																["name"			=> "ObjectDataSource",
+																"getMethod"		=> "loadBy",
+																"filterName"	=>	"Data source",
+																'dependences'	=> ["ObjectTypeProperty"],
+																"source"		=> ['productionFilterGroup'=>["IntObjectType"]]],
+																["name"			=> "ObjectTypeProperty",
+																"getMethod"		=> "loadBy",
+																"filterName"	=>	"Property",
+																"source"		=>  ['frequenceFilterGroup'=>["ObjectDataSource"]]],
+																["name"			=> "CodeFlowPhase",
+																"getMethod"		=> "loadBy",
+																"source"		=>  ['frequenceFilterGroup'=>["ObjectName"]]],
+																"CodeAllocType",
+																["name"			=>	"CodePlanType",
+																"filterName"	=>	"Plan type",],
+																["name"			=>	"CodeForecastType",
+																"filterName"	=>	"Forecast type",]
+														],
+								'dateFilterGroup'		=> array(	['id'=>'date_begin','name'=>'From date'],
+																	['id'=>'date_end',	'name'=>'To date']),
+								'enableButton'			=> false,
+								'FacilityDependentMore'	=> ["ObjectName","CodeFlowPhase"],
+								'extra' 				=> ['IntObjectType','CodeProductType']
+		);
+		
+		return $filterGroups;
+	}
 }

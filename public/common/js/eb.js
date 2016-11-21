@@ -531,7 +531,7 @@ var actions = {
 					
 					val = rowData[columnName];
 		    		val = Math.floor(val) == val && $.isNumeric(val)?Math.floor(val):val;
-		    		val = ""+val;
+		    		val = val!=null?""+val:"";
 		    		if(configuration.number.DECIMAL_MARK=='comma')
 		    			val = val.replace('.',',')
 //						val = val.split(".").join("");

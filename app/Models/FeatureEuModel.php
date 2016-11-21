@@ -64,7 +64,7 @@ class FeatureEuModel extends EbBussinessModel
 	}
 	
 	public static function getObjects() {
-		return EnergyUnit::all();
+		return EnergyUnit::where("ID",">",0)->orderBy("NAME")->get();
 	}
 	
 	public function getVAttribute($value)

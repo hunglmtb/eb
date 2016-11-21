@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 use App\Models\EnergyUnit;
-use Carbon\Carbon;
 
 class EuTestController extends CodeController {
     

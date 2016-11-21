@@ -133,11 +133,17 @@ $functionName		= "graph";
 #chartObjectContainer li span {
 	
 }
+
+._colorpicker{border:1px solid #bbbbbb;cursor:pointer;margin:2px;width:30px}
+
 </style>
 <meta http-equiv="Content-Language" content="en-us">
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <link rel="stylesheet" href="/common/css/admin.css">
 <link rel="stylesheet" href="/common/css/graph/style.css" />
+<link rel="stylesheet" media="screen" type="text/css" href="/common/colorpicker/css/colorpicker.css" />
+<script type="text/javascript" src="/common/colorpicker/js/colorpicker.js"></script>
+
 <script type="text/javascript">
 
 $(function(){
@@ -158,6 +164,19 @@ $(function(){
 	filters.preOnchange("IntObjectType");
 	filters.preOnchange("ObjectDataSource");
 });
+
+function setColorPicker(){
+	$('._colorpicker').ColorPicker({
+		onSubmit: function(hsb, hex, rgb, el) {
+			$(el).val(hex);
+			$(el).css({"background":"#"+hex,"color":"#"+hex});
+			$(el).ColorPickerHide();
+		},
+		onBeforeShow: function () {
+			$(this).ColorPickerSetColor(this.value);
+		}
+	});
+}
 
 var _graph = {
 
@@ -298,21 +317,27 @@ var _graph = {
 						$("#CodeForecastType").val();
 			if($("span[object_value='"+x+"']").length==0)
 			{
+				var color="transparent";
 				var sel="<select class='x_chart_type' style='width:100px'><option value='line'>Line</option><option value='spline'>Curved line</option><option value='column'>Column</option><option value='area'>Area</option><option value='areaspline'>Curved Area</option></select>";
+				var inputColor = "<input type='text' maxlength='6' size='6' style='background:"+color+";color:"+color+";' class='_colorpicker' value='7e6de3'>";
 				var s="<li class='x_item' object_value='"+x+
-				"'>"+sel+" <span>"+$("#ObjectName option:selected").text()+
-				"("+$("#IntObjectType option:selected").text()+
-				"."+$("#ObjectDataSource option:selected").val()+
+				"'>"+sel+inputColor+" <span onclick='editBox.editRow(1,this)'>"+
+				$("#ObjectName option:selected").text()+"("+
+				$("#IntObjectType option:selected").text()+"."+
+				$("#ObjectDataSource option:selected").val()+
 				($("#CodeFlowPhase").is(":visible")?"."+$("#CodeFlowPhase option:selected").text():"")+"."+
 				$("#ObjectTypeProperty option:selected").val()+
 				")</span> "+'<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="/img/x.png"><br></li>';
 				$("#chartObjectContainer").append(s);
+				setColorPicker();
 			}
 			else
 			{
 				$("span[object_value='"+x+"']").effect("highlight", {}, 1000);
 			}
 		}
+	},
+	editColumn	:  function(element){
 	},
 	draw : function()
 	{
@@ -358,7 +383,7 @@ var _graph = {
 	{
 		var s="";
 		$(".x_item").each(function(){
-	        s += (s==""?"":",")+$(this).attr("object_value")+":"+$(this).children("select").val()+":"+$(this).children("span").text();
+	        s += (s==""?"":",")+$(this).attr("object_value")+":"+$(this).children("select").val()+":"+$(this).children("span").text()+":#"+$(this).children("input").val();
 	    });
 		return s;
 	},
@@ -435,14 +460,19 @@ var _graph = {
 			var vals=cfs[i].split(':');
 			if(vals.length>=6)
 			{
-				var ct="<select class='x_chart_type' style='width:100px'><option value='line'>Line</option><option value='spline'>Curved line</option><option value='column'>Column</option><option value='area'>Area</option><option value='areaspline'>Curved Area</option></select>";
-				ct=ct.replace("value='"+vals[vals.length-2]+"'","value='"+vals[vals.length-2]+"' selected");
+				var color="transparent";
+				var cc="";
+				var k=2;
+				if(vals[vals.length-1][0]=="#") {color=vals[vals.length-1];cc=color.substr(1);k=3;}
+				var ct="<select class='x_chart_type' style='width:100px'><option value='line'>Line</option><option value='spline'>Curved line</option><option value='column'>Column</option><option value='area'>Area</option><option value='areaspline'>Curved Area</option></select><input type='text' maxlength='6' size='6' style='background:"+color+";color:"+color+";' class='_colorpicker' id='colorpicker_"+i+"' value='"+cc+"'>";
+				ct=ct.replace("value='"+vals[vals.length-k]+"'","value='"+vals[vals.length-k]+"' selected");
 				var x="",j;
-				for(j=0;j<vals.length-2;j++) x+=(x==""?"":":")+vals[j];
-				var s="<li class='x_item' object_value='"+x+"'>"+ct+" <span>"+vals[vals.length-1]+"</span> "+'<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="../img/x.png"><br></li>';
+				for(j=0;j<vals.length-k;j++) x+=(x==""?"":":")+vals[j];
+				var s="<li class='x_item' object_value='"+x+"'>"+ct+" <span>"+vals[vals.length-k+1]+"</span> "+'<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="../img/x.png"><br></li>';
 				$("#chartObjectContainer").append(s);
 			}
 		}
+		setColorPicker();
 		$('#listCharts').dialog("close");
 		_graph.draw();
 	},
@@ -517,8 +547,40 @@ function iframeOnload()
 	timeoutLoading=null;
 }
 </script>
+ 
 <body style="margin: 0; min-width: 1000px;">
 	<div id="listCharts" style="display: none; overflow: auto"></div>
 	<iframe id="frameChart" style="width:100%;border:none;height: 400px; margin-top: 10" onload="iframeOnload()"></iframe>
 </body>
 @stop
+
+
+@section('editBoxParams')
+@parent
+<script>
+// 	editBox.fields = ['deferment'];
+	editBox.loadUrl = "/code/filter";
+	editBox.initExtraPostData = function (id,rowData){
+ 		return 	{id:'keke'};
+ 	};
+ 	editBox.editGroupSuccess = function(data,id){
+ 		$("#editFilter").contents().find('html').html(data);
+//  	 	alert(JSON.stringify(data));
+	};
+	/* editBox.saveUrl = '/deferment/edit/saving';
+	editBox.enableRefresh = true;
+	*/
+</script>
+@stop
+
+@section('editBoxContentview')
+	<iframe id="editFilter" style="width:100%;border:none;height: 400px; margin-top: 10"></iframe>
+@stop
+
+
+@section('floatWindow')
+<!-- 	<script src="/common/js/eb_table_action.js"></script> -->
+	@yield('editBox')
+	@include('core.edit_dialog')
+@stop
+

@@ -81,6 +81,7 @@ Route::post('password/reset', 'Auth\PasswordController@postReset');
 
 //-----EB
 Route::post('code/list', 'CodeController@getCodes');
+Route::post('code/filter', 'CodeController@filter');
 
 Route::get('dc/flow',['uses' =>'ProductManagementController@flow','middleware' => 'checkRight:FDC_FLOW']);
 Route::post('code/load',['uses' =>'FlowController@load','middleware' => 'saveWorkspace']);
