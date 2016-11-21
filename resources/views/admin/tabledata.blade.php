@@ -1,5 +1,5 @@
 <?php
-$currentSubmenu 					='loadtabledata';
+$currentSubmenu 					='/loadtabledata';
 if (!isset($subMenus)) $subMenus 	= [];
 $enableFilter 						= false;
 if (!isset($active)) $active 		= 1;

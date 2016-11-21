@@ -31,7 +31,7 @@
 				viewId 		= option.viewId;
 				editId		= postData.id;
 				var dialogOptions = {
-							editId:editId,
+							editId	: editId,
 							height	: editBox.size.height,
 							width	: editBox.size.width,
 							position: { my: 'top', at: 'top+150' },
@@ -68,29 +68,31 @@
 				if (typeof(editBox.preSendingRequest) == "function") {
 					editBox.preSendingRequest();
 				}
-			
-				$.ajax({
-					url: url,
-					type: "post",
-					data: postData,
-					success:function(data){
-						$("#history_container").css("display","block");
-						$("#savebtn").css("display","block");
-						$("#box_loading").css("display","none");
-						
-						console.log ( "send "+url+"  success : "/* +JSON.stringify(data) */);
-						if (typeof(success) == "function") {
-							success(data);
+
+				if(typeof(url) != "undefined" && url!=null && url!=""){
+					$.ajax({
+						url: url,
+						type: "post",
+						data: postData,
+						success:function(data){
+							$("#history_container").css("display","block");
+							$("#savebtn").css("display","block");
+							$("#box_loading").css("display","none");
+							
+							console.log ( "send "+url+"  success : "/* +JSON.stringify(data) */);
+							if (typeof(success) == "function") {
+								success(data);
+							}
+						},
+						error: function(data) {
+							console.log ( "extensionHandle error: "/*+JSON.stringify(data)*/);
+							$("#box_loading").html("not availble");
+							if (typeof(error) == "function") {
+								error(data);
+							}
 						}
-					},
-					error: function(data) {
-						console.log ( "extensionHandle error: "/*+JSON.stringify(data)*/);
-						$("#box_loading").html("not availble");
-						if (typeof(error) == "function") {
-							error(data);
-						}
-					}
-				});
+					});
+				}
 			}
 				
 		editBox.editRow = function (id,rowData){

@@ -71,4 +71,8 @@ use App\Models\EbBussinessModel;
 		}
 		return null;
 	}
+	
+	public static function getObjects() {
+		return Equipment::all();
+	}
 } 

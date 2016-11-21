@@ -20,7 +20,7 @@ RUN TICKET CAPTURE
 	actions.saveUrl 		= "/ticket/save";
 	actions.historyUrl 		= "/ticket/history";
 	actions.type = {
-					idName:['ID','FLOW_PHASE','TANK_ID','OCCUR_DATE','TICKET_NO'],
+					idName:['TANK_ID','ID','FLOW_PHASE','OCCUR_DATE','TICKET_NO'],
 					keyField:'ID',
 					saveKeyField : function (model){
 										return 'ID';

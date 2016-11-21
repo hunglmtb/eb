@@ -21,7 +21,7 @@ WELL TEST DATA CAPTURE
 	actions.historyUrl 		= "/eutest/history";
 	
 	actions.type = {
-					idName:['ID','EU_ID','BEGIN_TIME','END_TIME','EFFECTIVE_DATE'],
+					idName:['EU_ID','ID','BEGIN_TIME','END_TIME','EFFECTIVE_DATE'],
 					keyField:'ID',
 					saveKeyField : function (model){
 										return 'ID';

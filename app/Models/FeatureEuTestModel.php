@@ -56,4 +56,8 @@ class FeatureEuTestModel extends EbBussinessModel
 	
 	public function updateValuesFromSourceEntry($object_id, $occur_date, $sourceEntry,$rat) {
 	}
+	
+	public static function getObjects() {
+		return EnergyUnit::where("ID",">",0)->orderBy("NAME")->get();
+	}
 }

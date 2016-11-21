@@ -1,23 +1,20 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Http\Request;
+use App\Models\AdvChart;
+use App\Models\CfgFieldProps;
+use App\Models\CodeFlowPhase;
 use App\Models\EuPhaseConfig;
-use App\Models\UserWorkspace;
 use App\Models\Facility;
+use App\Models\Formula;
 use App\Models\LoArea;
 use App\Models\LoProductionUnit;
-use App\Models\CodeFlowPhase;
-use App\Models\CodeAllocType;
-use App\Models\CodePlanType;
-use App\Models\CodeForecastType;
 use App\Models\UomConversion;
-use App\Models\AdvChart;
-use App\Models\Formula;
-use App\Models\CfgFieldProps;
+use App\Models\UserWorkspace;
+use Illuminate\Http\Request;
 
-use DB;
 use Carbon\Carbon;
+use DB;
 
 class graphController extends Controller {
 	
@@ -27,55 +24,7 @@ class graphController extends Controller {
 	}
 	
 	public function _index() {
-		$codeFlowPhase	= ["name"		=>	"CodeFlowPhase",
-							"source"	=>	"ObjectName" ];
-		$filterGroups = array(	'productionFilterGroup'	=>[	['name'			=>'CodeProductType',
-															'independent'	=>true,
-															'extra'			=> ["Facility","CodeProductType","IntObjectType"],
-															'dependences'	=>["ObjectName",
-																				$codeFlowPhase]],
-															['name'			=>'IntObjectType',
-															'independent'	=>true,
-															"getMethod"		=> "getGraphObjectType",
-															'extra'			=> ["Facility","CodeProductType","IntObjectType"],
-															'dependences'	=>[	"ObjectName",
-																				["name"		=>	"ObjectDataSource"],
-																				"ObjectTypeProperty",
-																				$codeFlowPhase
-																			]
-															]
-														],
-								'frequenceFilterGroup'	=> [	["name"			=> "ObjectName",
-																"getMethod"		=> "loadBy",
-																'dependences'	=> ["CodeFlowPhase"],
-																"source"		=> ['productionFilterGroup'=>["Facility","IntObjectType","CodeProductType"]]],
-																["name"			=> "ObjectDataSource",
-																"getMethod"		=> "loadBy",
-																"filterName"	=>	"Data source",
-																'dependences'	=> ["ObjectTypeProperty"],
-																"source"		=> ['productionFilterGroup'=>["IntObjectType"]]],
-																["name"			=> "ObjectTypeProperty",
-																"getMethod"		=> "loadBy",
-																"filterName"	=>	"Property",
-																"source"		=>  ['frequenceFilterGroup'=>["ObjectDataSource"]]],
-																["name"			=> "CodeFlowPhase",
-																"getMethod"		=> "loadBy",
-																"source"		=>  ['frequenceFilterGroup'=>["ObjectName"]]],
-																"CodeAllocType",
-																["name"			=>	"CodePlanType",
-																 "filterName"	=>	"Plan type",
-																],
-																["name"			=>	"CodeForecastType",
-																"filterName"	=>	"Forecast type",
-																]
-															],
-								'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
-																['id'=>'date_end','name'=>'To date']),
-								'enableButton'			=> false,
-								'FacilityDependentMore'	=> ["ObjectName","CodeFlowPhase"],
-								'extra' 				=> ['IntObjectType','CodeProductType']
-		);
-		
+		$filterGroups	= \Helper::getCommonGroupFilter();
 		return view ( 'front.graph',['filters'			=> $filterGroups]);
 	}
 	
@@ -260,14 +209,14 @@ class graphController extends Controller {
 	}
 	
 	public function loadChart(Request $request){
-		
-		$options 	= $request->only('title','minvalue', 'maxvalue','date_begin','date_end','input');
+		$options 	= $request->only('title','minvalue', 'maxvalue','date_begin','date_end','input',"bgcolor");
 		$title		= $options['title'];
 		$minvalue	= $options['minvalue'];
 		$maxvalue	= $options['maxvalue'];
 		$date_begin	= $options['date_begin'];
 		$date_end	= $options['date_end'];
 		$input		= $options['input'];
+		$bgcolor	= $options["bgcolor"];
 		
 		$isrange	=(is_numeric($minvalue) && $maxvalue>$minvalue);
 		$date_begin = \Helper::parseDate($date_begin);
@@ -288,7 +237,10 @@ class graphController extends Controller {
 			$chart_type=$xs[4];
 			$types=explode("~",$xs[3]);
 			$vfield=$types[0];
-		
+			
+			$chart_color=$xs[count($xs)-1];
+			if(!(substr($chart_color,0,1)=="#" && strlen($chart_color)>1)) $chart_color="";
+			
 			$datefield="OCCUR_DATE";
 			$is_eutest=false;
 			$is_deferment=false;
@@ -361,7 +313,9 @@ class graphController extends Controller {
 			}
 			$strData .= "type: '".$chart_type."',\n";
 			$strData .= "name: '".preg_replace('/\s+/', '_@', $chart_name)."',\n";
-			
+			$strData .= "type: '".$chart_type."',\n";
+			$strData .= ($chart_color?"color: '$chart_color',\n":"");
+		
 			//$strData .= "name: '".$chart_name."',";
 			$strData .= "data: [";
 			foreach ($tmp as $row)
