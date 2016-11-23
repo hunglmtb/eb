@@ -11,17 +11,17 @@ if (array_key_exists('productionFilterGroup', $filters)) {
 					array_merge($filters['FacilityDependentMore'],$filters['productionFilterGroup'])
 					:$filters['productionFilterGroup'];
 	$mapping = ['LoProductionUnit'		=> 	array('filterName'	=>'Production Unit',
-												'name'			=>'productionUnit',
+												'name'			=>'LoProductionUnit',
 												'dependences'	=> array_merge(['LoArea','Facility'],$dependences),
 	  											'extra'			=>$filters['extra'],
 											),
 				'LoArea'				=>	array('filterName'	=>'Area',
-												'name'			=>'area',
+												'name'			=>'LoArea',
 												'dependences'	=> array_merge(['Facility'],$dependences),
 	  											'extra'			=>$filters['extra'],
 											),
 				'Facility'				=>	array('filterName'	=>'Facility',
-												'name'			=>'facility',
+												'name'			=>'Facility',
 												'dependences'	=>$dependences,
 	  											'extra'			=>$filters['extra'],
 											)
@@ -61,7 +61,7 @@ $( document ).ready(function() {
 			@if($key=='productionFilterGroup')
 			<div class = "product_filter">
 				@foreach( $filters as $filter )
-					{{ Helper::buildFilter(array_merge($mapping[$filter['id']],$filter)) }}
+					{{ Helper::buildFilter(array_merge($mapping[$filter['modelName']],$filter)) }}
 				@endforeach
 			</div>
 			@elseif($key=='dateFilterGroup')
@@ -73,7 +73,7 @@ $( document ).ready(function() {
 			@elseif($key=='frequenceFilterGroup')
 			<div id = "filterFrequence" class = "product_filter">
 				@foreach( $filters as $filter )
-					{{ Helper::filter(array_key_exists($filter['id'], $mapping)?array_merge($mapping[$filter['id']],$filter):$filter) }}
+					{{ Helper::filter(array_key_exists($filter['modelName'], $mapping)?array_merge($mapping[$filter['modelName']],$filter):$filter) }}
 				@endforeach
 				@yield('frequenceFilterGroupMore')
 			</div>

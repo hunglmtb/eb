@@ -35,23 +35,23 @@
 							height	: editBox.size.height,
 							width	: editBox.size.width,
 							position: { my: 'top', at: 'top+150' },
-							modal: true,
-							title: title,
-							close: function(event) {
+							modal	: true,
+							title	: title,
+							close	: function(event) {
 										$.each(editBox.fields, function( index, value ) {
 											delete actions.editedData[value];
 									    });
-								    },
-						    open: function( event, ui ) {
-						    	if (typeof(editBox.saveDetail) == "function"&&typeof(editBox.saveUrl) != "undefined") {
-							        	var saveBtn = editBox.getSaveButton();
-										saveBtn.insertBefore('.ui-dialog-titlebar-close').click(function(e){
-											   e.preventDefault();
-											   editBox.saveDetail(editId,editBox['saveFloatDialogSucess']);
-										});
-								}
-							},
-							create: function() {
+								   	 },
+						    open	: function( event, ui ) {
+								    	if (typeof(editBox.saveDetail) == "function"&&typeof(editBox.saveUrl) != "undefined") {
+									        	var saveBtn = editBox.getSaveButton();
+												saveBtn.insertBefore('.ui-dialog-titlebar-close').click(function(e){
+													   e.preventDefault();
+													   editBox.saveDetail(editId,editBox['saveFloatDialogSucess']);
+												});
+										}
+									},
+							create	: function() {
 								
 						    }
 						};

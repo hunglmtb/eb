@@ -2,12 +2,11 @@
 
 namespace App\Http\ViewComposers;
 
-use Illuminate\View\View;
-use App\Repositories\UserRepository as UserRepository;
 use App\Models\LoProductionUnit;
+use App\Repositories\UserRepository as UserRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
-use App\Models\Model;
+use Illuminate\View\View;
 
 class ProductionGroupComposer
 {
@@ -17,17 +16,19 @@ class ProductionGroupComposer
      * @var UserRepository
      */
     protected $user;
-
+    protected $prefix;
+    protected $currentData;
+    
     /**
      * Create a new profile composer.
      *
      * @param  UserRepository  $users
      * @return void
      */
-    public function __construct(UserRepository $users)
-    {
-        // Dependencies automatically resolved by service container...
-        $this->user = auth()->user();
+    public function __construct(UserRepository $users){
+        $this->user 		= auth()->user();
+        $this->prefix 		= "";
+        $this->currentData 	= null;
     }
 
     /**
@@ -36,11 +37,12 @@ class ProductionGroupComposer
      * @param  View  $view
      * @return void
      */
-    public function compose(View $view)
-    {
-    	$fgs = $view->filters;
-    	$filterGroups = array('enableButton'	=> isset($fgs['enableButton'])?$fgs['enableButton']:true);
-    	$workspace = $this->user->workspace();
+    public function compose(View $view){
+    	$fgs 				= $view->filters;
+    	$this->prefix		= isset($view->prefix)?$view->prefix:"";
+    	$this->currentData	= isset($view->currentData)?$view->currentData:null;
+    	$filterGroups 		= array('enableButton'	=> isset($fgs['enableButton'])?$fgs['enableButton']:true);
+    	$workspace 			= $this->user->workspace();
     	
     	if (array_key_exists('dateFilterGroup', $fgs)) {
 	    	$dateFilterGroup = $this->initDateFilterGroup($workspace,$fgs['dateFilterGroup']);
@@ -55,8 +57,8 @@ class ProductionGroupComposer
     	$fres = array_key_exists('frequenceFilterGroup', $fgs)?$fgs['frequenceFilterGroup']:array();
     	$frequenceFilterGroup = $this->initFrequenceFilterGroup($fres,$filterGroups);
     	$filterGroups['frequenceFilterGroup'] = $frequenceFilterGroup;
-    	
     	$view->with('filterGroups', $filterGroups);
+    	$view->with('prefix', $this->prefix);
     }
     
     public function initDateFilterGroup($workspace,$extra=null){
@@ -101,15 +103,21 @@ class ProductionGroupComposer
     		$fid = 0;
     	}
     	
+    	if ($this->currentData) {
+    		$pid = array_key_exists('LoProductionUnit', $this->currentData)?$this->currentData["LoProductionUnit"]:$pid;
+    		$aid = array_key_exists('LoArea', $this->currentData)?$this->currentData["LoArea"]:$aid;
+    		$fid = array_key_exists('Facility', $this->currentData)?$this->currentData["Facility"]:$fid;
+    	}
+    	
     	$productionUnits = LoProductionUnit::all(['ID', 'NAME']);
     	$currentProductUnit = ProductionGroupComposer::getCurrentSelect($productionUnits,$pid);
     	$areas = $currentProductUnit->LoArea()->getResults();
     	$currentArea = ProductionGroupComposer::getCurrentSelect($areas,$aid);
     	$facilities = $currentArea->Facility()->getResults();
     	$currentFacility = ProductionGroupComposer::getCurrentSelect($facilities,$fid);
-	    $productionFilterGroup =['LoProductionUnit'	=>	ProductionGroupComposer::getFilterArray('LoProductionUnit',$productionUnits,$currentProductUnit),
-					    		'LoArea'			=>	ProductionGroupComposer::getFilterArray('LoArea',$areas,$currentArea),
-					    		'Facility'			=>	ProductionGroupComposer::getFilterArray('Facility',$facilities,$currentFacility)
+	    $productionFilterGroup =['LoProductionUnit'	=>	$this->getFilterArray('LoProductionUnit',$productionUnits,$currentProductUnit),
+					    		'LoArea'			=>	$this->getFilterArray('LoArea',$areas,$currentArea),
+					    		'Facility'			=>	$this->getFilterArray('Facility',$facilities,$currentFacility)
     							];
 	    
 	    $currentObject = $currentFacility;
@@ -118,10 +126,11 @@ class ProductionGroupComposer
 	    	if ($option&&array_key_exists($source, $option)&&array_key_exists("object", $option[$source])) 
 	    		$currentObject = $option[$source]["object"];
 	    	$rs = ProductionGroupComposer::initExtraDependence($productionFilterGroup,$model,$currentObject,$option);
-	    	$eCollection = $rs['collection'];
+	    	$eCollection 	= $rs['collection'];
 	    	$modelName 		= $rs['model'];
-	    	$extraFilter = ProductionGroupComposer::getCurrentSelect ( $eCollection );
-	    	$productionFilterGroup [$modelName] = ProductionGroupComposer::getFilterArray ( $modelName, $eCollection, $extraFilter,$model );
+	    	$eId			= $this->currentData&&isset($this->currentData[$modelName])?$this->currentData[$modelName]:null;
+	    	$extraFilter 	= ProductionGroupComposer::getCurrentSelect ( $eCollection,$eId );
+	    	$productionFilterGroup [$modelName] = $this->getFilterArray ($modelName, $eCollection, $extraFilter,$model );
 	    }
 	    return $productionFilterGroup;
     }
@@ -155,33 +164,39 @@ class ProductionGroupComposer
     			$filterGroups["frequenceFilterGroup"] = $frequenceFilterGroup;
     		}
     		if (is_array($model)) {
-    			$collection 			= $this->getFrequenceCollection($model,$filterGroups);
-    			$unit = $collection!=null&&$collection->count()>0?$collection->first():null;
-    			$frequenceFilterGroup[$model['name']] = ProductionGroupComposer::getFilterArray($model['name'],$collection,$unit,$model);
+    			$collection 		= $this->getFrequenceCollection($model,$filterGroups);
+    			$modelName			= $model['name'];
+	    		$eId				= $this->currentData&&isset($this->currentData[$modelName])?$this->currentData[$modelName]:null;
+    			$unit 				= ProductionGroupComposer::getCurrentSelect($collection,$eId);
+//     			$unit = $collection!=null&&$collection->count()>0?$collection->first():null;
+    			$frequenceFilterGroup[$modelName] = $this->getFilterArray($modelName,$collection,$unit,$model);
     		}
-    		else $frequenceFilterGroup[$model] = ProductionGroupComposer::getFilterArray($model);
+    		else $frequenceFilterGroup[$model] = $this->getFilterArray($model);
     	}
     	return $frequenceFilterGroup;
     }
        
     public function getFrequenceCollection($options=null,$filterGroups = null){
     	$collection 			= null;
-    	if ($filterGroups&&array_key_exists('source', $options)&&array_key_exists('getMethod', $options)) {
-    		$source 	= $options['source'];
-    		$getMethod 	= $options['getMethod'];
+    	if ($filterGroups) {
     		$mdl		= $options['name'];
-    		$sourceData	= [];
-    		foreach($source as $filter => $fields ){
-    			foreach($fields as $field ){
-    				if ($filter=="dateFilterGroup") {
-	    				$sourceData[$field] = $filterGroups[$filter][$field]['value'];
-    				}
-    				else $sourceData[$field] = $filterGroups[$filter][$field]['current'];
-    			}
+	    	$mdl 		= 'App\Models\\' . $mdl;
+    		if (array_key_exists('source', $options)&&array_key_exists('getMethod', $options)) {
+	    		$source 	= $options['source'];
+	    		$getMethod 	= $options['getMethod'];
+	    		$sourceData	= [];
+	    		foreach($source as $filter => $fields ){
+	    			foreach($fields as $field ){
+	    				if ($filter=="dateFilterGroup") {
+		    				$sourceData[$field] = $filterGroups[$filter][$field]['value'];
+	    				}
+	    				else $sourceData[$field] = $filterGroups[$filter][$field]['current'];
+	    			}
+	    		}
+	    		$getMethod = array_key_exists('getMethod', $options)?$options['getMethod']:'getAll';
+	    		$collection = $mdl::$getMethod($sourceData);
     		}
-    		$mdl = 'App\Models\\' . $mdl;
-    		$getMethod = array_key_exists('getMethod', $options)?$options['getMethod']:'getAll';
-    		$collection = $mdl::$getMethod($sourceData);
+    		else $collection = $mdl::getAll();
     	}
     	return $collection;
     }
@@ -189,41 +204,36 @@ class ProductionGroupComposer
     public static function getCurrentSelect($collection,$id=null)
     {
     	if ($collection!=null&& $collection instanceof Collection) {
-    		$units = $collection->keyBy('ID');
-    		$unit = $units->get($id);
-    		 
+    		$units 	= $collection->keyBy('ID');
+    		$unit 	= $units->get($id);
     		if ($unit==null) {
-    			$unit = $units->first();
+    			$unit = $collection->first();
     		}
     		return $unit;
     	}
     	return null;
     }
     
-    public static function getFilterArray($id,$collection=null,$currentUnit=null,$option=null)
-    {
-    	if ($option==null||is_string($option)) {
-    		$option = array();
-    	}
-    	$option['id'] 			= $id;
-    	$option['collection'] 	= $collection;
-    	$option['currentId'] 	=  $currentUnit&&isset($currentUnit->ID)?$currentUnit->ID:'';
-    	$option['current'] 		=  $currentUnit;
-    	return $option; 
+    public function getFilterArray($id,$collection=null,$currentUnit=null,$option=null){
+    	$fullId					= "$this->prefix".$id;
+    	$filters				= \Helper::getFilterArray($fullId,$collection,$currentUnit,$option);
+		$filters['modelName'] 	= $id;
+    	return $filters;
     }
-    
     
     public static function initExtraDependence($productionFilterGroup, $model, $currentUnit,$option = null) {
     	$modelName = $model;
 		$currentId = null;
 		$eCollection = [];
     	if (is_string ( $model )) {
-			$entry = $currentUnit->$model($option);
-			if ($entry) {
-				if ($entry instanceof Collection) $eCollection = $entry;
-				else  $eCollection = $entry->getResults();
-			}
-			$currentId = isset($option[$model]['id'])?$option[$model]['id']:null;
+    		if (method_exists($currentUnit,$model)) {
+				$entry = $currentUnit->$model($option);
+				if ($entry) {
+					if ($entry instanceof Collection) $eCollection = $entry;
+					else  $eCollection = $entry->getResults();
+				}
+				$currentId = isset($option[$model]['id'])?$option[$model]['id']:null;
+    		}
     	} else {
 			$modelName 		= $model ['name'];
 			if (array_key_exists('independent', $model)&&$model ['independent']) {

@@ -103,7 +103,7 @@ class CodeController extends EBController {
 			}
 			$unit = ProductionGroupComposer::getCurrentSelect ( $eCollection,$currentId );
 			$currentUnits[$modelName]	= $unit;
-			$filterArray = ProductionGroupComposer::getFilterArray ( $modelName, $eCollection, $unit );
+			$filterArray = \Helper::getFilterArray ( $modelName, $eCollection, $unit );
 			if ($isAdd) $results [] = $filterArray;
 		}
 		
@@ -1008,6 +1008,9 @@ class CodeController extends EBController {
     	$postData 		= $request->all();
     	$filterGroups	= \Helper::getCommonGroupFilter();
     	if(isset($filterGroups['dateFilterGroup'])) unset($filterGroups['dateFilterGroup']);
-    	return view ( 'group.production',['filters'			=> $filterGroups]);
+    	return view ( 'partials.editfilter',['filters'			=> $filterGroups,
+    									'prefix'			=> "secondary_",
+    									"currentData"		=> $postData
+    	]);
     }
 }

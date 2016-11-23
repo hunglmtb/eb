@@ -40,19 +40,22 @@ var enableSelect = function(dependentIds, value) {
 };
 
 var registerOnChange = function(id, dependentIds,more) {
+	var partials 	= id.split("_");
+	var prefix 		= partials.length>1?partials[0]+"_":"";
+	var model 		= partials.length>1?partials[1]:id;
 	$('#'+id).change(function(e){
 		if (typeof(filters.preOnchange) == "function") {
-			filters.preOnchange(id,dependentIds,more);
+			filters.preOnchange(id,dependentIds,more,prefix);
 		}
 		
 		var ccontinue = false;
 		var dependentSelects = [];
 		$.each(dependentIds, function( dindex, dvalue ) {
-			if (typeof dvalue === 'string' || dvalue instanceof String) dependentSelects.push(dvalue);
+			if (typeof dvalue === 'string' || dvalue instanceof String) dependentSelects.push(prefix+dvalue);
 			else if(typeof(dvalue["name"]) !== "undefined"
 				&&(typeof(dvalue["independent"]) === "undefined")
 					||!dvalue["independent"])
-				dependentSelects.push(dvalue["name"]);
+				dependentSelects.push(prefix+dvalue["name"]);
 		});
 		$.each(dependentSelects, function( dindex, dvalue ) {
 			ccontinue = ccontinue|| $("#"+dvalue).is(":visible");
@@ -64,8 +67,8 @@ var registerOnChange = function(id, dependentIds,more) {
 		if (more!=null&&more.length>0) {
 			$.each(more, function( i, value ) {
 				bundle[value] = {};
-				var name = $("#"+value).find(":selected").attr( "name");
-				var val = $("#"+value).val();
+				var name = $("#"+prefix+value).find(":selected").attr( "name");
+				var val = $("#"+prefix+value).val();
 				name = typeof(name) !== "undefined"?name:val;
 				bundle[value]['name'] 	= name;
 				bundle[value]['id'] 	= val;
@@ -74,11 +77,11 @@ var registerOnChange = function(id, dependentIds,more) {
 		$.ajax({
 			url: '/code/list',
 			type: "post",
-			data: {type:id,
-				dependences:dependentIds,
-				value:$(this).val(),
-				extra:bundle
-			},
+			data: {	type		: model,
+					dependences	: dependentIds,
+					value		: $(this).val(),
+					extra		: bundle
+				},
 			success: function(results){
 				$.each(dependentSelects, function( dindex, dvalue ) {
 					$('#'+dvalue).html('');   // clear the existing options
@@ -89,9 +92,9 @@ var registerOnChange = function(id, dependentIds,more) {
 						var name = typeof(this.CODE) !== "undefined"?this.CODE:this.NAME;
 						option.attr('name', name);
 						option.attr('value', this.ID).text(this.NAME);
-						$('#'+results[i].id).append(option);
+						$('#'+prefix+results[i].id).append(option);
 					});
-					$('#'+results[i].id).val(results[i].currentId);
+					$('#'+prefix+results[i].id).val(results[i].currentId);
 				}
 				
 				enableSelect(dependentSelects,false);
