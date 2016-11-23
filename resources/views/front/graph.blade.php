@@ -66,37 +66,53 @@ $functionName		= "graph";
 @section('adaptData')
 @parent
 <script>
-	filters.afterRenderingDependences	= function(dependence){
-		if(dependence=="ObjectName") $('#title_'+dependence).text($("#IntObjectType").find(":selected").text());
-		else if(dependence=="ObjectDataSource") filters.preOnchange("ObjectDataSource");
+	filters.afterRenderingDependences	= function(id){
+		var partials 		= id.split("_");
+		var prefix 			= partials.length>1?partials[0]+"_":"";
+		var model 			= partials.length>1?partials[1]:id;
+		
+		if(model=="ObjectName") 
+			$('#title_'+id).text($("#"+prefix+"IntObjectType").find(":selected").text());
+		else if(model=="ObjectDataSource") 
+			filters.preOnchange(prefix+"ObjectDataSource");
 	};
-	filters.preOnchange	= function(id, dependentIds,more){
-		switch(id){
+	filters.preOnchange		= function(id, dependentIds,more){
+		var partials 		= id.split("_");
+		var prefix 			= partials.length>1?partials[0]+"_":"";
+		var model 			= partials.length>1?partials[1]:id;
+		var selectedObject	= "#container_"+prefix;
+		var currentObject	= "#"+prefix;
+		switch(model){
 			case "IntObjectType":
-				if($("#"+id).find(":selected").attr( "name")=="ENERGY_UNIT"||
-						$("#"+id).find(":selected").attr( "name")=="EU_TEST") 
-					$('.CodeFlowPhase').css("display","block");
-				else $('.CodeFlowPhase').css("display","none");
-// 				filters.preOnchange("ObjectDataSource");
+				if($(currentObject+model).find(":selected").attr( "name")=="ENERGY_UNIT"||
+						$(currentObject+model).find(":selected").attr( "name")=="EU_TEST") 
+					$(selectedObject+'CodeFlowPhase').css("display","block");
+				else {
+// 					$(selectedObject+'CodeFlowPhase').css("display","none");
+					$(selectedObject+'CodeFlowPhase').hide();
+					$(selectedObject+'CodeForecastType').hide();
+					$(selectedObject+'CodePlanType').hide();
+					$(selectedObject+'CodeAllocType').hide();
+				}
 				break;
 			case "ObjectDataSource":
-				var objectDataSource = $('#ObjectDataSource').val();
+				var objectDataSource = $(currentObject+'ObjectDataSource').val();
 				if(objectDataSource!=null){
-					objectDataSource=='EnergyUnitDataAlloc'?$('.CodeAllocType').show():$('.CodeAllocType').hide();
-					objectDataSource.endsWith("Plan")?$('.CodePlanType').show():$('.CodePlanType').hide();
-					objectDataSource.endsWith("Forecast")?$('.CodeForecastType').show():$('.CodeForecastType').hide();
-					if($("#CodeFlowPhase").is(":visible")) {
-						$('.CodePlanType').removeClass("clearBoth");
-						$('.CodeAllocType').removeClass("clearBoth");
-						$('.CodeForecastType').removeClass("clearBoth");
+					objectDataSource=='EnergyUnitDataAlloc'?$(selectedObject+'CodeAllocType').show():$(selectedObject+'CodeAllocType').hide();
+					objectDataSource.endsWith("Plan")?$(selectedObject+'CodePlanType').show():$(selectedObject+'CodePlanType').hide();
+					objectDataSource.endsWith("Forecast")?$(selectedObject+'CodeForecastType').show():$(selectedObject+'CodeForecastType').hide();
+					if($(currentObject+"CodeFlowPhase").is(":visible")) {
+						$(selectedObject+'CodePlanType').removeClass("clearBoth");
+						$(selectedObject+'CodeAllocType').removeClass("clearBoth");
+						$(selectedObject+'CodeForecastType').removeClass("clearBoth");
 					}
 					else {
-						$('.CodePlanType').addClass("clearBoth");
-						$('.CodeAllocType').addClass("clearBoth");
-						$('.CodeForecastType').addClass("clearBoth");
+						$(selectedObject+'CodePlanType').addClass("clearBoth");
+						$(selectedObject+'CodeAllocType').addClass("clearBoth");
+						$(selectedObject+'CodeForecastType').addClass("clearBoth");
 					}
 				}
-				$("#tdObjectContainer").css({'height':($("#filterFrequence").height()+'px')});
+				if(prefix=="") $("#tdObjectContainer").css({'height':($("#filterFrequence").height()+'px')});
 				break;
 		}
 	};
@@ -144,413 +160,9 @@ $functionName		= "graph";
 <link rel="stylesheet" media="screen" type="text/css" href="/common/colorpicker/css/colorpicker.css" />
 <script type="text/javascript" src="/common/colorpicker/js/colorpicker.js"></script>
 
-<script type="text/javascript">
-
-$(function(){
-	var ebtoken = $('meta[name="_token"]').attr('content');
-	$.ajaxSetup({
-		headers: {
-			'X-XSRF-Token': ebtoken
-		}
-	});
-
-	$('#txtObjectName').val('Flow');
-	$("#chartObjectContainer").sortable();
-
-	$(".phase_type").hide();
-
-	$('#cboObjectNameTable').change();
-	filters.afterRenderingDependences("ObjectName");
-	filters.preOnchange("IntObjectType");
-	filters.preOnchange("ObjectDataSource");
-});
-
-function setColorPicker(){
-	$('._colorpicker').ColorPicker({
-		onSubmit: function(hsb, hex, rgb, el) {
-			$(el).val(hex);
-			$(el).css({"background":"#"+hex,"color":"#"+hex});
-			$(el).ColorPickerHide();
-		},
-		onBeforeShow: function () {
-			$(this).ColorPickerSetColor(this.value);
-		}
-	});
-}
-
-var _graph = {
-
-	loadObjType : 1,
-
-	currentChartID : 0,
-
-	lastObjectType : "",
-	
-	loadObjecType : function(){
-		var cbo = '';
-		cbo += ' <div class="filter">';
-		cbo += ' 	<div><b> Object type </b></div>';
-		cbo += ' 	<select id = "cboObjectType" onchange="_graph.cboObjectTypeOnChange()">';	
-		cbo += ' 		<option selected value="FLOW/FLOW/FL_DATA/Flow">Flow</option>';
-		cbo += ' 		<option value="ENERGY_UNIT/ENERGY_UNIT/EU_DATA/Energy Unit">Energy Unit</option>';
-		cbo += ' 		<option value="TANK/TANK/TANK/Tank">Tank</option>';
-		cbo += ' 		<option value="STORAGE/STORAGE/STORAGE/Storage">Storage</option>';
-		cbo += ' 		<option value="ENERGY_UNIT/EU_TEST/EU_TEST/Energy Unit">Well Test</option>';
-		cbo += ' 	</select>';
-		cbo += ' </div>';
-
-		return cbo;
-	},
-	
-	loadObjects : function(){
-		var objectType = $("#cboObjectType").val();
-		if(objectType == _graph.lastObjectType) return;
-		var ss = objectType.split("/");
-		$("#txtObjectName").html(ss[ss.length-1]);
-
-		param = {
-			'date_begin' : $('#date_begin').val(),
-			'date_end' : $('#date_end').val(),
-			'object_type' : objectType,
-			'facility_id' : $("#Facility").val(),
-			'product_type' : $('#Product').val()
-		};
-		
-		$("#cboObjectName").prop("disabled", true); 
-		sendAjaxNotMessage('/loadVizObjects', param, function(data){
-			$('#txtObjectName').val($("#cboObjectType ").text());
-			adminControl.reloadCbo('cboObjectName',data);
-			_graph.loadCbo('cboObjectNameTable',data.tab);
-
-			_graph.lastObjectType = objectType;
-			if($("#cboObjectType").val().indexOf("ENERGY_UNIT") > -1)
-			{
-				_graph.loadEUPhase();
-			}
-		});
-	},
-	setValueDefault : function(){
-		$('#ProductionUnit').val($('#h_production_unit_id').val());
-		$('#Area').val($('#h_area_id').val());
-		$('#Facility').val($('#h_facility_id').val());
-		$('#date_begin').val($('#h_date_begin').val());
-		$('#end_date').val($('#h_date_end').val());
-	},
-	loadEUPhase : function(){
-		param = {
-			'eu_id' : $('#cboObjectName').val(),
-		};
-		
-		$("#cboEUFlowPhase").prop("disabled", true); 
-		sendAjaxNotMessage('/loadEUPhase', param, function(data){
-			adminControl.reloadCbo('cboEUFlowPhase',data);
-		});
-	},
-	cboObjectTypeOnChange : function()
-	{
-		if($("#cboObjectType").val().indexOf("EU_TEST") > -1)
-		{
-			$(".eutest_table").show();
-			$(".object_table").hide();
-			$(".phase_type").show();
-		}
-		else
-		{
-			$(".eutest_table").hide();
-			$(".object_table").show();
-		}
-		if($("#cboObjectType").val().indexOf("ENERGY_UNIT/") > -1 && $("#cboObjectType").val().indexOf("EU_TEST/") < 0){
-			$(".phase_type").show();
-		}else{
-			$(".phase_type").hide();
-		}
-		
-		/* $("#cboObjectNameTable").val($("#cboObjectNameTable").find('option:visible:first').attr("value"));
-		$("#cboObjectNameProps").val($("#cboObjectNameProps").find('option:visible:first').attr("value")); */
-		
-		_graph.loadObjects();
-	},
-	ObjectNameTableChange : function(){
-		if($("#cboObjectNameTable").val()=="DATA_ALLOC" && $("#cboObjectType").val().indexOf("ENERGY_UNIT/") > -1)
-			$(".alloc_type").show();
-		else 
-			$(".alloc_type").hide();
-		if($("#cboObjectNameTable").val().endsWith("_PLAN"))
-			$(".plan_type").show();
-		else 
-			$(".plan_type").hide();
-		if($("#cboObjectNameTable").val().endsWith("_FORECAST"))
-			$(".forecast_type").show();
-		else 
-			$(".forecast_type").hide();
-
-		param = {
-			'table' : $("#cboObjectNameTable").val()
-		};
-		
-		sendAjaxNotMessage('/getProperty', param, function(data){
-			_graph.loadCbo('cboObjectNameProps', data);
-		});
-	},
-	addObject : function(){
-		if($("#ObjectName").val()>0){
-			/* var d=$("#cboObjectType").val().split("/");
-			var s1="", s2="", s3="";
-			if(d.length>1)
-			{
-				s1=d[1]+"_";
-			}
-			if(d.length>2)
-			{
-				s2=d[2]+"_";
-			} */
-			var s3="";
-			var d0 = $("#IntObjectType").val();
-			if(d0=="ENERGY_UNIT"){
-				s3+=":"+$("#CodeFlowPhase").val();
-			}
-			var x	= d0+":"+$("#ObjectName").val()+":"+
-						$("#ObjectDataSource").val()+":"+
-						$("#ObjectTypeProperty").val()+
-						s3+"~"+$("#CodeAllocType").val()+"~"+
-						$("#CodePlanType").val()+"~"+
-						$("#CodeForecastType").val();
-			if($("span[object_value='"+x+"']").length==0)
-			{
-				var color="transparent";
-				var sel="<select class='x_chart_type' style='width:100px'><option value='line'>Line</option><option value='spline'>Curved line</option><option value='column'>Column</option><option value='area'>Area</option><option value='areaspline'>Curved Area</option></select>";
-				var inputColor = "<input type='text' maxlength='6' size='6' style='background:"+color+";color:"+color+";' class='_colorpicker' value='7e6de3'>";
-				var s="<li class='x_item' object_value='"+x+
-				"'>"+sel+inputColor+" <span onclick='editBox.editRow(1,this)'>"+
-				$("#ObjectName option:selected").text()+"("+
-				$("#IntObjectType option:selected").text()+"."+
-				$("#ObjectDataSource option:selected").val()+
-				($("#CodeFlowPhase").is(":visible")?"."+$("#CodeFlowPhase option:selected").text():"")+"."+
-				$("#ObjectTypeProperty option:selected").val()+
-				")</span> "+'<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="/img/x.png"><br></li>';
-				$("#chartObjectContainer").append(s);
-				setColorPicker();
-			}
-			else
-			{
-				$("span[object_value='"+x+"']").effect("highlight", {}, 1000);
-			}
-		}
-	},
-	editColumn	:  function(element){
-	},
-	draw : function()
-	{
-		if($(".x_item").length<=0) {
-			alert("Please add object");
-			return;
-		}
-		
-		$("html, body").animate({ scrollTop: $(document).height() }, 1000);
-		document.getElementById("frameChart").contentWindow.document.write("<font family='Open Sans'>Generating chart...</font>");
-		
-		var title = encodeURIComponent($("#chartTitle").val());
-		if(title == "") title = null;
-		
-		var minvalue = $("#txt_min").val();
-		if(minvalue == "") minvalue = null;
-		
-		var maxvalue = $("#txt_max").val();
-		if(maxvalue == "") maxvalue = null;
-		
-		var date_begin = $("#date_begin").val();
-		var date_end = $("#date_end").val();
-		var input = encodeURIComponent(_graph.getChartConfig());
-		var iurl = "/loadchart?title="+title+
-								"&minvalue="+minvalue+
-								"&maxvalue="+maxvalue+
-								"&date_begin="+date_begin+
-								"&date_end="+date_end+
-								"&input="+input;	
-		$("#frameChart").attr("src",iurl);
-	},
-	newChart : function()
-	{
-		if($("#chartObjectContainer").children().length>0)
-		{
-			if(!confirm("Current chart will be clear. Do you want to continue?")) return;
-		}
-		_graph.currentChartID = 0;
-		$("#chartObjectContainer").empty();
-		$("#chartTitle").val("");
-	},
-	getChartConfig : function()
-	{
-		var s="";
-		$(".x_item").each(function(){
-	        s += (s==""?"":",")+$(this).attr("object_value")+":"+$(this).children("select").val()+":"+$(this).children("span").text()+":#"+$(this).children("input").val();
-	    });
-		return s;
-	},
-	loadCharts : function()
-	{
-		$('#listCharts').html("Loading...")
-		$( "#listCharts" ).dialog({
-			height: 400,
-			width: 600,
-			modal: true,
-			title: "Charts list",
-		});
-		
-		param = {
-		};
-		
-		sendAjaxNotMessage('/listCharts', param, function(data){
-			_graph.showListChart(data);
-		});
-	},
-	showListChart : function(_data){
-		var data = _data.adv_chart;
-		var str = "";
-		$('#listCharts').html(str);
-		/* for(var i =0; i < data.length; i++){
-			str += "<span class='chart_info' id='chart_"+data[i]['ID']+"' min_value='"+data[i]['MIN_VALUE']+"' max_value='"+data[i]['MAX_VALUE']+"' chart_config='"+data[i]['CONFIG']+"' style='display:block;line-height:20px;margin:2px;'><a href='javascript:_graph.openChart("+data[i]['ID']+")'>"+data[i]['TITLE']+"</a> <img valign='middle' onclick='_graph.deleteChart("+data[i]['ID']+")' class='xclose' src='../img/x.png'></span>";
-		}  */
-
-
-		str += "<table width='100%' class='list table table-hover' cellpadding='5' cellspacing='0'>";
-		str += "<tr>";
-		str += "<td>#</td>";
-		str += "<td><b>Chart title</b></td>";
-		str += "<td><b>delete</b></td>";
-		str += "</tr>";
-		
-		for(var i =0; i < data.length; i++){
-		
-			str += " <tr >";
-			str += " <td>"+(i+1)+"</td>";
-			str += " <td class='chart_info' id='chart_"+data[i]['ID']+"' min_value='"+checkValue(data[i]['MIN_VALUE'],'')+"' max_value='"+checkValue(data[i]['MAX_VALUE'],'')+"' chart_config='"+data[i]['CONFIG']+"' style='cursor:pointer;' onclick='_graph.openChart("+data[i]['ID']+");'><a href='#'>"+data[i]['TITLE']+"</a></td>";
-			str += " <td align='center'><a href='#' class='action_del' onclick = '_graph.deleteChart("+data[i]['ID']+");'><img alt='Delete' title='Delete' src='/images/delete.png'></a></td>";
-			str += " </tr>";
-		}
-		str += "</table>";
-
-
-		
-		$('#listCharts').html(str);
-	},
-
-	deleteChart : function(id)
-	{
-		if(!confirm("Do you want to delete this chart?")) return;
-		param = {
-				'ID' : id
-		};
-		sendAjaxNotMessage('/deleteChart', param, function(data){
-			_graph.showListChart(data);
-		});
-	},
-	openChart : function(id)
-	{
-		_graph.currentChartID=id;
-		$("#chartTitle").val($("#chart_"+id).text());
-		$("#txt_max").val(checkValue($("#chart_"+id).attr("max_value"),''));
-		$("#txt_min").val(checkValue($("#chart_"+id).attr("min_value"),''));
-		$("#chartObjectContainer").empty();
-		var config=$("#chart_"+id).attr("chart_config");
-		var cfs=config.split(',');
-		var i=0;
-		for(i=0;i<cfs.length;i++)
-		{
-			var vals=cfs[i].split(':');
-			if(vals.length>=6)
-			{
-				var color="transparent";
-				var cc="";
-				var k=2;
-				if(vals[vals.length-1][0]=="#") {color=vals[vals.length-1];cc=color.substr(1);k=3;}
-				var ct="<select class='x_chart_type' style='width:100px'><option value='line'>Line</option><option value='spline'>Curved line</option><option value='column'>Column</option><option value='area'>Area</option><option value='areaspline'>Curved Area</option></select><input type='text' maxlength='6' size='6' style='background:"+color+";color:"+color+";' class='_colorpicker' id='colorpicker_"+i+"' value='"+cc+"'>";
-				ct=ct.replace("value='"+vals[vals.length-k]+"'","value='"+vals[vals.length-k]+"' selected");
-				var x="",j;
-				for(j=0;j<vals.length-k;j++) x+=(x==""?"":":")+vals[j];
-				var s="<li class='x_item' object_value='"+x+"'>"+ct+" <span>"+vals[vals.length-k+1]+"</span> "+'<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="../img/x.png"><br></li>';
-				$("#chartObjectContainer").append(s);
-			}
-		}
-		setColorPicker();
-		$('#listCharts').dialog("close");
-		_graph.draw();
-	},
-
-	loadCbo : function(id, data){
-		var cbo = '';
-		$('#'+id).html(cbo);
-		for(var v in data){
-			cbo += ' 		<option value="' + data[v].CODE + '">' + data[v].NAME + '</option>';
-		}
-		$('#'+id).html(cbo);
-		$('#'+id).change();
-	},
-	saveChart : function(isAddNew)
-	{
-		var config = _graph.getChartConfig();
-		if(config == ""){alert("Chart's settings is not ready");return;}
-		var title = $("#chartTitle").val();
-		
-		if(title == ""){
-			alert("Please input chart's title");
-			$("#chartTitle").focus();
-			return;
-		}
-		if(isAddNew == true)
-		{
-			title = prompt("Please input chart's title",title);
-			title = title.trim();
-			if(title == "") return;
-		}
-
-		param = {
-				'id' : (isAddNew?-1:_graph.currentChartID),
-				'title' : title,
-				'maxvalue' : $("#txt_max").val(),
-				'minvalue' : $("#txt_min").val(),
-				'config' : config
-		};
-		sendAjaxNotMessage('/saveChart', param, function(data){
-			if(data.substr(0,3)=="ok:")
-			{
-				alert("Chart saved successfully");
-				_graph.currentChartID=data.substr(3);
-				$("#chartTitle").val(title);
-			}
-			else{
-				alert(data);
-			}
-		});
-	}
-}
-
-function showChartList()
-{
-	$("#listCharts").show();
-	$("#listFormulas").hide();
-	$("#cbuttonChart").addClass("cbutton_active");
-	$("#cbuttonFormula").removeClass("cbutton_active");
-}
-function showFormulaList()
-{
-	$("#listCharts").hide();
-	$("#listFormulas").show();
-	$("#cbuttonChart").removeClass("cbutton_active");
-	$("#cbuttonFormula").addClass("cbutton_active");
-}
-var timeoutLoading=null;
-function iframeOnload()
-{
-	if(timeoutLoading!=null)
-		clearTimeout(timeoutLoading);
-	timeoutLoading=null;
-}
-</script>
- 
 <body style="margin: 0; min-width: 1000px;">
 	<div id="listCharts" style="display: none; overflow: auto"></div>
-	<iframe id="frameChart" style="width:100%;border:none;height: 400px; margin-top: 10" onload="iframeOnload()"></iframe>
+	 <iframe id="frameChart" style="width:100%;border:none;height: 400px; margin-top: 10" onload="iframeOnload()"></iframe>
 </body>
 @stop
 
@@ -560,26 +172,505 @@ function iframeOnload()
 <script>
 // 	editBox.fields = ['deferment'];
 	editBox.loadUrl = "/code/filter";
-	editBox.initExtraPostData = function (id,rowData){
- 		return 	{id:'keke'};
+	/* editBox['size'] = {	height : 420,
+						width : 900,
+						}; */
+	var currentSpan = null;
+	editBox.initExtraPostData = function (span,rowData){
+ 							currentSpan = span;
+ 							return 	span.data();
  	};
- 	editBox.editGroupSuccess = function(data,id){
- 		$("#editFilter").contents().find('html').html(data);
-//  	 	alert(JSON.stringify(data));
+ 	editBox.editGroupSuccess = function(data,span){
+ 		$("#editBoxContentview").html(data);
+ 		filters.afterRenderingDependences("secondary_ObjectName");
+ 		filters.preOnchange("secondary_IntObjectType");
+ 		filters.preOnchange("secondary_ObjectDataSource");
 	};
-	/* editBox.saveUrl = '/deferment/edit/saving';
-	editBox.enableRefresh = true;
+
+	editBox.editSelectedObjects = function (dataStore,resultText){
+		if(currentSpan!=null) {
+			currentSpan.data(dataStore);
+			currentSpan.text(resultText);
+		}
+	};
+
+	editBox.renderOutputText = function (texts){
+		return 	texts.ObjectName +"("+
+				texts.IntObjectType+"."+
+				texts.ObjectDataSource+"."+
+				(texts.hasOwnProperty('CodeFlowPhase')? 		(texts["CodeFlowPhase"]+".")	:"")+
+				(texts.hasOwnProperty('ObjectTypeProperty')? 	texts["ObjectTypeProperty"]		:"")+
+				")";
+	};
+
+	editBox.addObjectItem = function (color, x,dataStore,texts){
+		var sel="<select class='x_chart_type' style='width:100px'><option value='line'>Line</option><option value='spline'>Curved line</option><option value='column'>Column</option><option value='area'>Area</option><option value='areaspline'>Curved Area</option></select>";
+		var inputColor = "<input type='text' maxlength='6' size='6' style='background:"+color+";color:"+color+";' class='_colorpicker' value='7e6de3'>";
+	/* 					var s="<li class='x_item' object_value='"+x+
+		"'>"+sel+inputColor+" <span onclick='editBox.editRow(this,this)'>"+
+		$("#ObjectName option:selected").text()+"("+
+		$("#IntObjectType option:selected").text()+"."+
+		$("#ObjectDataSource option:selected").val()+
+		($("#CodeFlowPhase").is(":visible")?"."+$("#CodeFlowPhase option:selected").text():"")+"."+
+		$("#ObjectTypeProperty option:selected").val()+
+		")</span> "+'<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="/img/x.png"><br></li>';
 	*/
+		var span 			= $("<span></span>");
+		var rstext 			= typeof texts =="string"? texts:editBox.renderOutputText(texts);
+		currentSpan 		= span;
+		editBox.editSelectedObjects(dataStore,rstext);
+		span.click(function() {
+			editBox.editRow(span,span);
+		});
+		span.addClass("clickable");
+		
+		var li 			= $("<li class='x_item' object_value='"+x+"'></li>");
+		var select		= $(sel);
+		var colorSelect	= $(inputColor);
+		var del			= $('<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="/img/x.png">');
+		select.appendTo(li);
+		colorSelect.appendTo(li);
+		span.appendTo(li);
+		del.appendTo(li);
+		li.appendTo($("#chartObjectContainer"));
+		setColorPicker();
+	}
+
+	$(function(){
+		var ebtoken = $('meta[name="_token"]').attr('content');
+		$.ajaxSetup({
+			headers: {
+				'X-XSRF-Token': ebtoken
+			}
+		});
+
+		$('#txtObjectName').val('Flow');
+		$("#chartObjectContainer").sortable();
+
+		$(".phase_type").hide();
+
+		$('#cboObjectNameTable').change();
+		filters.afterRenderingDependences("ObjectName");
+		filters.preOnchange("IntObjectType");
+		filters.preOnchange("ObjectDataSource");
+	});
+
+	function setColorPicker(){
+		$('._colorpicker').ColorPicker({
+			onSubmit: function(hsb, hex, rgb, el) {
+				$(el).val(hex);
+				$(el).css({"background":"#"+hex,"color":"#"+hex});
+				$(el).ColorPickerHide();
+			},
+			onBeforeShow: function () {
+				$(this).ColorPickerSetColor(this.value);
+			}
+		});
+	}
+
+	var _graph = {
+
+		loadObjType : 1,
+
+		currentChartID : 0,
+
+		lastObjectType : "",
+		
+		loadObjecType : function(){
+			var cbo = '';
+			cbo += ' <div class="filter">';
+			cbo += ' 	<div><b> Object type </b></div>';
+			cbo += ' 	<select id = "cboObjectType" onchange="_graph.cboObjectTypeOnChange()">';	
+			cbo += ' 		<option selected value="FLOW/FLOW/FL_DATA/Flow">Flow</option>';
+			cbo += ' 		<option value="ENERGY_UNIT/ENERGY_UNIT/EU_DATA/Energy Unit">Energy Unit</option>';
+			cbo += ' 		<option value="TANK/TANK/TANK/Tank">Tank</option>';
+			cbo += ' 		<option value="STORAGE/STORAGE/STORAGE/Storage">Storage</option>';
+			cbo += ' 		<option value="ENERGY_UNIT/EU_TEST/EU_TEST/Energy Unit">Well Test</option>';
+			cbo += ' 	</select>';
+			cbo += ' </div>';
+
+			return cbo;
+		},
+		
+		loadObjects : function(){
+			var objectType = $("#cboObjectType").val();
+			if(objectType == _graph.lastObjectType) return;
+			var ss = objectType.split("/");
+			$("#txtObjectName").html(ss[ss.length-1]);
+
+			param = {
+				'date_begin' : $('#date_begin').val(),
+				'date_end' : $('#date_end').val(),
+				'object_type' : objectType,
+				'facility_id' : $("#Facility").val(),
+				'product_type' : $('#Product').val()
+			};
+			
+			$("#cboObjectName").prop("disabled", true); 
+			sendAjaxNotMessage('/loadVizObjects', param, function(data){
+				$('#txtObjectName').val($("#cboObjectType ").text());
+				adminControl.reloadCbo('cboObjectName',data);
+				_graph.loadCbo('cboObjectNameTable',data.tab);
+
+				_graph.lastObjectType = objectType;
+				if($("#cboObjectType").val().indexOf("ENERGY_UNIT") > -1)
+				{
+					_graph.loadEUPhase();
+				}
+			});
+		},
+		setValueDefault : function(){
+			$('#ProductionUnit').val($('#h_production_unit_id').val());
+			$('#Area').val($('#h_area_id').val());
+			$('#Facility').val($('#h_facility_id').val());
+			$('#date_begin').val($('#h_date_begin').val());
+			$('#end_date').val($('#h_date_end').val());
+		},
+		loadEUPhase : function(){
+			param = {
+				'eu_id' : $('#cboObjectName').val(),
+			};
+			
+			$("#cboEUFlowPhase").prop("disabled", true); 
+			sendAjaxNotMessage('/loadEUPhase', param, function(data){
+				adminControl.reloadCbo('cboEUFlowPhase',data);
+			});
+		},
+		cboObjectTypeOnChange : function()
+		{
+			if($("#cboObjectType").val().indexOf("EU_TEST") > -1)
+			{
+				$(".eutest_table").show();
+				$(".object_table").hide();
+				$(".phase_type").show();
+			}
+			else
+			{
+				$(".eutest_table").hide();
+				$(".object_table").show();
+			}
+			if($("#cboObjectType").val().indexOf("ENERGY_UNIT/") > -1 && $("#cboObjectType").val().indexOf("EU_TEST/") < 0){
+				$(".phase_type").show();
+			}else{
+				$(".phase_type").hide();
+			}
+			
+			/* $("#cboObjectNameTable").val($("#cboObjectNameTable").find('option:visible:first').attr("value"));
+			$("#cboObjectNameProps").val($("#cboObjectNameProps").find('option:visible:first').attr("value")); */
+			
+			_graph.loadObjects();
+		},
+		ObjectNameTableChange : function(){
+			if($("#cboObjectNameTable").val()=="DATA_ALLOC" && $("#cboObjectType").val().indexOf("ENERGY_UNIT/") > -1)
+				$(".alloc_type").show();
+			else 
+				$(".alloc_type").hide();
+			if($("#cboObjectNameTable").val().endsWith("_PLAN"))
+				$(".plan_type").show();
+			else 
+				$(".plan_type").hide();
+			if($("#cboObjectNameTable").val().endsWith("_FORECAST"))
+				$(".forecast_type").show();
+			else 
+				$(".forecast_type").hide();
+
+			param = {
+				'table' : $("#cboObjectNameTable").val()
+			};
+			
+			sendAjaxNotMessage('/getProperty', param, function(data){
+				_graph.loadCbo('cboObjectNameProps', data);
+			});
+		},
+		addObject : function(){
+			if($("#ObjectName").val()>0){
+				/* var d=$("#cboObjectType").val().split("/");
+				var s1="", s2="", s3="";
+				if(d.length>1)
+				{
+					s1=d[1]+"_";
+				}
+				if(d.length>2)
+				{
+					s2=d[2]+"_";
+				} */
+				var s3="";
+				var d0 = $("#IntObjectType").val();
+				if(d0=="ENERGY_UNIT"){
+					s3+=":"+$("#CodeFlowPhase").val();
+				}
+				var x	= d0+":"+$("#ObjectName").val()+":"+
+							$("#ObjectDataSource").val()+":"+
+							$("#ObjectTypeProperty").val()+
+							s3+"~"+$("#CodeAllocType").val()+"~"+
+							$("#CodePlanType").val()+"~"+
+							$("#CodeForecastType").val();
+				if($("span[object_value='"+x+"']").length==0){
+					var color="transparent";
+					var dataStore		= {	
+							LoProductionUnit	:	$("#LoProductionUnit").val(),
+							LoArea				:	$("#LoArea").val(),
+							Facility			:	$("#Facility").val(),
+							CodeProductType		:	$("#CodeProductType").val(),
+							IntObjectType		:	$("#IntObjectType").val(),
+							ObjectName			:	$("#ObjectName").val(),
+							ObjectDataSource	:	$("#ObjectDataSource").val(),
+							ObjectTypeProperty	:	$("#ObjectTypeProperty").val(),
+							CodeFlowPhase		:	$("#CodeFlowPhase").val(),
+							CodeAllocType		:	$("#CodeAllocType").val(),
+							CodePlanType		:	$("#CodePlanType").val(),
+							CodeForecastType	:	$("#CodeForecastType").val(),
+						};
+					var texts			= {
+											ObjectName			:	$("#ObjectName option:selected").text(),
+											IntObjectType		:	$("#IntObjectType option:selected").text(),
+											ObjectDataSource	:	$("#ObjectDataSource option:selected").text(),
+											ObjectName			:	$("#ObjectName option:selected").text(),
+											ObjectTypeProperty	:	$("#ObjectTypeProperty option:selected").text(),
+										};
+					if($("#CodeFlowPhase").is(":visible")) 			texts["CodeFlowPhase"] = $("#CodeFlowPhase option:selected").text();
+					
+					editBox.addObjectItem(color, x,dataStore,texts);
+				}
+				else
+				{
+					$("span[object_value='"+x+"']").effect("highlight", {}, 1000);
+				}
+			}
+		},
+		editColumn	:  function(element){
+		},
+		draw : function()
+		{
+			if($(".x_item").length<=0) {
+				alert("Please add object");
+				return;
+			}
+			
+			$("html, body").animate({ scrollTop: $(document).height() }, 1000);
+			document.getElementById("frameChart").contentWindow.document.write("<font family='Open Sans'>Generating chart...</font>");
+			
+			var title = encodeURIComponent($("#chartTitle").val());
+			if(title == "") title = null;
+			
+			var minvalue = $("#txt_min").val();
+			if(minvalue == "") minvalue = null;
+			
+			var maxvalue = $("#txt_max").val();
+			if(maxvalue == "") maxvalue = null;
+			
+			var date_begin = $("#date_begin").val();
+			var date_end = $("#date_end").val();
+			var input = encodeURIComponent(_graph.getChartConfig());
+			var iurl = "/loadchart?title="+title+
+									"&minvalue="+minvalue+
+									"&maxvalue="+maxvalue+
+									"&date_begin="+date_begin+
+									"&date_end="+date_end+
+									"&input="+input;	
+			$("#frameChart").attr("src",iurl);
+		},
+		newChart : function()
+		{
+			if($("#chartObjectContainer").children().length>0)
+			{
+				if(!confirm("Current chart will be clear. Do you want to continue?")) return;
+			}
+			_graph.currentChartID = 0;
+			$("#chartObjectContainer").empty();
+			$("#chartTitle").val("");
+		},
+		getChartConfig : function()
+		{
+			var s="";
+			$(".x_item").each(function(){
+		        s += (s==""?"":",")+$(this).attr("object_value")+":"+$(this).children("select").val()+":"+$(this).children("span").text()+":#"+$(this).children("input").val();
+		    });
+			return s;
+		},
+		loadCharts : function()
+		{
+			$('#listCharts').html("Loading...")
+			$( "#listCharts" ).dialog({
+				height: 400,
+				width: 600,
+				modal: true,
+				title: "Charts list",
+			});
+			
+			param = {
+			};
+			
+			sendAjaxNotMessage('/listCharts', param, function(data){
+				_graph.showListChart(data);
+			});
+		},
+		showListChart : function(_data){
+			var data = _data.adv_chart;
+			var str = "";
+			$('#listCharts').html(str);
+			/* for(var i =0; i < data.length; i++){
+				str += "<span class='chart_info' id='chart_"+data[i]['ID']+"' min_value='"+data[i]['MIN_VALUE']+"' max_value='"+data[i]['MAX_VALUE']+"' chart_config='"+data[i]['CONFIG']+"' style='display:block;line-height:20px;margin:2px;'><a href='javascript:_graph.openChart("+data[i]['ID']+")'>"+data[i]['TITLE']+"</a> <img valign='middle' onclick='_graph.deleteChart("+data[i]['ID']+")' class='xclose' src='../img/x.png'></span>";
+			}  */
+
+
+			str += "<table width='100%' class='list table table-hover' cellpadding='5' cellspacing='0'>";
+			str += "<tr>";
+			str += "<td>#</td>";
+			str += "<td><b>Chart title</b></td>";
+			str += "<td><b>delete</b></td>";
+			str += "</tr>";
+			
+			for(var i =0; i < data.length; i++){
+			
+				str += " <tr >";
+				str += " <td>"+(i+1)+"</td>";
+				str += " <td class='chart_info' id='chart_"+data[i]['ID']+"' min_value='"+checkValue(data[i]['MIN_VALUE'],'')+"' max_value='"+checkValue(data[i]['MAX_VALUE'],'')+"' chart_config='"+data[i]['CONFIG']+"' style='cursor:pointer;' onclick='_graph.openChart("+data[i]['ID']+");'><a href='#'>"+data[i]['TITLE']+"</a></td>";
+				str += " <td align='center'><a href='#' class='action_del' onclick = '_graph.deleteChart("+data[i]['ID']+");'><img alt='Delete' title='Delete' src='/images/delete.png'></a></td>";
+				str += " </tr>";
+			}
+			str += "</table>";
+
+
+			
+			$('#listCharts').html(str);
+		},
+
+		deleteChart : function(id)
+		{
+			if(!confirm("Do you want to delete this chart?")) return;
+			param = {
+					'ID' : id
+			};
+			sendAjaxNotMessage('/deleteChart', param, function(data){
+				_graph.showListChart(data);
+			});
+		},
+		openChart : function(id)
+		{
+			_graph.currentChartID=id;
+			$("#chartTitle").val($("#chart_"+id).text());
+			$("#txt_max").val(checkValue($("#chart_"+id).attr("max_value"),''));
+			$("#txt_min").val(checkValue($("#chart_"+id).attr("min_value"),''));
+			$("#chartObjectContainer").empty();
+			var config=$("#chart_"+id).attr("chart_config");
+			var cfs=config.split(',');
+			var i=0;
+			for(i=0;i<cfs.length;i++)
+			{
+				var vals=cfs[i].split(':');
+				if(vals.length>=6)
+				{
+					var color="transparent";
+					var cc="";
+					var k=2;
+					if(vals[vals.length-1][0]=="#") {color=vals[vals.length-1];cc=color.substr(1);k=3;}
+					var ct="<select class='x_chart_type' style='width:100px'><option value='line'>Line</option><option value='spline'>Curved line</option><option value='column'>Column</option><option value='area'>Area</option><option value='areaspline'>Curved Area</option></select><input type='text' maxlength='6' size='6' style='background:"+color+";color:"+color+";' class='_colorpicker' id='colorpicker_"+i+"' value='"+cc+"'>";
+					ct=ct.replace("value='"+vals[vals.length-k]+"'","value='"+vals[vals.length-k]+"' selected");
+					var x="",j;
+					for(j=0;j<vals.length-k;j++) x+=(x==""?"":":")+vals[j];
+					var s="<li class='x_item' object_value='"+x+"'>"+ct+" <span>"+vals[vals.length-k+1]+"</span> "+'<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="../img/x.png"><br></li>';
+//  					$("#chartObjectContainer").append(s);
+
+
+					var dataStore		= {	
+// 							LoProductionUnit	:	$("#LoProductionUnit").val(),
+// 							LoArea				:	$("#LoArea").val(),
+// 							Facility			:	$("#Facility").val(),
+// 							CodeProductType		:	$("#CodeProductType").val(),
+							IntObjectType		:	vals[0],
+							ObjectName			:	vals[1],
+							ObjectDataSource	:	vals[2],
+							ObjectTypeProperty	:	vals[3],
+							CodeFlowPhase		:	vals[4],
+// 							CodeAllocType		:	$("#CodeAllocType").val(),
+// 							CodePlanType		:	$("#CodePlanType").val(),
+// 							CodeForecastType	:	$("#CodeForecastType").val(),
+						};
+					editBox.addObjectItem(color, x,dataStore,vals[vals.length-k+1]);
+					
+					
+				}
+			}
+			setColorPicker();
+			$('#listCharts').dialog("close");
+			_graph.draw();
+		},
+
+		loadCbo : function(id, data){
+			var cbo = '';
+			$('#'+id).html(cbo);
+			for(var v in data){
+				cbo += ' 		<option value="' + data[v].CODE + '">' + data[v].NAME + '</option>';
+			}
+			$('#'+id).html(cbo);
+			$('#'+id).change();
+		},
+		saveChart : function(isAddNew)
+		{
+			var config = _graph.getChartConfig();
+			if(config == ""){alert("Chart's settings is not ready");return;}
+			var title = $("#chartTitle").val();
+			
+			if(title == ""){
+				alert("Please input chart's title");
+				$("#chartTitle").focus();
+				return;
+			}
+			if(isAddNew == true)
+			{
+				title = prompt("Please input chart's title",title);
+				title = title.trim();
+				if(title == "") return;
+			}
+
+			param = {
+					'id' : (isAddNew?-1:_graph.currentChartID),
+					'title' : title,
+					'maxvalue' : $("#txt_max").val(),
+					'minvalue' : $("#txt_min").val(),
+					'config' : config
+			};
+			sendAjaxNotMessage('/saveChart', param, function(data){
+				if(data.substr(0,3)=="ok:")
+				{
+					alert("Chart saved successfully");
+					_graph.currentChartID=data.substr(3);
+					$("#chartTitle").val(title);
+				}
+				else{
+					alert(data);
+				}
+			});
+		}
+	}
+
+	function showChartList()
+	{
+		$("#listCharts").show();
+		$("#listFormulas").hide();
+		$("#cbuttonChart").addClass("cbutton_active");
+		$("#cbuttonFormula").removeClass("cbutton_active");
+	}
+	function showFormulaList()
+	{
+		$("#listCharts").hide();
+		$("#listFormulas").show();
+		$("#cbuttonChart").removeClass("cbutton_active");
+		$("#cbuttonFormula").addClass("cbutton_active");
+	}
+	var timeoutLoading=null;
+	function iframeOnload()
+	{
+		if(timeoutLoading!=null)
+			clearTimeout(timeoutLoading);
+		timeoutLoading=null;
+	}
+	
 </script>
 @stop
 
-@section('editBoxContentview')
-	<iframe id="editFilter" style="width:100%;border:none;height: 400px; margin-top: 10"></iframe>
-@stop
-
-
 @section('floatWindow')
-<!-- 	<script src="/common/js/eb_table_action.js"></script> -->
 	@yield('editBox')
 	@include('core.edit_dialog')
 @stop

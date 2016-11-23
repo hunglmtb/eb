@@ -487,3 +487,7 @@ table.dataTable thead .BAL_POWER,table.dataTable thead .ADJUST_POWER {
 .contenBoxBackground{
 	background-clip: content-box;
 }
+.clickable {
+	cursor: pointer;
+	color: #33b5e8;
+}

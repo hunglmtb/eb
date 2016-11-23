@@ -3,7 +3,7 @@
 namespace App\Models;
 use App\Models\DynamicModel;
 use App\Trail\ObjectNameLoad;
-
+use Illuminate\Database\Eloquent\Collection as ECollection;
 class IntObjectType extends DynamicModel
 {
 	use ObjectNameLoad;
@@ -18,9 +18,10 @@ class IntObjectType extends DynamicModel
 					array_key_exists("CODE", $param)&&
 					array_key_exists("NAME", $param)
 					){
-				$this->ID 	= $param["ID"];
-				$this->CODE = $param["CODE"];
-				$this->NAME = $param["NAME"];
+				$this->ID 		= $param["ID"];
+				$this->CODE 	= $param["CODE"];
+				$this->NAME 	= $param["NAME"];
+				$this->keyType 	= "string";
 			}
 		}
 		else parent::__construct($param);

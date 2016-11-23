@@ -16,8 +16,11 @@ class CodeFlowPhase extends DynamicModel
 // 			$EuPhaseConfig 	 = EuPhaseConfig::getTableName();
 // 			$code_flow_phase = CodeFlowPhase::getTableName();
 			$objectName 	= $sourceData['ObjectName'];
+			if (method_exists($objectName,'CodeFlowPhase')) {
+				return $objectName->CodeFlowPhase();
+			}
 // 			$eu_id 			= $objectName->ID;
-			return $objectName->CodeFlowPhase();
+
 			/* return static::whereHas("EuPhaseConfig",
 									function ($query) use($EuPhaseConfig,$eu_id) {
 										$query->where("$EuPhaseConfig.EU_ID",$eu_id);

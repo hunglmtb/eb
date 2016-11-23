@@ -5,9 +5,22 @@ use App\Models\AuditApproveTable;
 use Carbon\Carbon;
 
 class Helper {
+	
+	public static function getFilterArray($id,$collection=null,$currentUnit=null,$option=null){
+		if ($option==null||is_string($option)) {
+			$option = array();
+		}
+		$option['id'] 			= $id;
+		$option['modelName'] 	= $id;
+		$option['collection'] 	= $collection;
+		$option['currentId'] 	= $currentUnit&&isset($currentUnit->ID)?$currentUnit->ID:'';
+		$option['current'] 		= $currentUnit;
+		return $option;
+	}
+	
 	public static function filter($option=null) {
 		if ($option==null) return;
-		$model			='App\\Models\\'.$option['id'];
+		$model			='App\\Models\\'.$option['modelName'];
 		$collection		= array_key_exists('collection', $option)?$option['collection']:false;
 		
 		if (!$collection) {
@@ -35,7 +48,7 @@ class Helper {
 		$name			= array_key_exists('name', $option)?$option['name']:false;
 		$filterName 	= array_key_exists('filterName', $option)?$option['filterName']:$name;
 		
-		$htmlFilter 	= "<div  class=\"filter $name\"><div><b id=\"title_$name\">$filterName</b>".
+		$htmlFilter 	= "<div  class=\"filter $name\" id='container_$id'><div><b id=\"title_$id\">$filterName</b>".
 							'</div>
 							<select id="'.$id.'" name="'.$name.'">';
 		if ($default) {
@@ -249,7 +262,7 @@ class Helper {
 		return $value==null||$value==''||$value==false;
 	}
 	
-	public static function getCommonGroupFilter($options = null){
+	public static function getCommonGroupFilter($options = []){
 		$codeFlowPhase	= ["name"		=>	"CodeFlowPhase",
 							"source"	=>	"ObjectName" ];
 		$filterGroups = array(	'productionFilterGroup'	=> [['name'			=>'CodeProductType',
@@ -283,7 +296,8 @@ class Helper {
 																["name"			=> "CodeFlowPhase",
 																"getMethod"		=> "loadBy",
 																"source"		=>  ['frequenceFilterGroup'=>["ObjectName"]]],
-																"CodeAllocType",
+																["name"			=>	"CodeAllocType",
+																"filterName"	=>	"Alloc type",],
 																["name"			=>	"CodePlanType",
 																"filterName"	=>	"Plan type",],
 																["name"			=>	"CodeForecastType",
