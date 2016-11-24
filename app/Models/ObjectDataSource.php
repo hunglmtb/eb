@@ -2,8 +2,10 @@
 namespace App\Models; 
 use App\Models\DynamicModel; 
 use App\Models\ObjectTypeProperty;
+use App\Trail\ObjectNameLoad;
 
- class ObjectDataSource extends DynamicModel { 
+ class ObjectDataSource extends DynamicModel {
+ 	use ObjectNameLoad;
  	
  	protected $primaryKey = 'ID2';
  	

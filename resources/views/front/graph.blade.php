@@ -70,11 +70,13 @@ $functionName		= "graph";
 		var partials 		= id.split("_");
 		var prefix 			= partials.length>1?partials[0]+"_":"";
 		var model 			= partials.length>1?partials[1]:id;
+		var currentObject	= "#"+prefix;
 		
 		if(model=="ObjectName") 
-			$('#title_'+id).text($("#"+prefix+"IntObjectType").find(":selected").text());
-		else if(model=="ObjectDataSource") 
+			$('#title_'+id).text($(currentObject+"IntObjectType").find(":selected").text());
+		else if(model=="ObjectDataSource")
 			filters.preOnchange(prefix+"ObjectDataSource");
+		
 	};
 	filters.preOnchange		= function(id, dependentIds,more){
 		var partials 		= id.split("_");
@@ -115,6 +117,18 @@ $functionName		= "graph";
 				if(prefix=="") $("#tdObjectContainer").css({'height':($("#filterFrequence").height()+'px')});
 				break;
 		}
+	};
+
+	
+	filters.moreDependence	= function(dependentIds,model,currentValue,prefix){
+		if(model=="ObjectDataSource"&&$("#"+prefix+"IntObjectType").val()=="KEYSTORE"){
+			if(isFirstDisplay&&prefix!="") {
+				dependentIds = [{"name":"ObjectName","source":"ObjectDataSource"}];
+				isFirstDisplay = false;
+			}
+			else dependentIds.push({"name":"ObjectName","source":"ObjectDataSource"});
+		}
+		return dependentIds;
 	};
 </script>
 @stop
@@ -177,14 +191,18 @@ $functionName		= "graph";
 						}; */
 	var currentSpan = null;
 	editBox.initExtraPostData = function (span,rowData){
+	 						isFirstDisplay = false;
  							currentSpan = span;
  							return 	span.data();
  	};
+ 	isFirstDisplay = false;
  	editBox.editGroupSuccess = function(data,span){
  		$("#editBoxContentview").html(data);
  		filters.afterRenderingDependences("secondary_ObjectName");
  		filters.preOnchange("secondary_IntObjectType");
  		filters.preOnchange("secondary_ObjectDataSource");
+ 		isFirstDisplay = true;
+ 		if($("#secondary_IntObjectType").val()=="KEYSTORE") $("#secondary_ObjectDataSource").change();
 	};
 
 	editBox.editSelectedObjects = function (dataStore,resultText){
@@ -206,15 +224,6 @@ $functionName		= "graph";
 	editBox.addObjectItem = function (color, x,dataStore,texts){
 		var sel="<select class='x_chart_type' style='width:100px'><option value='line'>Line</option><option value='spline'>Curved line</option><option value='column'>Column</option><option value='area'>Area</option><option value='areaspline'>Curved Area</option></select>";
 		var inputColor = "<input type='text' maxlength='6' size='6' style='background:"+color+";color:"+color+";' class='_colorpicker' value='7e6de3'>";
-	/* 					var s="<li class='x_item' object_value='"+x+
-		"'>"+sel+inputColor+" <span onclick='editBox.editRow(this,this)'>"+
-		$("#ObjectName option:selected").text()+"("+
-		$("#IntObjectType option:selected").text()+"."+
-		$("#ObjectDataSource option:selected").val()+
-		($("#CodeFlowPhase").is(":visible")?"."+$("#CodeFlowPhase option:selected").text():"")+"."+
-		$("#ObjectTypeProperty option:selected").val()+
-		")</span> "+'<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="/img/x.png"><br></li>';
-	*/
 		var span 			= $("<span></span>");
 		var rstext 			= typeof texts =="string"? texts:editBox.renderOutputText(texts);
 		currentSpan 		= span;

@@ -1,8 +1,10 @@
 <?php 
 namespace App\Models; 
-use App\Models\DynamicModel; 
+ 
 
- class KeystoreTankDataValue extends DynamicModel 
+ class KeystoreTankDataValue extends FeatureKeystore 
 { 
-	protected $table = 'keystore_tank_data_value'; 
-} 
+	protected $table 					= 'keystore_tank_data_value'; 
+	public static $objectModel 			= "KeystoreTank";
+	public  static $foreignKeystore 	= "KEYSTORE_TANK_ID";
+ } 

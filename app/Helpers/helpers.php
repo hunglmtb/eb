@@ -56,12 +56,13 @@ class Helper {
 		}
 	
 		$currentId = array_key_exists('currentId', $option)?$option['currentId']:'';
-		foreach($collection as $item ){
-			$fvalue = $item->ID!=""?$item->ID:(isset($item->CODE)?$item->CODE:"");
-			$htmlFilter .= '<option name="'.(isset($item->CODE)?$item->CODE:"")
-						.'" value="'.$fvalue.'"'.($currentUnit&&$currentUnit==$item?'selected="selected"':'')
-						.'>'.($item->NAME).'</option>';
-				
+		if ($collection) {
+			foreach($collection as $item ){
+				$fvalue = $item->ID!=""?$item->ID:(isset($item->CODE)?$item->CODE:"");
+				$htmlFilter .= '<option name="'.(isset($item->CODE)?$item->CODE:"")
+							.'" value="'.$fvalue.'"'.($currentUnit&&$currentUnit==$item?'selected="selected"':'')
+							.'>'.($item->NAME).'</option>';
+			}
 		}
 		
 	
@@ -184,7 +185,7 @@ class Helper {
 	
 	public static function getModelName($table)
 	{
-		$tableName = strtolower ( $table );
+		$tableName = strtolower ( trim($table) );
 		$mdlName = static::camelize ( $tableName, '_' );
 		$mdl = 'App\Models\\' . $mdlName;
 		return $mdl;
@@ -267,13 +268,13 @@ class Helper {
 							"source"	=>	"ObjectName" ];
 		$filterGroups = array(	'productionFilterGroup'	=> [['name'			=>'CodeProductType',
 															'independent'	=>true,
-															'extra'			=> ["Facility","CodeProductType","IntObjectType"],
+															'extra'			=> ["Facility","CodeProductType","IntObjectType","ObjectDataSource"],
 															'dependences'	=>["ObjectName",
 																				$codeFlowPhase]],
 															['name'			=>'IntObjectType',
 															'independent'	=>true,
 															"getMethod"		=> "getGraphObjectType",
-															'extra'			=> ["Facility","CodeProductType","IntObjectType"],
+															'extra'			=> ["Facility","CodeProductType","IntObjectType","ObjectDataSource"],
 															'dependences'	=> ["ObjectName",
 																				["name"		=>	"ObjectDataSource"],
 																				"ObjectTypeProperty",
@@ -288,6 +289,7 @@ class Helper {
 																"getMethod"		=> "loadBy",
 																"filterName"	=>	"Data source",
 																'dependences'	=> ["ObjectTypeProperty"],
+																'extra'			=> ["Facility","CodeProductType"],
 																"source"		=> ['productionFilterGroup'=>["IntObjectType"]]],
 																["name"			=> "ObjectTypeProperty",
 																"getMethod"		=> "loadBy",
@@ -307,7 +309,7 @@ class Helper {
 																	['id'=>'date_end',	'name'=>'To date']),
 								'enableButton'			=> false,
 								'FacilityDependentMore'	=> ["ObjectName","CodeFlowPhase"],
-								'extra' 				=> ['IntObjectType','CodeProductType']
+								'extra' 				=> ['IntObjectType','CodeProductType',"ObjectDataSource"]
 		);
 		
 		return $filterGroups;

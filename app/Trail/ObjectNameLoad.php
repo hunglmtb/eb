@@ -5,10 +5,28 @@ namespace App\Trail;
 
 trait ObjectNameLoad
 {
-	public function ObjectName($option=null)
-	{
+	public function ObjectName($option=null){
 		if ($option!=null&&is_array($option)) {
-			$objectType 	= $option['IntObjectType'];
+			if(array_key_exists('IntObjectType', $option)){
+				$objectType 	= $option['IntObjectType'];
+				if ($objectType['id']=="KEYSTORE") {
+					if (array_key_exists('ObjectDataSource', $option)) {
+						$objectDataSource 	= $option['ObjectDataSource'];
+						$mdl 				= $objectDataSource['id'];
+						$mdl 				= 'App\Models\\' . $mdl;
+					}
+					else return null;
+				}
+				else {
+					$mdlName 		= $objectType['name'];
+					$mdl 			= \Helper::getModelName ( $mdlName);
+				}
+			}
+			else if ($this->CODE) {
+				$mdl			= $this->CODE;
+				$mdl 			= 'App\Models\\' . $mdl;
+			}
+			
 			if ( array_key_exists('Facility', $option)) {
 				$facility 		= $option['Facility'];
 				$facility_id 	= $facility['id'];
@@ -25,9 +43,8 @@ trait ObjectNameLoad
 			}
 			else $phaseTypeId 	= 0;
 			
-			$mdlName 		= $objectType['name'];
-			$mdl 			= \Helper::getModelName ( $mdlName);
-			return $mdl::getEntries($facility_id,$phaseTypeId);
+			if ($mdl&&method_exists($mdl, "getEntries")) 
+				return $mdl::getEntries($facility_id,$phaseTypeId);
 		}
 		return null;
 	}

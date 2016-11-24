@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class KeystoreTank extends DynamicModel 
 { 
-	protected $table = 'keystore_tank'; 
+	protected $table = 'KEYSTORE_TANK'; 
 } 

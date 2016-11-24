@@ -7,7 +7,7 @@ use App\Models\DynamicModel;
 		$objectType 	= $sourceData['ObjectDataSource'];
 		$id 			= $objectType->ID;	
 		$code 			= $id&&$id!==0?$objectType->ID:$objectType->CODE;
-		$model 			= 'App\\Models\\' .$code;
+		$model 			= 'App\\Models\\' .trim($code);
 		$tableName 		= $model::getTableName ();
 		$dates 			= $model::getDateFields();
 		

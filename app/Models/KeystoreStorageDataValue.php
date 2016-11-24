@@ -1,8 +1,9 @@
 <?php 
 namespace App\Models; 
-use App\Models\DynamicModel; 
 
- class KeystoreStorageDataValue extends DynamicModel 
-{ 
-	protected $table = 'keystore_storage_data_value'; 
+ class KeystoreStorageDataValue extends FeatureKeystore { 
+	protected $table 					= 'KEYSTORE_STORAGE_DATA_VALUE';
+	protected static $objectModel 		= "KeystoreStorage";
+	public  static $foreignKeystore 	= "KEYSTORE_STORAGE_ID";
+	
 } 
