@@ -250,6 +250,7 @@ class graphController extends Controller {
 			else if($xs[0]=="STORAGE") 	$obj_type_id_field="STORAGE_ID";
 			else if($xs[0]=="FLOW")		$obj_type_id_field="FLOW_ID";
 			else if($xs[0]=="EU_TEST") 	$obj_type_id_field="EU_ID";
+			else if($xs[0]=="KEYSTORE") $obj_type_id_field="KEYSTORE";
 			else if($xs[0]=="ENERGY_UNIT"){
 				$obj_type_id_field="EU_ID";
 				$chart_type=$xs[5];
@@ -288,7 +289,13 @@ class graphController extends Controller {
 			$va = $xs[0];
 			$pa1 = $xs[1];
 			//\DB::enableQueryLog ();
-			
+			if ($obj_type_id_field=="KEYSTORE") {
+				if (isset($model::$foreignKeystore)&&$model::$foreignKeystore) {
+					$obj_type_id_field	=	$model::$foreignKeystore;
+				}
+				else continue;
+			}
+					
 			$tmp = $model::where([$obj_type_id_field=>$pa1])
 			->where ( function ($q) use ($va, $is_eutest, $phase_type) {
 				if ($va == "ENERGY_UNIT" && !$is_eutest) {
@@ -327,9 +334,11 @@ class graphController extends Controller {
 					$strData .= ",\r\n";
 				}
 				$dateTime 		= $row->$datefield;
-				$dateTimeText 	= sprintf("%d,%d,%d", $dateTime->year,$dateTime->month-1,$dateTime->day);
-				$strData .= "[Date.UTC(".$dateTimeText."), ".$row->V."]";
-				$i++;
+				if ($dateTime) {
+					$dateTimeText 	= sprintf("%d,%d,%d", $dateTime->year,$dateTime->month-1,$dateTime->day);
+					$strData .= "[Date.UTC(".$dateTimeText."), ".$row->V."]";
+					$i++;
+				}
 			}
 			$strData .="]}\r\n";
 			$k++;

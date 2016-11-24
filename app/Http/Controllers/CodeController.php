@@ -58,8 +58,7 @@ class CodeController extends EBController {
 		$this->isApplyFormulaAfterSaving = false;
 	}
 	
-	public function getCodes(Request $request)
-    {
+	public function getCodes(Request $request){
 		$options = $request->only('type','value', 'dependences','extra');
 		$bunde = $options['extra'];
 		$type = $options['type'];

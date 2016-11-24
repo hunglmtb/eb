@@ -44,19 +44,26 @@ var registerOnChange = function(id, dependentIds,more) {
 	var prefix 		= partials.length>1?partials[0]+"_":"";
 	var model 		= partials.length>1?partials[1]:id;
 	$('#'+id).change(function(e){
+		var tmpDependentIds = $.merge([], dependentIds);
 		if (typeof(filters.preOnchange) == "function") {
-			filters.preOnchange(id,dependentIds,more,prefix);
+			filters.preOnchange(id,tmpDependentIds,more,prefix);
 		}
 		
 		var ccontinue = false;
 		var dependentSelects = [];
-		$.each(dependentIds, function( dindex, dvalue ) {
+		var currentValue = $(this).val();
+		if(typeof filters.moreDependence == 'function') 
+			tmpDependentIds = filters.moreDependence(tmpDependentIds,model,currentValue,prefix);
+		
+		$.each(tmpDependentIds, function( dindex, dvalue ) {
 			if (typeof dvalue === 'string' || dvalue instanceof String) dependentSelects.push(prefix+dvalue);
 			else if(typeof(dvalue["name"]) !== "undefined"
 				&&(typeof(dvalue["independent"]) === "undefined")
 					||!dvalue["independent"])
 				dependentSelects.push(prefix+dvalue["name"]);
 		});
+		
+		
 		$.each(dependentSelects, function( dindex, dvalue ) {
 			ccontinue = ccontinue|| $("#"+dvalue).is(":visible");
 		});
@@ -78,8 +85,8 @@ var registerOnChange = function(id, dependentIds,more) {
 			url: '/code/list',
 			type: "post",
 			data: {	type		: model,
-					dependences	: dependentIds,
-					value		: $(this).val(),
+					dependences	: tmpDependentIds,
+					value		: currentValue,
 					extra		: bundle
 				},
 			success: function(results){

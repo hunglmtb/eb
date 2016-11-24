@@ -53,6 +53,12 @@ $tab['QUALITY'] =collect([
 		(object)['NAME'=>'QUALITY DATA', 'ID'=>'QltyData']
 ]);
 
+$tab['KEYSTORE'] =collect([
+		(object)['NAME'=>'KEYSTORE_INJECTION_POINT_DAY', 	'ID'=>'KeystoreInjectionPointDay'],
+		(object)['NAME'=>'KEYSTORE_TANK_DATA_VALUE', 		'ID'=>'KeystoreTankDataValue'],
+		(object)['NAME'=>'KEYSTORE_STORAGE_DATA_VALUE', 	'ID'=>'KeystoreStorageDataValue'],
+]);
+
 return [
         'tabTable'					=> 'tabTable',
 		'keyField'					=> 'keyField',
