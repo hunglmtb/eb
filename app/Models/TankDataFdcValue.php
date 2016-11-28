@@ -8,7 +8,7 @@ class TankDataFdcValue extends FeatureTankModel
 	use LinkingTankModel;
 	
 	protected $table = 'TANK_DATA_FDC_VALUE'; 
-	protected $dates = ['LAST_DATA_READ'];
+	protected $dates = ['OCCUR_DATE','LAST_DATA_READ'];
 	protected $primaryKey = 'ID';
 	protected $fillable  = ['OCCUR_DATE',
 							 'LAST_DATA_READ',

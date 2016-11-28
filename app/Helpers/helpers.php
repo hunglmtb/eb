@@ -43,7 +43,9 @@ class Helper {
 		$collection 	= $option['collection'];
 		$currentUnit 	= $option['current'];
 		
-		$default		= array_key_exists('default', $option)?$option['default']:false;
+		$default		= (!array_key_exists('defaultEnable', $option)||(array_key_exists('defaultEnable', $option)&&$option['defaultEnable']))
+							&&array_key_exists('default', $option)?
+							$option['default']:false;
 		$id				= array_key_exists('id', $option)?$option['id']:false;
 		$name			= array_key_exists('name', $option)?$option['name']:false;
 		$filterName 	= array_key_exists('filterName', $option)?$option['filterName']:$name;
@@ -283,6 +285,7 @@ class Helper {
 															]],
 								'frequenceFilterGroup'	=> [	["name"			=> "ObjectName",
 																"getMethod"		=> "loadBy",
+																"defaultEnable"	=> false,
 																'dependences'	=> ["CodeFlowPhase"],
 																"source"		=> ['productionFilterGroup'=>["Facility","IntObjectType","CodeProductType"]]],
 																["name"			=> "ObjectDataSource",

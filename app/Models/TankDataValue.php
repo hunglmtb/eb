@@ -8,9 +8,9 @@ use App\Trail\LinkingTankModel;
 { 
 	use LinkingTankModel;
 	
-	protected $table = 'TANK_DATA_VALUE';
-	
-	protected $primaryKey = 'ID';
+	protected $table 		= 'TANK_DATA_VALUE';
+	protected $primaryKey 	= 'ID';
+	protected $dates 		= ['OCCUR_DATE'];
 	protected $fillable  = ['TANK_ID',
 							'OCCUR_DATE',
 							'TANK_LOCATION',

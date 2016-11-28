@@ -47,7 +47,7 @@ class IntObjectType extends DynamicModel
 				new IntObjectType(['ID' =>	'TANK'			,'CODE' =>	'TANK'			,'NAME' => 'Tank'    		]),
 				new IntObjectType(['ID' =>	'STORAGE' 		,'CODE' =>	'STORAGE'		,'NAME' => 'Storage'    	]),
 				new IntObjectType(['ID' =>	'EU_TEST'		,'CODE' =>	'EU_TEST'		,'NAME' => 'Well test'    	]),
-				new IntObjectType(['ID' =>	'KEYSTORE'		,'CODE' =>	'KEYSTORE'		,'NAME' => 'Key store'    	]),
+				new IntObjectType(['ID' =>	'KEYSTORE'		,'CODE' =>	'KEYSTORE'		,'NAME' => 'Keystore'    	]),
 		]);
 	}
 	
