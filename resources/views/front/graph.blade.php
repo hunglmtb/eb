@@ -230,6 +230,8 @@ $functionName		= "graph";
 		var colorSelect		= $(inputColor);
 		var span 			= $("<span></span>");
 		var del				= $('<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="/img/x.png">');
+
+		if(dataStore.hasOwnProperty('chartType')) select.val(dataStore.chartType);
 		select.appendTo(li);
 		colorSelect.appendTo(li);
 		span.appendTo(li);
@@ -496,7 +498,7 @@ $functionName		= "graph";
 		{
 			var s="";
 			$(".x_item").each(function(){
-		        s += (s==""?"":",")+$(this).attr("object_value")+":"+$(this).children("select").val()+":"+$(this).children("span").text()+":#"+$(this).children("input").val();
+				s += (s==""?"":",")+$(this).attr("object_value")+":"+$(this).children("select").val()+":"+$(this).children("span").text()+":#"+$(this).children("input").val();
 		    });
 			return s;
 		},
@@ -598,6 +600,8 @@ $functionName		= "graph";
 // 							CodeAllocType		:	$("#CodeAllocType").val(),
 // 							CodePlanType		:	$("#CodePlanType").val(),
 // 							CodeForecastType	:	$("#CodeForecastType").val(),
+							chartType			:	vals[vals.length-k],
+
 						};
 					editBox.addObjectItem(color,dataStore,vals[vals.length-k+1],x);
 				}
