@@ -91,9 +91,9 @@ class CodeController extends EBController {
 			
 			if ($sourceUnit!=null) {
 				$rs = ProductionGroupComposer::initExtraDependence($results,$model,$sourceUnit,$bunde);
-				$eCollection = $rs['collection'];
-				$modelName = $rs['model'];
-				$currentId = $rs['currentId'];
+				$eCollection 	= $rs['collection'];
+				$modelName 		= $rs['model'];
+				$currentId 		= $rs['currentId'];
 			}
 			else  break;
 			if (is_string($model) && array_key_exists($model,  config("constants.subProductFilterMapping"))&&

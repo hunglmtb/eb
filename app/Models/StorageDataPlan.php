@@ -9,7 +9,8 @@ namespace App\Models;
 	public  static  $idField = 'STORAGE_ID';
 // 	public static $unguarded = true;
 // 	public  static $ignorePostData = true;
-
+	protected $dates 		= ['OCCUR_DATE','LAST_DATA_READ'];
+	
 	protected $fillable  = ['OCCUR_DATE', 
 							'LAST_DATA_READ', 
 							'STORAGE_ID', 

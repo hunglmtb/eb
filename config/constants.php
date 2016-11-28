@@ -93,7 +93,8 @@ return [
 										'ObjectName'			=>	array('filterName'	=>'Object Name',
 																		'name'			=>'ObjectName',
 																		'id'			=>'ObjectName',
-																		'default'		=>['ID'=>0,'NAME'=>'All']),
+// 																		'default'		=>['ID'=>0,'NAME'=>'All']
+																		),
 										'EnergyUnitGroup'		=>	array('filterName'	=>'Energy Unit Group',
 																		'name'			=>'energyUnitGroup',
 																		'default'		=>['ID'=>0,'NAME'=>'All']),

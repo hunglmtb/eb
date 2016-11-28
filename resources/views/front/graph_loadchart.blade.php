@@ -39,7 +39,17 @@ $(function () {
                 marker: {
                     enabled: true
                 }
-            }
+            },
+            pie: {
+                dataLabels: {
+//                    distance: -50,
+                    format: '{point.name}: {point.y}'
+                },
+    			tooltip: {
+    				headerFormat: '',
+    				pointFormat: '{point.name}: {point.y}'
+    			},
+            } 
         },
         exporting: {
             sourceWidth: $('#container').width(),

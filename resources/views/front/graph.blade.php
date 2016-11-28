@@ -62,7 +62,6 @@ $functionName		= "graph";
 @include('group.production') 
 @stop
 
-
 @section('adaptData')
 @parent
 <script>
@@ -205,10 +204,12 @@ $functionName		= "graph";
  		if($("#secondary_IntObjectType").val()=="KEYSTORE") $("#secondary_ObjectDataSource").change();
 	};
 
-	editBox.editSelectedObjects = function (dataStore,resultText){
+	editBox.editSelectedObjects = function (dataStore,resultText,x){
 		if(currentSpan!=null) {
 			currentSpan.data(dataStore);
 			currentSpan.text(resultText);
+			var li = currentSpan.closest( "li" );
+			editBox.updateObjectAttributes(li,dataStore,x);
 		}
 	};
 
@@ -221,29 +222,51 @@ $functionName		= "graph";
 				")";
 	};
 
-	editBox.addObjectItem = function (color, x,dataStore,texts){
-		var sel="<select class='x_chart_type' style='width:100px'><option value='line'>Line</option><option value='spline'>Curved line</option><option value='column'>Column</option><option value='area'>Area</option><option value='areaspline'>Curved Area</option></select>";
-		var inputColor = "<input type='text' maxlength='6' size='6' style='background:"+color+";color:"+color+";' class='_colorpicker' value='7e6de3'>";
+	editBox.addObjectItem 	= function (color,dataStore,texts,x){
+		var li 				= $("<li class='x_item'></li>");
+		var sel				= "<select class='x_chart_type' style='width:100px'><option value='line'>Line</option><option value='spline'>Curved line</option><option value='column'>Column</option><option value='area'>Area</option><option value='areaspline'>Curved Area</option><option value='pie'>Pie</option></select>";
+		var inputColor 		= "<input type='text' maxlength='6' size='6' style='background:"+color+";color:"+color+";' class='_colorpicker' value='"+(color=="transparent"?"7e6de3":color.replace("#", ""))+"'>";
+		var select			= $(sel);
+		var colorSelect		= $(inputColor);
 		var span 			= $("<span></span>");
-		var rstext 			= typeof texts =="string"? texts:editBox.renderOutputText(texts);
-		currentSpan 		= span;
-		editBox.editSelectedObjects(dataStore,rstext);
-		span.click(function() {
-			editBox.editRow(span,span);
-		});
-		span.addClass("clickable");
-		
-		var li 			= $("<li class='x_item' object_value='"+x+"'></li>");
-		var select		= $(sel);
-		var colorSelect	= $(inputColor);
-		var del			= $('<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="/img/x.png">');
+		var del				= $('<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="/img/x.png">');
 		select.appendTo(li);
 		colorSelect.appendTo(li);
 		span.appendTo(li);
 		del.appendTo(li);
+		
+		currentSpan 		= span;
+		span.click(function() {
+			editBox.editRow(span,span);
+		});
+		span.addClass("clickable");
+		var rstext 			= typeof texts =="string"? texts:editBox.renderOutputText(texts);
+		editBox.editSelectedObjects(dataStore,rstext,x);
+		
 		li.appendTo($("#chartObjectContainer"));
 		setColorPicker();
 	}
+
+	editBox.updateObjectAttributes = function (li,dataStore,x){
+		if(typeof x !="string")
+			x = editBox.getObjectValue(dataStore);
+		li.attr("object_value",x);
+	};
+
+	editBox.getObjectValue = function (dataStore){
+		var s3	="";
+		var d0 	= dataStore.IntObjectType;
+		if(d0=="ENERGY_UNIT") s3+=":"+dataStore.CodeFlowPhase;
+		var x	= 	d0+":"+
+					dataStore.ObjectName+":"+
+					dataStore.ObjectDataSource+":"+
+					dataStore.ObjectTypeProperty+
+					s3+"~"+
+					dataStore.CodeAllocType+"~"+
+					dataStore.CodePlanType+"~"+
+					dataStore.CodeForecastType;
+		return x;
+	};
 
 	$(function(){
 		var ebtoken = $('meta[name="_token"]').attr('content');
@@ -393,43 +416,23 @@ $functionName		= "graph";
 		},
 		addObject : function(){
 			if($("#ObjectName").val()>0){
-				/* var d=$("#cboObjectType").val().split("/");
-				var s1="", s2="", s3="";
-				if(d.length>1)
-				{
-					s1=d[1]+"_";
-				}
-				if(d.length>2)
-				{
-					s2=d[2]+"_";
-				} */
-				var s3="";
-				var d0 = $("#IntObjectType").val();
-				if(d0=="ENERGY_UNIT"){
-					s3+=":"+$("#CodeFlowPhase").val();
-				}
-				var x	= d0+":"+$("#ObjectName").val()+":"+
-							$("#ObjectDataSource").val()+":"+
-							$("#ObjectTypeProperty").val()+
-							s3+"~"+$("#CodeAllocType").val()+"~"+
-							$("#CodePlanType").val()+"~"+
-							$("#CodeForecastType").val();
+				var dataStore		= {	
+						LoProductionUnit	:	$("#LoProductionUnit").val(),
+						LoArea				:	$("#LoArea").val(),
+						Facility			:	$("#Facility").val(),
+						CodeProductType		:	$("#CodeProductType").val(),
+						IntObjectType		:	$("#IntObjectType").val(),
+						ObjectName			:	$("#ObjectName").val(),
+						ObjectDataSource	:	$("#ObjectDataSource").val(),
+						ObjectTypeProperty	:	$("#ObjectTypeProperty").val(),
+						CodeFlowPhase		:	$("#CodeFlowPhase").val(),
+						CodeAllocType		:	$("#CodeAllocType").val(),
+						CodePlanType		:	$("#CodePlanType").val(),
+						CodeForecastType	:	$("#CodeForecastType").val(),
+					};
+				var x =  editBox.getObjectValue(dataStore);
 				if($("span[object_value='"+x+"']").length==0){
 					var color="transparent";
-					var dataStore		= {	
-							LoProductionUnit	:	$("#LoProductionUnit").val(),
-							LoArea				:	$("#LoArea").val(),
-							Facility			:	$("#Facility").val(),
-							CodeProductType		:	$("#CodeProductType").val(),
-							IntObjectType		:	$("#IntObjectType").val(),
-							ObjectName			:	$("#ObjectName").val(),
-							ObjectDataSource	:	$("#ObjectDataSource").val(),
-							ObjectTypeProperty	:	$("#ObjectTypeProperty").val(),
-							CodeFlowPhase		:	$("#CodeFlowPhase").val(),
-							CodeAllocType		:	$("#CodeAllocType").val(),
-							CodePlanType		:	$("#CodePlanType").val(),
-							CodeForecastType	:	$("#CodeForecastType").val(),
-						};
 					var texts			= {
 											ObjectName			:	$("#ObjectName option:selected").text(),
 											IntObjectType		:	$("#IntObjectType option:selected").text(),
@@ -439,7 +442,7 @@ $functionName		= "graph";
 										};
 					if($("#CodeFlowPhase").is(":visible")) 			texts["CodeFlowPhase"] = $("#CodeFlowPhase option:selected").text();
 					
-					editBox.addObjectItem(color, x,dataStore,texts);
+					editBox.addObjectItem(color,dataStore,texts,x);
 				}
 				else
 				{
@@ -596,9 +599,7 @@ $functionName		= "graph";
 // 							CodePlanType		:	$("#CodePlanType").val(),
 // 							CodeForecastType	:	$("#CodeForecastType").val(),
 						};
-					editBox.addObjectItem(color, x,dataStore,vals[vals.length-k+1]);
-					
-					
+					editBox.addObjectItem(color,dataStore,vals[vals.length-k+1],x);
 				}
 			}
 			setColorPicker();

@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class AdvChart extends DynamicModel 
 { 
-	protected $table = 'adv_chart'; 
+	protected $table = 'ADV_CHART'; 
 } 

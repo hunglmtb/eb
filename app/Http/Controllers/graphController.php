@@ -227,6 +227,8 @@ class graphController extends Controller {
 		$maxV=0;
 		$minV=PHP_INT_MAX;
 		$strData = "";
+		$pies="";
+		
 		foreach($ss as $s)
 		{
 			$tmp = [];
@@ -297,11 +299,9 @@ class graphController extends Controller {
 			}
 					
 			$tmp = $model::where([$obj_type_id_field=>$pa1])
-			->where ( function ($q) use ($va, $is_eutest, $phase_type) {
-				if ($va == "ENERGY_UNIT" && !$is_eutest) {
-					$q->where ( [
-							'FLOW_PHASE' => $phase_type
-					] );
+			->where ( function ($q) use ($va, $is_eutest, $is_deferment, $phase_type) {
+				if ($va == "ENERGY_UNIT" && !$is_eutest && !$is_deferment) {
+					$q->where (['FLOW_PHASE' => $phase_type]);
 				}
 			})
 		 	->whereDate ( $datefield, '>=',  $date_begin ) 
@@ -311,37 +311,65 @@ class graphController extends Controller {
 			->get([$vfield.' AS V', "$datefield"]);
 			
 			//\Log::info ( \DB::getQueryLog () );
-			$i=0;
-// 			DB::raw('DATE_FORMAT('.$datefield.', "%Y,%m-1,%d")');
-			if($k>0){
-				$strData .=",{";
-			}else{
-				$strData .="{";
-			}
-			$strData .= "type: '".$chart_type."',\n";
-			$strData .= "name: '".preg_replace('/\s+/', '_@', $chart_name)."',\n";
-			$strData .= "type: '".$chart_type."',\n";
-			$strData .= ($chart_color?"color: '$chart_color',\n":"");
-		
-			//$strData .= "name: '".$chart_name."',";
-			$strData .= "data: [";
-			foreach ($tmp as $row)
-			{
-				if($row->V == "") $row ->V=0;
-				if($row->V>$maxV)$maxV=$row->V;
-				if($row->V<$minV)$minV=$row->V;
-				if($i>0){
-					$strData .= ",\r\n";
+			if($chart_type!="pie"){
+				$i=0;
+				$strData.= $strData!=""?",{":"{";
+				$strData .= "type: '".$chart_type."',\n";
+				$strData .= "name: '".preg_replace('/\s+/', '_@', $chart_name)."',\n";
+				$strData .= "type: '".$chart_type."',\n";
+				$strData .= ($chart_color?"color: '$chart_color',\n":"");
+				//$strData .= "name: '".$chart_name."',";
+				$strData .= "data: [";
+				foreach ($tmp as $row)
+				{
+					if($row->V == "") $row ->V=0;
+					if($row->V>$maxV)$maxV=$row->V;
+					if($row->V<$minV)$minV=$row->V;
+					if($i>0){
+						$strData .= ",\r\n";
+					}
+					$dateTime 		= $row->$datefield;
+					if ($dateTime) {
+						$dateTimeText 	= sprintf("%d,%d,%d", $dateTime->year,$dateTime->month-1,$dateTime->day);
+						$strData .= "[Date.UTC(".$dateTimeText."), ".$row->V."]";
+						$i++;
+					}
 				}
-				$dateTime 		= $row->$datefield;
-				if ($dateTime) {
-					$dateTimeText 	= sprintf("%d,%d,%d", $dateTime->year,$dateTime->month-1,$dateTime->day);
-					$strData .= "[Date.UTC(".$dateTimeText."), ".$row->V."]";
-					$i++;
+				$strData .="]}\r\n";
+			}
+			else {
+				$result = $model::where([$obj_type_id_field=>$pa1])
+								->where ( function ($q) use ($va, $is_eutest, $phase_type,$is_deferment) {
+									if ($va == "ENERGY_UNIT" && !$is_eutest && !$is_deferment) {
+										$q->where (['FLOW_PHASE' => $phase_type]);
+									}
+								})
+								->whereDate ( $datefield, '=',  $date_begin )
+								->select($vfield.' AS V')
+								->first();
+				
+				if ($result&&$result->V) {
+					$vl = $result->V;
+					if(is_numeric($vl)){
+						if($chart_color&&$chart_color!=""){
+							list($r, $g, $b) = sscanf($chart_color, "#%02x%02x%02x");
+							$rgba=",color:'rgba($r, $g, $b,0.9)'";
+						}
+						else {
+							$colors = ["#aa39c9bb","#aafed3dd","#aa14831c","#aa003e77","#aa391300","#aa68879b","#aa4a4e35","#aae9b88f"];
+							$cIndex = rand(0, count($colors)-1);
+							$rgba=",color:'$colors[$cIndex]'";
+						}
+						$pies.=($pies?",":"")."{name:'$chart_name',y:$vl$rgba}";
+					}
 				}
 			}
-			$strData .="]}\r\n";
+			
 			$k++;
+		}
+		
+		if($pies){
+			$strData.= ($strData!=""?",":"")."{type:'pie',data:[$pies]}";
 		}
 		
 		$min1=($minV<0?$minV:0);
