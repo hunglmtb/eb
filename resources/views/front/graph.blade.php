@@ -34,7 +34,7 @@ $functionName		= "graph";
 	<tr>
 		<td id="tdObjectContainer" valign="top"
 			style="min-width:420px;overflow:hidden;box-sizing: border-box; overflow: auto; height: 113px; padding: 5px; border: 1px solid #bbbbbb; background: #eeeeee">
-			<ul id="chartObjectContainer">
+			<ul id="chartObjectContainer" class="ListStyleNone">
 			</ul>
 		</td>
 		<td rowspan="2" valign="top" align="center" width="180px">
