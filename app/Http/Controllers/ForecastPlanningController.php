@@ -64,4 +64,12 @@ class ForecastPlanningController extends EBController {
 		$int_import_setting = IntImportSetting::all('ID', 'NAME');
 		return view ( 'fp.loadplanforecast',['filters'=>$filterGroups, 'int_import_setting'=>$int_import_setting]);
 	}
+	
+	public function choke(){
+		$filterGroups = array(	'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
+																['id'=>'date_end','name'=>'To date']),
+						);
+	
+		return view ( 'fp.choke',['filters'=>$filterGroups]);
+	}
 }

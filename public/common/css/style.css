@@ -491,3 +491,6 @@ table.dataTable thead .BAL_POWER,table.dataTable thead .ADJUST_POWER {
 	cursor: pointer;
 	color: #33b5e8;
 }
+.ListStyleNone {
+    list-style-type: none;
+}

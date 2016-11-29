@@ -172,6 +172,7 @@ var actions = {
 	addingNewRowSuccess	: function(data,table,tab,isAddingNewRow){},
 	afterGotSavedData 	: function(data,table,key){},
 	dominoColumns 		: function(columnName,newValue,tab,rowData,collection,td){},
+	tableIsDragable 	: function(tab){return false;},
 	loadNeighbor		: function (){
 							if (actions.shouldLoad()) {
 								actions.doLoad(false);
@@ -275,7 +276,8 @@ var actions = {
 									filterGroup = javascriptFilterGroups[key];
 									for (var jkey in filterGroup) {
 										entry = filterGroup[jkey];
-										if($('.'+entry.id).css('display') != 'none'){
+										if(typeof(entry) !== "undefined"&&
+												$('.'+entry.id).css('display') != 'none'){
 											if ($('#'+entry.id).val()!=postData[entry.id]) {
 												$('#'+entry.id).val(postData[entry.id]).trigger('change');
 											}

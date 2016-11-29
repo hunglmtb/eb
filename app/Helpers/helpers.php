@@ -54,7 +54,7 @@ class Helper {
 							'</div>
 							<select id="'.$id.'" name="'.$name.'">';
 		if ($default) {
-			$htmlFilter .= '<option value="'.$default['ID'].'" selected >'.$default['NAME'].'</option>';
+			$htmlFilter .= '<option value="'.$default['ID'].'">'.$default['NAME'].'</option>';
 		}
 	
 		$currentId = array_key_exists('currentId', $option)?$option['currentId']:'';

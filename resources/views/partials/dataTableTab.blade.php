@@ -41,6 +41,9 @@
 		var tab = {'{{config("constants.tabTable")}}':activeTabID}
 		return tab;
 	}
+
+	actions.enableUpdateView = true;
+	
 	actions.loadSuccess =  function(data){
 		$('#buttonLoadData').attr('value', 'Refresh');
 		postData = data.postData;
@@ -50,7 +53,7 @@
 		var tbl = actions.initTableOption(tab,data,options,actions.renderFirsColumn,actions.createdFirstCellColumn);
 
 		actions.afterDataTable(tbl,tab);
-		actions.updateView(postData);
+		if(actions.enableUpdateView) actions.updateView(postData);
 
 		if($( window ).width()>$('#table_'+tab).width()){
 	 		$('#container_'+tab).css('width',$('#table_'+tab).width());
@@ -73,6 +76,11 @@
 	  			hdt.css({'left': $(this).scrollLeft()});
 	 		});
 		};
+
+		if(actions.tableIsDragable(tab)){
+			$('#table_'+tab +" tbody").sortable();
+	 		$('#table_'+tab +" tbody").disableSelection();
+		}
 
 	}
 	actions.shouldLoad = function(data){

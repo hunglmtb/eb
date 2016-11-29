@@ -492,6 +492,7 @@ menu["forecast"]=[
 		{menutext:"PREoS",desc:"",url:"../fp/preos"},
 		{menutext:"MANUAL ALLOCATE<br>PLAN",desc:"",url:"/fp/allocateplan"},
 		{menutext:"LOAD<br>PLAN/FORECAST",desc:"",url:"/fp/loadplanforecast"},
+		{menutext:"CONSTRAINT<br>DIAGRAM",desc:"",url:"/fp/choke"},
 	];
 <?php
 // if($current_username=="CP_User"){}

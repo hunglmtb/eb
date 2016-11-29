@@ -211,9 +211,12 @@ class CodeController extends EBController {
 	}
 	
     public function getWorkingTable($postData){
-    	$mdlName = $postData[config("constants.tabTable")];
-    	$mdl = "App\Models\\$mdlName";
-    	return $mdl::getTableName();
+    	if (array_key_exists(config("constants.tabTable"), $postData)) {
+	    	$mdlName = $postData[config("constants.tabTable")];
+	    	$mdl = "App\Models\\$mdlName";
+	    	return $mdl::getTableName();
+    	}
+    	return null;
     }
     
     public function getSecondaryData($postData,$dcTable,$facility_id,$occur_date,$results){
