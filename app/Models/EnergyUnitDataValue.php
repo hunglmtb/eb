@@ -25,7 +25,9 @@ class EnergyUnitDataValue extends FeatureEuModel
 							'SW', 
 							'STATUS_BY', 
 							'STATUS_DATE', 
-							'RECORD_STATUS'];
+							'RECORD_STATUS',
+							'EU_DATA_NET_MASS'
+	];
 	
 	protected static $enableCheckCondition = true;
 	

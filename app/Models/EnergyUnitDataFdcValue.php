@@ -58,6 +58,8 @@ class EnergyUnitDataFdcValue extends FeatureEuModel
 							'PUMP_RATE', 
 							'STATUS_BY', 
 							'STATUS_DATE', 
-							'RECORD_STATUS'];
+							'RECORD_STATUS',
+							'EU_DATA_NET_MASS'
+	];
 	
 }

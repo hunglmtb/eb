@@ -45,7 +45,9 @@ use App\Models\QltyData;
 							'EU_TEST_LIQ_3_VOL', 
 							'EU_TEST_LIQ_1_MASS', 
 							'EU_TEST_LIQ_2_MASS', 
-							'EU_TEST_LIQ_3_MASS'];
+							'EU_TEST_LIQ_3_MASS',
+							'EU_TEST_GAS_LIFT_MASS'
+	];
 	
 	public function  getFdcValues($attributes){
 		$fdcValues = EuTestDataStdValue::where($attributes)->first();
