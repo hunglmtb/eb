@@ -19,6 +19,8 @@ class EnergyUnitDataPlan extends FeatureEuModel
 							'EU_DATA_GRS_PWR', 
 							'RECORD_STATUS', 
 							'STATUS_BY', 
-							'STATUS_DATE'];
+							'STATUS_DATE',
+							'EU_DATA_NET_MASS'
+	];
 	
 }

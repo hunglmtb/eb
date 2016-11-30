@@ -20,7 +20,9 @@ class EnergyUnitDataAlloc extends FeatureEuModel
 							'EU_DATA_GRS_PWR',
 							'STATUS_BY',
 							'STATUS_DATE',
-							'RECORD_STATUS'];
+							'RECORD_STATUS',
+							'EU_DATA_NET_MASS'
+	];
 	
 	
 }

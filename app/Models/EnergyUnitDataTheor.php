@@ -22,7 +22,9 @@ class EnergyUnitDataTheor extends FeatureEuModel{
 							'EU_DATA_GRS_PWR',
 							'STATUS_BY',
 							'STATUS_DATE',
-							'RECORD_STATUS'];
+							'RECORD_STATUS',
+							'EU_DATA_NET_MASS'
+	];
 	
 	public static function calculateBeforeUpdateOrCreate(array &$attributes, array $values = []){
 	
