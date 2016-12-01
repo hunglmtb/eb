@@ -70,6 +70,7 @@ MANUAL ALLOCATE PLAN
 	actions.getTableOption	= function(data){
 		return {tableOption :	{searching		: false,
 								ordering		: false,
+								disableLeftFixer: true,
 // 								scrollY			: '350px',
 								},
 				invisible:[]};
@@ -203,7 +204,11 @@ MANUAL ALLOCATE PLAN
 			$("#t_grs_vol").focus();
 			return;
 		}
-		
+
+		if(t_grs_vol<0 || t_grs_mass < 0 || t_grs_energy<0 ||t_grs_power <0 ){
+			alert("Please input value >= 0");
+			return;
+		}
 // 		$("#tableData").html("");
 		var dates="";
 		d1 = $("#date_begin").datepicker( 'getDate' );
@@ -294,6 +299,29 @@ MANUAL ALLOCATE PLAN
 @section('content')
 	<div id="container_{{$key}}">
 		<table border="0" id="table_{{$key}}" class="fixedtable nowrap display" cellspacing="0">
+			<thead>
+				<tr id="_rh" style="background:#E6E6E6;" role="row">
+					<th rowspan="1" colspan="1" style="position: relative; left: 0px; background-color: rgb(230, 230, 230);"><b>Occur Date</b>	</th>
+					<th rowspan="1" colspan="1"><b>Gross Vol</b>	</th>
+					<th rowspan="1" colspan="1"><b>Gross Mass</b>	</th>
+					<th rowspan="1" colspan="1"><b>Gross Energy</b>	</th>
+					<th rowspan="1" colspan="1"><b>Gross Power</b>	</th>
+				</tr>
+				<tr style="background:#E6E6E6;height:40px" role="row">
+					<th style="position: relative; left: 0px; background-color: rgb(230, 230, 230);" rowspan="1" colspan="1"></th>
+					<th rowspan="1" colspan="1"><input type="number" id="t_grs_vol" class="_numeric" style="width:100%;background:#ffff88">	</th>
+					<th rowspan="1" colspan="1"><input type="number" id="t_grs_mass" class="_numeric" style="width:100%;background:#ffff88">	</th>
+					<th rowspan="1" colspan="1"><input type="number" id="t_grs_energy" class="_numeric" style="width:100%;background:#ffff88"></th>
+					<th rowspan="1" colspan="1"><input type="number" id="t_grs_power" class="_numeric" style="width:100%;background:#ffff88">	</th>
+				</tr>
+				<tr style="background:#E6E6E6;height:40px;display:none">
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
 		</table>
 	</div>
 	<div>
