@@ -1,6 +1,12 @@
 <?php
 if (!isset($currentSubmenu)) $currentSubmenu ='';
 $enableFilter	= isset($enableFilter)?$enableFilter:true;
+
+$currentClass = $currentSubmenu;
+if($currentClass!=''){
+	$spits = explode("/", $currentClass);
+	$currentClass = $spits[count($spits)-1];
+}
 ?>
 
 @extends('core.bstemplate',['subMenus' => array('pairs' => $subMenus, 'currentSubMenu' => $currentSubmenu)])
@@ -10,7 +16,7 @@ $enableFilter	= isset($enableFilter)?$enableFilter:true;
 	@endif
 @stop
 @section('main')
-<div class="rootMain {{$currentSubmenu}}">
+<div class="rootMain {{$currentClass}}">
 	<div id="functionName" style="padding:10px 10px 10px 0px;font-size:16pt;display:none">@yield('funtionName')</div>
 	<div id="ebfilter" style="width:100%; clear:both">@yield('ebfilter')</div>
 	<div id="mainContent" style="width:100%; clear:both">@yield('content')</div>
