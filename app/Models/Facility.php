@@ -36,4 +36,15 @@ class Facility extends UomModel
 	}
 	
 	
+	public static function getEntries($facility_id=null,$product_type = 0){
+		if ($facility_id&&$facility_id>0)$wheres = ['ID'=>$facility_id];
+		else $wheres = [];
+	
+		if ($product_type>0) {
+// 			$wheres['PHASE_ID'] = $product_type;
+		}
+		$entries = static ::where($wheres)->select('ID','NAME')->orderBy('NAME')->get();
+		return $entries;
+	}
+	
 }

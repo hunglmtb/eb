@@ -1,8 +1,8 @@
 <?php 
 namespace App\Models; 
-use App\Models\DynamicModel; 
+use App\Trail\ObjectNameLoad;
 
- class CodeInjectPoint extends DynamicModel 
-{ 
-	protected $table = 'code_inject_point'; 
+ class CodeInjectPoint extends DynamicModel {
+	use ObjectNameLoad;
+	protected $table = 'CODE_INJECT_POINT'; 
 } 

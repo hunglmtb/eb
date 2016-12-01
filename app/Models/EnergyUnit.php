@@ -27,8 +27,11 @@ class EnergyUnit extends DynamicModel
 	}
 	
 	public static function getEntries($facility_id=null,$product_type = 0){
+		if ($facility_id&&$facility_id>0) {
+			$wheres = ['FACILITY_ID'=>$facility_id];
+		}
+		else $wheres = [];
 		
-		$wheres = ['FACILITY_ID'=>$facility_id];
 		$query = static ::where($wheres)->select('ID','NAME');
 		
 		if ($product_type>0) {

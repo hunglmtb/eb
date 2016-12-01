@@ -51,7 +51,9 @@ $tables 							= ['FlowDataFdcValue'	=>['name'=>'FDC VALUE']];
 		{
 			$("#tableHeaderName").html(s);
 // 			actions.doLoad(true);
-	 		$("#frameEdit").attr('src','tabledata/edittable.php?table='+s);
+// 	 		$("#frameEdit").attr('src','tabledata/edittable.php?table='+s);
+// 	 		$("#frameEdit").attr('src','loadtabledata/edittable/'+s+"/index");
+ 	 		$("#frameEdit").attr('src','loadtabledata/edittable?table='+s);
 		}
 	}
 </script>

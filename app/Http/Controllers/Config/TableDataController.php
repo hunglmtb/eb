@@ -2,45 +2,39 @@
 namespace App\Http\Controllers\Config;
 
 use App\Http\Controllers\CodeController;
-use App\Models\PdCargoNomination;
-use App\Models\Storage;
+use App\Services\lazy_mofo;
 
 class TableDataController extends CodeController {
     
-    public function getFirstProperty($dcTable){
-		return  ['data'=>'ID','title'=>'','width'=>90];
-	}
-	
-    public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
+    public function edittable(){
+//     	public function edittable($tablename,$action){
+
+    	/* include('lazy_mofo.php');
     	
-    	$date_end 		= array_key_exists('date_end',  $postData)?$postData['date_end']:null;
-    	if ($date_end) {
-	    	$date_end 		= \Helper::parseDate($date_end);
+    	$db_host = 'localhost';
+    	$db_name = 'energy_builder_from_server';
+    	$db_user = 'root';
+    	$db_pass = '';
+    	
+    	// connect with pdo
+    	try {
+    		$dbh = new PDO("mysql:host=$db_host;dbname=$db_name;", $db_user, $db_pass);
     	}
+    	catch(PDOException $e) {
+    		die('pdo connection error: ' . $e->getMessage());
+    	} */
     	
-    	$mdlName = $postData[config("constants.tabTable")];
-    	$mdl = "App\Models\\$mdlName";
+    	$tablename 	=  \Input::get('table');
+    	$action 	=  \Input::get('action');
     	
-    	$storage = Storage::getTableName();
-    	$pdCargoNomination = PdCargoNomination::getTableName();
-    	 
-//     	\DB::enableQueryLog();
-    	$query 	= $mdl::join($storage,"$dcTable.STORAGE_ID", '=', "$storage.ID")
-    					->leftJoin($pdCargoNomination,"$pdCargoNomination.CARGO_ID", '=', "$dcTable.ID")
-    					->where(["$storage.FACILITY_ID" => $facility_id])
-				    	->select(
-				    			"$dcTable.ID as $dcTable",
-				    			"$dcTable.ID as DT_RowId",
-				    			"$pdCargoNomination.ID as IS_NOMINATED",
-				    			"$dcTable.*");
-//   		    			->orderBy('EFFECTIVE_DATE')
-//   		    			->get();
-  		if ($date_end) 		$query->whereDate("$dcTable.REQUEST_DATE",'<=',$date_end);
-  		if ($occur_date) 	$query->whereDate("$dcTable.REQUEST_DATE",'>=',$occur_date);
-  		$dataSet = $query->get();
-//  		\Log::info(\DB::getQueryLog());
-  		return ['dataSet'=>$dataSet,
-//     			'objectIds'=>$objectIds
-    	];
+    	$dbh = \DB::connection()->getPdo();
+    	// create LM object, pass in PDO connection
+    	$lm = new lazy_mofo($dbh);
+    	$lm->setModelName($tablename);
+    	
+    	return view ( 'tableData.edittable',['tablename'=>$tablename,
+							    			'action'=>$action,
+							    			'lm'	=>$lm
+    	]);
     }
 }

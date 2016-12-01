@@ -75,8 +75,9 @@ class CodeController extends EBController {
 		$results 		= [];
 		$currentUnits 	= [$type	=> $unit];
 		foreach($options['dependences'] as $model ){
-			$modelName = $model;
-			$currentId = null;
+			$modelName 	= $model;
+			$elementId	= $modelName;
+			$currentId 	= null;
 			$sourceUnit = $unit;
 			$isAdd		= true;
 			if (is_array($model)) {
@@ -87,6 +88,8 @@ class CodeController extends EBController {
 				else $sourceUnit = $originUnit;
 				$modelName  = $model["name"];
 				$isAdd = !array_key_exists("independent", $model)||!$model["independent"];
+				
+				if (array_key_exists("elementId", $model)) $elementId	= $model['elementId'];
 			}
 			
 			if ($sourceUnit!=null) {
@@ -102,7 +105,9 @@ class CodeController extends EBController {
 			}
 			$unit = ProductionGroupComposer::getCurrentSelect ( $eCollection,$currentId );
 			$currentUnits[$modelName]	= $unit;
-			$filterArray = \Helper::getFilterArray ( $modelName, $eCollection, $unit );
+			$aOption 		= ["modelName"	=> $modelName];
+			$elementId		= is_string($elementId)?$elementId:$modelName;
+			$filterArray 	= \Helper::getFilterArray ( $elementId, $eCollection, $unit,$aOption );
 			if ($isAdd) $results [] = $filterArray;
 		}
 		

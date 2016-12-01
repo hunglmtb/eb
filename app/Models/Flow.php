@@ -9,14 +9,15 @@ class Flow extends DynamicModel
 	protected $primaryKey = 'ID';
 	
 	
-	public function CodeFlowPhase()
-	{
+	public function CodeFlowPhase(){
 		return $this->belongsTo('App\Models\CodeFlowPhase', 'PHASE_ID', $this->primaryKey);
 	}
 	
 	
 	public static function getEntries($facility_id=null,$product_type = 0){
-		$wheres = ['FACILITY_ID'=>$facility_id];
+		if ($facility_id&&$facility_id>0)$wheres = ['FACILITY_ID'=>$facility_id];
+		else $wheres = [];
+		
 		if ($product_type>0) {
 			$wheres['PHASE_ID'] = $product_type;
 		}

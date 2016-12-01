@@ -406,7 +406,8 @@ Route::post('getprop', 'FieldsConfigController@getprop');
 Route::post('saveprop', 'FieldsConfigController@saveprop');
 
 Route::get('loadtabledata',['uses' =>'DataViewController@tabledata','middleware' => 'checkRight:CONFIG_TABLE_DATA']);
-Route::post('loadtabledata/load',['uses' =>'Config\TableDataController@load','middleware' => 'checkRight:CONFIG_TABLE_DATA']);
+Route::get('loadtabledata/edittable',['uses' =>'Config\TableDataController@edittable','middleware' => 'checkRight:CONFIG_TABLE_DATA']);
+Route::post('loadtabledata/edittable',['uses' =>'Config\TableDataController@edittable','middleware' => 'checkRight:CONFIG_TABLE_DATA']);
 Route::get('pdtabledata',['uses' =>'DataViewController@pdtabledata','middleware' => 'checkRight:CONFIG_TABLE_DATA']);
 
 Route::get('formula',['uses' =>'FormulaController@_index','middleware' => 'checkRight:CONFIG_FORMULA']);
