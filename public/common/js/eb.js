@@ -75,7 +75,8 @@ var registerOnChange = function(sourceObject, dependentIds,more) {
 		model 		= sourceObject.model;
 		prefix 		= sourceObject.valueId;
 		dependeceNameFn = function(dvalue){
-			return dvalue+"-"+prefix;
+			if(prefix!="") return dvalue+"-"+prefix;
+			return dvalue;
 		};
 		
 		initDependentSelectsFn = function(tmpDependentIds){

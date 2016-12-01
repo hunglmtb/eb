@@ -6,7 +6,7 @@ use App\Models\DynamicModel;
 { 
 	protected $table = 'keystore_injection_point'; 
 	
-	public static function getForeignColumn($row,$originCommand,$columnName,$idValue){
+	public static function getForeignColumn($row,$originCommand,$columnName){
 		$command = $originCommand;
 		if ($columnName=="OBJECT_ID") {
 			/* $s_where	= array_key_exists('where', $oColumns)?$oColumns['where']:"";
@@ -14,7 +14,8 @@ use App\Models\DynamicModel;
 			$s_where	= "";
 			$s_order	= "";
 			$namefield	= "NAME";
-			$inject		= CodeInjectPoint::find($row["OBJECT_TYPE"]);
+			$id			= $row&&array_key_exists('OBJECT_TYPE', $row)?$row["OBJECT_TYPE"]:1;
+			$inject		= CodeInjectPoint::find($id);
 			if($inject&&$inject->CODE) {
 				$ref_table	= $inject->CODE;
 				$command 	= "select ID, $namefield from `$ref_table` $s_where $s_order ; --select";

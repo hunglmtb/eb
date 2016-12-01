@@ -22,6 +22,9 @@ $enableFooter	= false;
 .documentBody{
  	overflow-x:scroll;
  }
+ .lm_form_button_bar input{
+     color: #333333;
+ }
 </style>
 @stop
 

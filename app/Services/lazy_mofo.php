@@ -856,10 +856,21 @@ if($identity_id<=0)
             // render the html control according to the type of data
             $control = "";    
 
+            
             if($column_name == $this->identity_name)
                 $control = $this->clean_out($value);
-            elseif(array_key_exists($column_name, $this->form_input_control))
-                $control = $this->get_input_control($column_name, $value, $this->form_input_control[$column_name], 'form');
+            elseif(array_key_exists($column_name, $this->form_input_control)){
+            	$input_control 	= $this->grid_input_control;
+            	$mdl 			= $this->modelTable;
+            	$command 		= $input_control[$column_name];
+            	if ($mdl&&method_exists($mdl,"getForeignColumn")){
+            		$command	= $mdl::getForeignColumn($row,$command,$column_name);
+            	}
+                $control 		= $this->get_input_control($column_name, $value,$command, 'form');
+                $mdl 			= $this->modelTable;
+                $control 		.= $this->addRegisterDependences($mdl,$column_name);
+                
+            }
             else
                 $control = $this->get_input_control($column_name, $value, '--text', 'form');
         
@@ -1269,35 +1280,15 @@ if($identity_id<=0)
                     $mdl 			= $this->modelTable;
                     $command 		= $input_control[$column_name];
                     if ($mdl&&method_exists($mdl,"getForeignColumn")){
-                    	$command	= $mdl::getForeignColumn($row,$command,$column_name,$idValue);
+                    	$command	= $mdl::getForeignColumn($row,$command,$column_name);
                     }
                     if(mb_strlen($error) > 0 && $_posted == 1) // repopulate from previous post when validation error is displayed
                         $value = $_POST[$column_name . '-' . $row[$this->identity_name]];
                     $html .= "    <td align='center'>" . $this->get_input_control($column_name . '-' . $row[$this->identity_name], $value,  $command, 'grid') . "</td>\n";
-                    if($j==1){
-	                    $cmd = trim(mb_substr($command, mb_strrpos($command, '--') + 2));
-	                    if(startsWith($cmd,'select')|| $cmd == 'selectmultiple'){
-	                    	 $html .= "<script>disableSearchingTargets.push($index+1);</script>";
-	                    	 if ($mdl&&method_exists($mdl,"getDependences")){
-	                    	 	$foreignColumns			= null;
-	                    	 	$option 				= $mdl::getDependences($column_name,$idValue);
-	                    	 	if (is_array($option)) {
-	                    	 		$sourceModel 		= $option["sourceModel"];
-	                    	 		$targets 			= $option["targets"];
-	                    	 		$sourceObject		= [	"id"		=> $column_name."-".$idValue,
-	                    	 				"model"		=> $sourceModel,
-	                    	 				"valueId"	=> $idValue,
-	                    	 				"targets"	=> $targets
-	                    	 		];
-	                    	 		$column_name_id 	= json_encode($sourceObject);
-	                    	 		$originDependences 	= $option["dependences"];
-	                    	 		$extra 				= array_key_exists('extra', $option)&&count($option['extra'])>0?$option['extra']:null;
-	                    	 		$extra 				= is_array($extra)&&count($extra)>0?",['".implode("','", $extra)."']":'';
-	                    	 		$foreignColumns		= "<script>registerOnChange($column_name_id,".json_encode($originDependences)."$extra)</script>";
-		                    	 	$html 				.= $foreignColumns;
-	                    	 	}
-	                    	 }
-	                    }
+                    $cmd = trim(mb_substr($command, mb_strrpos($command, '--') + 2));
+                    if(startsWith($cmd,'select')|| $cmd == 'selectmultiple'){
+                    	if($j==1) $html .= "<script>disableSearchingTargets.push($index+1);</script>";
+	                    $html .= $this->addRegisterDependences($mdl,$column_name,$idValue);
                     }
                 }
 
@@ -1331,8 +1322,30 @@ if($identity_id<=0)
         return $html;
 
     }
+    function addRegisterDependences($mdl,$column_name,$idValue=null){
 
-
+    	$foreignColumns = "";
+    	if ($mdl&&method_exists($mdl,"getDependences")){
+    		$foreignColumns			= null;
+    		$option 				= $mdl::getDependences($column_name,$idValue);
+    		if (is_array($option)) {
+    			$sourceModel 		= $option["sourceModel"];
+    			$targets 			= $option["targets"];
+    			$sourceObject		= [	"id"		=> $idValue?$column_name."-".$idValue:$column_name,
+    					"model"		=> $sourceModel,
+    					"valueId"	=> $idValue?$idValue:"",
+    					"targets"	=> $targets
+    			];
+    			$column_name_id 	= json_encode($sourceObject);
+    			$originDependences 	= $option["dependences"];
+    			$extra 				= array_key_exists('extra', $option)&&count($option['extra'])>0?$option['extra']:null;
+    			$extra 				= is_array($extra)&&count($extra)>0?",['".implode("','", $extra)."']":'';
+    			$foreignColumns		= "<script>registerOnChange($column_name_id,".json_encode($originDependences)."$extra)</script>";
+    		}
+    	}
+    	return $foreignColumns;
+    }
+    
     function grid_inject_where($sql, &$sql_param, $_search, $columns){
 
         // purpose: alter sql statement by adding 'where' clause.
