@@ -11,7 +11,7 @@ class Helper {
 			$option = array();
 		}
 		$option['id'] 			= $id;
-		$option['modelName'] 	= $id;
+		$option['modelName'] 	= array_key_exists('modelName', $option)?$option['modelName']:$id;
 		$option['collection'] 	= $collection;
 		$option['currentId'] 	= $currentUnit&&isset($currentUnit->ID)?$currentUnit->ID:'';
 		$option['current'] 		= $currentUnit;

@@ -39,10 +39,54 @@ var enableSelect = function(dependentIds, value) {
 	}
 };
 
-var registerOnChange = function(id, dependentIds,more) {
-	var partials 	= id.split("_");
-	var prefix 		= partials.length>1?partials[0]+"_":"";
-	var model 		= partials.length>1?partials[1]:id;
+var registerOnChange = function(sourceObject, dependentIds,more) {
+	var model = null;
+	var id = sourceObject;
+	var dependeceNameFn = function(){};
+	var initDependentSelectsFn = function(){};
+
+	if(typeof sourceObject =="string"){
+		var partials 	= sourceObject.split("_");
+		var prefix 		= partials.length>1?partials[0]+"_":"";
+		model 		= partials.length>1?partials[1]:id;
+		dependeceNameFn = function(dvalue){
+			return prefix+dvalue;
+		};
+		initDependentSelectsFn = function(tmpDependentIds){
+			var dependentSelects = [];
+			$.each(tmpDependentIds, function( dindex, dvalue ) {
+				if (typeof dvalue === 'string' || dvalue instanceof String){
+					var dependeceName = dependeceNameFn(dvalue);
+					dependentSelects.push(dependeceName);
+				}
+				else if(typeof(dvalue["name"]) !== "undefined"
+					&&(typeof(dvalue["independent"]) === "undefined")
+						||!dvalue["independent"]){
+					var dependeceName = dependeceNameFn(dvalue["name"]);
+					dependentSelects.push(dependeceName);
+				}
+			});
+			
+			return dependentSelects;
+		};
+	}
+	else{
+		id 			= sourceObject.id;
+		model 		= sourceObject.model;
+		prefix 		= sourceObject.valueId;
+		dependeceNameFn = function(dvalue){
+			return dvalue+"-"+prefix;
+		};
+		
+		initDependentSelectsFn = function(tmpDependentIds){
+			var dependentSelects = [];
+			$.each(sourceObject.targets, function( dindex, dvalue ) {
+				var dependeceName = dependeceNameFn(dvalue);
+				dependentSelects.push(dependeceName);
+			});
+			return dependentSelects;
+		};
+	}
 	$('#'+id).change(function(e){
 		var tmpDependentIds = $.merge([], dependentIds);
 		if (typeof(filters.preOnchange) == "function") {
@@ -50,19 +94,11 @@ var registerOnChange = function(id, dependentIds,more) {
 		}
 		
 		var ccontinue = false;
-		var dependentSelects = [];
 		var currentValue = $(this).val();
 		if(typeof filters.moreDependence == 'function') 
 			tmpDependentIds = filters.moreDependence(tmpDependentIds,model,currentValue,prefix);
 		
-		$.each(tmpDependentIds, function( dindex, dvalue ) {
-			if (typeof dvalue === 'string' || dvalue instanceof String) dependentSelects.push(prefix+dvalue);
-			else if(typeof(dvalue["name"]) !== "undefined"
-				&&(typeof(dvalue["independent"]) === "undefined")
-					||!dvalue["independent"])
-				dependentSelects.push(prefix+dvalue["name"]);
-		});
-		
+		var dependentSelects = initDependentSelectsFn(tmpDependentIds);
 		
 		$.each(dependentSelects, function( dindex, dvalue ) {
 			ccontinue = ccontinue|| $("#"+dvalue).is(":visible");
@@ -74,8 +110,9 @@ var registerOnChange = function(id, dependentIds,more) {
 		if (more!=null&&more.length>0) {
 			$.each(more, function( i, value ) {
 				bundle[value] = {};
-				var name = $("#"+prefix+value).find(":selected").attr( "name");
-				var val = $("#"+prefix+value).val();
+				var elementId = dependeceNameFn(value);
+				var name = $("#"+elementId).find(":selected").attr( "name");
+				var val = $("#"+elementId).val();
 				name = typeof(name) !== "undefined"?name:val;
 				bundle[value]['name'] 	= name;
 				bundle[value]['id'] 	= val;
@@ -94,14 +131,15 @@ var registerOnChange = function(id, dependentIds,more) {
 					$('#'+dvalue).html('');   // clear the existing options
 				});
 				for (var i = 0; i < results.length; i++) {
+					var elementId = dependeceNameFn(results[i].id);
 					$(results[i].collection).each(function(){
 						var option = $('<option />');
 						var name = typeof(this.CODE) !== "undefined"?this.CODE:this.NAME;
 						option.attr('name', name);
 						option.attr('value', this.ID).text(this.NAME);
-						$('#'+prefix+results[i].id).append(option);
+						$('#'+elementId).append(option);
 					});
-					$('#'+prefix+results[i].id).val(results[i].currentId);
+					$('#'+elementId).val(results[i].currentId);
 				}
 				
 				enableSelect(dependentSelects,false);

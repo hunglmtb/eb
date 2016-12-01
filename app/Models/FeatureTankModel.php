@@ -90,7 +90,8 @@ class FeatureTankModel extends EbBussinessModel
 	
 	
 	public static function getEntries($facility_id=null,$product_type = 0){
-		$wheres = ['FACILITY_ID'=>$facility_id];
+		if ($facility_id&&$facility_id>0)$wheres = ['FACILITY_ID'=>$facility_id];
+		else $wheres = [];
 		if ($product_type>0) {
 			$wheres['PRODUCT'] = $product_type;
 		}

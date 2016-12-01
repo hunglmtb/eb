@@ -3,6 +3,9 @@ $configuration	= isset($configuration)?$configuration:auth()->user()->getConfigu
 $request 		= request();
 $parameters 	= $request->route()->parameters();
 $rightCode		= isset($parameters['rightCode'])?$parameters['rightCode']:"";
+$enableHeader	= isset($enableHeader)?$enableHeader:true;
+$enableFooter	= isset($enableFooter)?$enableFooter:true;
+
 ?>
 
 <!DOCTYPE html>
@@ -22,7 +25,6 @@ $rightCode		= isset($parameters['rightCode'])?$parameters['rightCode']:"";
 <meta name="_token" content="{{ app('Illuminate\Encryption\Encrypter')->encrypt(csrf_token()) }}" />
 <link rel="stylesheet" href="/css/css3menu0/style.css?4" />
 <link rel="stylesheet" href="/common/css/jquery-ui.css" />
-<link rel="stylesheet" href="/common/css/jquery.dataTables.css"/>
 <script src="/common/js/jquery-2.1.3.js"></script>
 <script type="text/javascript" src="/common/js/jquery.dataTables.js"></script> 
 <script type="text/javascript" src="/common/js/dataTables.fixedColumns.min.js"></script>
@@ -37,18 +39,32 @@ var jsFormat = configuration['picker']['DATE_FORMAT_JQUERY'];//'mm/dd/yy';
 @yield('script')
 <link rel="stylesheet" href="/common/css/style.css" />
 </head>
+@section('extensionCss')
+<style>
+.documentBody{
+ 	overflow-x:hidden
+ }
+</style>
+@stop
 
-<body style="margin:0; overflow-x:hidden">
+@yield('extensionCss')
+
+<body class="documentBody" style="margin:0;">
 	@yield('floatWindow')
-	<header role="banner">
-		@include('partials.header')
-		@yield('header')
-	</header>
+	@if($enableHeader)
+		<header role="banner">
+			@include('partials.header')
+			@yield('header')
+		</header>
+	@endif
+	
 	<main role="main" class="contentContainer"> 
 		@yield('main') 
 	 </main>
 
-	@include('partials.footer')
+	@if($enableFooter)
+		@include('partials.footer')
+	@endif
 	@yield('modalWindow')
 </body>
 </html>

@@ -19,11 +19,15 @@
 		</div>
 		@yield('secondaryContent')
 	</div>
-	@section('script') @parent
+	@section('script') 
+	@parent
 		<script>
 				$(document).ready(function () {
 					$("#tabs").tabs({
-						active:{{$active}},
+						active	:{{$active}},
+						create	: function(event,ui){
+						        actions.loadNeighbor(event, ui);
+					    },
 						activate: function(event, ui) {
 					        actions.loadNeighbor(event, ui);
 					    }

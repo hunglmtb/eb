@@ -1,22 +1,31 @@
-<html>
-<head>
-	<meta charset='UTF-8' />
-	<link rel='stylesheet' type='text/css' href='style.css'  />
-	<!-- <script  src="../common/lm/jquery.js"></script> -->
-	<script src="/common/js/jquery-2.1.3.js"></script>
-    
-	<!-- <script  src="../common/lm/colResizable-1.3.min.js"></script> -->
-	<script  src="/common/js/colResizable-1.6.js"></script> 
-    <script  src="../common/utils.js"></script>
-<!--     <script type="text/javascript" src="../common/js/jquery.dataTables.js"></script>  -->
-	<script type="text/javascript" src="../common/js/jquery.dataTables.lazy_mofo.js"></script>
-<!--  	<script src="/common/js/bootstrap.js"></script> -->
-<!-- 	<script src="/common/js/bootstrap-editable.js"></script> -->
+<?php
+if (!isset($currentSubmenu)) $currentSubmenu ='';
+$enableFilter	= false;
+$enableHeader	= false;
+$enableFooter	= false;
+?>
+@extends('core.bstemplate',['subMenus' => array('pairs' => $subMenus, 'currentSubMenu' => $currentSubmenu)])
 
+@section('script')
+	<link rel="stylesheet" href="/common/css/jquery-ui.css" />
+	<link rel='stylesheet' href='/common/css/tableDataStyle.css'  />
+ 	<script src="/common/js/colResizable-1.6.js"></script> 
+	<script type="text/javascript" src="/common/js/jquery.dataTables.lazy_mofo.js"></script>
+	<script type="text/javascript" src="/common/js/jquery-ui-timepicker-addon.js"></script>
+	<script type="text/javascript" src="/common/js/jquery-ui-sliderAccess.js"></script>
 	<script>var disableSearchingTargets = [];</script>
-<!-- 	<script type="text/javascript" src="/common/js/dataTables.fixedColumns.min.js"></script> -->
-</head>
-<body>
+	<script src="/common/js/eb.js"></script>
+@stop
+
+@section('extensionCss')
+<style>
+.documentBody{
+ 	overflow-x:scroll;
+ }
+</style>
+@stop
+
+@section('main')
 <div id='box_sql' style='display:none;'>
 Insert:
 <textarea id='sql_insert' style='width:700px;height:100px;margin-bottom:10px'>
@@ -32,14 +41,14 @@ Update:
 </div>
 <?php
 error_reporting(E_ERROR);
-$tablename=$_REQUEST['table'];
-$action=$_REQUEST['action'];
+// $tablename=$_REQUEST['table'];
+// $action=$_REQUEST['action'];
 $global_table_name=$tablename;
 //echo $tablename;
 // enter your database host, name, username, and password
 
-header('Content-Type: text/html; charset=utf-8');
-
+// header('Content-Type: text/html; charset=utf-8');
+/* 
 include('lazy_mofo.php');
 
 $db_host = 'localhost';
@@ -57,10 +66,10 @@ catch(PDOException $e) {
 
 // create LM object, pass in PDO connection
 $lm = new lazy_mofo($dbh); 
-
+ */
 
 // table name for updates, inserts and deletes
-$lm->table = $tablename;
+// $lm->table = $tablename;
 
 // identity / primary key for table
 if(strtolower(substr($lm->table,0,5))=="code_")
@@ -208,12 +217,12 @@ $lm->run();
 //if($action=='edit' || $action=='insert')
 {
 ?>
-<link rel="stylesheet" href="../common/css/jquery-ui.css" />
-	<script src="../common/js/jquery-ui.js"></script>
+<!-- <link rel="stylesheet" href="../common/css/jquery-ui.css" /> -->
+<!-- 	<script src="../common/js/jquery-ui.js"></script> -->
 
-		<script type="text/javascript" src="js/jquery-ui-timepicker-addon.js"></script>
-		<script type="text/javascript" src="js/jquery-ui-sliderAccess.js"></script>
- <script src="../common/utils.js"></script>
+<!-- 		<script type="text/javascript" src="js/jquery-ui-timepicker-addon.js"></script> -->
+<!-- 		<script type="text/javascript" src="js/jquery-ui-sliderAccess.js"></script> -->
+<!--  <script src="../common/utils.js"></script> -->
 <script>
 
 function genSQL(type)
@@ -386,5 +395,4 @@ EOT;
 <?php
 }
 ?>
-</body>
-</html>
+@stop

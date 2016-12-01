@@ -15,6 +15,6 @@ class Tank extends FeatureTankModel
 	public function Facility()
 	{
 		return $this->belongsTo('App\Models\Facility', 'FACILITY_ID', 'ID');
-	}	
+	}
 	
 }
