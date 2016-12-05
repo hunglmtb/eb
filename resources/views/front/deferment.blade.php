@@ -126,7 +126,7 @@ DEFERMENT DATA CAPTURE
 	editBox.saveUrl 		= '/deferment/detail/save';
 	editBox.woLoadUrl 		= "/deferment/wo/load";
 	editBox.woSaveUrl 		= '/deferment/wo/save';
-	editBox.enableRefresh = false;
+	editBox.enableRefresh 	= false;
 
 	editBox.getSaveDetailUrl = function (url,editId,viewId){
 		if(url==editBox.woLoadUrl) 	return editBox.woSaveUrl;
@@ -142,6 +142,7 @@ DEFERMENT DATA CAPTURE
 		if(saveUrl==editBox.saveUrl) {
 			data.postData.tabTable = "DefermentDetail";
 			actions.loadSuccess(data);
+			editBox.enableRefresh = true;
 		}
 		else if(saveUrl==editBox.woSaveUrl) actions.saveSuccess(data);
 		close = false;

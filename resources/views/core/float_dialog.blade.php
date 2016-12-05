@@ -45,6 +45,10 @@
 										$.each(editBox.fields, function( index, value ) {
 											delete actions.editedData[value];
 									    });
+										if(editBox.enableRefresh) {
+											actions.doLoad(true);
+											editBox.enableRefresh = false;
+										} 
 								   	 },
 						    open	: function( event, ui ) {
 						    			$(".savebtn").remove();
