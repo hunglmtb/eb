@@ -1,8 +1,7 @@
 <?php 
 namespace App\Models; 
-use App\Models\DynamicModel; 
-
- class DefermentDetail extends DynamicModel 
+ 
+ class DefermentDetail extends EbBussinessModel 
 { 
 	protected $table = 'DEFERMENT_DETAIL'; 
 	protected $primaryKey = 'ID';

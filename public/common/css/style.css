@@ -390,6 +390,11 @@ table.dataTable thead .sorting_desc {
     text-align: right;
 }
 
+#floatBox table.dataTable thead .sorting,
+#floatBox table.dataTable thead .sorting_asc,
+#floatBox table.dataTable thead .sorting_desc {
+    text-align: left;
+}
 .toolbarAction button{
 	margin-left: 5px;
 }
@@ -497,4 +502,7 @@ table.dataTable thead .BAL_POWER,table.dataTable thead .ADJUST_POWER {
 
 .allocateplan .dataTables_scrollHeadInner {
 	background-color: #E6E6E6;
+}
+.ui-dialog-titlebar{
+	min-height: 25px;
 }

@@ -16,12 +16,16 @@
 			if(close) $('#floatBox').dialog('close');
 		};
 		
-		editBox.initExtraPostData = function (id,rowData){
+		editBox.initExtraPostData = function (id,rowData,url){
 		 		return 	{id:id};
 		 	}
 
-		editBox['getSaveButton'] = function (){
-			return $("<a id='savebtn' href='#' style='right: 60px;display:none;position: absolute;'>Save</a>")
+		editBox.getSaveDetailUrl = function (url,editId,viewId){
+	 		return 	editBox.saveUrl;
+	 	}
+	 	
+		editBox['getSaveButton'] = function (id){
+			return $("<a id ='"+id+"' class='savebtn' href='#' style='right: 60px;display:block;position: absolute;'>Save</a>")
 			.button({/* icons:{primary: "ui-icon-plus"}, */text: true});
 	 	};
 		editBox.showDialog = function (option,success,error){
@@ -43,12 +47,15 @@
 									    });
 								   	 },
 						    open	: function( event, ui ) {
-								    	if (typeof(editBox.saveDetail) == "function"&&typeof(editBox.saveUrl) != "undefined") {
-									        	var saveBtn = editBox.getSaveButton();
-												saveBtn.insertBefore('.ui-dialog-titlebar-close').click(function(e){
+						    			$(".savebtn").remove();
+										var saveUrl = editBox.getSaveDetailUrl(url,editId,viewId);
+								    	if (typeof(editBox.saveDetail) == "function" && typeof saveUrl == "string") {
+									        	var saveBtn = editBox.getSaveButton(viewId+"_"+editId);
+									        	saveBtn.click(function(e){
 													   e.preventDefault();
-													   editBox.saveDetail(editId,editBox['saveFloatDialogSucess']);
+													   editBox.saveDetail(editId,editBox['saveFloatDialogSucess'],saveUrl);
 												});
+												saveBtn.insertBefore('.ui-dialog-titlebar-close');
 										}
 									},
 							create	: function() {
@@ -95,19 +102,21 @@
 				}
 			}
 				
-		editBox.editRow = function (id,rowData){
+		editBox.editRow = function (id,rowData,url,viewId){
+			var editUrl = typeof url 	== "string"? url	: editBox.loadUrl;
+			var vId 	= typeof viewId == "string"? viewId	:'editBoxContentview';
 			if (typeof(editBox.preEditHandleAction) == "function") {
 				editBox.preEditHandleAction(id,rowData);
 			}
 			
 	 		success = function(data){
-				editBox.editGroupSuccess(data,id);
+				editBox.editGroupSuccess(data,id,editUrl);
 			}
 	    	option = {
 				    	title 		: rowData.CODE,
-				 		postData 	: editBox.initExtraPostData(id,rowData),
-				 		url 		: editBox.loadUrl,
-				 		viewId 		: 'editBoxContentview',
+				 		postData 	: editBox.initExtraPostData(id,rowData,editUrl),
+				 		url 		: editUrl,
+				 		viewId 		: vId,
 	    	    	};
 	 		
 			editBox.showDialog(option,success);

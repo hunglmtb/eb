@@ -984,6 +984,9 @@ var actions = {
 	createdFirstCellColumn : function (td, cellData, rowData, row, col) {
 		$(td).css('z-index','1');
 	},
+	getRenderFirsColumnFn : function (tab) {
+		return actions.renderFirsColumn;
+	},
 	getGrepValue : function (data,value,row) {
 						return data;
 	},
@@ -998,6 +1001,9 @@ var actions = {
 	},
 	getExtendWidth: function(data,autoWidth,tab){
 		return 0;
+	},
+	enableUpdateView : function(tab,postData){
+		return true;
 	},
 	getTableWidth: function(data,autoWidth,tab){
 		var  marginLeft = 0;
@@ -1031,7 +1037,7 @@ var actions = {
 		tHeight = ""+hhh+'px';
 		return tHeight;
 	},
-	getTableOption: function(data){
+	getTableOption: function(data,tab){
 		return {tableOption :{searching: true},
 				invisible:[]};
 		
@@ -1135,7 +1141,8 @@ var actions = {
 		
 		var tblWdth = actions.getTableWidth(data,autoWidth,tab);
 		if(!autoWidth) $('#table_'+tab).css('width',(tblWdth)+'px');
-		
+//		if(!autoWidth && tblWdth>0) $('#table_'+tab).css('width',(tblWdth)+'px');
+
 		tHeight = actions.getTableHeight(tab);
 		option = {data: data.dataSet,
 		          columns: data.properties,

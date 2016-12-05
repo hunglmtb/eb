@@ -117,9 +117,12 @@ Route::get('dc/deferment',['uses' =>'ProductManagementController@deferment','mid
 Route::post('deferment/load',['uses' =>	'DefermentController@load','middleware' => 'saveWorkspace']);
 Route::post('deferment/save', 			'DefermentController@save');
 Route::post('deferment/loadsrc', 		'DefermentController@loadsrc');
-Route::post('deferment/edit', 			'DefermentController@edit');
-Route::post('deferment/edit/saving', 	'DefermentController@editSaving');
+Route::post('deferment/detail/load', 	'DefermentController@load');
+Route::post('deferment/detail/save', 	'DefermentController@editSaving');
+Route::post('deferment/wo/load', 		'DefermentController@load');
+Route::post('deferment/wo/save', 		'DefermentController@save');
 Route::post('deferment/history', 		'DefermentController@history');
+
 
 Route::get('dc/ticket',			['uses' =>'ProductManagementController@ticket','middleware' => 'checkRight:FDC_TICKET']);
 Route::post('ticket/load',		['uses' =>	'TicketController@load','middleware' => 'saveWorkspace']);

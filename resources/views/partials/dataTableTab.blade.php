@@ -46,18 +46,17 @@
 		return tab;
 	}
 
-	actions.enableUpdateView = true;
-	
 	actions.loadSuccess =  function(data){
 		$('#buttonLoadData').attr('value', 'Refresh');
 		postData = data.postData;
 		var tab = postData['{{config("constants.tabTable")}}'];
 		actions.loadedData[tab] = postData;
-		options = actions.getTableOption(data);
-		var tbl = actions.initTableOption(tab,data,options,actions.renderFirsColumn,actions.createdFirstCellColumn);
+		options = actions.getTableOption(data,tab);
+		var render1stCoumnFn = actions.getRenderFirsColumnFn(tab);
+		var tbl = actions.initTableOption(tab,data,options,render1stCoumnFn,actions.createdFirstCellColumn);
 
 		actions.afterDataTable(tbl,tab);
-		if(actions.enableUpdateView) actions.updateView(postData);
+		if(actions.enableUpdateView(tab,postData)) actions.updateView(postData);
 
 		if($( window ).width()>$('#table_'+tab).width()){
 	 		$('#container_'+tab).css('width',$('#table_'+tab).width());
