@@ -271,7 +271,7 @@
 	}
 
 	oInitSavingDetailData = editBox['initSavingDetailData'];
-	editBox['initSavingDetailData'] = function(editId,success) {
+	editBox['initSavingDetailData'] = function(editId,saveUrl) {
 		var pdDocumentSetData 		= actions.editedData["PdDocumentSetData"];
 		if(typeof(pdDocumentSetData) !== "undefined"){
 			var tab;
@@ -308,7 +308,7 @@
 	   		});
 //   	  		delete actions.editedData["PdDocumentSetData"];
 		}
-		return oInitSavingDetailData(editId,success);;
+		return oInitSavingDetailData(editId,saveUrl);
 	};
 
 	getPdDocumentSetContractData = function(index,DT_RowId){
@@ -320,7 +320,7 @@
 		return entry[index];
 	}
 
-	editBox['saveFloatDialogSucess'] = function(data,id){
+	editBox['saveFloatDialogSucess'] = function(data,saveUrl){
 // 		if(typeof(actions.editedData["PdDocumentSetContactData"]) !== "undefined" ){
 		showWaiting();
 	  	delete actions.editedData["PdDocumentSetData"];

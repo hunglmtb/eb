@@ -114,7 +114,7 @@
 
 	}
 
-	editBox['saveFloatDialogSucess'] = function(data,id){
+	editBox['saveFloatDialogSucess'] = function(data,saveUrl){
 		actions.saveSuccess(data);
 		otable = $('#table_{{$detailTableTab}}').DataTable();
 		$.each(otable.data(), function( i, rowData ) {

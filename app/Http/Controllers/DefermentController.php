@@ -7,6 +7,8 @@ use App\Models\DefermentDetail;
 use App\Models\DefermentGroup;
 use App\Models\DefermentGroupEu;
 use App\Models\EnergyUnit;
+use App\Models\WorkOrder;
+
 use Illuminate\Http\Request;
 
 class DefermentController extends CodeController {
@@ -25,39 +27,53 @@ class DefermentController extends CodeController {
 	}
 	
 	public function getFirstProperty($dcTable){
-		return  ['data'=>$dcTable,'title'=>'','width'=>50];
+		if ($dcTable=="DEFERMENT") 	return  	['data'=>$dcTable,'title'=>'','width'=>120];
+		if ($dcTable=="WORK_ORDER") return  	['data'=>$dcTable,'title'=>'','width'=>50];
+		return null;
 	}
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	
     	$mdlName = $postData[config("constants.tabTable")];
     	$mdl = "App\Models\\$mdlName";
-    	$date_end = $postData['date_end'];
-    	$date_end = \Helper::parseDate($date_end);
-    	
-    	$dataSet = null;
-    	$codeDeferGroupType = CodeDeferGroupType::getTableName();
-	    
-	    $where = ['FACILITY_ID' => $facility_id];
-    	$dataSet = $mdl::leftJoin($codeDeferGroupType,"$dcTable.DEFER_GROUP_TYPE",'=',"$codeDeferGroupType.ID")
-							    	->where($where)
-							    	->whereDate("$dcTable.BEGIN_TIME", '>=', $occur_date)
-							    	->whereDate("$dcTable.END_TIME", '<=', $date_end)
-							    	->select(
- 							    			"$dcTable.ID as $dcTable",
-							    			"$codeDeferGroupType.CODE as DEFER_GROUP_CODE",
-							    			"$dcTable.ID as DT_RowId",
-							    			"$dcTable.ID",
-							    			"$dcTable.*"
-							    			)
-// 					    			->orderBy($dcTable)
- 									->get();
-	    
-    	$bunde = ['FACILITY_ID' => $facility_id];
-    	$extraDataSet 	= $this->getExtraDataSet($dataSet, $bunde);
+    	$dataSet		= [];
+    	$extraDataSet	= [];
+    	if ($mdlName=="Deferment") {
+	    	$date_end = $postData['date_end'];
+	    	$date_end = \Helper::parseDate($date_end);
+	    	
+	    	$dataSet = null;
+	    	$codeDeferGroupType = CodeDeferGroupType::getTableName();
+		    
+		    $where = ['FACILITY_ID' => $facility_id];
+	    	$dataSet = $mdl::leftJoin($codeDeferGroupType,"$dcTable.DEFER_GROUP_TYPE",'=',"$codeDeferGroupType.ID")
+								    	->where($where)
+								    	->whereDate("$dcTable.BEGIN_TIME", '>=', $occur_date)
+								    	->whereDate("$dcTable.END_TIME", '<=', $date_end)
+								    	->select(
+	 							    			"$dcTable.ID as $dcTable",
+								    			"$codeDeferGroupType.CODE as DEFER_GROUP_CODE",
+								    			"$dcTable.ID as DT_RowId",
+								    			"$dcTable.ID as DEFERMENT_ID",
+								    			"$dcTable.*"
+								    			)
+	// 					    			->orderBy($dcTable)
+	 									->get();
+		    
+	    	$bunde = ['FACILITY_ID' => $facility_id];
+	    	$extraDataSet 	= $this->getExtraDataSet($dataSet, $bunde);
+    	}
+    	else if ($mdlName=="DefermentDetail"){
+    		$id				= $postData["id"];
+    		$dataSet 		= $this->getDefermentDetails($id);
+    	}
+    	else if ($mdlName=="WorkOrder"){
+    		$id				= $postData["id"];
+    		$dataSet 		= $this->getWorkOrder($id);
+    	}
     	 
-    	return ['dataSet'=>$dataSet,
-     			'extraDataSet'=>$extraDataSet
+    	return ['dataSet'		=>$dataSet,
+     			'extraDataSet'	=>$extraDataSet
     	];
     }
     
@@ -144,33 +160,39 @@ class DefermentController extends CodeController {
     							'postData'=>$postData]);
     }
     
-    public function edit(Request $request){
-    	$postData = $request->all();
-    	$id = $postData['id'];
-    	$defermentDetail =DefermentDetail::getTableName();
-    	$properties = $this->getOriginProperties($defermentDetail);
-    	
-    	$dataSet = $this->getDefermentDetails($id);
-	    $results = [];
-    	$results['deferment'] = ['properties'	=>$properties,
-	    							'dataSet'		=>$dataSet];
-	    
-    	return response()->json($results);
+    public function loadDetailData($id){
+    	$defermentDetail 		= DefermentDetail::getTableName();
+    	$properties 			= $this->getOriginProperties($defermentDetail);
+    	$dataSet 				= $this->getDefermentDetails($id);
+    	return ['properties'	=>$properties,
+				 'dataSet'		=>$dataSet];
+    }
+    
+    public function getWorkOrder($id){
+    	$workOrder 			= WorkOrder::getTableName();
+    	$dataSet 			= WorkOrder::where("DEFERMENT_ID",$id)
+								    	->select(
+	 							    			"ID as $workOrder",
+								    			"ID as DT_RowId",
+								    			"$workOrder.*"
+								    			)
+								    	->get();
+    	return $dataSet;
     }
     
     public function getDefermentDetails($id){
-    	$defermentDetail =DefermentDetail::getTableName();
-    	//     	$defermentGroupEu =DefermentGroupEu::getTableName();
-    	$energyUnit =EnergyUnit::getTableName();
-    	$deferment =Deferment::getTableName();
-    	$dataSet = Deferment::join($energyUnit, "$deferment.DEFER_TARGET", '=', "$energyUnit.ID")
+    	$defermentDetail 	= DefermentDetail::getTableName();
+    	$defermentGroupEu 	= DefermentGroupEu::getTableName();
+    	$energyUnit 		= EnergyUnit::getTableName();
+    	$deferment 			= Deferment::getTableName();
+    	
+    	$dataSet 			= Deferment::join($defermentGroupEu, "$deferment.DEFER_TARGET", '=', "$defermentGroupEu.DEFERMENT_GROUP_ID")
+    						->join($energyUnit, "$defermentGroupEu.EU_ID", '=', "$energyUnit.ID")
 					    	->leftJoin($defermentDetail, function($join) use ($defermentDetail,$deferment,$energyUnit){
 					    		$join->on("$defermentDetail.DEFERMENT_ID", '=', "$deferment.ID")
 					    		->on("$defermentDetail.EU_ID",'=',"$energyUnit.ID");
 					    	})
 					    	->where("$deferment.ID",'=',$id)
-					    	//well
-					    	->where("$deferment.DEFER_GROUP_TYPE",'=',3)
 					    	->select(
 					    			"$energyUnit.ID as ID",
 					    			"$energyUnit.NAME as NAME",
@@ -178,7 +200,7 @@ class DefermentController extends CodeController {
 					    			"$deferment.DEFER_GROUP_TYPE",
 					    			"$defermentDetail.*"
 					    			)
-					    			->get();
+					    	->get();
     	return $dataSet;
     }
     
@@ -187,7 +209,7 @@ class DefermentController extends CodeController {
     public function editSaving(Request $request){
     	$postData = $request->all();
     	$id = $postData['id'];
-	    $mdlData = $postData['deferment'];
+	    $mdlData = $postData['editedData']['DefermentDetail'];
 	    $columns = ['DEFERMENT_ID'=>$id];
 	    foreach($mdlData as $key => $newData ){
 	    	$columns['EU_ID'] = $newData['DT_RowId'];
@@ -206,7 +228,10 @@ class DefermentController extends CodeController {
     					'OVR_DEFER_GAS_VOL' => $totalOfOvrDeferGasVol,
     					'OVR_DEFER_WATER_VOL' => $totalOfOvrDeferWaterVol
     			));
-    	return response()->json('Edit Successfullly');
+    			
+    	$results 				= $this->loadDetailData($id);
+    	$results["postData"]	= $postData;
+    	return response()->json($results);
     }
     
     public function getHistoryConditions($dcTable,$rowData,$row_id){

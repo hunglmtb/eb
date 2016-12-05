@@ -2,7 +2,7 @@
 
 @section('editBoxParams')
 <script>
-	editBox['initSavingDetailData'] = function(editId,success) {
+	editBox['initSavingDetailData'] = function(editId,saveUrl) {
 		var editData = {id:editId};
 		$.each(editBox.fields, function( index, value ) {
 			editData[value] = actions.editedData[value];
@@ -14,7 +14,7 @@
         return false;
     };
     	
-    editBox.saveDetail = function(editId,success) {
+    editBox.saveDetail = function(editId,success,saveUrl) {
     	if(editId&&editId!=null){
     		isEmpty = true;
     		$.each(editBox.fields, function( index, value ) {
@@ -24,7 +24,7 @@
         		alert('no change to commit');
         		return;
         	}
-    		var editData = editBox.initSavingDetailData(editId);
+    		var editData = editBox.initSavingDetailData(editId,saveUrl);
 
     		if(!editData) {
         		alert('no change to commit');
@@ -32,18 +32,23 @@
         	}
         	if(editBox.notValidatedData(editId)) return;
     		showWaiting();
+    		saveUrl = typeof saveUrl == "string"? saveUrl	:editBox.saveUrl;
     		$.ajax({
-    			url: editBox.saveUrl,
-    			type: "post",
-    			data: editData,
+    			url		: saveUrl,
+    			type	: "post",
+    			data	: editData,
     			success:function(data){
     				hideWaiting();
-    				console.log ( "success saveDetail "+JSON.stringify(data) );
+    				console.log ( "success saveDetail "/* +JSON.stringify(data)  */);
 //     				alert("success");
     				if(editBox.enableRefresh) actions.doLoad(true);
-    				close = true
+    				var close = true
     				if (typeof(success) == "function") {
-    					close = success(data);
+    					close = success(data,saveUrl);
+					}
+    				else if (typeof(actions.saveSuccess) == "function") {
+    					actions.saveSuccess(data);
+    					close = false;
 					}
     				editBox.closeEditWindow(close);
     			},
@@ -55,7 +60,7 @@
     		});
     	}
     	else{
-    		alert('no change to commit');
+    		alert('no item change to commit');
     	}
     }
 </script>

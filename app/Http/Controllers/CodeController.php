@@ -364,6 +364,7 @@ class CodeController extends EBController {
      			
      			//      			\DB::enableQueryLog();
      			foreach($editedData as $mdlName => $mdlData ){
+     				if (!is_array($mdlData)) continue;
      				$modelName = $this->getModelName($mdlName,$postData);
  		     		$mdl = "App\Models\\".$modelName;
 		     		if ($mdl::$ignorePostData) {
@@ -403,6 +404,7 @@ class CodeController extends EBController {
 		     	//doFormula in config table
 		     	$affectColumns = [];
 		     	foreach($editedData as $mdlName => $mdlData ){
+     				if (!is_array($mdlData)) continue;
 		     		$modelName = $this->getModelName($mdlName,$postData);
 		     		$cls  = \FormulaHelpers::doFormula($modelName,'ID',$ids[$mdlName]);
 		     		if (is_array($cls)&&count($cls)>0) {

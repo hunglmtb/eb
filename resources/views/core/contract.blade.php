@@ -104,7 +104,7 @@
 		else return getAddButtonHandler(otable,otab);
 	};
 
-	editBox['initSavingDetailData'] = function(editId,success) {
+	editBox['initSavingDetailData'] = function(editId,saveUrl) {
 		params 		= actions.loadSaveParams(true);
 		editedData 	= {};
 		deleteData 	= {};
@@ -147,7 +147,7 @@
 		if(etbl!=null) actions.afterDataTable(etbl,tab);
 	}
 
-	editBox['saveFloatDialogSucess'] = function(data,id){
+	editBox['saveFloatDialogSucess'] = function(data,saveUrl){
 		actions.saveSuccess(data);
 		close = false;
 		return close;
