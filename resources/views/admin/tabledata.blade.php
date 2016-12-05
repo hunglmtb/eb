@@ -342,6 +342,7 @@ function scopeChange(c){
 "<option value='PRE_DEF_GLOBAL_DATA_SET'>PRE_DEF_GLOBAL_DATA_SET</option>"+
 "<option>FORMULA</option>"+
 "<option>FO_VAR</option>"+
+"<option value='FO_GROUP'>FO_GROUP</option>"+
 		"";
 	}
 	else if($("#cboObjectScope").val()=="ENERGY")
@@ -373,6 +374,7 @@ function scopeChange(c){
 "<option value='FLOW_DATA_THEOR'>FLOW_DATA_THEOR</option>"+
 "<option value='FLOW_DATA_ALLOC'>FLOW_DATA_ALLOC</option>"+
 "<option value='FLOW_DATA_PLAN'>FLOW_DATA_PLAN</option>"+
+"<option value='FLOW_DATA_FORECAST'>FLOW_DATA_FORECAST</option>"+
 "<option value='FLOW_COMP_DATA_ALLOC'>FLOW_COMP_DATA_ALLOC</option>"+
 "<option value='FLOW_CO_ENT_DATA_ALLOC'>FLOW_CO_ENT_DATA_ALLOC</option>"+
 "<option value='FLOW_CO_ENT_COMP_DATA_ALLOC'>FLOW_CO_ENT_COMP_DATA_ALLOC</option>"+
