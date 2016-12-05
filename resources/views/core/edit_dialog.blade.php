@@ -41,7 +41,7 @@
     				hideWaiting();
     				console.log ( "success saveDetail "/* +JSON.stringify(data)  */);
 //     				alert("success");
-    				if(editBox.enableRefresh) actions.doLoad(true);
+//     				if(editBox.enableRefresh) actions.doLoad(true);
     				var close = true
     				if (typeof(success) == "function") {
     					close = success(data,saveUrl);
