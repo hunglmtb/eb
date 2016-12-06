@@ -296,7 +296,7 @@ function loadReport(o){
 	var date_begin 	= $("#date_begin").val();
 	var ds			=date_begin.split("/");
 	var iurl = 	"/report/"+$(o).parent().attr("d_obj")+".blade.php?bgcolor="+bgcolor+
-				"&startDate="+ds[2]+"/"+ds[0]+
+				"&startDate="+ds[2]+"/"+ds[0]+"/01"+
 				"&export=HTML"+
 				"&report_time="+Months[Number(ds[0])-1]+"%20"+ds[2]+
 				"&facility_id=";
