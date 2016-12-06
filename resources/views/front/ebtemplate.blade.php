@@ -481,7 +481,8 @@ menu["visual"]=[
 		{menutext:"Report",desc:"",url:"/workreport"},
 		{menutext:"Advanced Graph",desc:"",url:"/graph"},
 		{menutext:"Workflow",desc:"",url:"/workflow"},
-		{menutext:"Task Manager",desc:"",url:"/taskman/?com=task"}
+		{menutext:"Dashboard",desc:"",url:"/dashboard"},
+		{menutext:"Task Manager",desc:"",url:"/taskman/?com=task"},
 	];
 menu["allocation"]=[
 		{menutext:"Run Allocation",desc:"",url:"/allocrun"},

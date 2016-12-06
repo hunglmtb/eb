@@ -375,6 +375,9 @@ Route::post('deleteChart', 'graphController@deleteChart');
 Route::post('saveChart', 'graphController@saveChart');
 Route::post('getProperty', 'graphController@getProperty');
 
+Route::get('dashboard',		['uses' =>'DVController@dashboard',		'middleware' => 'checkRight:VIS_DASHBOARD']);
+Route::post('dashboard/all',['uses' =>'DataVisualization\DashboardController@all',	'middleware' => 'checkRight:VIS_DASHBOARD']);
+
 Route::get('viewconfig',['uses' =>'ViewConfigController@_indexViewConfig','middleware' => 'checkRight:CF_VIEW_CONFIG']);
 Route::post('loadPlotObjects', 'ViewConfigController@loadPlotObjects');
 Route::post('getTableFields', 'ViewConfigController@getTableFields');
@@ -411,6 +414,7 @@ Route::post('saveprop', 'FieldsConfigController@saveprop');
 Route::get('loadtabledata',['uses' =>'DataViewController@tabledata','middleware' => 'checkRight:CONFIG_TABLE_DATA']);
 Route::get('loadtabledata/edittable',['uses' =>'Config\TableDataController@edittable','middleware' => 'checkRight:CONFIG_TABLE_DATA']);
 Route::post('loadtabledata/edittable',['uses' =>'Config\TableDataController@edittable','middleware' => 'checkRight:CONFIG_TABLE_DATA']);
+Route::post('loadtabledata/delete',['uses' =>'Config\TableDataController@delete','middleware' => 'checkRight:CONFIG_TABLE_DATA']);
 Route::get('pdtabledata',['uses' =>'DataViewController@pdtabledata','middleware' => 'checkRight:CONFIG_TABLE_DATA']);
 
 Route::get('formula',['uses' =>'FormulaController@_index','middleware' => 'checkRight:CONFIG_FORMULA']);

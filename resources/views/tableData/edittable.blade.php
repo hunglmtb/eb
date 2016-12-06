@@ -262,21 +262,35 @@ function _genSQL(id){
 			$('#sql_update').val(ds[1]);
 		});
 }
+
 function _delete_rows(){
 	var ids="";
+	var idarray = [];
 	$('input[name="_delete[]"]:checked').each(function(){
 		ids+=(ids==""?"":",")+$(this).val();
+		idarray.push(ids);
 	});
-	if(ids!=""){
+	if(ids!=""&&idarray.length>0){
 		if(!confirm('Are you sure you want to detete selected record(s)?'))
 			return;
-		postRequest('act.php?act=deleterows&table=<?php echo $tablename; ?>&id='+ids,{},
-			function(data){
-				if(data=="")
-					location.reload();
-				else
-					alert(data);
-			});
+		showWaiting();
+		$.ajax({
+			url: "/loadtabledata/delete",
+			type: "post",
+			data: {
+					table	: '{{$tablename}}',
+					ids		: idarray
+				},
+			success:function(data){
+				hideWaiting();
+				alert(data);
+				location.reload();
+			},
+			error: function(data) {
+				hideWaiting();
+				alert("delete error");
+			}
+		});
 	}
 }
 function saveChanges()

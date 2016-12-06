@@ -29,6 +29,9 @@ $(function () {
                 text: 'Occur date'
             }
         },
+        legend: {
+            enabled: <?php echo ($nolegend?"false":"true"); ?>
+        },
         tooltip: {
             headerFormat: '<b>{series.name}</b><br>',
             pointFormat: '{point.x:%e. %b}: {point.y:.2f} kL'

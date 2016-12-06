@@ -19,6 +19,7 @@ use App\Models\Params;
 use App\Models\TmWorkflow;
 use App\Models\TmWorkflowTask;
 use App\Models\User;
+use App\Models\Dashboard;
 
 use App\Jobs\runAllocation;
 use Carbon\Carbon;
@@ -941,5 +942,31 @@ class DVController extends Controller {
 		->get ( ['id','name','isrun'] );
 		
 		return $result;
+	}
+	
+	
+	public function dashboard() {
+		$filterGroups = array(	'productionFilterGroup'	=> [],
+								'frequenceFilterGroup'	=> [],
+								'dateFilterGroup'		=> array(	['id'=>'date_begin','name'=>'From date'],
+																	['id'=>'date_end',	'name'=>'To date']),
+								'enableButton'			=> true,
+								'enableSaveButton'		=> false,
+				
+		);
+		$current_username 	= auth()->user()->username;
+		$cquery1 			= Dashboard::where("IS_DEFAULT",1)->where("USER_NAME",$current_username);
+		$cquery2 			= Dashboard::where("USER_NAME",$current_username)->take(0,1);
+		$cquery3 			= Dashboard::where("IS_DEFAULT",1)->where("TYPE",1)->take(0,1);
+		$cquery4 			= Dashboard::where("TYPE",1)->take(0,1);
+		$query 				= $cquery1->union($cquery2)->union($cquery3)->union($cquery4);
+		$dashboard_row 		= $query->first();
+
+		return view ( 
+				'front.dashboard',
+				['filters'			=> $filterGroups,
+				'dashboard_id'		=> $dashboard_row->ID,
+				'dashboard_row'		=> $dashboard_row
+		]);
 	}
 }

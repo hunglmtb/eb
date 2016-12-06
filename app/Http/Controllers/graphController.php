@@ -209,14 +209,27 @@ class graphController extends Controller {
 	}
 	
 	public function loadChart(Request $request){
-		$options 	= $request->only('title','minvalue', 'maxvalue','date_begin','date_end','input',"bgcolor");
-		$title		= $options['title'];
-		$minvalue	= $options['minvalue'];
-		$maxvalue	= $options['maxvalue'];
-		$date_begin	= $options['date_begin'];
-		$date_end	= $options['date_end'];
-		$input		= $options['input'];
-		$bgcolor	= $options["bgcolor"];
+// 		$options 	= $request->only('title','minvalue', 'maxvalue','date_begin','date_end','input',"bgcolor");
+		$options 	= $request->all();
+		$title		= isset($options['title']		)?$options['title']:"";
+		$minvalue	= isset($options['minvalue']	)?$options['minvalue']:"";
+		$maxvalue	= isset($options['maxvalue']	)?$options['maxvalue']:"";
+		$date_begin	= isset($options['date_begin']	)?$options['date_begin']:"";
+		$date_end	= isset($options['date_end']	)?$options['date_end']:"";
+		$input		= isset($options['input']		)?$options['input']:"";
+		$bgcolor	= isset($options["bgcolor"]		)?$options['bgcolor']:"";
+		$chart_id	= isset($options["chart_id"]	)?$options['chart_id']:0;
+		$nolegend	= isset($options["nolegend"])	;
+		
+		if($chart_id>0){
+			$rc		= AdvChart::find($chart_id);
+			if ($rc) {
+				$title		= $rc->TITLE;
+				$minvalue	= $rc->MIN_VALUE;
+				$maxvalue	= $rc->MAX_VALUE;
+				$input		= $rc->CONFIG;
+			}
+		}
 		
 		$isrange	=(is_numeric($minvalue) && $maxvalue>$minvalue);
 		$date_begin = \Helper::parseDate($date_begin);
@@ -235,6 +248,7 @@ class graphController extends Controller {
 			$phase_type = -1;
 			
 			$xs=explode(":",$s);
+			if(count($xs)<5) continue;
 			$chart_name=$xs[5];
 			$chart_type=$xs[4];
 			$types=explode("~",$xs[3]);
@@ -407,12 +421,13 @@ class graphController extends Controller {
 		}
 		
 		return view('front.graph_loadchart', [
-				'min1'=>$min1,
-				'max1'=>$max1,
-				'min2'=>$min2,
-				'max2'=>$max2,
-				'title'=>($title != "null")?$title:"",
-				'series'=>$strData
+				'min1'		=>$min1,
+				'max1'		=>$max1,
+				'min2'		=>$min2,
+				'max2'		=>$max2,
+				"nolegend"	=> $nolegend,
+				'title'		=>($title != "null")?$title:"",
+				'series'	=>$strData
 		]);
 	}
 	

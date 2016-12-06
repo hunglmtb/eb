@@ -73,6 +73,7 @@ var xmenu=
 							{"name":"Reports","title":"Reports","link":"/workreport"},
 							{"name":"Advanced Graph","title":"Advanced Graph","link":"/graph"},
 							{"name":"Workflow","title":"Workflow","link":"/workflow"},
+							{"name":"Dashboard","title":"Dashboard","link":"/dashboard"},
 							{"name":"Task Manager","title":"Task Manager","link":"#"},
 						]
 					},
