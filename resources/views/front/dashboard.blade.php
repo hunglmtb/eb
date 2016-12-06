@@ -292,13 +292,13 @@ function loadReport(o){
 	$(o).attr("src","../report/"+$(o).parent().attr("d_obj")+".php?bgcolor="+bgcolor+"&export=HTML&startDate="+ds[2]+"/"+ds[0]+"/01&report_time="+Months[Number(ds[0])-1]+"%20"+ds[2]+"&facility_id=");
 
  */
-
-	var date_begin 	= $("#date_begin").val();
-	var ds			=date_begin.split("/");
+ 	var date_begin	= $("#date_begin").datepicker( "getDate" );
+ 	var month 		= date_begin.getMonth() + 1;              
+ 	var year 		= date_begin.getFullYear();
 	var iurl = 	"/report/"+$(o).parent().attr("d_obj")+".blade.php?bgcolor="+bgcolor+
-				"&startDate="+ds[2]+"/"+ds[0]+"/01"+
+				"&startDate="+year+"/"+month+"/01"+
 				"&export=HTML"+
-				"&report_time="+Months[Number(ds[0])-1]+"%20"+ds[2]+
+				"&report_time="+Months[Number(month-1)]+"%20"+year+
 				"&facility_id=";
 	$(o).attr("src",iurl);	
 }
