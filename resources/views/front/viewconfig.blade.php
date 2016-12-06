@@ -53,7 +53,7 @@ $(function(){
 		}
 	})
 
-	$("#chartObjectContainer").sortable();
+	$("#plotItemObjectContainer").sortable();
 	
 });
 
