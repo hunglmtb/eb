@@ -1140,7 +1140,7 @@ var actions = {
 		}
 		
 		var tblWdth = actions.getTableWidth(data,autoWidth,tab);
-		if(!autoWidth) $('#table_'+tab).css('width',(tblWdth)+'px');
+		if(!autoWidth) $('#table_'+tab).css('width',(tblWdth+20)+'px');
 //		if(!autoWidth && tblWdth>0) $('#table_'+tab).css('width',(tblWdth)+'px');
 
 		tHeight = actions.getTableHeight(tab);
@@ -1149,7 +1149,7 @@ var actions = {
 		          destroy: true,
 		          "columnDefs": uoms,
 		          "scrollX": true,
-		         "autoWidth": autoWidth,
+		         "autoWidth": "800px",
 //		       	"scrollY":        "37vh",
 //		         "scrollY":        "250px",
 		       	scrollY:        tHeight,
