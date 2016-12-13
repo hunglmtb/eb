@@ -4,12 +4,17 @@
 <script>
 	var floatContents = <?php echo json_encode($floatContents); ?>;
 	if(typeof(editBox) == "undefined"){
-		editBox = {	fields : [],
-				enableRefresh:false,
-				hidenFields : [],
-				size	: 	{	height : 350,
-								width : 900,
-							},
+		editBox = {
+					fields 			: [],
+					enableRefresh	:false,
+					hidenFields 	: [],
+					size			: {	height : 350,
+											width : 900,
+										},
+					isNotSaveGotData	: function (url,viewId){
+				 		return true;
+				 	},
+				 	gotData			: false,
 				};
 
 		editBox.closeEditWindow = function(close) {
@@ -81,28 +86,35 @@
 				}
 
 				if(typeof(url) != "undefined" && url!=null && url!=""){
-					$.ajax({
-						url: url,
-						type: "post",
-						data: postData,
-						success:function(data){
-							$("#history_container").css("display","block");
-							$("#savebtn").css("display","block");
-							$("#box_loading").css("display","none");
-							
-							console.log ( "send "+url+"  success : "/* +JSON.stringify(data) */);
-							if (typeof(success) == "function") {
-								success(data);
-							}
-						},
-						error: function(data) {
-							console.log ( "extensionHandle error: "/*+JSON.stringify(data)*/);
-							$("#box_loading").html("not availble");
-							if (typeof(error) == "function") {
-								error(data);
-							}
+					successFn = function(data){
+						if(typeof editBox.gotData != "object") editBox.gotData = {};
+						editBox.gotData[viewId]	= data;
+						$("#history_container").css("display","block");
+						$("#savebtn").css("display","block");
+						$("#box_loading").css("display","none");
+						
+						console.log ( "send "+url+"  success : "/* +JSON.stringify(data) */);
+						if (typeof(success) == "function") {
+							success(data);
 						}
-					});
+					};
+					
+					if(editBox.isNotSaveGotData(url,viewId)){
+						$.ajax({
+							url			: url,
+							type		: "post",
+							data		: postData,
+							success		: successFn,
+							error		: function(data) {
+								console.log ( "extensionHandle error: "/*+JSON.stringify(data)*/);
+								$("#box_loading").html("not availble");
+								if (typeof(error) == "function") {
+									error(data);
+								}
+							}
+						});
+					}
+					else successFn(editBox.gotData[viewId]);
 				}
 			}
 				
@@ -138,15 +150,25 @@
 			});
 			return total;
 		}
+
+		editBox.renderOutputText = function (texts){
+			return 	texts.ObjectName +"("+
+					texts.IntObjectType+"."+
+					texts.ObjectDataSource+"."+
+					(texts.hasOwnProperty('CodeFlowPhase')? 		(texts["CodeFlowPhase"]+".")	:"")+
+					(texts.hasOwnProperty('ObjectTypeProperty')? 	texts["ObjectTypeProperty"]		:"")+
+					")";
+		};
 	}
 </script>
 @yield('editBoxParams')
 
 <div id="floatBox" style="display:none;">
 		@foreach($floatContents as $key => $content )
-			<div id="{{$content}}"  style="display:none;width:100%;border:none;height: 100%; margin-top: 0">
+			<div id="{{$content}}"  style="display:none;border:none; margin-top: 0">
 				@yield($content)
 			</div>
+			@yield("extra_".$content)
 	 	@endforeach
 		<div id="box_loading" >Loading...</div>
 </div>

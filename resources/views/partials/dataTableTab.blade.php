@@ -160,12 +160,4 @@
 		alert(msg);
  	};
 </script>
-
-@if(isset($isAction)&&$isAction)
-	<script src="/common/js/eb_table_action.js"></script>
-	@section('floatWindow')
-		@yield('editBox')
-		@include('core.edit_dialog')
-	@stop
-@endif
 @stop

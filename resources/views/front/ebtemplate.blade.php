@@ -640,7 +640,7 @@ function logineb(){
   var tk = $('input[name=_token]').val();
           
   $.ajax({
-    url: 'auth/eblogin',
+    url: '/auth/eblogin',
     type: "post",
     data: {username:usn,password:pw},
     success: function(data){

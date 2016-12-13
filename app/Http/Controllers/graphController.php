@@ -242,6 +242,9 @@ class graphController extends Controller {
 		$strData = "";
 		$pies="";
 		
+		$ya=array();
+		$no_yaxis_config=true;
+		
 		foreach($ss as $s)
 		{
 			$tmp = [];
@@ -278,6 +281,28 @@ class graphController extends Controller {
 				
 		
 			if (!$obj_type_id_field) continue;
+			
+			$ypos=$types[count($types)-2];
+			$ytext=$types[count($types)-1];
+			
+			if($ytext=="")
+				$ypos="";
+				$yaIndex=-1;
+				if($ypos!="" && $ytext!=""){
+					$yatext=$ypos."^^^".$ytext;
+					for($i=0;$i<count($ya);$i++)
+						if($ya[$i]==$ytext){
+							$yaIndex=$i;
+							break;
+					}
+					if($yaIndex<0){
+						array_push($ya,$yatext);
+						$yaIndex=count($ya)-1;
+					}
+					$no_yaxis_config=false;
+				}
+			
+				
 			$pos=strpos($xs[3],"@");
 			if($pos>0)
 			{
@@ -332,6 +357,8 @@ class graphController extends Controller {
 				$strData .= "name: '".preg_replace('/\s+/', '_@', $chart_name)."',\n";
 				$strData .= "type: '".$chart_type."',\n";
 				$strData .= ($chart_color?"color: '$chart_color',\n":"");
+				$strData .= $yaIndex>-1?"yAxis: $yaIndex,":"";
+				
 				//$strData .= "name: '".$chart_name."',";
 				$strData .= "data: [";
 				foreach ($tmp as $row)
@@ -386,39 +413,86 @@ class graphController extends Controller {
 			$strData.= ($strData!=""?",":"")."{type:'pie',data:[$pies]}";
 		}
 		
-		$min1=($minV<0?$minV:0);
-		$div=5;
-		if($isrange){
-			$min1=$minvalue;
-			$max1=$maxvalue;
-		}
-		else{
-			$x=ceil($maxV);
-			$xs=strval($x);
-			$xl=strlen($xs)-1;
-			$n=(int)$xs[0];
-			$t=pow(10,$xl);
-			$x=ceil(2*$maxV/$t)/2;
-			$max1=$x*$t;
-			if($max1/$div*($div-1)>$maxV){
-				$max1 = $max1/$div*($div-1);
-				$div -= 1;
+		$yaxis="";
+		$min1 = 0;
+		$max1 = 0;
+		$min2 = 0;
+		$max2 = 0;
+		if($no_yaxis_config){
+			$min1=($minV<0?$minV:0);
+			$div=5;
+			if($isrange){
+				$min1=$minvalue;
+				$max1=$maxvalue;
+			}
+			else{
+				$x=ceil($maxV);
+				$xs=strval($x);
+				$xl=strlen($xs)-1;
+				$n=(int)$xs[0];
+				$t=pow(10,$xl);
+				$x=ceil(2*$maxV/$t)/2;
+				$max1=$x*$t;
+				if($max1/$div*($div-1)>$maxV){
+					$max1 = $max1/$div*($div-1);
+					$div -= 1;
+				}
+			}
+			$tickInterval1=($max1-($min1>0?$min1:0))/$div;
+
+			$tickInterval2=0;
+			$min2=0;
+			$max2 = 0;
+			$x = $this->convertUOM($tickInterval1,'kL','m3');
+			if(is_numeric($x)){
+				$tickInterval2=$x;
+				if($isrange)
+					$min2 = $this->convertUOM($min1,'kL','m3');
+			}
+			if($tickInterval2>0){
+				$max2=($min2<0?0:$min2)+$tickInterval2*$div;
 			}
 		}
-		$tickInterval1=($max1-($min1>0?$min1:0))/$div;
+		else{
+			if(count($ya)>0){
+				$yaxisArray=[];
+				$ci=0;
+				foreach($ya as $yat){
+					$ys=explode("^^^",$yat);
+					/* $yaxis.=($yaxis==""?"":",")."
+							{
+								labels: {
+									format: '{value}',
+									style: {
+											color: Highcharts.getOptions().colors[$ci]
+									}
+								},
+								title: {
+									text: '$ys[1]',
+									style: {
+										color: Highcharts.getOptions().colors[$ci]
+									}
+								}
+							".($ys[0]=="R"?",opposite: true":"")."}"; */
+					$ci++;
+					$yaxisItem = [
+									"labels"	=> [
+													"format"	=> '{value}',
+													"style"		=> ['color'	=>"Highcharts.getOptions().colors[$ci]"],
+													],
+									"title"		=> [
+													"text"	=> "$ys[1]",
+													"style"		=> ['color'	=>"Highcharts.getOptions().colors[$ci]"],
+									],
+							
+					];
+					if($ys[0]=="R") $yaxisItem["opposite"] = true;
+					$yaxisArray[] = $yaxisItem;
+					$ci++;
+				}
+			}
+		}
 		
-		$tickInterval2=0;
-		$min2=0;
-		$max2 = 0;
-		$x = $this->convertUOM($tickInterval1,'kL','m3');
-		if(is_numeric($x)){
-			$tickInterval2=$x;
-			if($isrange)
-				$min2 = $this->convertUOM($min1,'kL','m3');
-		}
-		if($tickInterval2>0){
-			$max2=($min2<0?0:$min2)+$tickInterval2*$div;
-		}
 		
 		return view('front.graph_loadchart', [
 				'min1'		=>$min1,
@@ -427,7 +501,10 @@ class graphController extends Controller {
 				'max2'		=>$max2,
 				"nolegend"	=> $nolegend,
 				'title'		=>($title != "null")?$title:"",
-				'series'	=>$strData
+				'series'	=>$strData,
+				'ya'		=>$ya,
+				'no_yaxis_config'		=>$no_yaxis_config,
+				"yaxis"		=> $yaxisArray,
 		]);
 	}
 	

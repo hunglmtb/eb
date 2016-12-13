@@ -13,6 +13,7 @@ use App\Models\DynamicModel;
 		
 		$tmp  			= GraphCfgFieldProps::where(['USE_FDC'=>1, 'TABLE_NAME'=>$tableName])
 											->whereNotIn("COLUMN_NAME",$dates)
+											->where("INPUT_TYPE",2)
 											->get(['COLUMN_NAME AS ID','COLUMN_NAME AS CODE', 'LABEL AS NAME']);
 		$tmp 			= $tmp->each(function ($item, $key){
 							if($item->NAME == '' || is_null($item->NAME)){

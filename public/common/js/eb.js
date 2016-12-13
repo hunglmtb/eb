@@ -176,6 +176,8 @@ var typetoclass = function (data){
 			return "checkbox";
 		case 6:
 			return "timepicker";
+		default:
+			return data;
 	}
 	return "text";
 };
@@ -811,6 +813,10 @@ var actions = {
 		type = actions.getCellType(data,type,cindex);
 		var property 		= data.properties[cindex];
 		const columnName 	= property.data;
+		if(typeof type == "function") {
+			cell["createdCell"] = type;
+			return cell;
+		}
 		if (type!='checkbox') {
 			cell["createdCell"] = function (td, cellData, rowData, row, col) {
 					var property 		= data.properties[col];

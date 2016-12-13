@@ -4,13 +4,26 @@
  	$active 		= 0;
  	$isAction 		= true;
  	$floatContents 	= ['editBoxContentview','contrainList'];
- 	$tableTab		= "ConstraintDiagram"
-//  	$tables = ['ConstraintDiagram'	=>['name'=>'Constraint Diagram']];
+ 	$tableTab		= "ConstraintDiagram";
+ 	$useFeatures	= [
+ 							['name'	=>	"filter_modify",
+ 							"data"	=>	["isFilterModify"	=> true,
+ 										"isAction"			=> $isAction]],
+ 	];
+ 	
+//  	$tables = ['ConstraintDiagram'	:['name':'Constraint Diagram']];
  ?>
 
 @extends('core.fp')
+
 @section('funtionName')
 Constrain diagrams
+@stop
+
+@section('script')
+@parent
+	<link rel="stylesheet" type="text/css" href="/common/tooltipster/css/tooltipster.bundle.min.css" />
+    <script type="text/javascript" src="/common/tooltipster/js/tooltipster.bundle.min.js"></script>
 @stop
 
 @section('action_extra')
@@ -27,36 +40,119 @@ Constrain diagrams
 </div>
 @stop
 
+@section('extra_editBoxContentview')
+<div id="objectList" style="overflow-x: hidden;z-index: 1001;position: relative;float: right;">
+</div>
+@stop
+
 @section('adaptData')
 @parent
 <script>
 	actions.loadUrl = "/choke/load";
 	actions.saveUrl = "/choke/run";
 
-	actions.enableUpdateView = false;
+	actions.enableUpdateView = function(tab,postData){
+		return false;
+	};
 	
 	actions.getTableOption	= function(data){
 		return {tableOption :	{searching		: false,
-								ordering		: false,
-								scrollY			: '350px',
+								ordering		: true,
+								scrollY			: false,
 								},
 				invisible:[]};
 		
 	}
-	
+
+	actions.tableIsDragable	= function(tab){
+		return true;
+	}
+
+
+	var renderFirsColumn = actions.renderFirsColumn;
+	actions.renderFirsColumn  = function ( data, type, rowData ) {
+		var html = renderFirsColumn(data, type, rowData );
+		var id = rowData['DT_RowId'];
+		isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
+		html += '<a id="item_edit_'+id+'" class="actionLink">objects</a>';
+		return html;
+	};
+
+	var tooltipAddMoreHandle	= function ( table,rowData,td,tab) {
+			var id = rowData['DT_RowId'];
+    		var telement	 = table.$('#item_edit_'+id);
+				
+    		telement.tooltipster({
+	 		  	    	content: function(){
+	 		  	    			var tooltipContent = editBox.renderObjectsList(rowData.OBJECTS);
+	 		  	    			var actionsButton = $("<div>");
+	 		  	    			var cancel = $("<button>cancel</button>");
+	 		  	    			cancel.click(function() {
+	 		  	    				telement.tooltipster('close');
+		 		  	    			});
+	 		  					cancel.appendTo(actionsButton);
+
+	 		  					var add = $("<button>add</button>");
+	 		  					add.click(function() {
+	 		  						editBox.editRow(add,add);
+		 		  	    		});
+	 		  					add.appendTo(actionsButton);
+
+	 		  					var apply = $("<button>apply</button>");
+	 		  					apply.click(function() {
+	 		  	    				telement.tooltipster('close');
+		 		  	    		});
+	 		  					apply.appendTo(actionsButton);
+		 		  	 			actionsButton.appendTo(tooltipContent);
+		 		  				return tooltipContent;
+		 		  	    	},
+	 		  	   		// if you use a single element as content for several tooltips, set this option to true
+	 		  	   		contentCloning: false,
+	 		  	   		interactive : true,
+	 		  	   		trigger: 'custom',
+		 		  	 	triggerOpen: {
+			 		        click: true,
+			 		        tap: true,
+			 		       	mouseenter: false
+		 		    	},
+		 		    	triggerClose: {
+		 		    		mouseleave: false,
+		 		           	originClick: true,
+		 		           	touchleave: true,
+		 		       },
+		 		      zIndex	: 99
+	 		  	});
+		};
+		
+		var addMoreHandle	= function ( table,rowData,td,tab) {
+			var id = rowData['DT_RowId'];
+			var moreFunction = function(e){
+			    var list = editBox.renderObjectsList(rowData.OBJECTS);
+			    $("#objectList").html("");
+			    $("#objectList").css("width","49%");
+			    $("#objectList").css("height","95%");
+			    $("#objectList").css("z-index","1001");
+			    $("#objectList").addClass("product_filter");
+			    
+			    $("#editBoxContentview").css("float","left");
+			    $("#editBoxContentview").css("width","48%");
+			    list.appendTo($("#objectList"));
+			    editBox.editRow(td,td);
+			};
+			table.$('#item_edit_'+id).click(moreFunction);
+		};
+		actions['addMoreHandle']  = addMoreHandle;
 </script>
 @stop
-
 
 @section('editBoxParams')
 @parent
 <script>
 // 	editBox.fields = ['deferment'];
-	editBox.loadUrl = "/choke/editcontrains";
-	/* editBox['size'] = {	height : 420,
-						width : 900,
-						}; */
+// 	editBox.loadUrl = "/choke/editcontrains";
+// 	var contrainListData = false;
 	editBox.loadConsList = function (){
+// 							if(contrainListData!=false) return;
 					 		success = function(data){
 						    	$("#contrainList").html("");
 						 		var dataSet = data.dataSet;
@@ -73,11 +169,10 @@ Constrain diagrams
 										var tableData = {
 												'{{config("constants.tabTable")}}'	: '{{$tableTab}}',
 												dataSet		: value.CONFIG,
-												properties	: data.properties,
+												properties	: editBox.buildTableProperties(value,data.properties),
 												postData	: data.postData,
 												};
 										actions.loadSuccess(tableData);
-// 										editBox.editRow(span,span);
 									});
 									span.addClass("clickable");
 									span.text(value.NAME);
@@ -96,86 +191,71 @@ Constrain diagrams
 							editBox.showDialog(option,success);
 						}
 						
-	var currentSpan = null;
-	editBox.initExtraPostData = function (span,rowData){
-	 						isFirstDisplay = false;
- 							currentSpan = span;
- 							return 	span.data();
- 	};
- 	isFirstDisplay = false;
- 	editBox.editGroupSuccess = function(data,span){
- 		$("#editBoxContentview").html(data);
- 		filters.afterRenderingDependences("secondary_ObjectName");
- 		filters.preOnchange("secondary_IntObjectType");
- 		filters.preOnchange("secondary_ObjectDataSource");
- 		isFirstDisplay = true;
- 		if($("#secondary_IntObjectType").val()=="KEYSTORE") $("#secondary_ObjectDataSource").change();
-	};
-
-	editBox.editSelectedObjects = function (dataStore,resultText,x){
-		if(currentSpan!=null) {
-			currentSpan.data(dataStore);
-			currentSpan.text(resultText);
-			var li = currentSpan.closest( "li" );
-			editBox.updateObjectAttributes(li,dataStore,x);
-		}
-	};
-
-	editBox.renderOutputText = function (texts){
-		return 	texts.ObjectName +"("+
-				texts.IntObjectType+"."+
-				texts.ObjectDataSource+"."+
-				(texts.hasOwnProperty('CodeFlowPhase')? 		(texts["CodeFlowPhase"]+".")	:"")+
-				(texts.hasOwnProperty('ObjectTypeProperty')? 	texts["ObjectTypeProperty"]		:"")+
-				")";
-	};
-
-	editBox.addObjectItem 	= function (color,dataStore,texts,x){
-		var li 				= $("<li class='x_item'></li>");
-		var sel				= "<select class='x_chart_type' style='width:100px'><option value='line'>Line</option><option value='spline'>Curved line</option><option value='column'>Column</option><option value='area'>Area</option><option value='areaspline'>Curved Area</option><option value='pie'>Pie</option></select>";
-		var inputColor 		= "<input type='text' maxlength='6' size='6' style='background:"+color+";color:"+color+";' class='_colorpicker' value='"+(color=="transparent"?"7e6de3":color.replace("#", ""))+"'>";
-		var select			= $(sel);
-		var colorSelect		= $(inputColor);
-		var span 			= $("<span></span>");
-		var del				= $('<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="/img/x.png">');
-
-		if(dataStore.hasOwnProperty('chartType')) select.val(dataStore.chartType);
-		select.appendTo(li);
-		colorSelect.appendTo(li);
-		span.appendTo(li);
-		del.appendTo(li);
+	editBox.isNotSaveGotData = function (url,viewId){
 		
-		currentSpan 		= span;
-		span.click(function() {
-			editBox.editRow(span,span);
+		return viewId=="contrainList"?editBox.gotData==false:true;
+	}					
+	
+ 	editBox.buildTableProperties = function (constrain,column1){
+ 	 	var first		= column1[0];
+ 	 	first.width		= 100;
+ 	 	first.title		= "";
+ 		var properties 	= [
+							first,
+ 	 		  				{	'data' 		: 'NAME',
+ 	 		  					'title' 	: 'Summary Items'  ,
+ 	 		  					'width'		: 100,
+ 	 		  					'INPUT_TYPE': 1
+ 	 		  				},
+ 	 		  				{	'data' 		: 'GROUP',
+ 	 		  					'title' 	: 'Group'  ,
+ 	 		  					'width'		: 50,
+ 	 		  					'INPUT_TYPE': 1
+ 	 		  				},	 	
+ 	 		  				{	'data' 		: 'COLOR',
+ 	 		  					'title' 	: 'Color'  ,
+ 	 		  					'width'		: 40,
+ 	 		  					'INPUT_TYPE': 1
+ 	 		  				},
+ 	 		  				{	'data' 		: 'VALUE',
+ 	 		  					'title' 	: 'Value'  ,
+ 	 		  					'width'		: 60,
+ 	 		  					'INPUT_TYPE': 2
+ 	 		  				},
+ 	 		  				{	'data' 		: 'FACTOR',
+ 	 		  					'title' 	: 'Factor'  ,
+ 	 		  					'width'		: 60,
+ 	 		  					'INPUT_TYPE': 2
+ 	 		  				},
+ 	 		  				{	'data' 		: 'YCAPTION',
+ 	 		  					'title' 	: constrain.YCAPTION,
+ 	 		  					'width'		: 60,
+ 	 		  					'INPUT_TYPE': 2
+ 	 		  				},
+ 		  		];
+ 		return properties;
+	};
+
+ 	editBox.renderObjectsList = function (objects){
+ 		var tooltipContent = $("<div>");
+   		var ul = $("<ul class='ListStyleNone'></ul>");
+	  	$.each(objects, function( index, object) {
+		    var text = editBox.renderOutputText(object);
+		    object.text		= text;
+		    var li 				= $("<li class='x_item'></li>");
+			var span 			= $("<span></span>");
+			var del				= $('<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="/img/x.png">');
+			span.text(text);
+			span.click(function() {
+				editBox.editRow(span,span);
+			});
+			span.addClass("clickable");
+			span.appendTo(li);
+			del.appendTo(li);
+			li.appendTo(ul);
 		});
-		span.addClass("clickable");
-		var rstext 			= typeof texts =="string"? texts:editBox.renderOutputText(texts);
-		editBox.editSelectedObjects(dataStore,rstext,x);
-		
-		li.appendTo($("#chartObjectContainer"));
-		setColorPicker();
-	}
-
-	editBox.updateObjectAttributes = function (li,dataStore,x){
-		if(typeof x !="string")
-			x = editBox.getObjectValue(dataStore);
-		li.attr("object_value",x);
-	};
-
-	editBox.getObjectValue = function (dataStore){
-		var s3	="";
-		var d0 	= dataStore.IntObjectType;
-		if(d0=="ENERGY_UNIT") s3+=":"+dataStore.CodeFlowPhase;
-		var x	= 	d0+":"+
-					dataStore.ObjectName+":"+
-					dataStore.ObjectDataSource+":"+
-					dataStore.ObjectTypeProperty+
-					s3+"~"+
-					dataStore.CodeAllocType+"~"+
-					dataStore.CodePlanType+"~"+
-					dataStore.CodeForecastType;
-		return x;
+		ul.appendTo(tooltipContent);
+		return 	tooltipContent;
 	};
 	</script>
 @stop

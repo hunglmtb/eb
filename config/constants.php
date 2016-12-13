@@ -12,14 +12,16 @@ $tab['FLOW'] =collect([
 				]);
 
 $tab['ENERGY_UNIT'] 	= collect([
-								(object)['NAME'=>'FDC VALUE', 'ID'=>'EnergyUnitDataFdcValue'],
-								(object)['NAME'=>'STD VALUE', 'ID'=>'EnergyUnitDataValue'],
+								(object)['NAME'=>'FDC VALUE', 	'ID'=>'EnergyUnitDataFdcValue'],
+								(object)['NAME'=>'STD VALUE', 	'ID'=>'EnergyUnitDataValue'],
 								(object)['NAME'=>'THEORETICAL', 'ID'=>'EnergyUnitDataTheor'],
-								(object)['NAME'=>'ALLOCATION', 'ID'=>'EnergyUnitDataAlloc'],
+								(object)['NAME'=>'ALLOCATION', 	'ID'=>'EnergyUnitDataAlloc'],
 								(object)['NAME'=>'COMPOSITION ALLOC', 'ID'=>'EnergyUnitCompDataAlloc'],
-								(object)['NAME'=>'PLAN', 'ID'=>'EnergyUnitDataPlan'],
-								(object)['NAME'=>'FORECAST', 'ID'=>'EnergyUnitDataForecast']
-						]);
+								(object)['NAME'=>'PLAN', 		'ID'=>'EnergyUnitDataPlan'],
+								(object)['NAME'=>'FORECAST', 	'ID'=>'EnergyUnitDataForecast'],
+								(object)['NAME'=>'Deferment', 	'ID'=>'DEFERMENT'],
+								(object)['NAME'=>'Energy Unit', 'ID'=>'EnergyUnit'],
+]);
 
 $tab['STORAGE'] 	=	collect([
 							(object)['NAME'=>'VALUE', 'ID'=>'StorageDataValue'],

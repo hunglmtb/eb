@@ -9,41 +9,71 @@ class ChokeController extends CodeController {
 	/* public function __construct() {
 		parent::__construct();
 	} */
-	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
-    	
-    	/* $sSQL="select * from constraint_diagram order by NAME";
-    	$re=mysql_query($sSQL) or die (mysql_error());
-    	$sRole="";
-    	while($row=mysql_fetch_array($re))
-    	{
-    		echo "<span class='plotItem' id='plotItem_$row[ID]' ycaption='$row[YCAPTION]' cons_id='$row[ID]' style='display:block;line-height:20px;margin:2px;'><a id='a_$row[ID]' href='javascript:openCons($row[ID])'>$row[NAME]</a> <img valign='middle' onclick='deleteCons($row[ID])' class='xclose' src='../img/x.png'></span>";
-    	}
-    	
-    	$date_end 		= $postData['date_end'];
-    	$date_end 		= \Helper::parseDate($date_end);
-    	
-    	$mdlName = $postData[config("constants.tabTable")];
-    	$mdl = "App\Models\\$mdlName"; */
-    	
-//     	\DB::enableQueryLog();
     	$dataSet = ConstraintDiagram::orderBy("NAME")->get();
-//  		\Log::info(\DB::getQueryLog());
- 		
+    	$item1 = [
+    		"LoProductionUnit"		=>	"12",
+    		"LoArea"				=>	"23",
+    		"Facility"				=>	"23",
+    		"CodeProductType"		=>	"2",
+    		"IntObjectType"			=>	"ENERGY_UNIT",
+    		"ObjectName"			=>	"382",
+    		"ObjectDataSource"		=>	"EnergyUnitDataValue",
+    		"ObjectTypeProperty"	=>	"EU_DATA_GRS_ENGY",
+    		"CodeFlowPhase"			=>	"2",
+    		"CodeAllocType"			=>	"1",
+    		"CodePlanType"			=>	"1",
+    		"CodeForecastType"		=>	"1"
+    	];
+    	
+    	$item2 = [
+    			"LoProductionUnit"		=>			 "9",                     
+    			"LoArea"				=>	 "7",                             
+    			"Facility"				=>	 "19",                            
+    			"CodeProductType"		=>			 "2",                     
+    			"IntObjectType"			=>			 "FLOW",                  
+    			"ObjectName"			=>		 "396",                       
+    			"ObjectDataSource"		=>	"FlowDataForecast",      
+    			"ObjectTypeProperty"	=>	"FL_DATA_NET_VOL",   
+    			"CodeFlowPhase"			=>	 null,                                 
+    			"CodeAllocType"			=>			 "1",                     
+    			"CodePlanType"			=>		 "1",                         
+    			"CodeForecastType"		=>			 "1"                      
+    	];
+    	
+    	$item3 = [
+    			"LoProductionUnit"		=>			 "9",
+    			"LoArea"				=>	 "7",
+    			"Facility"				=>	 "19",
+    			"CodeProductType"		=>			 "2",
+    			"IntObjectType"			=>			 "FLOW",
+    			"ObjectName"			=>		 "398",
+    			"ObjectDataSource"		=>	"FlowDataForecast",
+    			"ObjectTypeProperty"	=>	"FL_DATA_NET_VOL",
+    			"CodeFlowPhase"			=>	 null,
+    			"CodeAllocType"			=>			 "1",
+    			"CodePlanType"			=>		 "1",
+    			"CodeForecastType"		=>			 "1"
+    	];
+    	
     	$set1 = ["NAME"		=> "FPSO Constraint Scenario test1",
     			"YCAPTION"	=> "Oil Limit (bbl) test1",
     			"CONFIG"	=> [
 			    					["NAME"		=> "max oil 1.1",
     								"GROUP"		=> "Group A",
     								"FACTOR"	=> "0.7",
-    								"OBJECTS"	=> [],
-    								],
+			    					"OBJECTS"	=> [$item2,$item1,$item3],
+    								"DT_RowId"	=> 1,
+			    					$dcTable	=> 1,
+			    					],
 			    					["NAME"		=> "max oil 1.2",
 			    					"GROUP"		=> "Group A2",
 			    					"FACTOR"	=> "0.5",
-			    					"OBJECTS"	=> [],
+			    					"OBJECTS"	=> [$item1,$item2,$item3],
+    								"DT_RowId"	=> 2,
+			    					$dcTable	=> 2,
 			    					],
-    							]
+    							],
     			];
     	
     	$set2 = ["NAME"		=> "FPSO Constraint Scenario test2",
@@ -51,16 +81,21 @@ class ChokeController extends CodeController {
     			"CONFIG"	=> [
 			    					["NAME"		=> "max oil 2.1",
 			    					"GROUP"		=> "Group b",
-			    					"FACTOR"	=> "0.5",
-			    					"OBJECTS"	=> [],
+			    					"FACTOR"	=> "0.4",
+			    					"OBJECTS"	=> [$item3,$item1,$item2],
+	    							"DT_RowId"	=> 1,
+			    					$dcTable	=> 1,
 			    					],
 			    					["NAME"		=> "max oil 2.2",
     								"GROUP"		=> "Group B2",
 			    					"FACTOR"	=> "0.5",
-			    					"OBJECTS"	=> [],
+			    					"OBJECTS"	=> [$item1,$item3,$item2],
+	    							"DT_RowId"	=> 2,
+			    					$dcTable	=> 2,
 			    					],
-    							]
-    			];
-    	return ['dataSet'=>[$set1,$set2]];
+    							],
+    	];
+     	return ['dataSet'=>[$set1,$set2]];
+//     	return ['dataSet'=>$dataSet];
     }
 }

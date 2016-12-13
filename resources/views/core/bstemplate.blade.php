@@ -3,9 +3,8 @@ $configuration	= isset($configuration)?$configuration:auth()->user()->getConfigu
 $request 		= request();
 $parameters 	= $request->route()->parameters();
 $rightCode		= isset($parameters['rightCode'])?$parameters['rightCode']:"";
-$enableHeader	= isset($enableHeader)?$enableHeader:true;
-$enableFooter	= isset($enableFooter)?$enableFooter:true;
-
+$enableHeader	= isset($enableHeader)	? $enableHeader	:true;
+$enableFooter	= isset($enableFooter)	? $enableFooter	:true;
 ?>
 
 <!DOCTYPE html>
