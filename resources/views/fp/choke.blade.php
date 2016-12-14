@@ -10,7 +10,8 @@
  							"data"	=>	["isFilterModify"	=> true,
  										"isAction"			=> $isAction]],
  	];
- 	
+ 	$filterGroups	= \Helper::getCommonGroupFilter();
+ 	if(isset($filterGroups['dateFilterGroup'])) unset($filterGroups['dateFilterGroup']);
 //  	$tables = ['ConstraintDiagram'	:['name':'Constraint Diagram']];
  ?>
 
@@ -22,8 +23,8 @@ Constrain diagrams
 
 @section('script')
 @parent
-	<link rel="stylesheet" type="text/css" href="/common/tooltipster/css/tooltipster.bundle.min.css" />
-    <script type="text/javascript" src="/common/tooltipster/js/tooltipster.bundle.min.js"></script>
+	<!-- <link rel="stylesheet" type="text/css" href="/common/tooltipster/css/tooltipster.bundle.min.css" />
+    <script type="text/javascript" src="/common/tooltipster/js/tooltipster.bundle.min.js"></script> -->
 @stop
 
 @section('action_extra')
@@ -40,6 +41,12 @@ Constrain diagrams
 </div>
 @stop
 
+@section('editBoxContentview')
+	@include('choke.editfilter',['filters'			=> $filterGroups,
+				    			'prefix'			=> "secondary_",
+						    	])
+@stop
+
 @section('extra_editBoxContentview')
 <div id="objectList" style="overflow-x: hidden;z-index: 1001;position: relative;float: right;">
 </div>
@@ -50,7 +57,7 @@ Constrain diagrams
 <script>
 	actions.loadUrl = "/choke/load";
 	actions.saveUrl = "/choke/run";
-
+	
 	actions.enableUpdateView = function(tab,postData){
 		return false;
 	};
@@ -78,81 +85,56 @@ Constrain diagrams
 		return html;
 	};
 
-	var tooltipAddMoreHandle	= function ( table,rowData,td,tab) {
-			var id = rowData['DT_RowId'];
-    		var telement	 = table.$('#item_edit_'+id);
-				
-    		telement.tooltipster({
-	 		  	    	content: function(){
-	 		  	    			var tooltipContent = editBox.renderObjectsList(rowData.OBJECTS);
-	 		  	    			var actionsButton = $("<div>");
-	 		  	    			var cancel = $("<button>cancel</button>");
-	 		  	    			cancel.click(function() {
-	 		  	    				telement.tooltipster('close');
-		 		  	    			});
-	 		  					cancel.appendTo(actionsButton);
+	var addMoreHandle	= function ( table,rowData,td,tab) {
+		var id = rowData['DT_RowId'];
+		var moreFunction = function(e){
+		    var list = editBox.renderObjectsList(rowData.OBJECTS);
+		    $("#objectList").html("");
+		    $("#objectList").css("width","44%");
+		    $("#objectList").css("height","87%");
+		    $("#objectList").css("z-index","1001");
+		    $("#objectList").addClass("product_filter");
+		    
+		    $("#editBoxContentview").css("float","left");
+		    $("#editBoxContentview").css("width","54%");
+		    list.appendTo($("#objectList"));
 
-	 		  					var add = $("<button>add</button>");
-	 		  					add.click(function() {
-	 		  						editBox.editRow(add,add);
-		 		  	    		});
-	 		  					add.appendTo(actionsButton);
-
-	 		  					var apply = $("<button>apply</button>");
-	 		  					apply.click(function() {
-	 		  	    				telement.tooltipster('close');
-		 		  	    		});
-	 		  					apply.appendTo(actionsButton);
-		 		  	 			actionsButton.appendTo(tooltipContent);
-		 		  				return tooltipContent;
-		 		  	    	},
-	 		  	   		// if you use a single element as content for several tooltips, set this option to true
-	 		  	   		contentCloning: false,
-	 		  	   		interactive : true,
-	 		  	   		trigger: 'custom',
-		 		  	 	triggerOpen: {
-			 		        click: true,
-			 		        tap: true,
-			 		       	mouseenter: false
-		 		    	},
-		 		    	triggerClose: {
-		 		    		mouseleave: false,
-		 		           	originClick: true,
-		 		           	touchleave: true,
-		 		       },
-		 		      zIndex	: 99
-	 		  	});
+		    $("#floatBox").dialog( {
+				editId	: "editBoxContentview",
+				height	: editBox.size.height,
+				width	: editBox.size.width,
+				position: { my: 'top', at: 'top+150' },
+				modal	: true,
+				title	: "Edit Summary Item",
+				close	: function(event) {
+							$("#objectList").css('display','none');
+					   	 },
+		   	 	open	: function( event, ui ) {
+							$("#objectList").css('display','block');
+						},
+			});
+		    $("#editBoxContentview").show();
+		    $("#contrainList").hide();
+		    editBox.renderFilter();
+		    currentSpan = null;
 		};
-		
-		var addMoreHandle	= function ( table,rowData,td,tab) {
-			var id = rowData['DT_RowId'];
-			var moreFunction = function(e){
-			    var list = editBox.renderObjectsList(rowData.OBJECTS);
-			    $("#objectList").html("");
-			    $("#objectList").css("width","49%");
-			    $("#objectList").css("height","95%");
-			    $("#objectList").css("z-index","1001");
-			    $("#objectList").addClass("product_filter");
-			    
-			    $("#editBoxContentview").css("float","left");
-			    $("#editBoxContentview").css("width","48%");
-			    list.appendTo($("#objectList"));
-			    editBox.editRow(td,td);
-			};
-			table.$('#item_edit_'+id).click(moreFunction);
-		};
-		actions['addMoreHandle']  = addMoreHandle;
+		table.$('#item_edit_'+id).click(moreFunction);
+	};
+	actions['addMoreHandle']  = addMoreHandle;
 </script>
 @stop
 
 @section('editBoxParams')
 @parent
 <script>
-// 	editBox.fields = ['deferment'];
-// 	editBox.loadUrl = "/choke/editcontrains";
-// 	var contrainListData = false;
+	editBox.loadUrl = "/choke/filter";
+
+	editBox.size = {
+						height 	: 470,
+						width 	: 950,
+					};
+	
 	editBox.loadConsList = function (){
-// 							if(contrainListData!=false) return;
 					 		success = function(data){
 						    	$("#contrainList").html("");
 						 		var dataSet = data.dataSet;
@@ -187,7 +169,7 @@ Constrain diagrams
 								 		url 		: "/choke/load",
 								 		viewId 		: 'contrainList',
 					    	    	};
-
+							$("#objectList").css('display','none');
 							editBox.showDialog(option,success);
 						}
 						
@@ -240,23 +222,45 @@ Constrain diagrams
  		var tooltipContent = $("<div>");
    		var ul = $("<ul class='ListStyleNone'></ul>");
 	  	$.each(objects, function( index, object) {
-		    var text = editBox.renderOutputText(object);
-		    object.text		= text;
-		    var li 				= $("<li class='x_item'></li>");
-			var span 			= $("<span></span>");
-			var del				= $('<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="/img/x.png">');
-			span.text(text);
-			span.click(function() {
-				editBox.editRow(span,span);
-			});
-			span.addClass("clickable");
-			span.appendTo(li);
-			del.appendTo(li);
-			li.appendTo(ul);
+		    var text 			= editBox.renderOutputText(object);
+	  		editBox.add2ObjectList(object,ul,text);
 		});
 		ul.appendTo(tooltipContent);
 		return 	tooltipContent;
 	};
+
+	var focusOnCurrentSpan = function (span){
+		if(typeof currentSpan != 'undefined') $(currentSpan).css("color","");
+		span.css("color","#830253");
+		currentSpan		=	span;
+	}
+	
+	editBox.add2ObjectList = function (object,ul,text){
+	    object.text			= text;
+	    var li 				= $("<li class='x_item'></li>");
+		var span 			= $("<span></span>");
+		var del				= $('<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="/img/x.png">');
+		span.text(text);
+		span.click(function() {
+			if(currentSpan==span) return;
+			focusOnCurrentSpan(span);
+			editBox.editRow(span,span);
+		});
+		span.addClass("clickable");
+		span.data(object);
+		span.appendTo(li);
+		del.appendTo(li);
+		li.appendTo(ul);
+		return span;
+	};
+
+	editBox.addObject 	= function (close){
+		var object 		= editBox.buildFilterData();
+		var ul 			= $("#objectList ul:first");
+		var text 		= editBox.buildFilterText();
+		var span		= editBox.add2ObjectList(object,ul,text);
+		focusOnCurrentSpan(span);
+	}
 	</script>
 @stop
 

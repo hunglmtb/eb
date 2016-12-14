@@ -2,6 +2,7 @@
 if (!isset($filters['extra'])) {
 	$filters['extra'] = [];
 }
+$prefix				= isset($prefix)?$prefix:"";
 $functionName		= isset($functionName)?$functionName:"";
 $enableButton 		= isset($filterGroups['enableButton'])?	$filterGroups['enableButton']	:true;
 $enableSaveButton 	= isset($filters['enableSaveButton'])?	$filters['enableSaveButton']	:true;
@@ -88,5 +89,6 @@ $( document ).ready(function() {
 				onClick="actions.doLoad(true)" style="width: 85px; height: 26px;foat:left;">
 		</div>
 	@endif
-	@yield('action_extra')
+	@yield($prefix.'action_extra')
 </div>
+	@yield($prefix.'filter_extra')

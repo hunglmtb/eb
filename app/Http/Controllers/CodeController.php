@@ -1007,19 +1007,8 @@ class CodeController extends EBController {
     }
     
     public function help($name){
-//     	echo getOneValue("select HELP from eb_functions where CODE='$func_code'");
     	$help = EbFunctions::where("CODE",$name)->select("HELP")->first();
     	$help = $help?$help:"";
     	return response()->json($help);
-    }
-    
-    public function filter(Request $request){
-    	$postData 		= $request->all();
-    	$filterGroups	= \Helper::getCommonGroupFilter();
-    	if(isset($filterGroups['dateFilterGroup'])) unset($filterGroups['dateFilterGroup']);
-    	return view ( 'graph.editfilter',['filters'			=> $filterGroups,
-    									'prefix'			=> "secondary_",
-    									"currentData"		=> $postData
-    	]);
     }
 }

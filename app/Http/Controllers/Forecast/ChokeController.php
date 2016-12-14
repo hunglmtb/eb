@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Forecast;
 
 use App\Http\Controllers\CodeController;
 use App\Models\ConstraintDiagram; 
+use Illuminate\Http\Request;
 
 class ChokeController extends CodeController {
     
@@ -97,5 +98,15 @@ class ChokeController extends CodeController {
     	];
      	return ['dataSet'=>[$set1,$set2]];
 //     	return ['dataSet'=>$dataSet];
+    }
+    
+    public function filter(Request $request){
+    	$postData 		= $request->all();
+    	$filterGroups	= \Helper::getCommonGroupFilter();
+    	if(isset($filterGroups['dateFilterGroup'])) unset($filterGroups['dateFilterGroup']);
+    	return view ( 'choke.editfilter',['filters'			=> $filterGroups,
+						    			'prefix'			=> "secondary_",
+						    			"currentData"		=> $postData
+						    	]);
     }
 }

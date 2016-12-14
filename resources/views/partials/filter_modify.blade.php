@@ -85,11 +85,6 @@
 		</script>
 		
 		<script>
-		// 	editBox.fields = ['deferment'];
-			editBox.loadUrl = "/code/filter";
-			/* editBox['size'] = {	height : 420,
-								width : 900,
-								}; */
 			var currentSpan = null;
 			editBox.initExtraPostData = function (span,rowData){
 			 						isFirstDisplay = false;
@@ -100,13 +95,19 @@
 		 	isFirstDisplay = false;
 		 	editBox.editGroupSuccess = function(data,span){
 		 		$("#editBoxContentview").html(data);
+		 		editBox.renderFilter();
+		 		if(typeof editBox.updateExtraFilterData == "function"){
+		 			var dataStore = typeof span.data == "function"? span.data():{};
+					editBox.updateExtraFilterData(dataStore);
+		 		}
+			};
+
+			editBox.renderFilter = function(){
 		 		filters.afterRenderingDependences("secondary_ObjectName");
 		 		filters.preOnchange("secondary_IntObjectType");
 		 		filters.preOnchange("secondary_ObjectDataSource");
 		 		isFirstDisplay = true;
 		 		if($("#secondary_IntObjectType").val()=="KEYSTORE") $("#secondary_ObjectDataSource").change();
-		 		if(typeof editBox.updateExtraFilterData == "function")
-					editBox.updateExtraFilterData(span.data());
 			};
 		
 			editBox.editSelectedObjects = function (dataStore,resultText,x){
@@ -117,6 +118,20 @@
 					editBox.updateObjectAttributes(li,dataStore,x);
 				}
 			};
+
+			 editBox.buildFilterText = function(){
+					var resultText 	= "";
+					var texts = {};
+					var selects = $("#ebFilters_ select");
+					selects.each(function(index, element) {
+						texts[element.name]		= $("#"+element.id+" option:selected").text();
+					});
+					if(typeof editBox.renderOutputText == "function")
+						resultText	= editBox.renderOutputText(texts);
+					else 
+						resultText	= JSON.stringify(texts);
+					return resultText;
+				}
 		
 			editBox.addObjectItem 	= function (color,dataStore,texts,x){
 				var li 				= $("<li class='x_item'></li>");

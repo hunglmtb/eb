@@ -538,3 +538,10 @@ $useFeatures		= [
 @stop
 
 
+
+@section('editBoxParams')
+@parent
+<script>
+	editBox.loadUrl = "/graph/filter";
+</script>
+@stop

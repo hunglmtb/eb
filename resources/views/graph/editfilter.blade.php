@@ -1,5 +1,5 @@
 @extends('partials.editfilter')
-@section('action_extra')
+@section($prefix.'action_extra')
 @parent
 	<table border="0" class="clearBoth" style="">
 		<tr>
@@ -16,7 +16,10 @@
 			</td>
 		</tr>
 	</table>
-	
+@stop
+
+@section($prefix.'filter_extra')
+@parent
 	<script type='text/javascript'>
 		var oBuildFilterData		= editBox.buildFilterData;
 		editBox.buildFilterData 	= function(){

@@ -81,7 +81,6 @@ Route::post('password/reset', 'Auth\PasswordController@postReset');
 
 //-----EB
 Route::post('code/list', 'CodeController@getCodes');
-Route::post('code/filter', 'CodeController@filter');
 
 Route::get('dc/flow',['uses' =>'ProductManagementController@flow','middleware' => 'checkRight:FDC_FLOW']);
 Route::post('code/load',['uses' =>'FlowController@load','middleware' => 'saveWorkspace']);
@@ -174,15 +173,16 @@ Route::post('me/setting/save', 		'UserSettingController@saveSetting');
 
 Route::get('fp/loadplanforecast',	['uses' =>'ForecastPlanningController@loadplan'	,'middleware' => 'checkRight:FP_LOAD_PLAN_FORECAST']);
 Route::get('fp/choke',				['uses' =>'ForecastPlanningController@choke'	,'middleware' => 'checkRight:CF_VIEW_CONFIG']);
-Route::post('choke/load',			['uses' =>'Forecast\ChokeController@load'				,'middleware' => 'checkRight:CF_VIEW_CONFIG']);
+Route::post('choke/load',			['uses' =>'Forecast\ChokeController@load'		,'middleware' => 'checkRight:CF_VIEW_CONFIG']);
+Route::post('choke/filter', 		['uses' =>'Forecast\ChokeController@filter'		,'middleware' => 'checkRight:CF_VIEW_CONFIG']);
 
 Route::get('pd/cargoentry',			['uses' =>'ProductDeliveryController@cargoentry','middleware' => 'checkRight:PD_CARGO_ADMIN_ENTRY']);
-Route::post('cargoentry/load',		['uses' =>	'Cargo\CargoEntryController@load','middleware' => 'saveWorkspace']);
+Route::post('cargoentry/load',		['uses' =>	'Cargo\CargoEntryController@load'	,'middleware' => 'saveWorkspace']);
 Route::post('cargoentry/save', 		'Cargo\CargoEntryController@save');
-Route::post('cargoentry/nominate', 		'Cargo\CargoEntryController@nominate');
+Route::post('cargoentry/nominate', 	'Cargo\CargoEntryController@nominate');
 
-Route::get('pd/cargonomination',			['uses' =>'ProductDeliveryController@cargonomination','middleware' => 'checkRight:PD_CARGO_ADMIN_NOMINATION']);
-Route::post('cargonomination/load',			['uses' =>	'Cargo\CargoNominationController@load','middleware' => 'saveWorkspace']);
+Route::get('pd/cargonomination',			['uses' =>'ProductDeliveryController@cargonomination'	,'middleware' => 'checkRight:PD_CARGO_ADMIN_NOMINATION']);
+Route::post('cargonomination/load',			['uses' =>'Cargo\CargoNominationController@load'		,'middleware' => 'saveWorkspace']);
 Route::post('cargonomination/save', 		'Cargo\CargoNominationController@save');
 Route::post('cargonomination/loadsrc', 		'Cargo\CargoNominationController@loadsrc');
 Route::post('cargonomination/confirm', 		'Cargo\CargoNominationController@confirm');
@@ -374,6 +374,7 @@ Route::post('listCharts', 'graphController@getListCharts');
 Route::post('deleteChart', 'graphController@deleteChart');
 Route::post('saveChart', 'graphController@saveChart');
 Route::post('getProperty', 'graphController@getProperty');
+Route::post('graph/filter', ['uses' =>'graphController@filter','middleware' => 'checkRight:VIS_ADVGRAPH']);
 
 Route::get('dashboard',		['uses' =>'DVController@dashboard',		'middleware' => 'checkRight:VIS_DASHBOARD']);
 Route::post('dashboard/all',['uses' =>'DataVisualization\DashboardController@all',	'middleware' => 'checkRight:VIS_DASHBOARD']);

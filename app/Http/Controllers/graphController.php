@@ -625,4 +625,14 @@ class graphController extends Controller {
 	
 		return $tmp;
 	}
+	
+	public function filter(Request $request){
+		$postData 		= $request->all();
+		$filterGroups	= \Helper::getCommonGroupFilter();
+		if(isset($filterGroups['dateFilterGroup'])) unset($filterGroups['dateFilterGroup']);
+		return view ( 'graph.editfilter',['filters'			=> $filterGroups,
+				'prefix'			=> "secondary_",
+				"currentData"		=> $postData
+		]);
+	}
 }
