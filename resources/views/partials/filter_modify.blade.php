@@ -105,6 +105,8 @@
 		 		filters.preOnchange("secondary_ObjectDataSource");
 		 		isFirstDisplay = true;
 		 		if($("#secondary_IntObjectType").val()=="KEYSTORE") $("#secondary_ObjectDataSource").change();
+		 		if(typeof editBox.updateExtraFilterData == "function")
+					editBox.updateExtraFilterData(span.data());
 			};
 		
 			editBox.editSelectedObjects = function (dataStore,resultText,x){

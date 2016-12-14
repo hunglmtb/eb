@@ -1017,7 +1017,7 @@ class CodeController extends EBController {
     	$postData 		= $request->all();
     	$filterGroups	= \Helper::getCommonGroupFilter();
     	if(isset($filterGroups['dateFilterGroup'])) unset($filterGroups['dateFilterGroup']);
-    	return view ( 'partials.editfilter',['filters'			=> $filterGroups,
+    	return view ( 'graph.editfilter',['filters'			=> $filterGroups,
     									'prefix'			=> "secondary_",
     									"currentData"		=> $postData
     	]);
