@@ -459,21 +459,6 @@ class graphController extends Controller {
 				$ci=0;
 				foreach($ya as $yat){
 					$ys=explode("^^^",$yat);
-					/* $yaxis.=($yaxis==""?"":",")."
-							{
-								labels: {
-									format: '{value}',
-									style: {
-											color: Highcharts.getOptions().colors[$ci]
-									}
-								},
-								title: {
-									text: '$ys[1]',
-									style: {
-										color: Highcharts.getOptions().colors[$ci]
-									}
-								}
-							".($ys[0]=="R"?",opposite: true":"")."}"; */
 					$ci++;
 					$yaxisItem = [
 									"labels"	=> [
