@@ -418,6 +418,7 @@ class graphController extends Controller {
 		$max1 = 0;
 		$min2 = 0;
 		$max2 = 0;
+		$yaxisArray=[];
 		if($no_yaxis_config){
 			$min1=($minV<0?$minV:0);
 			$div=5;
@@ -455,7 +456,6 @@ class graphController extends Controller {
 		}
 		else{
 			if(count($ya)>0){
-				$yaxisArray=[];
 				$ci=0;
 				foreach($ya as $yat){
 					$ys=explode("^^^",$yat);
