@@ -71,6 +71,7 @@ MANUAL ALLOCATE PLAN
 		return {tableOption :	{searching		: false,
 								ordering		: false,
 								disableLeftFixer: true,
+								autoWidth		: false,
 // 								scrollY			: '350px',
 								},
 				invisible:[]};

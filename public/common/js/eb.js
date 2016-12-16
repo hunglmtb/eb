@@ -1176,6 +1176,7 @@ var actions = {
 		          destroy: true,
 		          "columnDefs": uoms,
 		          "scrollX": true,
+//		         "autoWidth": false,
 		         "autoWidth": "800px",
 //		       	"scrollY":        "37vh",
 //		         "scrollY":        "250px",

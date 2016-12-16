@@ -134,8 +134,8 @@ Constrain diagrams
 		    actionsBtn.appendTo($("#objectListContainer"));
 		    $("#floatBox").dialog( {
 				editId	: "editBoxContentview",
-				height	: editBox.size.height,
-				width	: editBox.size.width,
+				height	: 470,
+				width	: 950,
 				position: { my: 'top', at: 'top+150' },
 				modal	: true,
 				title	: "Edit Summary Item",
@@ -213,8 +213,8 @@ Constrain diagrams
 	editBox.loadUrl = "/choke/filter";
 
 	editBox.size = {
-						height 	: 470,
-						width 	: 950,
+						height 	: 300,
+						width 	: 500,
 					};
 
 	editBox.renderContrainTable = function (value,postData){
