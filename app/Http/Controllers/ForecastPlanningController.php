@@ -68,6 +68,7 @@ class ForecastPlanningController extends EBController {
 	public function choke(){
 		$filterGroups = array(	'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
 																['id'=>'date_end','name'=>'To date']),
+								'enableButton'			=> 	false,
 						);
 	
 		return view ( 'fp.choke',['filters'=>$filterGroups]);

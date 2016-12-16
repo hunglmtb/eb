@@ -174,7 +174,9 @@ Route::post('me/setting/save', 		'UserSettingController@saveSetting');
 Route::get('fp/loadplanforecast',	['uses' =>'ForecastPlanningController@loadplan'	,'middleware' => 'checkRight:FP_LOAD_PLAN_FORECAST']);
 Route::get('fp/choke',				['uses' =>'ForecastPlanningController@choke'	,'middleware' => 'checkRight:CF_VIEW_CONFIG']);
 Route::post('choke/load',			['uses' =>'Forecast\ChokeController@load'		,'middleware' => 'checkRight:CF_VIEW_CONFIG']);
+Route::post('choke/save',			['uses' =>'Forecast\ChokeController@save'		,'middleware' => 'checkRight:CF_VIEW_CONFIG']);
 Route::post('choke/filter', 		['uses' =>'Forecast\ChokeController@filter'		,'middleware' => 'checkRight:CF_VIEW_CONFIG']);
+Route::post('choke/diagram', 		['uses' =>'Forecast\ChokeController@diagram'	,'middleware' => 'checkRight:CF_VIEW_CONFIG']);
 
 Route::get('pd/cargoentry',			['uses' =>'ProductDeliveryController@cargoentry','middleware' => 'checkRight:PD_CARGO_ADMIN_ENTRY']);
 Route::post('cargoentry/load',		['uses' =>	'Cargo\CargoEntryController@load'	,'middleware' => 'saveWorkspace']);

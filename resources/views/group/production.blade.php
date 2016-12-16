@@ -57,7 +57,8 @@ $( document ).ready(function() {
     $( "#date_end" ).change(onChangeFunction);
 });
 </script>
-<div id="ebFilters_{{$functionName}}" class="{{$functionName}}" style="height:auto">
+@yield($prefix.'first_filter')
+<div id="ebFilters_{{$functionName}}" class="{{$functionName}} filterContainer" style="height:auto">
 	@foreach( $filterGroups as $key => $filters )
 			@if($key=='productionFilterGroup')
 			<div class = "product_filter">
@@ -81,12 +82,13 @@ $( document ).ready(function() {
 			@endif
 	@endforeach
 	@if($enableButton)
-		<div class="action_filter">
+		<div class="action_filter floatLeft">
 			@if(!auth()->user()->hasRight('DATA_READONLY')&&$enableSaveButton)
-				<input type="button" value="Save" name="B3" id = "buttonSave" onClick="actions.doSave(true)" style="width: 85px;foat:left; height: 26px">
+				<input type="button" value="Save" name="B3" id = "buttonSave" onClick="actions.doSave(true)" style="width: 85px;float:left; height: 26px">
+				<br>
 			@endif
 			<input type="button" value="Load data" id="buttonLoadData" name="B33"
-				onClick="actions.doLoad(true)" style="width: 85px; height: 26px;foat:left;">
+				onClick="actions.doLoad(true)" style="width: 85px; height: 26px;float:left;margin-top:7px">
 		</div>
 	@endif
 	@yield($prefix.'action_extra')

@@ -57,7 +57,8 @@ class ChokeController extends CodeController {
     			"CodeForecastType"		=>			 "1"
     	];
     	
-    	$set1 = ["NAME"		=> "FPSO Constraint Scenario test1",
+    	$set1 = ["ID"		=> 2,
+    			"NAME"		=> "FPSO Constraint Scenario test1",
     			"YCAPTION"	=> "Oil Limit (bbl) test1",
     			"CONFIG"	=> [
 			    					["NAME"		=> "max oil 1.1",
@@ -79,7 +80,8 @@ class ChokeController extends CodeController {
     							],
     			];
     	
-    	$set2 = ["NAME"		=> "FPSO Constraint Scenario test2",
+    	$set2 = ["ID"		=> 7,
+    			"NAME"		=> "FPSO Constraint Scenario test2",
     			"YCAPTION"	=> "Oil Limit (bbl) test2",
     			"CONFIG"	=> [
 			    					["NAME"		=> "max oil 2.1",
@@ -100,8 +102,8 @@ class ChokeController extends CodeController {
 			    					],
     							],
     	];
-     	return ['dataSet'=>[$set1,$set2]];
-//     	return ['dataSet'=>$dataSet];
+//      	return ['dataSet'=>[$set1,$set2]];
+     	return ['dataSet'=>$dataSet];
     }
     
     public function filter(Request $request){
@@ -112,5 +114,15 @@ class ChokeController extends CodeController {
 						    			'prefix'			=> "secondary_",
 						    			"currentData"		=> $postData
 						    	]);
+    }
+    
+    public function diagram(Request $request){
+    	$postData 		= $request->all();
+    	$filterGroups	= \Helper::getCommonGroupFilter();
+    	if(isset($filterGroups['dateFilterGroup'])) unset($filterGroups['dateFilterGroup']);
+    	return view ( 'choke.editfilter',['filters'			=> $filterGroups,
+    			'prefix'			=> "secondary_",
+    			"currentData"		=> $postData
+    	]);
     }
 }

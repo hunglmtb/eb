@@ -13,7 +13,7 @@
 			var dataStore = {};
 			var selects = $("#ebFilters_ select");
 			selects.each(function(index, element) {
-				dataStore[element.name] = element.value;
+				if(element.name!="") dataStore[element.name] = element.value;
 			});
 			return dataStore;
 		}
