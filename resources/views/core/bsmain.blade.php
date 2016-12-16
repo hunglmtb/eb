@@ -28,8 +28,8 @@ $useFeatures	= isset($useFeatures)	? $useFeatures	:[];
 	<div id="ebfilter" style="width:100%; clear:both">@yield('ebfilter')</div>
 	<div id="mainContent" style="width:100%; clear:both">@yield('content')</div>
 </div>
-@yield('adaptData')
 @yield('extraAdaptData')
+@yield('adaptData')
 @stop
 
 @section('script')

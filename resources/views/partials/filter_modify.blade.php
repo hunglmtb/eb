@@ -112,6 +112,7 @@
 		
 			editBox.editSelectedObjects = function (dataStore,resultText,x){
 				if(currentSpan!=null) {
+					dataStore.text	= resultText;
 					currentSpan.data(dataStore);
 					currentSpan.text(resultText);
 					var li = currentSpan.closest( "li" );

@@ -9,10 +9,8 @@ $subMenus = [
 		array('title' => 'WORKFLOW', 'link' => 'workflow')
 ];
 ?>
-@extends('core.bsmain',['subMenus' => array('pairs' => $subMenus, 'currentSubMenu' => $currentSubmenu)])
-
+@extends('core.bstemplate',['subMenus' => array('pairs' => $subMenus, 'currentSubMenu' => $currentSubmenu)])
 @section('script')
-	@parent
 	<script type="text/javascript" src="/common/js/mxClient.js"></script>
 	<script type="text/javascript" src="/common/js/utils.js"></script>
 	<script type="text/javascript" src="/common/js/mxApplication.js?3"></script>
@@ -21,4 +19,18 @@ $subMenus = [
 	<link rel="stylesheet" href="/common/css/diagram.css"/>
 	<link rel="stylesheet" href="/common/css/common.css"/>
 	<link rel="stylesheet" href="/common/css/styleTab.css"/>
+@stop	
+@section('main')
+
+<div id="content">
+	<div class="title">
+		@yield('title')
+	</div>
+	@yield('group')		
+
+	@yield('content')
+</div>
+@yield('adaptData')
+
 @stop
+

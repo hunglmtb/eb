@@ -24,6 +24,7 @@
 @section($prefix.'filter_extra')
 @parent
 	<script type='text/javascript'>
+		$('#{{$prefix}}buttonLoadData').hide();
 		var oBuildFilterData		= editBox.buildFilterData;
 		editBox.buildFilterData 	= function(){
 			var dataStore 			= oBuildFilterData();
@@ -36,8 +37,8 @@
 			if(currentSpan==null) $("#updateFilterBtn").hide();
 			else $("#updateFilterBtn").show();
 			
-// 			$("#edit_cboYPos").val(dataStore.cboYPos);
-// 			$("#edit_txt_y_unit").val(dataStore.txt_y_unit);
+ 			$("#cboOperation").val(dataStore.cboOperation);
+ 			$("#txtConstant").val(dataStore.txtConstant);
 		}
 	</script>
 @stop

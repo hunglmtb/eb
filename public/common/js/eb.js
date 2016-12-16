@@ -176,6 +176,8 @@ var typetoclass = function (data){
 			return "checkbox";
 		case 6:
 			return "timepicker";
+		/*case 100:
+			return "color";*/
 		default:
 			return data;
 	}
@@ -555,7 +557,24 @@ var actions = {
 			editable['value'] = cellData==null?(collection!=null&&collection[0]!=null?collection[0].ID:0):cellData;
 			$(td).editable(editable);
 			return;
-	    	break;
+		case "color":
+			$(td).addClass( "_colorpicker" );
+			$(td).data(cellData);
+			$(td).css("background-color",'#'+cellData);
+			$(td).css("color",'#'+cellData);
+			$(td).ColorPicker({
+				onSubmit: function(hsb, hex, rgb, el) {
+					$(el).val(hex);
+					$(el).css({"background-color":"#"+hex,"color":"#"+hex});
+					$(el).ColorPickerHide();
+					rowData[columnName] = hex;
+//					$(td).text(hex);
+				},
+				onBeforeShow: function () {
+					$(this).ColorPickerSetColor(rowData[columnName]);
+				}
+			});
+			return;	
 		}	
 		$(td).editable(editable);
     	$(td).on("shown", function(e, editable) {
@@ -838,6 +857,7 @@ var actions = {
 					$(td).addClass( "contenBoxBackground");
 					$(td).addClass( "cell"+type );
 	 				$(td).addClass( colName );
+	 				
 		 			if(!data.locked&&actions.isEditable(property,rowData,data.rights)){
 		 				$(td).addClass( "editInline" );
 		 	        	var table = $('#table_'+tab).DataTable();
@@ -876,6 +896,7 @@ var actions = {
 		}
 		switch(type){
 		case "text":
+		case "color":
 			if(columnName=='UOM'){
 				cell["render"] = function ( data2, type2, row ) {
 					if (data2==null||data2=='') return "&nbsp";

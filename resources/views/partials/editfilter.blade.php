@@ -4,7 +4,7 @@
 
 @section('secondary_filter_extra') 
 	<div class="action_filter">
-		<input type="button" value="Save" id="buttonLoadData" name="B33"
+		<input type="button" value="Save" id="secondary_buttonLoadData" name="B33"
 				onClick="editBox.finishSelectingObjects(true)" style="width: 85px; height: 26px;">
 	</div>
 	
@@ -18,7 +18,7 @@
 			return dataStore;
 		}
 		
-		 editBox.finishSelectingObjects = function(close){
+		editBox.finishSelectingObjects = function(close){
 			var dataStore 	= editBox.buildFilterData();
 			var resultText 	= editBox.buildFilterText();
 			if(typeof editBox.editSelectedObjects == "function") 

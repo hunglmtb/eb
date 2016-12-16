@@ -228,7 +228,7 @@ table.dataTable {
 
 .toolbarAction {
 	float: left;
-	margin-top: 5px;
+	/* margin-top: 5px; */
 }
 
 .actionLink {

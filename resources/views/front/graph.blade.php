@@ -5,6 +5,14 @@ $useFeatures		= [
 						['name'	=>	"filter_modify",
 						"data"	=>	["isFilterModify"	=> true]],
 					];
+$subMenus = [
+		array('title' => 'NETWORK MODELS', 'link' => 'diagram'),
+		array('title' => 'DATA VIEWS', 'link' => 'dataview'),
+		array('title' => 'REPORT', 'link' => 'workreport'),
+		array('title' => 'ADVANCED GRAPH', 'link' => 'graph'),
+		array('title' => 'TASK MANAGER', 'link' => 'approvedata'),
+		array('title' => 'WORKFLOW', 'link' => 'workflow')
+];
 ?>
 
 @section('frequenceFilterGroupMore')
@@ -71,7 +79,7 @@ $useFeatures		= [
 </table>
 @stop
 
-@extends('core.bsdiagram')
+@extends('core.bsmain',['subMenus' => array('pairs' => $subMenus, 'currentSubMenu' => $currentSubmenu)])
 
 @section('content')
 <style>

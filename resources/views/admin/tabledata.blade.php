@@ -254,6 +254,7 @@ function scopeChange(c){
 "<option value='DEFERMENT_DETAIL'>DEFERMENT_DETAIL</option>"+
 "<option value='DEFERMENT_GROUP'>DEFERMENT_GROUP</option>"+
 "<option value='DEFERMENT_GROUP_EU'>DEFERMENT_GROUP_EU</option>"+
+"<option value='WORK_ORDER'>WORK_ORDER</option>"+
 		"";
 	}
 	else if($("#cboObjectScope").val()=="TEST")
@@ -481,7 +482,7 @@ function scopeChange(c){
 				<option value="CONFIG">CONFIG tables</option>
 				<option value="ENERGY">ENERGY OBJECT tables</option>
 				<option value="STORAGE">TANKS, STORAGE tables</option>
-				<option value="DEFER">DEFERMENT tables</option>
+				<option value="DEFER">Deferment and MMR tables</option>
 				<option value="TEST">TEST tables</option>
 				<option value="RESERVOIR">RESERVOIR tables</option>
 				<option value="NETWORK">NETWORK tables</option>

@@ -282,25 +282,30 @@ class graphController extends Controller {
 		
 			if (!$obj_type_id_field) continue;
 			
-			$ypos=$types[count($types)-2];
-			$ytext=$types[count($types)-1];
+			if(count($types)>2){
+				$ypos	=$types[count($types)-2];
+				$ytext	=$types[count($types)-1];
+			}
+			else {
+				$ytext	= "";
+				$ypos	= "";
+			}
 			
-			if($ytext=="")
-				$ypos="";
-				$yaIndex=-1;
-				if($ypos!="" && $ytext!=""){
-					$yatext=$ypos."^^^".$ytext;
-					for($i=0;$i<count($ya);$i++)
-						if($ya[$i]==$ytext){
-							$yaIndex=$i;
-							break;
-					}
-					if($yaIndex<0){
-						array_push($ya,$yatext);
-						$yaIndex=count($ya)-1;
-					}
-					$no_yaxis_config=false;
+			if($ytext=="") $ypos="";
+			$yaIndex=-1;
+			if($ypos!="" && $ytext!=""){
+				$yatext=$ypos."^^^".$ytext;
+				for($i=0;$i<count($ya);$i++)
+					if($ya[$i]==$ytext){
+						$yaIndex=$i;
+						break;
 				}
+				if($yaIndex<0){
+					array_push($ya,$yatext);
+					$yaIndex=count($ya)-1;
+				}
+				$no_yaxis_config=false;
+			}
 			
 				
 			$pos=strpos($xs[3],"@");

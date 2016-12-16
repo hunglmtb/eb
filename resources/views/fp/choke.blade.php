@@ -25,6 +25,8 @@ Constrain diagrams
 @parent
 	<!-- <link rel="stylesheet" type="text/css" href="/common/tooltipster/css/tooltipster.bundle.min.css" />
     <script type="text/javascript" src="/common/tooltipster/js/tooltipster.bundle.min.js"></script> -->
+    <link rel="stylesheet" media="screen" type="text/css" href="/common/colorpicker/css/colorpicker.css" />
+	<script type="text/javascript" src="/common/colorpicker/js/colorpicker.js"></script>
 @stop
 
 @section('action_extra')
@@ -48,7 +50,8 @@ Constrain diagrams
 @stop
 
 @section('extra_editBoxContentview')
-<div id="objectList" style="overflow-x: hidden;z-index: 1001;position: relative;float: right;">
+<div id="objectListContainer" style="overflow-x: hidden;z-index: 1001;position: relative;float: right;width:44%;height:100%">
+	<div id="objectList" style="height:90%;width:100%;overflow-x: hidden;"></div>
 </div>
 @stop
 
@@ -57,6 +60,14 @@ Constrain diagrams
 <script>
 	actions.loadUrl = "/choke/load";
 	actions.saveUrl = "/choke/run";
+
+	actions.type = {
+			idName:['ID'],
+			keyField:'ID',
+			saveKeyField : function (model){
+				return 'ID';
+				},
+			};
 	
 	actions.enableUpdateView = function(tab,postData){
 		return false;
@@ -66,6 +77,7 @@ Constrain diagrams
 		return {tableOption :	{searching		: false,
 								ordering		: true,
 								scrollY			: false,
+								"info"			: false,
 								},
 				invisible:[]};
 		
@@ -75,6 +87,7 @@ Constrain diagrams
 		return true;
 	}
 
+	addingOptions.keepColumns = ['GROUP','COLOR'];
 
 	var renderFirsColumn = actions.renderFirsColumn;
 	actions.renderFirsColumn  = function ( data, type, rowData ) {
@@ -90,15 +103,24 @@ Constrain diagrams
 		var moreFunction = function(e){
 		    var list = editBox.renderObjectsList(rowData.OBJECTS);
 		    $("#objectList").html("");
-		    $("#objectList").css("width","44%");
-		    $("#objectList").css("height","87%");
-		    $("#objectList").css("z-index","1001");
 		    $("#objectList").addClass("product_filter");
-		    
 		    $("#editBoxContentview").css("float","left");
 		    $("#editBoxContentview").css("width","54%");
 		    list.appendTo($("#objectList"));
 
+		    $("button[id=actionsavefilter]").remove();
+		    var actionsBtn = $("<button id ='actionsavefilter' class='myButton' style='width: 61px;float:right'>Save</button>");
+		    actionsBtn.click(function() {
+		    	var lis			= $("#objectList ul:first li");
+				var objects		= [];
+				$.each(lis, function( index, li) {
+					var span = $(li).find("span:first");
+					objects.push(span.data());
+				});
+				rowData.OBJECTS = objects;
+ 				editBox.closeEditWindow(true);
+			});
+		    actionsBtn.appendTo($("#objectListContainer"));
 		    $("#floatBox").dialog( {
 				editId	: "editBoxContentview",
 				height	: editBox.size.height,
@@ -108,11 +130,15 @@ Constrain diagrams
 				title	: "Edit Summary Item",
 				close	: function(event) {
 							$("#objectList").css('display','none');
+							$("button[id=actionsavefilter]").css('display','none');
+						    $("button[id=actionsavefilter]").remove();
 					   	 },
 		   	 	open	: function( event, ui ) {
 							$("#objectList").css('display','block');
+// 						    $("#actionsavefilter").css('display','block');
 						},
 			});
+			$("#box_loading").css("display","none");
 		    $("#editBoxContentview").show();
 		    $("#contrainList").hide();
 		    editBox.renderFilter();
@@ -121,6 +147,51 @@ Constrain diagrams
 		table.$('#item_edit_'+id).click(moreFunction);
 	};
 	actions['addMoreHandle']  = addMoreHandle;
+
+	var obuildFilterText = editBox.buildFilterText;
+	editBox.buildFilterText = function(){
+		 	var resultText 		= obuildFilterText();
+			var	operationVal	= $("#txtConstant").val();
+			var pvalue 			= parseFloat(operationVal);
+			pvalue 				= isNaN(pvalue)? 0:pvalue;
+			if(pvalue!=0){
+				var	operation	= $("#cboOperation").val();
+				var extraText	= operation!=null&&operationVal!=""&&operation!=""?""+operation+operationVal:"";
+				resultText		+= extraText;
+			}
+			return resultText;
+		}
+
+
+	var currentDiagram = {	
+							CONFIG		: [],
+							NAME		: '',
+							YCAPTION	: 'Oil Limit'
+						};
+	var oAfterDataTable	= actions.afterDataTable;
+	actions.afterDataTable = function (table,tab){
+		oAfterDataTable(table,tab);
+		var diagramTitle			= $('<input type="text" style="width:300px" id="txtDiagramName" name="txtDiagramName" size="15" value="">');
+		diagramTitle.val(currentDiagram!=null?currentDiagram.NAME:"");
+		var contraintDiagramName 	= $('<div><b>Contraint Diagram Name </b></div>');
+		diagramTitle.appendTo(contraintDiagramName);
+		contraintDiagramName.css("float","right");
+		contraintDiagramName.appendTo($("#toolbar_"+tab));
+		$("#toolbar_"+tab).css("width","100%");
+	};
+
+	$(document).ready(function () {
+		var cfirstColumn = {data	: '{{$tableTab}}'};
+		var cproperties = editBox.buildTableProperties(currentDiagram,[cfirstColumn]);
+		var tableData = {
+				'{{config("constants.tabTable")}}'	: '{{$tableTab}}',
+				dataSet		: currentDiagram.CONFIG,
+				properties	: cproperties,
+				postData	: {'{{config("constants.tabTable")}}' : "{{$tableTab}}"},
+				};
+		actions.loadSuccess(tableData);
+	});
+	
 </script>
 @stop
 
@@ -154,6 +225,7 @@ Constrain diagrams
 												properties	: editBox.buildTableProperties(value,data.properties),
 												postData	: data.postData,
 												};
+										currentDiagram		= value;
 										actions.loadSuccess(tableData);
 									});
 									span.addClass("clickable");
@@ -171,6 +243,7 @@ Constrain diagrams
 					    	    	};
 							$("#objectList").css('display','none');
 							editBox.showDialog(option,success);
+						    $("button[id=actionsavefilter]").remove();
 						}
 						
 	editBox.isNotSaveGotData = function (url,viewId){
@@ -187,27 +260,31 @@ Constrain diagrams
  	 		  				{	'data' 		: 'NAME',
  	 		  					'title' 	: 'Summary Items'  ,
  	 		  					'width'		: 100,
- 	 		  					'INPUT_TYPE': 1
+ 	 		  					'INPUT_TYPE': 1,
+ 	 		  					DATA_METHOD	: 1
  	 		  				},
  	 		  				{	'data' 		: 'GROUP',
  	 		  					'title' 	: 'Group'  ,
  	 		  					'width'		: 50,
- 	 		  					'INPUT_TYPE': 1
+ 	 		  					'INPUT_TYPE': 1,
+ 	 		  					DATA_METHOD	: 1
  	 		  				},	 	
  	 		  				{	'data' 		: 'COLOR',
  	 		  					'title' 	: 'Color'  ,
  	 		  					'width'		: 40,
- 	 		  					'INPUT_TYPE': 1
+ 	 		  					'INPUT_TYPE': 'color',
+ 	 		  					DATA_METHOD	: 1
  	 		  				},
  	 		  				{	'data' 		: 'VALUE',
  	 		  					'title' 	: 'Value'  ,
  	 		  					'width'		: 60,
- 	 		  					'INPUT_TYPE': 2
+ 	 		  					'INPUT_TYPE': 2,
  	 		  				},
  	 		  				{	'data' 		: 'FACTOR',
  	 		  					'title' 	: 'Factor'  ,
  	 		  					'width'		: 60,
- 	 		  					'INPUT_TYPE': 2
+ 	 		  					'INPUT_TYPE': 2,
+ 	 		  					DATA_METHOD	: 1
  	 		  				},
  	 		  				{	'data' 		: 'YCAPTION',
  	 		  					'title' 	: constrain.YCAPTION,
@@ -221,10 +298,12 @@ Constrain diagrams
  	editBox.renderObjectsList = function (objects){
  		var tooltipContent = $("<div>");
    		var ul = $("<ul class='ListStyleNone'></ul>");
-	  	$.each(objects, function( index, object) {
-		    var text 			= editBox.renderOutputText(object);
-	  		editBox.add2ObjectList(object,ul,text);
-		});
+   		ul.sortable();
+   		if(typeof objects == "object"){
+		  	$.each(objects, function( index, object) {
+		  		editBox.add2ObjectList(object,ul);
+			});
+   		}
 		ul.appendTo(tooltipContent);
 		return 	tooltipContent;
 	};
@@ -235,8 +314,10 @@ Constrain diagrams
 		currentSpan		=	span;
 	}
 	
-	editBox.add2ObjectList = function (object,ul,text){
-	    object.text			= text;
+	editBox.add2ObjectList = function (object,ul){
+		if(typeof object.text == 'undefined' || object.text =='')
+			object.text		= editBox.renderOutputText(object);
+		var text			= object.text;
 	    var li 				= $("<li class='x_item'></li>");
 		var span 			= $("<span></span>");
 		var del				= $('<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="/img/x.png">');
@@ -258,10 +339,18 @@ Constrain diagrams
 		var object 		= editBox.buildFilterData();
 		var ul 			= $("#objectList ul:first");
 		var text 		= editBox.buildFilterText();
-		var span		= editBox.add2ObjectList(object,ul,text);
+		object.text		= text;
+		var span		= editBox.add2ObjectList(object,ul);
 		focusOnCurrentSpan(span);
 	}
+
 	</script>
+	
+	<style>
+	#table_ConstraintDiagram tbody th, #table_ConstraintDiagram tbody td {
+		padding: 2px;
+	}
+	</style>
 @stop
 
 
