@@ -176,6 +176,7 @@ Route::get('fp/choke',				['uses' =>'ForecastPlanningController@choke'	,'middlew
 Route::post('choke/load',			['uses' =>'Forecast\ChokeController@load'		,'middleware' => 'checkRight:CF_VIEW_CONFIG']);
 Route::post('choke/save',			['uses' =>'Forecast\ChokeController@save'		,'middleware' => 'checkRight:CF_VIEW_CONFIG']);
 Route::post('choke/filter', 		['uses' =>'Forecast\ChokeController@filter'		,'middleware' => 'checkRight:CF_VIEW_CONFIG']);
+Route::post('choke/summary', 		['uses' =>'Forecast\ChokeController@summary'	,'middleware' => 'checkRight:CF_VIEW_CONFIG']);
 Route::post('choke/diagram', 		['uses' =>'Forecast\ChokeController@diagram'	,'middleware' => 'checkRight:CF_VIEW_CONFIG']);
 
 Route::get('pd/cargoentry',			['uses' =>'ProductDeliveryController@cargoentry','middleware' => 'checkRight:PD_CARGO_ADMIN_ENTRY']);

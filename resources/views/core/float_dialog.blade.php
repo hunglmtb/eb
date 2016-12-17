@@ -39,10 +39,11 @@
 				url 		= option.url;
 				viewId 		= option.viewId;
 				editId		= postData.id;
+				var dSize	= typeof option.size=='object'?option.size: editBox.size;
 				var dialogOptions = {
 							editId	: editId,
-							height	: editBox.size.height,
-							width	: editBox.size.width,
+							height	: dSize.height,
+							width	: dSize.width,
 							position: { my: 'top', at: 'top+150' },
 							modal	: true,
 							title	: title,

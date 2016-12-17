@@ -38,7 +38,7 @@ Constrain diagrams
 	<input type="button" value="Save" id="buttonSaveContrain" name="buttonSave" onClick="editBox.saveConstrain()" style="margin-top:5px;width: 85px; height: 26px;clear:both;">
 </div>
 <div class="action_filter" style="clear:both;">
-	<input type="button" value="Generate Diagram" id="buttonGenContrain" name="buttonGen" onClick="editBox.genDiagram()" style="top: -20px;position: relative;width: 255px; height: 26px;float:left;">
+	<input type="button" value="Generate Diagram" id="buttonGenContrain" name="buttonGen" onClick="editBox.genDiagramOfTable()" style="top: -20px;position: relative;width: 255px; height: 26px;float:left;">
 </div>
 
 @stop
@@ -49,7 +49,13 @@ Constrain diagrams
 		class="fixedtable nowrap display">
 	</table>
 </div>
+
 @stop
+
+@section('content')
+	<div id="diagramContainer" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+@stop
+
 
 @section('editBoxContentview')
 	@include('choke.editfilter',['filters'			=> $filterGroups,
@@ -134,8 +140,8 @@ Constrain diagrams
 		    actionsBtn.appendTo($("#objectListContainer"));
 		    $("#floatBox").dialog( {
 				editId	: "editBoxContentview",
-				height	: 470,
-				width	: 950,
+				height	: editBox.size.height,
+				width	: editBox.size.width, 
 				position: { my: 'top', at: 'top+150' },
 				modal	: true,
 				title	: "Edit Summary Item",
@@ -213,15 +219,16 @@ Constrain diagrams
 	editBox.loadUrl = "/choke/filter";
 
 	editBox.size = {
-						height 	: 300,
-						width 	: 500,
+						height 	: 420,
+						width 	: 950,
 					};
 
-	editBox.renderContrainTable = function (value,postData){
+	editBox.renderContrainTable = function (value,convertJson=true){
 		var tableData = {
-				dataSet		: JSON.parse(value.CONFIG),
+				dataSet		: convertJson?JSON.parse(value.CONFIG):value.CONFIG,
 				properties	: editBox.buildTableProperties(value),
 				postData	: {'{{config("constants.tabTable")}}'	: '{{$tableTab}}'},
+// 				columnDefs	: [],
 				};
 		currentDiagram		= value;
 		actions.loadSuccess(tableData);
@@ -235,13 +242,39 @@ Constrain diagrams
 			$.each(dataSet, function( index, value) {
 		    	var li 				= $("<li class='x_item'></li>");
 				var span 			= $("<span></span>");
-				var del				= $('<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="/img/x.png">');
+				var del				= $('<img valign="middle" class="xclose" src="/img/x.png">');
 				span.appendTo(li);
 				del.appendTo(li);
+
+				del.click(function() {
+					if(!confirm("Are you sure you want to delete this item?")) return;
+					showWaiting();
+					$.ajax({
+						url			: actions.saveUrl,
+						type		: "post",
+						data		: {
+											deleteData	: {
+															{{$tableTab}}	: [value.ID]
+															}
+									},
+						success		: function(data){
+							hideWaiting();
+							li.remove();
+							console.log ( "delConstrain success ");
+						},
+						error		: function(data) {
+							hideWaiting();
+							console.log ( "delConstrain error "/*+JSON.stringify(data)*/);
+							alert("delete Constrain error ");
+						}
+					});
+				});
+				
 				span.data(value);
 				span.click(function() {
 					editBox.closeEditWindow(true);
 					editBox.renderContrainTable(value);
+					editBox.loadContrainValue();
 				});
 				span.addClass("clickable");
 				span.text(value.NAME);
@@ -255,6 +288,10 @@ Constrain diagrams
 			 		postData 	: {tabTable : "{{$tableTab}}"},
 			 		url 		: actions.loadUrl,
 			 		viewId 		: 'contrainList',
+			 		size		: {
+										height 	: 300,
+										width 	: 500,
+									},
     	    	};
 		$("#objectList").css('display','none');
 		editBox.showDialog(option,success);
@@ -267,6 +304,7 @@ Constrain diagrams
 		var rows				= table.data().toArray();
 		$.each(rows, function( index, row) {
 			row.FACTOR			= row.FACTOR.replace(',','.');
+			row.DT_RowId		= Math.random().toString(36).substring(10);
 		});
 		currentDiagram.CONFIG	= convertJson?JSON.stringify(rows):rows;
 		currentDiagram.NAME		= $("#txtDiagramName").val();
@@ -304,16 +342,120 @@ Constrain diagrams
 		editBox.renderContrainTable(currentDiagram);
 	}
 
-	editBox.genDiagram = function (){
-		editBox.updateCurrentContrain(false);
+	editBox.genDiagramOfTable = function (){
+		editBox.loadContrainValue();
+	}
+
+	editBox.genDiagram = function (diagram,view){
+		var series = [];
+		for (var group in diagram.series) {
+			series.push({
+				type	: 'column',
+				color	: '#'+diagram.colors[group],
+// 				".($colors[$serie]?"color: '#$colors[$serie]',":"")."
+				name	: group,
+				data	: diagram.series[group],
+			});
+		}
+		
+		/* $.each(diagram.series, function( index, serie) {
+			var category 	= serie.category;
+			series.push({
+				type	: 'column',
+				color	: '#'+diagram.colors[category],
+// 				".($colors[$serie]?"color: '#$colors[$serie]',":"")."
+				name	: category,
+				data	: serie.category,
+			});
+		}); */
+
+		if(diagram.minY>0){
+			var lineData = Array.apply(null, Array(diagram.categories.length)).map(function (_, i) {return diagram.minY;});
+			series.push({
+				type: 'line',
+				color: 'red',
+				name: 'MinLevel',
+				lineWidth: 2,
+				showInLegend:false,
+				marker: {enabled: false},
+				states: {hover: {enabled: false}},
+				tooltip: {enabled: false,pointFormat: '{point.y:.2f}'},
+				data: lineData,
+			});
+		}	
+		var diagramOption	= {
+				chart: {
+		            zoomType		: 'xy',
+		            backgroundColor	: diagram.bgcolor,
+		        },
+				credits: false,
+		        title: {
+		            text: diagram.title,
+					style: {
+						fontWeight:"bold"
+					}
+		        },
+		        subtitle: {
+		            text: null
+		        },
+		        tooltip: {
+		            headerFormat: '<b>{series.name}</b><br>',
+		            pointFormat: '{point.x:%e. %b}: {point.y:.2f}'
+		        },
+		        exporting: {
+		            sourceWidth: view.width(),
+		            sourceHeight:view.height(),
+		            scale: 1,
+		            chartOptions: {
+		                subtitle: null
+		            }
+		        },
+				plotOptions: {
+		            column: {
+						stacking: 'normal',
+		                pointPadding: 0.2,
+		                borderWidth: 0
+		            }
+        		},
+        		series: series,
+        		xAxis: {
+                    categories:  diagram.categories,
+                    crosshair: false
+                },
+                yAxis: { // Primary yAxis
+                    labels: {
+                        format: '{value}',
+                    },
+                    title: {
+                        text: diagram.ycaption,
+                        style: {
+                            fontWeight:"bold"
+                        }
+                    },
+                    opposite: false,
+        			endOnTick: false,
+                }
+        };
+		view.highcharts(diagramOption);
+	}
+
+	editBox.loadContrainValue	= function (){
 		showWaiting();
+		editBox.updateCurrentContrain(false);
+		var constraintPostData 			= {	
+											date_begin	: $("#date_begin").val(),
+											date_end	: $("#date_end").val(),
+											constraints	: currentDiagram,
+											};
 		$.ajax({
-			url			: "/choke/diagram",
+			url			: "/choke/summary",
 			type		: "post",
-			data		: currentDiagram,
+			data		: constraintPostData,
 			success		: function(data){
 				hideWaiting();
 				console.log ( "genDiagram success ");
+				editBox.renderContrainTable(data.constraints,false);
+				editBox.genDiagram(data.diagram,$('#diagramContainer'));
 			},
 			error		: function(data) {
 				hideWaiting();
@@ -349,7 +491,7 @@ Constrain diagrams
  	 		  				},
  	 		  				{	'data' 		: 'VALUE',
  	 		  					'title' 	: 'Value'  ,
- 	 		  					'width'		: 30,
+ 	 		  					'width'		: 40,
  	 		  					'INPUT_TYPE': 2,
  	 		  				},
  	 		  				{	'data' 		: 'FACTOR',

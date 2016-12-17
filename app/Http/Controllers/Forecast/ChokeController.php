@@ -116,6 +116,88 @@ class ChokeController extends CodeController {
 						    	]);
     }
     
+    public function summary(Request $request){
+    	$postData 		= $request->all();
+    	$constraints	= $postData['constraints'];
+    	$beginDate 		= \Helper::parseDate($postData['date_begin']);
+    	$endDate 		= \Helper::parseDate($postData['date_end']);
+    	$constraints	= $postData['constraints'];
+    	 
+    	$sumField		= "V";
+    	if (count($constraints['CONFIG'])>0){
+    		$categories	= [];
+    		$colors 	= [];
+    		$minY 		= 1000000000;
+    		$groups		= [];
+    		$series		= [];
+    		foreach($constraints['CONFIG'] as $key => $constraint ){
+	    		$rquery				= null;
+	    		$factor				= $constraint['FACTOR'];
+	    		$factor				= $factor&&$factor!=''?$factor:0;
+	    		$category			= $constraint['NAME'];
+    			$group				= $constraint['GROUP'];
+    			$colors[$group]		= $constraint['COLOR'];
+    			$categories[] 		= $category;
+    			$serie				= [];
+		    	foreach($constraint['OBJECTS'] as $index => $object ){
+			    	$modelName		= 'App\Models\\' .$object["ObjectDataSource"];
+			    	$datefield		= $modelName::$dateField;
+			    	$objectIdField	= $modelName::$idField;
+			    	$objectId		= $object["ObjectName"];
+			    	$operation		= $object["cboOperation"];
+			    	$operationValue	= $object["txtConstant"];
+			    	$queryField		= $object["ObjectTypeProperty"];
+			    	$queryField		= $operation&&$operation!=''&&$operationValue&&$operationValue!=""&&$operationValue!=0?
+			    						"$queryField$operation$operationValue":
+			    						$queryField;
+			    	$query			= $modelName::where($objectIdField,$objectId)
+				    							->whereDate("$datefield", '>=', $beginDate)
+								    			->whereDate("$datefield", '<=', $endDate)
+				    							->select(\DB::raw("$queryField as $sumField"));
+			    	if ($index==0) $rquery = $query;
+			    	else 	$rquery->union($query);
+	    		}
+	    		$value								= 0;
+    			if ($rquery) {
+	    			$dataSet						= $rquery->get();
+		    		$value							= $dataSet->sum($sumField);
+		    		$ycaptionValue					= $value*$factor;
+		    		$minY							= ($ycaptionValue < $minY && $ycaptionValue>0)?$ycaptionValue:$minY;
+		    		$constraint['VALUE']			= $value;
+	    			$constraint['YCAPTION']			= $ycaptionValue;
+		    		$constraints['CONFIG'][$key]	= $constraint;
+	    		}
+	    		if(!array_key_exists($group,$series)) $series[$group] = [];
+    			$series[$group][$category] 			= $ycaptionValue;
+    		}
+    		
+    		$sampleSeries = array();
+    		foreach($colors as $group=> $color ){
+    			$sampleSeries[$group] = [];
+	    		for($j=0;$j<count($categories);$j++){
+	    				$sampleSeries[$group][] = array_key_exists($categories[$j], $series[$group])?$series[$group][$categories[$j]]:"null";
+    			}
+    			
+    		}
+    		
+    		$title 						= $constraints["NAME"];
+    		$ycaption 					= $constraints["YCAPTION"];
+    		if(!$ycaption) 	$ycaption	= "Oil Limit";
+    		if(!$title) 	$ycaption	= "Limit Diagram";
+    		$bgcolor					= "";
+	    	$postData["diagram"] = ["bgcolor"		=> $bgcolor,
+					    			"title"			=> $title,
+					    			"colors"		=> $colors,
+					    			"categories"	=> $categories,
+					    			"series"		=> $sampleSeries,
+	    							"ycaption"		=> $ycaption,
+	    							"minY"			=> $minY==1000000000?0:$minY,
+	    	];
+    	}
+    	$postData["constraints"] 	= $constraints;
+    	return response()->json($postData);
+    }
+    
     public function diagram(Request $request){
     	$postData 		= $request->all();
     	$filterGroups	= \Helper::getCommonGroupFilter();
