@@ -126,9 +126,8 @@ class ChokeController extends CodeController {
     	$sumField		= "V";
     	if (count($constraints['CONFIG'])>0){
     		$categories	= [];
-    		$colors 	= [];
+     		$groups 	= [];
     		$minY 		= 1000000000;
-    		$groups		= [];
     		$series		= [];
     		foreach($constraints['CONFIG'] as $key => $constraint ){
 	    		$rquery				= null;
@@ -136,9 +135,11 @@ class ChokeController extends CodeController {
 	    		$factor				= $factor&&$factor!=''?$factor:0;
 	    		$category			= $constraint['NAME'];
     			$group				= $constraint['GROUP'];
-    			$colors[$group]		= $constraint['COLOR'];
+     			$groups[]			= $group;
+    			 
     			$categories[] 		= $category;
     			$serie				= [];
+    			if (!array_key_exists('OBJECTS', $constraint)) continue;
 		    	foreach($constraint['OBJECTS'] as $index => $object ){
 			    	$modelName		= 'App\Models\\' .$object["ObjectDataSource"];
 			    	$datefield		= $modelName::$dateField;
@@ -168,17 +169,15 @@ class ChokeController extends CodeController {
 		    		$constraints['CONFIG'][$key]	= $constraint;
 	    		}
 	    		if(!array_key_exists($group,$series)) $series[$group] = [];
-    			$series[$group][$category] 			= $ycaptionValue;
+	    		$series[$group][$category] 			= [	
+    													"name"	=> $category,
+    													"data"	=> [$ycaptionValue],
+    													"color"	=> "#".$constraint['COLOR'],
+    													];
     		}
     		
-    		$sampleSeries = array();
-    		foreach($colors as $group=> $color ){
-    			$sampleSeries[$group] = [];
-	    		for($j=0;$j<count($categories);$j++){
-	    				$sampleSeries[$group][] = array_key_exists($categories[$j], $series[$group])?$series[$group][$categories[$j]]:"null";
-    			}
-    			
-    		}
+    		$groups		= array_unique($groups);
+    		$groups		= array_values($groups);
     		
     		$title 						= $constraints["NAME"];
     		$ycaption 					= $constraints["YCAPTION"];
@@ -187,9 +186,9 @@ class ChokeController extends CodeController {
     		$bgcolor					= "";
 	    	$postData["diagram"] = ["bgcolor"		=> $bgcolor,
 					    			"title"			=> $title,
-					    			"colors"		=> $colors,
+					    			"groups"		=> $groups,
 					    			"categories"	=> $categories,
-					    			"series"		=> $sampleSeries,
+					    			"series"		=> $series,
 	    							"ycaption"		=> $ycaption,
 	    							"minY"			=> $minY==1000000000?0:$minY,
 	    	];

@@ -347,34 +347,29 @@ Constrain diagrams
 	}
 
 	editBox.genDiagram = function (diagram,view){
-		var series = [];
+		var series 		= [];
+		var groupIndex	= 0;
+		var serieGroup;
 		for (var group in diagram.series) {
-			series.push({
-				type	: 'column',
-				color	: '#'+diagram.colors[group],
-// 				".($colors[$serie]?"color: '#$colors[$serie]',":"")."
-				name	: group,
-				data	: diagram.series[group],
-			});
+			serieGroup	= diagram.series[group];
+			groupIndex = diagram.groups.indexOf(group);
+			for (var category in serieGroup) {
+				serie		= serieGroup[category];
+				serie.type	= 'column';
+				serie.name	+= ' LIP';
+				for(var i = 0; i< groupIndex;i++){
+					serie.data.unshift(0);
+				}
+				series.push(serie);
+			}
 		}
 		
-		/* $.each(diagram.series, function( index, serie) {
-			var category 	= serie.category;
-			series.push({
-				type	: 'column',
-				color	: '#'+diagram.colors[category],
-// 				".($colors[$serie]?"color: '#$colors[$serie]',":"")."
-				name	: category,
-				data	: serie.category,
-			});
-		}); */
-
 		if(diagram.minY>0){
-			var lineData = Array.apply(null, Array(diagram.categories.length)).map(function (_, i) {return diagram.minY;});
+			var lineData = Array.apply(null, Array(diagram.groups.length)).map(function (_, i) {return diagram.minY;});
 			series.push({
 				type: 'line',
 				color: 'red',
-				name: 'MinLevel',
+				name: 'MPP',
 				lineWidth: 2,
 				showInLegend:false,
 				marker: {enabled: false},
@@ -419,7 +414,7 @@ Constrain diagrams
         		},
         		series: series,
         		xAxis: {
-                    categories:  diagram.categories,
+                    categories:  diagram.groups,
                     crosshair: false
                 },
                 yAxis: { // Primary yAxis
@@ -447,6 +442,7 @@ Constrain diagrams
 											date_end	: $("#date_end").val(),
 											constraints	: currentDiagram,
 											};
+		$('#diagramContainer').html("");
 		$.ajax({
 			url			: "/choke/summary",
 			type		: "post",
