@@ -13,7 +13,7 @@
 				if(isShowWaiting)	hideWaiting();
 				console.log ( "requestGenDiagram success ");
 				editBox.genDiagram(data.diagram,container);
-				if(typeof successFn == 'function') successFn(v);
+				if(typeof successFn == 'function') successFn(data);
 			},
 			error		: function(data) {
 				if(isShowWaiting)	hideWaiting();
