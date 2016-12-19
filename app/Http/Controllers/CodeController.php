@@ -285,12 +285,15 @@ class CodeController extends EBController {
     			"DATA_METHOD",
     			"INPUT_ENABLE",
     			'INPUT_TYPE',
+    			'VALUE_MAX',
     			'VALUE_MIN',
+    			'VALUE_WARNING_MAX',
+    			'VALUE_WARNING_MIN',
+    			'RANGE_PERCENT',
     			'VALUE_FORMAT',
     			'ID',
     			'FIELD_ORDER',
-    			'VALUE_MAX',
-    			'OBJECT_EXTENSION'
+    			'OBJECT_EXTENSION',
     	]);
     	return $properties;
     }

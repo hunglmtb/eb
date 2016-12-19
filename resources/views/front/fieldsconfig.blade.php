@@ -7,6 +7,7 @@ $objectExtension 		= isset($objectExtension)?$objectExtension:[];
 <script src="/common/js/jquery-2.1.3.js"></script>
 <script src="/common/js/js.js"></script>
 <script type="text/javascript">
+
 $(function(){
 	var ebtoken = $('meta[name="_token"]').attr('content');
 	$.ajaxSetup({
@@ -48,7 +49,6 @@ $(function(){
 	$("#data_field_effected").change(function(){
 		_fieldconfig.data_field_effected_change();
 	});
-
 	
 });
 
@@ -220,20 +220,23 @@ var _fieldconfig = {
 			var data = respondData.data;
 			$('#caption').text(data[0].COLUMN_NAME);
 			$('#friendly_name').val(data[0].LABEL);
-			$('#FDC_WIDTH').val(data[0].FDC_WIDTH);
 			$('#data_method').val(data[0].DATA_METHOD);
-			$('#input_type').val(data[0].INPUT_TYPE);
 
 			if(data[0].IS_MANDATORY == "1"){
 				$('#is_mandatory').prop('checked', true);
 			}else{
 				$('#is_mandatory').prop('checked', false); 
 			}
-			$('#formula').val(data[0].FORMULA);
-			$('#data_format').val(data[0].VALUE_FORMAT);
-			$('#max_value').val(data[0].VALUE_MAX);
-			$('#min_value').val(data[0].VALUE_MIN);
-
+			$('#FDC_WIDTH').val(data[0].FDC_WIDTH);
+			$('#INPUT_TYPE').val(data[0].INPUT_TYPE);
+			$('#FORMULA').val(data[0].FORMULA);
+			$('#VALUE_FORMAT').val(data[0].VALUE_FORMAT);
+			$('#VALUE_MAX').val(data[0].VALUE_MAX);
+			$('#VALUE_MIN').val(data[0].VALUE_MIN);
+			$('#VALUE_WARNING_MAX').val(data[0].VALUE_WARNING_MAX);
+			$('#VALUE_WARNING_MIN').val(data[0].VALUE_WARNING_MIN);
+			$('#RANGE_PERCENT').val(data[0].RANGE_PERCENT);
+			
 			if(data[0].USE_FDC == "1"){
 				$('#us_data').prop('checked', true);
 			}else{
@@ -308,7 +311,32 @@ var _fieldconfig = {
 			}
 
 			var objectExtensionTarget = _fieldconfig.objectExtensionTarget;
- 			
+
+			var basic = $("<span></span>");
+			basic.addClass("linkViewer");
+			basic.appendTo(li);
+			basic.editable({
+				type	: 'address',
+		        value: {
+		        		VALUE_MAX			: $("#VALUE_MAX").val(),
+		        		VALUE_MIN			: $("#VALUE_MIN").val(),
+		        		VALUE_WARNING_MAX	: $("#VALUE_WARNING_MAX").val(),
+		        		VALUE_WARNING_MIN	: $("#VALUE_WARNING_MIN").val(),
+		        		RANGE_PERCENT		: $("#RANGE_PERCENT").val(),
+		        },
+		        validate: function(value) {
+// 		            if(value.city == '') return 'city is required!'; 
+		        },
+		        display: function(value) {
+		            if(!value) {
+		                $(this).empty();
+		                return; 
+		            }
+		            var html = '<b>' + $('<div>').text(value.city).html() + '</b>, ' + $('<div>').text(value.street).html() + ' st., bld. ' + $('<div>').text(value.building).html();
+		            $(this).html("<b>basic</b><br>"); 
+		        }         
+		    });  
+			
 			var span = $("<span></span>");
 			span.addClass("linkViewer");
 			span.editable({
@@ -326,7 +354,7 @@ var _fieldconfig = {
 				        	       $.each(checked, function(i, v) { html.push($.fn.editableutils.escape(v.text)); });
 				        	       $(this).text(html.join(', '));
 				        	   } else {
-				        	       $(this).text("pick rules"); 
+				        	       $(this).text("advance"); 
 				        	   }
 				        	},
 		    });
@@ -419,15 +447,18 @@ var _fieldconfig = {
 			var table = $("#data_source").val();
 			
 			param = {
-				'table' : $("#data_source").val(),
-				'field' : field,
-				'data_method' : $("#data_method").val(),
-				'formula' : $("#formula").val(),
-				'input_type' : $("#input_type").val(),
-				'data_format' : $("#data_format").val(),
-				'max_value' : $("#max_value").val(),
-				'min_value' : $("#min_value").val(),
-				'fdc_width' : $("#FDC_WIDTH").val(),
+				'table' 				: $("#data_source").val(),
+				'field' 				: field,
+				'data_method' 			: $("#data_method").val(),
+				'data_format' 			: $("#data_format").val(),
+				'INPUT_TYPE' 			: $("#INPUT_TYPE").val(),
+				'FORMULA' 				: $("#FORMULA").val(),
+				'VALUE_MAX' 			: $("#VALUE_MAX").val(),
+				'VALUE_MIN' 			: $("#VALUE_MIN").val(),
+				'VALUE_WARNING_MAX' 	: $("#VALUE_WARNING_MAX").val(),
+				'VALUE_WARNING_MIN' 	: $("#VALUE_WARNING_MIN").val(),
+				'RANGE_PERCENT' 		: $("#RANGE_PERCENT").val(),
+				'FDC_WIDTH' 			: $("#FDC_WIDTH").val(),
 				'us_data' : $("#us_data").is(':checked') ? 1 : 0,
 				'us_gr' : $("#us_gr").is(':checked') ? 1 : 0,
 				'us_sr' : $("#us_sr").is(':checked') ? 1 : 0,
@@ -498,7 +529,7 @@ var _fieldconfig = {
                 <tr>
                   <td class="field">Input type</td>
                   <td>
-                  	<select size="1" name="input_type" style="width:332" id="input_type">
+                  	<select size="1" name="INPUT_TYPE" style="width:332" id="INPUT_TYPE">
                   	<option value="0"></option>
                   	@foreach($cfg_input_type as $re)
 						<option value="{!!$re['ID']!!}">{!!$re['NAME']!!}</option> 
@@ -515,7 +546,7 @@ var _fieldconfig = {
                 <tr>
                   <td class="field">Formula</td>
                   <td>
-                  <textarea name="formula" id="formula" style="width:332" rows="2"></textarea>
+                  <textarea name="FORMULA" id="FORMULA" style="width:332" rows="2"></textarea>
                   </td>
                 </tr>
                 <tr>
@@ -523,12 +554,24 @@ var _fieldconfig = {
                   <td><input type="text" name="data_format" id="data_format" size="50"></td>
                 </tr>
                 <tr>
-                  <td class="field">Max value</td>
-                  <td><input type="text" name="max_value" id="max_value" size="50"></td>
+                  <td class="field">Error Max Value</td>
+                  <td><input type="text" name=VALUE_MAX id="VALUE_MAX" size="50"></td>
                 </tr>
                 <tr>
-                  <td class="field">Min value</td>
-                  <td><input type="text" name="min_value" id="min_value" size="50"></td>
+                  <td class="field">Error Min value</td>
+                  <td><input type="text" name="VALUE_MIN" id="VALUE_MIN" size="50"></td>
+                </tr>
+                <tr>
+                  <td class="field">Warning Max Value</td>
+                  <td><input type="text" name="VALUE_WARNING_MAX" id="VALUE_WARNING_MAX" size="50"></td>
+                </tr>
+                <tr>
+                  <td class="field">Warning Min value</td>
+                  <td><input type="text" name="VALUE_WARNING_MIN" id="VALUE_WARNING_MIN" size="50"></td>
+                </tr>
+                <tr>
+                  <td class="field">Range %</td>
+                  <td><input type="text" name="RANGE_PERCENT" id="RANGE_PERCENT" size="50"></td>
                 </tr>
                 <tr style="height:30px">
                   <td class="field">Use for:</td>
@@ -592,11 +635,24 @@ var _fieldconfig = {
 	
 	<link href="/jqueryui-editable/css/jqueryui-editable.css" rel="stylesheet"/>
 	<script src="/jqueryui-editable/js/jqueryui-editable.js"></script>
+	<script src="/common/js/basicFieldConfig.js"></script>
 	
 	<link rel="stylesheet" media="screen" type="text/css" href="/common/colorpicker/css/colorpicker.css" />
 	<script type="text/javascript" src="/common/colorpicker/js/colorpicker.js"></script>
 	
 	<style>
  		._colorpicker{border:none;cursor:pointer}
+ 		.field{
+ 			white-space: nowrap;
+ 		}
+ 		.editable-address {
+		    display: block;
+		    margin-bottom: 5px;  
+		}
+		
+		.editable-address span {
+		    width: 115px;  
+		    display: inline-block;
+		}
 	</style>
 @stop

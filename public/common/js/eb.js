@@ -464,7 +464,7 @@ var actions = {
 	},
 	applyEditable : function (tab,type,td, cellData, rowData, property,collection){
 		var columnName = typeof property === 'string'?property:property.data;
-		var successFunction = actions.getEditSuccessfn(tab,td, rowData, columnName,collection,type);
+		var successFunction = actions.getEditSuccessfn(property,tab,td, rowData, columnName,collection,type);
 		var  editable = {
 	    	    title: 'edit',
 	    	    emptytext: '',
@@ -606,12 +606,6 @@ var actions = {
 		    		val = val!=null?""+val:"";
 		    		if(configuration.number.DECIMAL_MARK=='comma')
 		    			val = val.replace('.',',')
-//						val = val.split(".").join("");
-//					else val = val.split(",").join("");
-		    		/*
-					if(configuration.number.DECIMAL_MARK=='comma')
-						val = val.split(".").join("");
-					else val = val.split(",").join("");*/
 					editable.input.$input.val(val);
     		  }
     		  editable.input.$input.get(0).select();
@@ -638,46 +632,49 @@ var actions = {
     	    }
     	});
 	},
-	applyLockedCellHistory	:	function (tab,type,td, cellData, rowData, columnName){
-		if(type=="number") {
-			var successFunction = actions.getEditSuccessfn(tab,td, rowData, columnName,null,type);
-			var  editable = {
-					title			: 'edit',
-					emptytext		: '',
-					showbuttons		: false,
-					success			: successFunction,
-					onblur			: 'cancel',
-					extensionHandle	: function() {
-						actions.extensionHandle(tab,columnName,rowData,false,successFunction);
-					}
-			};
-//			$(td).css("position","relative");
-			var $newdiv1 = $( "<div class='fakeCell' style='width: 100%;height: 100%;position: absolute;left: 0; top: 0;'></div>" );
-			$( td ).append( $newdiv1 );
-			
-			$($newdiv1).editable(editable);
-			$($newdiv1).on("shown", function(e, editable) {
-				$(".extension-buttons").css("display","none");
-				$( editable.input.$input.get(0) ).closest( ".editable-container" ).css("float","right");
-				if (actions.historyUrl) {
-					$(".editable-input").css("display","none");
-//					$(".editable-input input").prop("disabled", true);
-					$(".extension-buttons").css("display","block");
-					$(td).css("display","table-cell");
-					$(".editable-extension").css("margin","0px");
-					$(".editable-container").css("float","left");
-				}
-			});
-		}
-	},
-	getEditSuccessfn  : function(tab, td, rowData, columnName,collection,type) {
+	getEditSuccessfn  : function(property,tab, td, rowData, columnName,collection,type) {
+		var originColor		= $(td).css('background-color');
 		return function(response, newValue) {
         	rowData = actions.putModifiedData(tab,columnName,newValue,rowData,type);
         	rowData[columnName] = newValue;
         	var table = $('#table_'+tab).DataTable();
-        	$(td).css('color', 'red');
+        	$(td).css('color', 'black');
+        	if(type=='number'){
+        		/*var cellProperty	= property;
+        		var objectExtension	= property.OBJECT_EXTENSION;
+        		
+        		if(objectExtension!=null&&objectExtension!=""){
+					var objects = $.parseJSON(objectExtension);
+					var objectId = rowData[actions.type.idName[0]];
+					var extension = objects[objectId];
+					if(typeof(extension) == "object"){
+						$.each(extension, function( index, value ) {
+							if(typeof(value) == "string") $(td).addClass( value );
+							else if (typeof(value) == "object" && typeof(value.color) != "undefined" )
+								$(td).css("background-color","#"+value.color);
+						});
+					}
+				}*/
+        		var minWarningValue = typeof(property.VALUE_WARNING_MIN) !== "undefined"&&
+    			property.VALUE_WARNING_MIN != null &&
+    			property.VALUE_WARNING_MIN != ""?
+    			parseFloat(property.VALUE_WARNING_MIN):-1*Number.MAX_VALUE;
+    			var maxWarningValue = typeof(property.VALUE_WARNING_MAX) !== "undefined"&&
+    			property.VALUE_WARNING_MAX != null &&
+    			property.VALUE_WARNING_MAX != ""?
+    			parseFloat(property.VALUE_WARNING_MAX):Number.MAX_VALUE;
+    			if(newValue <= minWarningValue || newValue >= maxWarningValue) $(td).css('background-color', 'yellow');
+    			else {
+    				var rangePercent = typeof(property.RANGE_PERCENT) !== "undefined"&&
+        			property.RANGE_PERCENT != null &&
+        			property.RANGE_PERCENT != ""?
+        			parseFloat(property.RANGE_PERCENT):false;
+        			if(rangePercent!=false&&newValue!=rangePercent) $(td).css('background-color', 'blue');
+        			else $(td).css('background-color', originColor);
+    			}
+        	}
 			table.row( '#'+rowData['DT_RowId'] ).data(rowData);
-			table.columns().footer().draw();
+			table.columns().footer().draw(); 
 //        	table.draw(false);
         	//dependence columns
         	actions.dominoColumns(columnName,newValue,tab,rowData,collection,table,td);
@@ -971,11 +968,12 @@ var actions = {
 								return '<div  class="checkboxCell" ><input '+disabled+' class="cellCheckboxInput" type="checkbox" value="'+data2+'"size="15" '+checked+'></div>';
 							};
 			cell["createdCell"] = function (td, cellData, rowData, row, col) {
-				colName = data.properties[col].data;
+				var cproperty = data.properties[col];
+				colName = cproperty.data;
  				$(td).addClass( colName );
  				$(td).addClass( "cell"+type );
  				$(td).find(".cellCheckboxInput").click(function(){
- 					fn = actions.getEditSuccessfn(tab,td, rowData, columnName,collection);
+ 					fn = actions.getEditSuccessfn(cproperty,tab,td, rowData, columnName,collection);
  					fn(null,$(this).is(':checked')?1:0);
  				});
  				var disabled = data.locked||!(actions.isEditable(data.properties[col],rowData,data.rights));
@@ -1114,7 +1112,8 @@ var actions = {
 	            	vl['text']=vl['NAME'];
 	            });
 	            uoms[index]["createdCell"] = function (td, cellData, rowData, row, col) {
-	            	columnName = data.properties[col].data;
+	            	var property = data.properties[col];
+	            	columnName = property.data;
 	 				$(td).addClass( columnName );
 	            	if(!data.locked&&actions.isEditable(data.properties[col],rowData,data.rights)&&actions.notUniqueValue(uoms[index],rowData)){
 		 				$(td).addClass( "editInline" );
@@ -1125,7 +1124,7 @@ var actions = {
 			        	    value:cellData,
 			        	    showbuttons:false,
 			        	    source: actions.getUomCollection(collection,columnName,rowData),
-			        	    success: actions.getEditSuccessfn(tab,td, rowData, columnName,collection),
+			        	    success: actions.getEditSuccessfn(property,tab,td, rowData, columnName,collection),
 			        	});
 		 			}
 	   			}

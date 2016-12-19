@@ -173,6 +173,11 @@ class FieldsConfigController extends Controller {
 		]);
 	}
 	
+	public function putValue(&$param,$data,$field){
+		if (isset ( $data [$field] ))
+			$param [$field] = $data [$field]==''?null:$data [$field];
+	}
+	
 	public function saveprop(Request $request){
 		$data = $request->all ();
 		
@@ -185,24 +190,15 @@ class FieldsConfigController extends Controller {
 			$param ['DATA_METHOD'] = $data ['data_method'];
 			$param ['INPUT_ENABLE'] = $data ['data_method'];
 		}
-		
-		if (isset ( $data ['formula'] ))
-			$param ['FORMULA'] = $data ['formula'];
-		
-		if (isset ( $data ['input_type'] ))
-			$param ['INPUT_TYPE'] = $data ['input_type'];
-		
-		if (isset ( $data ['data_format'] ))
-			$param ['VALUE_FORMAT'] = $data ['data_format'];
-		
-		if (isset ( $data ['max_value'] ))
-			$param ['VALUE_MAX'] = $data ['max_value'];
-		
-		if (isset ( $data ['min_value'] ))
-			$param ['VALUE_MIN'] = $data ['min_value'];
-		
-		if (isset ( $data ['fdc_width'] ))
-			$param ['FDC_WIDTH'] = $data ['fdc_width'];
+		$this->putValue($param,$data,'FORMULA');
+		$this->putValue($param,$data,'INPUT_TYPE');
+		$this->putValue($param,$data,'VALUE_FORMAT');
+		$this->putValue($param,$data,'VALUE_MAX');
+		$this->putValue($param,$data,'VALUE_MIN');
+		$this->putValue($param,$data,'VALUE_WARNING_MAX');
+		$this->putValue($param,$data,'VALUE_WARNING_MIN');
+		$this->putValue($param,$data,'RANGE_PERCENT');
+		$this->putValue($param,$data,'FDC_WIDTH');
 		
 		if (isset ( $data ['friendly_name'] ) && count ( $fields ) == 1)
 			$param ['LABEL'] = $data ['friendly_name'];

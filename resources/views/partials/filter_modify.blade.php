@@ -141,13 +141,21 @@
 				var select			= $(sel);
 				var colorSelect		= $(inputColor);
 				var span 			= $("<span></span>");
+				var edit 			= $("<img valign='middle' onclick='renameItem(this)' class='xclose' src='/img/edit.png'>");
 				var del				= $('<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="/img/x.png">');
-		
+
 				if(dataStore.hasOwnProperty('chartType')) select.val(dataStore.chartType);
 				select.appendTo(li);
 				colorSelect.appendTo(li);
 				span.appendTo(li);
+				edit.appendTo(li);
 				del.appendTo(li);
+
+				edit.click(function() {
+					var title=prompt("Item title",span.text());
+					if(title=="" || title == null) return;
+					span.text(title);
+				});
 				
 				currentSpan 		= span;
 				span.click(function() {
