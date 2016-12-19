@@ -53,7 +53,7 @@ Constrain diagrams
 @stop
 
 @section('content')
-	<div id="diagramContainer" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+	@include('choke.diagram')
 @stop
 
 
@@ -346,117 +346,16 @@ Constrain diagrams
 		editBox.loadContrainValue();
 	}
 
-	editBox.genDiagram = function (diagram,view){
-		var series 		= [];
-		var groupIndex	= 0;
-		var serieGroup;
-		for (var group in diagram.series) {
-			serieGroup	= diagram.series[group];
-			groupIndex = diagram.groups.indexOf(group);
-			for (var category in serieGroup) {
-				serie		= serieGroup[category];
-				serie.type	= 'column';
-				serie.name	+= ' LIP';
-				for(var i = 0; i< groupIndex;i++){
-					serie.data.unshift(0);
-				}
-				series.push(serie);
-			}
-		}
-		
-		if(diagram.minY>0){
-			var lineData = Array.apply(null, Array(diagram.groups.length)).map(function (_, i) {return diagram.minY;});
-			series.push({
-				type: 'line',
-				color: 'red',
-				name: 'MPP',
-				lineWidth: 2,
-				showInLegend:false,
-				marker: {enabled: false},
-				states: {hover: {enabled: false}},
-				tooltip: {enabled: false,pointFormat: '{point.y:.2f}'},
-				data: lineData,
-			});
-		}	
-		var diagramOption	= {
-				chart: {
-		            zoomType		: 'xy',
-		            backgroundColor	: diagram.bgcolor,
-		        },
-				credits: false,
-		        title: {
-		            text: diagram.title,
-					style: {
-						fontWeight:"bold"
-					}
-		        },
-		        subtitle: {
-		            text: null
-		        },
-		        tooltip: {
-		            headerFormat: '<b>{series.name}</b><br>',
-		            pointFormat: '{point.x:%e. %b}: {point.y:.2f}'
-		        },
-		        exporting: {
-		            sourceWidth: view.width(),
-		            sourceHeight:view.height(),
-		            scale: 1,
-		            chartOptions: {
-		                subtitle: null
-		            }
-		        },
-				plotOptions: {
-		            column: {
-						stacking: 'normal',
-		                pointPadding: 0.2,
-		                borderWidth: 0
-		            }
-        		},
-        		series: series,
-        		xAxis: {
-                    categories:  diagram.groups,
-                    crosshair: false
-                },
-                yAxis: { // Primary yAxis
-                    labels: {
-                        format: '{value}',
-                    },
-                    title: {
-                        text: diagram.ycaption,
-                        style: {
-                            fontWeight:"bold"
-                        }
-                    },
-                    opposite: false,
-        			endOnTick: false,
-                }
-        };
-		view.highcharts(diagramOption);
-	}
-
 	editBox.loadContrainValue	= function (){
-		showWaiting();
 		editBox.updateCurrentContrain(false);
 		var constraintPostData 			= {	
 											date_begin	: $("#date_begin").val(),
 											date_end	: $("#date_end").val(),
-											constraints	: currentDiagram,
+ 											constraints	: currentDiagram,
+// 											constraintId	: 9,
 											};
-		$('#diagramContainer').html("");
-		$.ajax({
-			url			: "/choke/summary",
-			type		: "post",
-			data		: constraintPostData,
-			success		: function(data){
-				hideWaiting();
-				console.log ( "genDiagram success ");
-				editBox.renderContrainTable(data.constraints,false);
-				editBox.genDiagram(data.diagram,$('#diagramContainer'));
-			},
-			error		: function(data) {
-				hideWaiting();
-				console.log ( "genDiagram error "/*+JSON.stringify(data)*/);
-			}
+		editBox.requestGenDiagram(constraintPostData,false,true,function(data){
+			editBox.renderContrainTable(data.constraints,false);
 		});
 	}
 	

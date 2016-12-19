@@ -1,8 +1,14 @@
 <?php
 	$currentSubmenu ='/dashboard';
+	$useFeatures 	= [
+							['name'	=>	"filter_modify",
+							"data"	=>	["isFilterModify"	=> false,
+										"isAction"			=> false]],
+					];
 ?>
 
-@extends('core.bsmain',['subMenus' => []])
+@extends('core.bsmain',['subMenus' 		=> [],
+						'useFeatures'	=> $useFeatures])
 @section('funtionName')
 Dashboard
 @stop
@@ -14,34 +20,37 @@ Dashboard
 	<script src="/common/js/jquery-ui-timepicker-addon.js"></script>
 
 	<style type="text/css">
-	div.container{
-		padding:5px;
-		position:absolute;
-		border:1px solid #888888;
-	}
-	div.container span.title{
-		display:block;
-		position:absolute;
-		border:0px solid #888888;
-		//width:auto;
-		//height:20px;
-		background:#bbbbbb;
-		opacity:0.8;
-		padding:2px;
-		cursor:pointer;
-	}
-	div.container iframe{
-		border:0;
-		margin:0;
-		padding:0px;
-		width:100%;
-		height:100%;
-	}
+		.filterContainer {
+			width	:100%;
+		}
+		div.container{
+			padding:5px;
+			position:absolute;
+			border:1px solid #888888;
+		}
+		div.container span.title{
+			display:block;
+			position:absolute;
+			border:0px solid #888888;
+			//width:auto;
+			//height:20px;
+			background:#bbbbbb;
+			opacity:0.8;
+			padding:2px;
+			cursor:pointer;
+		}
+		div.container iframe{
+			border:0;
+			margin:0;
+			padding:0px;
+			width:100%;
+			height:100%;
+		}
 	</style>
 @stop
 
 @section('action_extra')
-<div style="right:5px;top:5px;z-index:10;text-align:right">
+<div style="right:5px;top:5px;z-index:10;text-align:right;">
 	<b><span id="dashboard_name"><?php echo $dashboard_row->NAME; ?></span></b><br>
 	<a style="font-size:8pt" href="javascript:loaddashboards()">Change Dashboard</a>
 </div>
@@ -83,47 +92,48 @@ for(var i=0;i<cf.length;i++){
 }
 function create_container(config, d_id){
 	var html="";
+	var $box = null;
 	if(config.type=="1"){
 		html='<div class="container">'+
 	//'<span class="title" onclick="selectChart()">Chart</span>'+
-	'<iframe id="if'+d_id+'" src=""></iframe>'+
+	'<iframe class="dashboardContainer" id="if'+d_id+'" src=""></iframe>'+
 	'</div>';
 	}
 	else if(config.type=="2"){
 		html='<div class="container">'+
 	//'<span class="title" onclick="selectWorkflow()">Workflow</span>'+
-	'<iframe id="if'+d_id+'" src=""></iframe>'+
+	'<iframe class="dashboardContainer" id="if'+d_id+'" src=""></iframe>'+
 	'</div>';
 	}
 	else if(config.type=="3"){
 		html='<div class="container">'+
 	//'<span class="title" onclick="selectReport()">Report</span>'+
-	'<iframe id="if'+d_id+'" src="">'+
+	'<iframe class="dashboardContainer" id="if'+d_id+'" src="">'+
 	'</div>';
 	}
 	else if(config.type=="5"){
 		html='<div class="container">'+
 	//'<span class="title" onclick="selectReport()">Network Model</span>'+
-	'<iframe id="if'+d_id+'" src="">'+
+	'<iframe class="dashboardContainer" id="if'+d_id+'" src="">'+
 	'</div>';
 	}
 	else if(config.type=="6"){
 		html='<div class="container">'+
 	//'<span class="title" onclick="selectReport()">Data View</span>'+
-	'<iframe id="if'+d_id+'" src="">'+
+	'<iframe class="dashboardContainer" id="if'+d_id+'" src="">'+
 	'</div>';
 	}
 	else if(config.type=="7"){
 		html='<div class="container">'+
 	//'<span class="title" onclick="selectReport()">Storage Display</span>'+
-	'<iframe id="if'+d_id+'" src="">'+
+	'<iframe class="dashboardContainer" id="if'+d_id+'" src="" style="display:none">'+
 	'</div>';
 	}
 	else if(config.type=="8"){
 		html='<div class="container">'+
-	//'<span class="title" onclick="selectReport()">Constraint</span>'+
-	'<iframe id="if'+d_id+'" src="">'+
-	'</div>';
+		'<div class="dashboardContainer" style="width: 100%;height: 100%;"></div>'+
+// 		'<iframe id="if'+d_id+'" src="">'+
+		'</div>';
 	}
 	else if(config.type=="4"){
 		html='<div class="container">'+
@@ -322,34 +332,42 @@ function loadStorageDisplay(o){
 function loadCons(o){
 	var d1=$("#date_begin").val();
 	var d2=$("#date_end").val();
-	//document.getElementById("ifReport").contentWindow.document.write("<font family='Open Sans'>Loading...</font>");
-	$(o).attr("src","../graph/choke_load.php?bgcolor="+bgcolor+"&cons_id="+$(o).parent().attr("d_obj")+"&date_begin="+d1+"&date_end="+d2);
+// 	$(o).attr("src","/choke/diagram?bgcolor="+bgcolor+"&constraintId="+$(o).parent().attr("d_obj")+"&date_begin="+d1+"&date_end="+d2);
+
+	var constraintPostData 	= {	
+				date_begin		: $("#date_begin").val(),
+				date_end		: $("#date_end").val(),
+				constraintId	: $(o).parent().attr("d_obj"),
+			};
+	editBox.requestGenDiagram(constraintPostData,o);
 }
 function reload(){
-	$("iframe").each(function(){
-		var dtype=$(this).parent().attr("d_type");
+	$(".dashboardContainer").each(function(){
+		var iframe 	= $(this).parent().find("iframe:first");
+		var dtype	= $(this).parent().attr("d_type");
 		if(dtype=="1"){
-			loadChart($(this));
+			loadChart(iframe);
 		}
 		if(dtype=="2"){
-			loadWorkflow($(this));
+			loadWorkflow(iframe);
 		}
 		if(dtype=="3"){
- 			loadReport($(this));
+ 			loadReport(iframe);
 		}
 		if(dtype=="5"){
-// 			loadNetworkModel($(this));
+// 			loadNetworkModel(iframe);
 		}
 		if(dtype=="6"){
-// 			loadDataView($(this));
+// 			loadDataView(iframe);
 		}
 		if(dtype=="7"){
-// 			loadStorageDisplay($(this));
+// 			loadStorageDisplay(iframe);
 		}
 		if(dtype=="8"){
-// 			loadCons($(this));
+ 			loadCons($(this));
 		}
 	});
+	
 	if(typeof d_bg != "undefined" && d_bg.length>1) 
 		$('body').css("background-color",d_bg);
 	else
@@ -361,4 +379,8 @@ $(function() {
  	reload();
 });
 </script>
+
+<div id="constrainContain" class="container" style="display:none">
+	@include('choke.diagram')
+</div>
 @stop

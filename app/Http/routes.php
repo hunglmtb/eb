@@ -176,8 +176,7 @@ Route::get('fp/choke',				['uses' =>'ForecastPlanningController@choke'	,'middlew
 Route::post('choke/load',			['uses' =>'Forecast\ChokeController@load'		,'middleware' => 'checkRight:CF_VIEW_CONFIG']);
 Route::post('choke/save',			['uses' =>'Forecast\ChokeController@save'		,'middleware' => 'checkRight:CF_VIEW_CONFIG']);
 Route::post('choke/filter', 		['uses' =>'Forecast\ChokeController@filter'		,'middleware' => 'checkRight:CF_VIEW_CONFIG']);
-Route::post('choke/summary', 		['uses' =>'Forecast\ChokeController@summary'	,'middleware' => 'checkRight:CF_VIEW_CONFIG']);
-Route::post('choke/diagram', 		['uses' =>'Forecast\ChokeController@diagram'	,'middleware' => 'checkRight:CF_VIEW_CONFIG']);
+Route::post('choke/summary', 		['uses' =>'Forecast\ChokeController@summary'	,'middleware' => ['checkRight:CF_VIEW_CONFIG','saveWorkspace']]);
 
 Route::get('pd/cargoentry',			['uses' =>'ProductDeliveryController@cargoentry','middleware' => 'checkRight:PD_CARGO_ADMIN_ENTRY']);
 Route::post('cargoentry/load',		['uses' =>	'Cargo\CargoEntryController@load'	,'middleware' => 'saveWorkspace']);
@@ -379,7 +378,7 @@ Route::post('saveChart', 'graphController@saveChart');
 Route::post('getProperty', 'graphController@getProperty');
 Route::post('graph/filter', ['uses' =>'graphController@filter','middleware' => 'checkRight:VIS_ADVGRAPH']);
 
-Route::get('dashboard',		['uses' =>'DVController@dashboard',		'middleware' => 'checkRight:VIS_DASHBOARD']);
+Route::get('dashboard',		['uses' =>'DVController@dashboard',		'middleware' => ['checkRight:VIS_DASHBOARD','saveWorkspace']]);
 Route::post('dashboard/all',['uses' =>'DataVisualization\DashboardController@all',	'middleware' => 'checkRight:VIS_DASHBOARD']);
 
 Route::get('viewconfig',['uses' =>'ViewConfigController@_indexViewConfig','middleware' => 'checkRight:CF_VIEW_CONFIG']);
