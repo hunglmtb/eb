@@ -14,7 +14,7 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function demurrageebo() {
-		$filterGroups = array(	'productionFilterGroup'	=>[	'Facility'		=>'Storage'],								
+		$filterGroups = array(	'productionFilterGroup'	=>['Storage'],								
 								'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
 																['id'=>'date_end','name'=>'To date']),
 								'enableSaveButton'		=> 	false,
@@ -38,7 +38,7 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function cargonomination() {
-		$filterGroups = array(	'productionFilterGroup'	=>['Facility'		=>'Storage'],
+		$filterGroups = array(	'productionFilterGroup'	=>['Storage'],
 								'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
 																['id'=>'date_end','name'=>'To date']),
 						);
@@ -46,7 +46,7 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function cargoschedule() {
-		$filterGroups = array(	'productionFilterGroup'	=>['Facility'=>'Storage'],
+		$filterGroups = array(	'productionFilterGroup'	=>['Storage'],
 				'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From date'],
 						['id'=>'date_end','name'=>'To date']),
 		);
@@ -54,7 +54,7 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function cargodocuments() {
-		$filterGroups = array(	'productionFilterGroup'	=>['Facility'		=>'Storage'],
+		$filterGroups = array(	'productionFilterGroup'	=>['Storage'],
 								'enableSaveButton'		=> 	false,
 								'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
 																['id'=>'date_end','name'=>'To date']),
@@ -70,8 +70,8 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function liftaccdailybalance() {
-		$filterGroups = array(	'productionFilterGroup'	=>	['Facility'		=>'Storage',
-																'Storage'	=>'PdLiftingAccount',
+		$filterGroups = array(	'productionFilterGroup'	=>	[	'Storage',
+																'PdLiftingAccount'
 															],
 								'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
 																['id'=>'date_end','name'=>'To date']),
@@ -81,12 +81,12 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function liftaccmonthlyadjust() {
-		$filterGroups = array(	'productionFilterGroup'	=>	['Facility'		=>'Storage',
-															'Storage'		=>'PdLiftingAccount',
+		$filterGroups = array(	'productionFilterGroup'	=>	[	'Storage',
+																'PdLiftingAccount'
 															],
 								'dateFilterGroup'		=> array(['id'	=>'date_begin',	'name'=>'From date'],
 																['id'	=>'date_end',	'name'=>'To date']),
-// 								'enableSaveButton'		=> 	false,
+																// 								'enableSaveButton'		=> 	false,
 		);
 		return view ( 'front.cargomonitoring.liftaccmonthlyadjust',['filters'=>$filterGroups]);
 	}
