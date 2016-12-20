@@ -823,7 +823,8 @@ var actions = {
 			var objectId = rowData[actions.type.idName[0]];
 			var extension = objects[objectId];
 			if(typeof(extension) == "object"){
-				isKeep = typeof(extension.advance) != "undefined"&&(extension.advance.KEEP_DISPLAY_VALUE==true||extension.advance.KEEP_DISPLAY_VALUE=="true");
+				isKeep = typeof(extension.advance) == "object"
+						&&(extension.advance.KEEP_DISPLAY_VALUE==true||extension.advance.KEEP_DISPLAY_VALUE=="true");
 				/*var result = $.grep(extension, function(e){
     				return e == "KEEP_DISPLAY_VALUE";
      			});
@@ -853,7 +854,7 @@ var actions = {
 						var objects = $.parseJSON(objectExtension);
 						var objectId = rowData[actions.type.idName[0]];
 						var extension = objects[objectId];
-						if(typeof(extension) == "object"){
+						if(typeof(extension) == "object"&& typeof extension.advance=="object"){
 							//TODO more ruless
 							$(td).css("background-color","#"+extension.advance.COLOR);
 						}
