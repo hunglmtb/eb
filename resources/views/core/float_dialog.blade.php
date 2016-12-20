@@ -166,7 +166,7 @@
 
 <div id="floatBox" style="display:none;">
 		@foreach($floatContents as $key => $content )
-			<div id="{{$content}}"  style="display:none;border:none; margin-top: 0">
+			<div id="{{$content}}"  style="display:none;border:none; margin-top: 0;height: 100%;">
 				@yield($content)
 			</div>
 			@yield("extra_".$content)
