@@ -52,32 +52,6 @@ $(function(){
 	
 });
 
-function setColorPicker(element,target){
-	element.ColorPicker({
-		onSubmit: function(hsb, hex, rgb, el) {
-			$(el).val(hex);
-			$(el).ColorPickerHide();
-// 			target.css("background-color","#"+hex);
-			$(el).css("background-color","#"+hex);
-			$(el).css("color","#"+hex);
-
-			/* var ovalue = target.editable('getValue',true);
-			var result = $.grep(ovalue, function(e){ 
-              	 			return typeof(e) == "object" && typeof( e.color) != "undefined";
-               			});
-			if (result.length == 0) 
-				ovalue.push({color:hex});
-			else
-				result[0]["color"] = hex;
-			
-			target.editable('setValue',ovalue,false); */
-		},
-		onBeforeShow: function () {
-			$(this).ColorPickerSetColor($(this).val());
-		}
-	});
-}
-
 var _fieldconfig = {
 
 		data_source_change : function(){
@@ -272,7 +246,7 @@ var _fieldconfig = {
 				addObjectBtn.attr("src","/img/plus.png");
 				addObjectBtn.addClass("xclose floatRight");
 				addObjectBtn.click(function() {
-					_fieldconfig.addObjectExtension(objectExtensionSource,[],-1);
+					_fieldconfig.addObjectExtension(objectExtensionSource,[],{});
 				});
 				addObjectBtn.appendTo($("#extensionView"));
 			}
@@ -280,7 +254,7 @@ var _fieldconfig = {
 			$("#save, #reset").show();
 		},
 		objectExtensionTarget	: [],
-		addObjectExtension : function(objects,targets,value){
+		addObjectExtension : function(objects,targets,objectId){
 			var li = $("<li></li>");
 			var del = $("<img></img>");
 			del.attr("src","../img/x.png");
@@ -297,127 +271,50 @@ var _fieldconfig = {
 				option.text(ovalue.NAME);
 				option.appendTo(select);
 			});
-			select.val(value);
+			select.css("width","85px");
+			select.val(objectId);
 			select.appendTo(li);
-
-			var colorObjects = $.grep(targets, function(e){ 
-  	 			return typeof(e) == "object" && typeof( e.color) != "undefined";
-   			});
-
-			if (colorObjects.length > 0){
-				var cellColor = colorObjects[0]["color"];
-				select.css("background-color","#"+cellColor);
-				select.attr("cell-color",cellColor);
-			}
 
 			var objectExtensionTarget = _fieldconfig.objectExtensionTarget;
 
+			if(targets.OVERWRITE !=true && targets.OVERWRITE !="true") {
+				targets.basic				= {
+		        	VALUE_MAX			: $("#VALUE_MAX").val()			,
+		        	VALUE_MIN			: $("#VALUE_MIN").val()			,
+		        	VALUE_WARNING_MAX	: $("#VALUE_WARNING_MAX").val()	,
+		        	VALUE_WARNING_MIN	: $("#VALUE_WARNING_MIN").val()	,
+		        	RANGE_PERCENT		: $("#RANGE_PERCENT").val()		,
+				};
+				targets.OVERWRITE			= false;
+			}
+			else targets.OVERWRITE			= true;
+			
 			var basic = $("<span></span>");
 			basic.addClass("linkViewer");
 			basic.appendTo(li);
 			basic.editable({
-				type	: 'address',
-		        value: {
-		        		VALUE_MAX			: $("#VALUE_MAX").val(),
-		        		VALUE_MIN			: $("#VALUE_MIN").val(),
-		        		VALUE_WARNING_MAX	: $("#VALUE_WARNING_MAX").val(),
-		        		VALUE_WARNING_MIN	: $("#VALUE_WARNING_MIN").val(),
-		        		RANGE_PERCENT		: $("#RANGE_PERCENT").val(),
-		        },
-		        validate: function(value) {
-// 		            if(value.city == '') return 'city is required!'; 
-		        },
+				type		: 'address',
+				onblur		: 'ignore',
+				placement	: 'left',
+				value		: targets,
 		        display: function(value) {
 		            if(!value) {
 		                $(this).empty();
 		                return; 
 		            }
-		            var html = '<b>' + $('<div>').text(value.city).html() + '</b>, ' + $('<div>').text(value.street).html() + ' st., bld. ' + $('<div>').text(value.building).html();
-		            $(this).html("<b>basic</b><br>"); 
-		        }         
-		    });  
-			
-			var span = $("<span></span>");
-			span.addClass("linkViewer");
-			span.editable({
-		    	type 		: 'checklist',
-		    	onblur		: 'ignore',
-		        value		: targets,
-		        savenochange: true,
-		        source		: objectExtensionTarget,
-		        display		: function(value, sourceData) {
-				        	   //display checklist as comma-separated values
-				        	   var html = [],
-				        	       checked = $.fn.editableutils.itemsByValue(value, sourceData);
-				        	       
-				        	   if(checked.length) {
-				        	       $.each(checked, function(i, v) { html.push($.fn.editableutils.escape(v.text)); });
-				        	       $(this).text(html.join(', '));
-				        	   } else {
-				        	       $(this).text("advance"); 
-				        	   }
-				        	},
+		            var text = typeof value.advance == "object"&&value.advance.KEEP_DISPLAY_VALUE ? "Display origin value":"rules";
+		            var html = '<b>' + $('<div>').text(text).html() + '</b>';
+		            $(this).html(html); 
+		        }       
 		    });
-			span.on("shown", function(e, editable) {
-					var div = $("<div></div>");
-					var color = $("<input class='inputColor' type='text' maxlength='6' size='6' style='padding:2px;background: rgb(219, 68, 219);' >");
-					color.addClass("_colorpicker");
-					var evalue = span.editable('getValue',true);
-					var colorObjects = $.grep(evalue, function(e){ 
-          	 			return typeof(e) == "object" && typeof( e.color) != "undefined";
-           			});
-
-					if (colorObjects.length >0){
-						var cellColor = colorObjects[0]["color"];
-						color.css("background-color","#"+cellColor);
-						color.css("color","#"+cellColor);
-						color.val(cellColor);
-					}
-					else{
-						color.css("color","#000000");
-						color.val("pick color");
-					}
-					
-					setColorPicker(color,span);
-					color.appendTo(div);
-
-					var clearColor = $("<img></img>");
-					clearColor.attr("src","../img/x.png");
-					clearColor.addClass("xclose");
-					clearColor.click(function() {
-						color.css("color","#000000");
-						color.val("pick color");
-					});
-					clearColor.appendTo(div);
-					div.insertAfter($(editable.container.$form.get(0)).find(".editable-buttons").eq(0));
-					
-					span.on('save', function(e, params) {
-						var cellColor = color.val();
-						if(cellColor!=""&&cellColor!="pick color"){
-							select.css("background-color","#"+cellColor);
-							select.attr("cell-color",cellColor);
-							var ovalue = params.newValue;
-							var result = $.grep(ovalue, function(e){ 
-				              	 			return typeof(e) == "object" && typeof( e.color) != "undefined";
-				               			});
-							if (result.length == 0) 
-								ovalue.push({color	: cellColor});
-							else
-								result[0]["color"] = cellColor;
-						}
-						else {
-							select.css("background-color","");
-							select.attr("cell-color","");
-
-							var evalue = span.editable('getValue',true);
-							evalue = $.grep(evalue, function(e){ 
-		          	 			return typeof(e) != "object" || typeof( e.color) == "undefined";
-		           			});
-							span.editable('setValue',evalue,false);
-						}
-					});
-	    	});
-			span.appendTo(li);
+			basic.on('save', function(e, params) {
+				var cellColor 	= params.newValue.advance.COLOR;
+				cellColor		= cellColor==""?"transparent":"#"+cellColor;
+				select.css("background-color",cellColor);
+			});
+			var scolor 	= typeof targets.advance == "object"?targets.advance.COLOR:"";
+			scolor		= scolor==""?"transparent":"#"+scolor;
+			select.css("background-color",scolor);
 			li.appendTo($("#objectExtension"));
 		},
 		buildObjectExtension	:  function(){
@@ -459,12 +356,12 @@ var _fieldconfig = {
 				'VALUE_WARNING_MIN' 	: $("#VALUE_WARNING_MIN").val(),
 				'RANGE_PERCENT' 		: $("#RANGE_PERCENT").val(),
 				'FDC_WIDTH' 			: $("#FDC_WIDTH").val(),
-				'us_data' : $("#us_data").is(':checked') ? 1 : 0,
-				'us_gr' : $("#us_gr").is(':checked') ? 1 : 0,
-				'us_sr' : $("#us_sr").is(':checked') ? 1 : 0,
-				'is_mandatory' : $("#is_mandatory").is(':checked') ? 1 : 0,
-				'friendly_name' : $("#friendly_name").val(),
-				objectExtension	: _fieldconfig.buildObjectExtension(),
+				'us_data' 				: $("#us_data").is(':checked') ? 1 : 0,
+				'us_gr' 				: $("#us_gr").is(':checked') ? 1 : 0,
+				'us_sr' 				: $("#us_sr").is(':checked') ? 1 : 0,
+				'is_mandatory' 			: $("#is_mandatory").is(':checked') ? 1 : 0,
+				'friendly_name' 		: $("#friendly_name").val(),
+				objectExtension			: _fieldconfig.buildObjectExtension(),
 			}
 			
 			sendAjax('/saveprop', param, function(data){
@@ -635,13 +532,20 @@ var _fieldconfig = {
 	
 	<link href="/jqueryui-editable/css/jqueryui-editable.css" rel="stylesheet"/>
 	<script src="/jqueryui-editable/js/jqueryui-editable.js"></script>
-	<script src="/common/js/basicFieldConfig.js"></script>
+	<script src="/common/js/extendFieldConfig.js"></script>
 	
 	<link rel="stylesheet" media="screen" type="text/css" href="/common/colorpicker/css/colorpicker.css" />
 	<script type="text/javascript" src="/common/colorpicker/js/colorpicker.js"></script>
 	
 	<style>
- 		._colorpicker{border:none;cursor:pointer}
+ 		._colorpicker{
+	 		border:none;
+	 		cursor:pointer;
+	 		z-index: 10000;
+ 		}
+ 		.colorpicker{
+	 		z-index: 10000;
+ 		}
  		.field{
  			white-space: nowrap;
  		}

@@ -34,6 +34,7 @@ class FlowController extends CodeController {
     	$where = ['FACILITY_ID' => $facility_id, 'FDC_DISPLAY' => 1];
     	if ($record_freq>0) {
     		$where["$flow.RECORD_FREQUENCY"]= $record_freq;
+//     		$where["$dcTable.RECORD_FREQUENCY"]= $record_freq;
     	}
     	if ($phase_type>0) {
     		$where['PHASE_ID']= $phase_type;

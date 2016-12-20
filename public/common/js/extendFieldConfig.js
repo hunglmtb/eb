@@ -86,9 +86,10 @@ $(function(){
        value2str: function(value) {
            var str = '';
            if(value) {
-               for(var k in value) {
+               /*for(var k in value) {
                    str = str + k + ':' + value[k] + ';';  
-               }
+               }*/
+        	   str = JSON.stringify(value);
            }
            return str;
        }, 
@@ -116,11 +117,18 @@ $(function(){
            if(!value) {
              return;
            }
-           this.$input.filter('[name="VALUE_MAX"]').val(value.VALUE_MAX);
-           this.$input.filter('[name="VALUE_MIN"]').val(value.VALUE_MIN);
-           this.$input.filter('[name="VALUE_WARNING_MAX"]').val(value.VALUE_WARNING_MAX);
-           this.$input.filter('[name="VALUE_WARNING_MIN"]').val(value.VALUE_WARNING_MIN);
-           this.$input.filter('[name="RANGE_PERCENT"]').val(value.RANGE_PERCENT);
+           if(typeof value.basic != "undefined") {
+        	   this.$input.filter('[name="OVERWRITE"]').prop('checked', value.OVERWRITE);
+        	   this.$input.filter('[name="VALUE_MAX"]').val(value.basic.VALUE_MAX);
+        	   this.$input.filter('[name="VALUE_MIN"]').val(value.basic.VALUE_MIN);
+        	   this.$input.filter('[name="VALUE_WARNING_MAX"]').val(value.basic.VALUE_WARNING_MAX);
+        	   this.$input.filter('[name="VALUE_WARNING_MIN"]').val(value.basic.VALUE_WARNING_MIN);
+        	   this.$input.filter('[name="RANGE_PERCENT"]').val(value.basic.RANGE_PERCENT);
+           }
+           if(typeof value.advance != "undefined") {
+        	   this.$input.filter('[name="KEEP_DISPLAY_VALUE"]').prop('checked', value.advance.KEEP_DISPLAY_VALUE);
+        	   this.$input.filter('[name="COLOR"]').val(value.advance.COLOR);
+           }
        },       
        
        /**
@@ -128,14 +136,22 @@ $(function(){
         
         @method input2value() 
        **/          
-       input2value: function() { 
-           return {
-        	  VALUE_MAX			: this.$input.filter('[name="VALUE_MAX"]').val(), 
-        	  VALUE_MIN			: this.$input.filter('[name="VALUE_MIN"]').val(), 
-        	  VALUE_WARNING_MAX	: this.$input.filter('[name="VALUE_WARNING_MAX"]').val(),
-        	  VALUE_WARNING_MIN	: this.$input.filter('[name="VALUE_WARNING_MIN"]').val(),
-        	  RANGE_PERCENT		: this.$input.filter('[name="RANGE_PERCENT"]').val(),
-           };
+       input2value: function() {
+    	   var value	= {
+			       	   		OVERWRITE	: this.$input.filter('[name="OVERWRITE"]').is(":checked"),
+			    	   		basic		: {
+						  		        	  VALUE_MAX			: this.$input.filter('[name="VALUE_MAX"]').val(), 
+								        	  VALUE_MIN			: this.$input.filter('[name="VALUE_MIN"]').val(), 
+								        	  VALUE_WARNING_MAX	: this.$input.filter('[name="VALUE_WARNING_MAX"]').val(),
+								        	  VALUE_WARNING_MIN	: this.$input.filter('[name="VALUE_WARNING_MIN"]').val(),
+								        	  RANGE_PERCENT		: this.$input.filter('[name="RANGE_PERCENT"]').val(),
+							           },
+			    	   		advance		: {
+			        		   					KEEP_DISPLAY_VALUE	: this.$input.filter('[name="KEEP_DISPLAY_VALUE"]').is(":checked"),
+			             	  					COLOR				: this.$input.filter('[name="COLOR"]').val(),
+			         	  				}
+			       		};
+           return value;
        },        
        
         /**
@@ -144,7 +160,35 @@ $(function(){
         @method activate() 
        **/        
        activate: function() {
-            this.$input.filter('[name="VALUE_MAX"]').focus();
+    	   var editableInputs 	= this.$input;
+    	   var overwite			= editableInputs.filter('[name="OVERWRITE"]').is(":checked");
+    	   var effectFields		= editableInputs.filter('[name="RANGE_PERCENT"],[name="VALUE_WARNING_MIN"],[name="VALUE_WARNING_MAX"],[name="VALUE_MIN"],[name="VALUE_MAX"]');
+    	   effectFields.prop('disabled', !overwite);
+           
+    	   editableInputs.filter('[name="OVERWRITE"]').change(function(e){
+    		   effectFields.prop('disabled', !this.checked);
+    	   });
+    	   
+    	   editableInputs.filter('[name="OVERWRITE"]').focus();
+    	   var colorPicker	= editableInputs.filter('[name="COLOR"]');
+    	   var color		= colorPicker.val()==""?"transparent":"#"+colorPicker.val();
+           colorPicker.css("background-color",color);
+           colorPicker.css("color",color);
+           colorPicker.ColorPicker({
+        		onSubmit: function(hsb, hex, rgb, el) {
+        			$(el).val(hex);
+        			$(el).ColorPickerHide();
+        			$(el).css("background-color","#"+hex);
+        			$(el).css("color","#"+hex);
+        		},
+        		onBeforeShow: function () {
+        			$(this).ColorPickerSetColor($(this).val());
+        		}
+        	});
+	       colorPicker.parent().next(".removeColor").click(function() {
+	        	colorPicker.val("");
+	        	colorPicker.css("background-color","transparent");
+	       });
        },  
        
        /**
@@ -162,12 +206,15 @@ $(function(){
     });
 
     Address.defaults = $.extend({}, $.fn.editabletypes.abstractinput.defaults, {
-        tpl: '<div class="editable-address"><label><span>Error Max Value: </span><input type="number" name="VALUE_MAX" class="input-small"></label></div>'+
+        tpl: '<div class="editable-address"><label><span> Overwrite</span><input type="checkbox" name="OVERWRITE"></label></div>'+
+        	 '<div class="editable-address"><label><span>Error Max Value: </span><input type="number" name="VALUE_MAX" class="input-small"></label></div>'+
              '<div class="editable-address"><label><span>Error Min Value: </span><input type="number" name="VALUE_MIN" class="input-small"></label></div>'+
              '<div class="editable-address"><label><span>Warning Max Value: </span><input type="number" name="VALUE_WARNING_MAX" class="input-small"></label></div>'+
              '<div class="editable-address"><label><span>Warning Min Value: </span><input type="number" name="VALUE_WARNING_MIN" class="input-small"></label></div>'+
-             '<div class="editable-address"><label><span>Range percent: </span><input type="number" name="RANGE_PERCENT" class="input-mini"></label></div>',
-             
+             '<div class="editable-address"><label><span>Range percent: </span><input type="number" name="RANGE_PERCENT" class="input-mini"></label></div>'+
+             '<div class="editable-address"><label><span> Display origin value</span><input type="checkbox" name="KEEP_DISPLAY_VALUE"></label></div>'+
+             '<div class="editable-address"><label><span> To be defined</span><input type="checkbox" name="TBD"></label></div>'+
+             '<div class="editable-address"><label><span> Pick color</span><input class="inputColor"  type="text" name="COLOR" maxlength="6" size="6" style="padding:2px;background: rgb(219, 68, 219);"></label><img class="removeColor" name="removeColor" valign="middle" class="xclose" src="/img/x.png"></div>',
         inputclass: ''
     });
 

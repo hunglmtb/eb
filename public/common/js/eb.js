@@ -462,6 +462,21 @@ var actions = {
 		extraHtml += "</div>";
 		return html+extraHtml;
 	},
+	addNumberRangeRule : function (property,strimValue){
+		var minValue = typeof(property.VALUE_MIN) !== "undefined"&&
+		property.VALUE_MIN != null &&
+		property.VALUE_MIN != ""?
+		parseFloat(property.VALUE_MIN):-1*Number.MAX_VALUE;
+		var maxValue = typeof(property.VALUE_MAX) !== "undefined"&&
+				property.VALUE_MAX != null &&
+				property.VALUE_MAX != ""?
+				parseFloat(property.VALUE_MAX):Number.MAX_VALUE;
+		
+		if(minValue>=maxValue) return;
+		if(strimValue < minValue) return 'This field need greater or equal '+property.VALUE_MIN;
+		if(strimValue > maxValue) return 'This field need less or equal '+property.VALUE_MAX;
+
+	},
 	applyEditable : function (tab,type,td, cellData, rowData, property,collection){
 		var columnName = typeof property === 'string'?property:property.data;
 		var successFunction = actions.getEditSuccessfn(property,tab,td, rowData, columnName,collection,type);
@@ -502,18 +517,8 @@ var actions = {
 	    	            return 'This field is required';
 	    	        }
 	    	        if(typeof property !== 'string'){
-	    	        	var minValue = typeof(property.VALUE_MIN) !== "undefined"&&
-					        			property.VALUE_MIN != null &&
-					        			property.VALUE_MIN != ""?
-					        			parseFloat(property.VALUE_MIN):-1*Number.MAX_VALUE;
-	    	        	var maxValue = typeof(property.VALUE_MAX) !== "undefined"&&
-					        			property.VALUE_MAX != null &&
-					        			property.VALUE_MAX != ""?
-					        			parseFloat(property.VALUE_MAX):Number.MAX_VALUE;
-	    	        	
-	    	        	if(minValue>=maxValue) return;
-	    	        	if(strimValue < minValue) return 'This field need greater or equal '+property.VALUE_MIN;
-	    	        	if(strimValue > maxValue) return 'This field need less or equal '+property.VALUE_MAX;
+	            		var rules	= actions.getCellRules(property,rowData);
+	    	        	return actions.addNumberRangeRule(rules,strimValue);
 	    	        }
 	    	    };
 			}
@@ -632,6 +637,42 @@ var actions = {
     	    }
     	});
 	},
+	addCellNumberRules  : function(td, property,newValue,originColor) {
+		var minWarningValue = typeof(property.VALUE_WARNING_MIN) !== "undefined"&&
+		property.VALUE_WARNING_MIN != null &&
+		property.VALUE_WARNING_MIN != ""?
+		parseFloat(property.VALUE_WARNING_MIN):-1*Number.MAX_VALUE;
+		var maxWarningValue = typeof(property.VALUE_WARNING_MAX) !== "undefined"&&
+		property.VALUE_WARNING_MAX != null &&
+		property.VALUE_WARNING_MAX != ""?
+		parseFloat(property.VALUE_WARNING_MAX):Number.MAX_VALUE;
+		if(newValue <= minWarningValue || newValue >= maxWarningValue) $(td).css('background-color', 'yellow');
+		else {
+			var rangePercent = typeof(property.RANGE_PERCENT) !== "undefined"&&
+			property.RANGE_PERCENT != null &&
+			property.RANGE_PERCENT != ""?
+			parseFloat(property.RANGE_PERCENT):false;
+			if(rangePercent!=false&&newValue!=rangePercent) $(td).css('background-color', 'blue');
+			else $(td).css('background-color', originColor);
+		}
+	},
+
+	getCellRules  : function(property,rowData) {
+		var rules	= property;
+		var objectExtension	= property.OBJECT_EXTENSION;
+		if(objectExtension!=null&&objectExtension!=""){
+			var objects = $.parseJSON(objectExtension);
+			var objectId = rowData[actions.type.idName[0]];
+			var extension = objects[objectId];
+			if(typeof(extension) == "object"
+				&&(extension.OVERWRITE==true|| extension.OVERWRITE=='true') 
+				&& typeof(extension.basic) =="object"){
+				rules	= extension.basic;
+			}
+		}
+		return rules;
+	},
+	
 	getEditSuccessfn  : function(property,tab, td, rowData, columnName,collection,type) {
 		var originColor		= $(td).css('background-color');
 		return function(response, newValue) {
@@ -640,38 +681,8 @@ var actions = {
         	var table = $('#table_'+tab).DataTable();
         	$(td).css('color', 'black');
         	if(type=='number'){
-        		/*var cellProperty	= property;
-        		var objectExtension	= property.OBJECT_EXTENSION;
-        		
-        		if(objectExtension!=null&&objectExtension!=""){
-					var objects = $.parseJSON(objectExtension);
-					var objectId = rowData[actions.type.idName[0]];
-					var extension = objects[objectId];
-					if(typeof(extension) == "object"){
-						$.each(extension, function( index, value ) {
-							if(typeof(value) == "string") $(td).addClass( value );
-							else if (typeof(value) == "object" && typeof(value.color) != "undefined" )
-								$(td).css("background-color","#"+value.color);
-						});
-					}
-				}*/
-        		var minWarningValue = typeof(property.VALUE_WARNING_MIN) !== "undefined"&&
-    			property.VALUE_WARNING_MIN != null &&
-    			property.VALUE_WARNING_MIN != ""?
-    			parseFloat(property.VALUE_WARNING_MIN):-1*Number.MAX_VALUE;
-    			var maxWarningValue = typeof(property.VALUE_WARNING_MAX) !== "undefined"&&
-    			property.VALUE_WARNING_MAX != null &&
-    			property.VALUE_WARNING_MAX != ""?
-    			parseFloat(property.VALUE_WARNING_MAX):Number.MAX_VALUE;
-    			if(newValue <= minWarningValue || newValue >= maxWarningValue) $(td).css('background-color', 'yellow');
-    			else {
-    				var rangePercent = typeof(property.RANGE_PERCENT) !== "undefined"&&
-        			property.RANGE_PERCENT != null &&
-        			property.RANGE_PERCENT != ""?
-        			parseFloat(property.RANGE_PERCENT):false;
-        			if(rangePercent!=false&&newValue!=rangePercent) $(td).css('background-color', 'blue');
-        			else $(td).css('background-color', originColor);
-    			}
+        		var rules	= actions.getCellRules(property,rowData);
+        		actions.addCellNumberRules(td,rules,newValue,originColor);
         	}
 			table.row( '#'+rowData['DT_RowId'] ).data(rowData);
 			table.columns().footer().draw(); 
@@ -812,10 +823,11 @@ var actions = {
 			var objectId = rowData[actions.type.idName[0]];
 			var extension = objects[objectId];
 			if(typeof(extension) == "object"){
-				var result = $.grep(extension, function(e){
+				isKeep = typeof(extension.advance) != "undefined"&&(extension.advance.KEEP_DISPLAY_VALUE==true||extension.advance.KEEP_DISPLAY_VALUE=="true");
+				/*var result = $.grep(extension, function(e){
     				return e == "KEEP_DISPLAY_VALUE";
      			});
-     			isKeep = typeof(result) !== "undefined" && result.length > 0;
+     			isKeep = typeof(result) !== "undefined" && result.length > 0;*/
 			}
 		}
 		return isKeep;
@@ -842,11 +854,8 @@ var actions = {
 						var objectId = rowData[actions.type.idName[0]];
 						var extension = objects[objectId];
 						if(typeof(extension) == "object"){
-							$.each(extension, function( index, value ) {
-								if(typeof(value) == "string") $(td).addClass( value );
-								else if (typeof(value) == "object" && typeof(value.color) != "undefined" )
-									$(td).css("background-color","#"+value.color);
-							});
+							//TODO more ruless
+							$(td).css("background-color","#"+extension.advance.COLOR);
 						}
 					}
 
