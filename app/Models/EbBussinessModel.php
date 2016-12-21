@@ -173,27 +173,20 @@ class EbBussinessModel extends DynamicModel {
 	
 	public function updateAudit($attributes,$values,$postData) {
 		if ($this->disableUpdateAudit)  return;
-		$current = Carbon::now();
-		$current_username =auth()->user()->username;
-		$rowID = $attributes[static::$idField];
-		$facility_id = $postData['Facility'];
-		$objectDesc = $this->getObjectDesc($rowID);
-		$oldValue = null;
-		$newValue = null;
-		$records = array();
-		$shouldInsertAudit = true;
-		
-		if ($this->wasRecentlyCreated) {
-			$action = "New record";
-			$columns = ['New'];
-		}
-		else{
-			$action = "Update value";
-			$columns = $values;
-		}
-		
+		$current 			= Carbon::now();
+		$current_username 	= auth()->user()->username;
+		$rowID 				= $attributes[static::$idField];
+		$facility_id 		= $postData['Facility'];
+		$objectDesc 		= $this->getObjectDesc($rowID);
+		$oldValue 			= null;
+		$newValue 			= null;
+		$records 			= array();
+		$shouldInsertAudit 	= true;
+		$columns 			= $this->wasRecentlyCreated? (['New'	=> true] + $values):$values;
+		$keyColumns			= array_keys($attributes);
 		
 		foreach ( $columns as $column => $columnValue ) {
+			$newValue 		= $this->$column;
 			if (!$this->wasRecentlyCreated) {
 				$shouldInsertAudit = false;
 				if (!in_array($column, $this->excludeColumns)) {
@@ -201,16 +194,16 @@ class EbBussinessModel extends DynamicModel {
 						$original = $this->oldValues;
 						if (array_key_exists($column, $original)){
 							$oldValue = $original[$column];
-							$newValue = $this->$column;
 							$shouldInsertAudit = $oldValue!=$newValue;
 						}
 					}
 				}
 			}
 					
-			if ($shouldInsertAudit) {
-				$auditNote = array_key_exists("AUDIT_NOTE-$column", $values)?$values["AUDIT_NOTE-$column"]:null;
-				$records[] = array('ACTION'		=>$action,
+			if ($shouldInsertAudit&&($column=='New'||in_array($column,$this->fillable))&&!in_array($column,$keyColumns)) {
+				$action 	= $column=='New'?"New record":"Update value";
+				$auditNote 	= array_key_exists("AUDIT_NOTE-$column", $values)?$values["AUDIT_NOTE-$column"]:null;
+				$records[] 	= array('ACTION'	=>$action,
 								'FACILITY_ID'	=>$facility_id,
 								'WHO'			=>$current_username,
 								'WHEN'			=>$current, 
