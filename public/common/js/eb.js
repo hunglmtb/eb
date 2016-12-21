@@ -637,7 +637,23 @@ var actions = {
     	    }
     	});
 	},
-	addCellNumberRules  : function(td, property,newValue,originColor) {
+	addCellNumberRules  : function(td, property,newValue,originColor,phase="manual") {
+		if(newValue==null||newValue==""||newValue==" ") return;
+		if(phase=="loading"){
+			var minValue = typeof(property.VALUE_MIN) !== "undefined"&&
+			property.VALUE_MIN != null &&
+			property.VALUE_MIN != ""?
+			parseFloat(property.VALUE_MIN):-1*Number.MAX_VALUE;
+			var maxValue = typeof(property.VALUE_MAX) !== "undefined"&&
+					property.VALUE_MAX != null &&
+					property.VALUE_MAX != ""?
+					parseFloat(property.VALUE_MAX):Number.MAX_VALUE;
+			
+			if(minValue<maxValue && (newValue <= 	minValue || newValue >= maxValue)) {
+				$(td).css('background-color', 'red');
+				return;
+			}
+		}
 		var minWarningValue = typeof(property.VALUE_WARNING_MIN) !== "undefined"&&
 		property.VALUE_WARNING_MIN != null &&
 		property.VALUE_WARNING_MIN != ""?
@@ -651,7 +667,7 @@ var actions = {
 			var rangePercent = typeof(property.RANGE_PERCENT) !== "undefined"&&
 			property.RANGE_PERCENT != null &&
 			property.RANGE_PERCENT != ""?
-			parseFloat(property.RANGE_PERCENT):false;
+					parseFloat(property.RANGE_PERCENT):false;
 			if(rangePercent!=false&&newValue!=rangePercent) $(td).css('background-color', 'blue');
 			else $(td).css('background-color', originColor);
 		}
@@ -682,7 +698,7 @@ var actions = {
         	$(td).css('color', 'black');
         	if(type=='number'){
         		var rules	= actions.getCellRules(property,rowData);
-        		actions.addCellNumberRules(td,rules,newValue,originColor);
+        		actions.addCellNumberRules(td,rules,newValue,originColor,"manual");
         	}
 			table.row( '#'+rowData['DT_RowId'] ).data(rowData);
 			table.columns().footer().draw(); 
@@ -899,6 +915,11 @@ var actions = {
 		 					}
 		 				});
 		 			}
+		 			if(type=='number'){
+		        		var rules			= actions.getCellRules(property,rowData);
+		        		var originColor		= $(td).css('background-color');
+		        		actions.addCellNumberRules(td,rules,cellData,originColor,"loading");
+		        	}
 			    };
 		}
 		switch(type){
