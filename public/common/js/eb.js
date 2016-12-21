@@ -649,7 +649,7 @@ var actions = {
 					property.VALUE_MAX != ""?
 					parseFloat(property.VALUE_MAX):Number.MAX_VALUE;
 			
-			if(minValue<maxValue && (newValue <= 	minValue || newValue >= maxValue)) {
+			if(minValue<maxValue && (newValue < 	minValue || newValue > maxValue)) {
 				$(td).css('background-color', 'red');
 				return;
 			}
