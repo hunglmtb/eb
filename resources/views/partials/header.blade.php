@@ -74,6 +74,7 @@ var xmenu=
 							{"name":"Advanced Graph","title":"Advanced Graph","link":"/graph"},
 							{"name":"Workflow","title":"Workflow","link":"/workflow"},
 							{"name":"Dashboard","title":"Dashboard","link":"/dashboard"},
+							{"name":"Choke Model","title":"Choke Model","link":"/fp/choke"},
 							{"name":"Task Manager","title":"Task Manager","link":"#"},
 						]
 					},
@@ -258,7 +259,6 @@ var xmenu=
 							{"name":"PREoS","title":"PENG-ROBINSON EQUATION OF STATE","link":"/fp/preos"},
 							{"name":"Manual Allocate Plan","title":"MANUAL ALLOCATE PLAN","link":"/fp/allocateplan"},
 							{"name":"Load Plan/Forecast","title":"LOAD PLAN/FORECAST DATA","link":"/fp/loadplanforecast"},
-							{"name":"Constraint Diagram","title":"Constraint Diagram","link":"/fp/choke"},
 						]
 					},
 				]

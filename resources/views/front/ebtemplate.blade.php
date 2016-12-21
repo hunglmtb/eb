@@ -481,6 +481,7 @@ menu["visual"]=[
 		{menutext:"Report",desc:"",url:"/workreport"},
 		{menutext:"Advanced Graph",desc:"",url:"/graph"},
 		{menutext:"Workflow",desc:"",url:"/workflow"},
+		{menutext:"Choke Model",desc:"",url:"/fp/choke"},
 		{menutext:"Dashboard",desc:"",url:"/dashboard"},
 		{menutext:"Task Manager",desc:"",url:"/taskman/?com=task"},
 	];
@@ -493,7 +494,6 @@ menu["forecast"]=[
 		{menutext:"PREoS",desc:"",url:"../fp/preos"},
 		{menutext:"MANUAL ALLOCATE<br>PLAN",desc:"",url:"/fp/allocateplan"},
 		{menutext:"LOAD<br>PLAN/FORECAST",desc:"",url:"/fp/loadplanforecast"},
-		{menutext:"CONSTRAINT<br>DIAGRAM",desc:"",url:"/fp/choke"},
 	];
 <?php
 // if($current_username=="CP_User"){}

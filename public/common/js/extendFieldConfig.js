@@ -189,6 +189,7 @@ $(function(){
 	        	colorPicker.val("");
 	        	colorPicker.css("background-color","transparent");
 	       });
+	       $( ".editable-container" ).draggable();
        },  
        
        /**
@@ -206,7 +207,7 @@ $(function(){
     });
 
     Address.defaults = $.extend({}, $.fn.editabletypes.abstractinput.defaults, {
-        tpl: '<div class="editable-address"><label><span> Overwrite</span><input type="checkbox" name="OVERWRITE"></label></div>'+
+        tpl: '<div class="editable-address"><label><span>Overwrite General Rules</span><input type="checkbox" name="OVERWRITE"></label></div>'+
         	 '<div class="editable-address"><label><span>Error Max Value: </span><input type="number" name="VALUE_MAX" class="input-small"></label></div>'+
              '<div class="editable-address"><label><span>Error Min Value: </span><input type="number" name="VALUE_MIN" class="input-small"></label></div>'+
              '<div class="editable-address"><label><span>Warning Max Value: </span><input type="number" name="VALUE_WARNING_MAX" class="input-small"></label></div>'+

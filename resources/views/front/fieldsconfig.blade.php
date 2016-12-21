@@ -551,11 +551,12 @@ var _fieldconfig = {
  		}
  		.editable-address {
 		    display: block;
-		    margin-bottom: 5px;  
+		    margin-bottom: 5px; 
+		    white-space: nowrap;
 		}
 		
 		.editable-address span {
-		    width: 115px;  
+		    width: 140px; 
 		    display: inline-block;
 		}
 	</style>
