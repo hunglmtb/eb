@@ -182,8 +182,9 @@ class EbBussinessModel extends DynamicModel {
 		$newValue 			= null;
 		$records 			= array();
 		$shouldInsertAudit 	= true;
-		$columns 			= $this->wasRecentlyCreated? (['New'	=> true] + $values):$values;
+		$columns 			= $values;
 		$keyColumns			= array_keys($attributes);
+		$action 			= $this->wasRecentlyCreated?"New record":"Update value";
 		
 		foreach ( $columns as $column => $columnValue ) {
 			$newValue 		= $this->$column;
@@ -200,8 +201,10 @@ class EbBussinessModel extends DynamicModel {
 				}
 			}
 					
-			if ($shouldInsertAudit&&($column=='New'||in_array($column,$this->fillable))&&!in_array($column,$keyColumns)) {
-				$action 	= $column=='New'?"New record":"Update value";
+			if ($shouldInsertAudit
+					&&(in_array($column,$this->fillable))&&!in_array($column,$keyColumns)){
+// 					&&($action=="New record" || (!in_array($column,$keyColumns)))){
+				
 				$auditNote 	= array_key_exists("AUDIT_NOTE-$column", $values)?$values["AUDIT_NOTE-$column"]:null;
 				$records[] 	= array('ACTION'	=>$action,
 								'FACILITY_ID'	=>$facility_id,
