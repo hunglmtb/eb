@@ -47,11 +47,25 @@ $(function(){
         @method value2html(value, element) 
         **/
         value2html: function(value, element) {
-            if(!value) {
+            /*if(!value) {
                 $(element).empty();
                 return; 
             }
             var html = $('<div>').text(value.VALUE_MAX).html() + ', ' + $('<div>').text(value.street).html() + ' st., bld. ' + $('<div>').text(value.building).html();
+            $(element).html(html); */
+        	
+        	if(!value) {
+                $(element).empty();
+                return; 
+            }
+        	var text = "rules";
+        	if(typeof value.advance == "object") {
+        		var texts	= [];
+        		if(value.advance.KEEP_DISPLAY_VALUE) texts.push("Display origin value");
+        		if(value.advance.ENFORCE_EDIT_NOTE) texts.push("Enforce Edit Note");
+        		if(texts.length>0) text = texts.join(",");
+            }
+        	var html = '<b>' + text+ '</b>';
             $(element).html(html); 
         },
         
@@ -127,6 +141,7 @@ $(function(){
            }
            if(typeof value.advance != "undefined") {
         	   this.$input.filter('[name="KEEP_DISPLAY_VALUE"]').prop('checked', value.advance.KEEP_DISPLAY_VALUE);
+        	   this.$input.filter('[name="ENFORCE_EDIT_NOTE"]').prop('checked', value.advance.ENFORCE_EDIT_NOTE);
         	   this.$input.filter('[name="COLOR"]').val(value.advance.COLOR);
            }
        },       
@@ -148,6 +163,7 @@ $(function(){
 							           },
 			    	   		advance		: {
 			        		   					KEEP_DISPLAY_VALUE	: this.$input.filter('[name="KEEP_DISPLAY_VALUE"]').is(":checked"),
+			        		   					ENFORCE_EDIT_NOTE	: this.$input.filter('[name="ENFORCE_EDIT_NOTE"]').is(":checked"),
 			             	  					COLOR				: this.$input.filter('[name="COLOR"]').val(),
 			         	  				}
 			       		};
@@ -213,9 +229,9 @@ $(function(){
              '<div class="editable-address"><label><span>Warning Max Value: </span><input type="number" name="VALUE_WARNING_MAX" class="input-small"></label></div>'+
              '<div class="editable-address"><label><span>Warning Min Value: </span><input type="number" name="VALUE_WARNING_MIN" class="input-small"></label></div>'+
              '<div class="editable-address"><label><span>Range percent: </span><input type="number" name="RANGE_PERCENT" class="input-mini"></label></div>'+
-             '<div class="editable-address"><label><span> Display origin value</span><input type="checkbox" name="KEEP_DISPLAY_VALUE"></label></div>'+
-             '<div class="editable-address"><label><span> To be defined</span><input type="checkbox" name="TBD"></label></div>'+
-             '<div class="editable-address"><label><span> Pick color</span><input class="inputColor"  type="text" name="COLOR" maxlength="6" size="6" style="padding:2px;background: rgb(219, 68, 219);"></label><img class="removeColor" name="removeColor" valign="middle" class="xclose" src="/img/x.png"></div>',
+             '<div class="editable-address"><label><span>Display origin value</span><input type="checkbox" name="KEEP_DISPLAY_VALUE"></label></div>'+
+             '<div class="editable-address"><label><span>Enforce Edit Note</span><input type="checkbox" name="ENFORCE_EDIT_NOTE"></label></div>'+
+             '<div class="editable-address"><label><span>Pick color</span><input class="inputColor"  type="text" name="COLOR" maxlength="6" size="6" style="padding:2px;background: rgb(219, 68, 219);"></label><img class="removeColor" name="removeColor" valign="middle" class="xclose" src="/img/x.png"></div>',
         inputclass: ''
     });
 

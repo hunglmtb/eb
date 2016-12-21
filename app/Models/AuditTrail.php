@@ -5,5 +5,5 @@ use App\Models\DynamicModel;
 
 class AuditTrail extends DynamicModel
 {
-	protected $table = 'audit_trail';
+	protected $table = 'AUDIT_TRAIL';
 }

@@ -209,17 +209,20 @@ class EbBussinessModel extends DynamicModel {
 			}
 					
 			if ($shouldInsertAudit) {
-				$records[] = array('ACTION'=>$action,
-								'FACILITY_ID'=>$facility_id,
-								'WHO'=>$current_username,
-								'WHEN'=>$current, 
-								'TABLE_NAME'=>$this->table,
-								'COLUMN_NAME'=>$column,
-								'RECORD_ID'=>$rowID,
-								'OBJECT_DESC'=>$objectDesc->NAME,
-								'REASON'=>1,
-								'OLD_VALUE'=>$oldValue,
-								'NEW_VALUE'=>$newValue);
+				$auditNote = array_key_exists("AUDIT_NOTE-$column", $values)?$values["AUDIT_NOTE-$column"]:null;
+				$records[] = array('ACTION'		=>$action,
+								'FACILITY_ID'	=>$facility_id,
+								'WHO'			=>$current_username,
+								'WHEN'			=>$current, 
+								'TABLE_NAME'	=>$this->table,
+								'COLUMN_NAME'	=>$column,
+								'RECORD_ID'		=>$rowID,
+								'OBJECT_DESC'	=>$objectDesc->NAME,
+								'REASON'		=>1,
+								'OLD_VALUE'		=>$oldValue,
+								'NEW_VALUE'		=>$newValue,
+								'AUDIT_NOTE'	=>$auditNote,
+				);
 			}
 		}
 		

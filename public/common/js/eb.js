@@ -462,7 +462,7 @@ var actions = {
 		extraHtml += "</div>";
 		return html+extraHtml;
 	},
-	addNumberRangeRule : function (property,strimValue){
+	validateNumberWithRules : function (property,strimValue){
 		var minValue = typeof(property.VALUE_MIN) !== "undefined"&&
 		property.VALUE_MIN != null &&
 		property.VALUE_MIN != ""?
@@ -492,11 +492,6 @@ var actions = {
 		case "number":
 		case "date":
 			editable['type'] = type;
-			editable['validate'] = function(value) {
-						    	        if($.trim(value) == '') {
-						    	            return 'This field is required';
-						    	        }
-						    	    };
     	    editable['onblur'] = 'cancel';
 			if (type=='date') {
 				editable['onblur'] 	= 'submit';
@@ -511,16 +506,6 @@ var actions = {
 					editable['tpl'] = "<input class='cellnumber' type=\"text\" pattern=\"^[-]?[0-9]+([,][0-9]{1,20})?\">";
 				else  
 					editable['tpl'] = "<input class='cellnumber' type=\"text\" pattern=\"^[-]?[0-9]+([\.][0-9]{1,20})?\">";
-				editable['validate'] = function(value) {
-					var strimValue = $.trim(value);
-	    	        if(strimValue == '') {
-	    	            return 'This field is required';
-	    	        }
-	    	        if(typeof property !== 'string'){
-	            		var rules	= actions.getCellRules(property,rowData);
-	    	        	return actions.addNumberRangeRule(rules,strimValue);
-	    	        }
-	    	    };
 			}
 	    	break;
 	    	
@@ -580,7 +565,35 @@ var actions = {
 				}
 			});
 			return;	
-		}	
+		}
+		editable['validate'] = function(value) {
+			var validateResult	= null;
+			var strimValue 		= $.trim(value);
+			var objectRules		= actions.getObjectRules(property,rowData);
+			switch(type){
+			case "text":
+			case "number":
+			case "date":
+				if(strimValue == '') 
+					validateResult =  'inputted data must not empty';
+				if(type=="number"&&typeof property !== 'string'){
+					var basicRules	= actions.getBasicRules(property,objectRules);
+					validateResult 	= actions.validateNumberWithRules(basicRules,strimValue);
+				}
+				break;
+			}
+			if(validateResult==null&&objectRules!=null&&typeof objectRules.advance == "object"){
+				var enforceEditNote = (objectRules.advance.ENFORCE_EDIT_NOTE==true)||objectRules.advance.ENFORCE_EDIT_NOTE=="true";
+				if(enforceEditNote){
+					var auditNote	= prompt("Please input memo","reason for new value "+strimValue);
+					if(auditNote!="" && auditNote!=null){
+						actions.putModifiedData(tab,"AUDIT_NOTE-"+columnName,auditNote,rowData,"text");
+					}
+					else validateResult =  'Please input memo';
+				}
+			}
+			return validateResult;
+	    };
 		$(td).editable(editable);
     	$(td).on("shown", function(e, editable) {
     		  var val = editable.input.$input.val();
@@ -673,19 +686,11 @@ var actions = {
 		}
 	},
 
-	getCellRules  : function(property,rowData) {
-		var rules	= property;
-		var objectExtension	= property.OBJECT_EXTENSION;
-		if(objectExtension!=null&&objectExtension!=""){
-			var objects = $.parseJSON(objectExtension);
-			var objectId = rowData[actions.type.idName[0]];
-			var extension = objects[objectId];
-			if(typeof(extension) == "object"
-				&&(extension.OVERWRITE==true|| extension.OVERWRITE=='true') 
-				&& typeof(extension.basic) =="object"){
-				rules	= extension.basic;
-			}
-		}
+	getBasicRules  : function(property,objectRules) {
+		var rules	= (typeof(objectRules) == "object"
+						&&(objectRules.OVERWRITE==true|| objectRules.OVERWRITE=='true') 
+						&& typeof(objectRules.basic) =="object")?
+						objectRules.basic:property;
 		return rules;
 	},
 	
@@ -697,8 +702,9 @@ var actions = {
         	var table = $('#table_'+tab).DataTable();
         	$(td).css('color', 'black');
         	if(type=='number'){
-        		var rules	= actions.getCellRules(property,rowData);
-        		actions.addCellNumberRules(td,rules,newValue,originColor,"manual");
+        		var objectRules		= actions.getObjectRules(property,rowData);
+        		var basicRules		= actions.getBasicRules(property,objectRules);
+        		actions.addCellNumberRules(td,basicRules,newValue,originColor,"manual");
         	}
 			table.row( '#'+rowData['DT_RowId'] ).data(rowData);
 			table.columns().footer().draw(); 
@@ -853,6 +859,18 @@ var actions = {
 		type = actions.extraDataSetColumns.hasOwnProperty(data.properties[cindex].data)?'select':type;
 		return type;
 	},
+	
+	getObjectRules : function(property,rowData){
+		var rules;
+		var objectExtension	= property.OBJECT_EXTENSION;
+		if(objectExtension!=null&&objectExtension!=""){
+			var objects = $.parseJSON(objectExtension);
+			var objectId = rowData[actions.type.idName[0]];
+			rules = objects[objectId];
+		}
+		return rules;
+	},
+	
 	getCellProperty : function(data,tab,type,cindex){
 		var cell = {"targets"	: cindex};
 		type = actions.getCellType(data,type,cindex);
@@ -865,15 +883,10 @@ var actions = {
 		if (type!='checkbox') {
 			cell["createdCell"] = function (td, cellData, rowData, row, col) {
 					var property 		= data.properties[col];
-					var objectExtension	= property.OBJECT_EXTENSION;
-					if(objectExtension!=null&&objectExtension!=""){
-						var objects = $.parseJSON(objectExtension);
-						var objectId = rowData[actions.type.idName[0]];
-						var extension = objects[objectId];
-						if(typeof(extension) == "object"&& typeof extension.advance=="object"){
-							//TODO more ruless
-							$(td).css("background-color","#"+extension.advance.COLOR);
-						}
+					var objectRules		= actions.getObjectRules(property,rowData);
+					if(objectRules!=null&&typeof(objectRules) == "object"&& typeof objectRules.advance=="object"){
+						//TODO more ruless
+						$(td).css("background-color","#"+objectRules.advance.COLOR);
 					}
 
 					colName 			= property.data;
@@ -916,9 +929,9 @@ var actions = {
 		 				});
 		 			}
 		 			if(type=='number'){
-		        		var rules			= actions.getCellRules(property,rowData);
+		        		var basicRules		= actions.getBasicRules(property,objectRules);
 		        		var originColor		= $(td).css('background-color');
-		        		actions.addCellNumberRules(td,rules,cellData,originColor,"loading");
+		        		actions.addCellNumberRules(td,basicRules,cellData,originColor,"loading");
 		        	}
 			    };
 		}

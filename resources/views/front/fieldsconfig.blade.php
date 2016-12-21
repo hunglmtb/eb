@@ -297,15 +297,6 @@ var _fieldconfig = {
 				onblur		: 'ignore',
 				placement	: 'left',
 				value		: targets,
-		        display: function(value) {
-		            if(!value) {
-		                $(this).empty();
-		                return; 
-		            }
-		            var text = typeof value.advance == "object"&&value.advance.KEEP_DISPLAY_VALUE ? "Display origin value":"rules";
-		            var html = '<b>' + $('<div>').text(text).html() + '</b>';
-		            $(this).html(html); 
-		        }       
 		    });
 			basic.on('save', function(e, params) {
 				var cellColor 	= params.newValue.advance.COLOR;
