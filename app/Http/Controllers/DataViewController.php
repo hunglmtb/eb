@@ -68,6 +68,7 @@ class DataViewController extends EBController {
 				$ss=explode(";",$sql);
 				$id=substr($ss[0],6);
 				$tmp = SqlList::where(['ID'=>$id])->select('SQL')->first();
+				if(!$tmp) return response ()->json ( "sql not available" ); 
 				$sql = $tmp->SQL;
 				for($i=1;$i<count($ss);$i++)
 					if($ss[$i])
@@ -91,6 +92,21 @@ class DataViewController extends EBController {
 		
 			$page=$data['page'];
 			$rows_in_page=$data['rows_in_page'];
+			
+			while(true){
+				$found=false;
+				$i1=strpos($sql,'{');
+				if($i1>0){
+					$i2=strpos($sql,'}',$i1);
+					if($i2>$i1){
+						$found=true;
+						$sql=substr($sql,0,$i1)."1".substr($sql,$i2+1);
+					}
+				}
+				if(!$found)
+					break;
+			}
+			
 			try{
 				$total_row = DB::select($sql);
 			}catch (\Exception $exp){
@@ -108,7 +124,7 @@ class DataViewController extends EBController {
 			$fields=collect($re[0])->toArray();
 		
 			$occur_date_exist=false;
-			$str .= "<table border='0' id='data' class='display compact'><thead><tr>";
+			$str .= "<table border='0' id='data' class='dataViewTable display compact'><thead><tr>";
 			$keys = "";
 			foreach($fields as $key => $value)
 			{
@@ -186,8 +202,8 @@ class DataViewController extends EBController {
 				echo "</tr>";
 			}
 		}
-		$str .= "</table><div id='paging'>
-    You are here: ";
+		$str .= "</table>";
+		$pagingDiv = "<div id='paging'>You are here: ";
 		$page_list = "";
 		$skip=false;
 		for($i=1; $i<=$total_page; $i++)
@@ -201,14 +217,13 @@ class DataViewController extends EBController {
 			$page_list.=($page_list? "-": "")."<span page='".$i."' ".($i==$page? "class='current_page'": "").">".($i==$page?"[<b>".$i."</b>]": $i)."</span>";
 			$skip=false;
 		}
-		$str .= $page_list."<input type='text' value='' size='4' id='txtpage'><input type='button' value='Go' id='go'></div>
-	<div style='display:none'>
-		<span id='sql_export'>".$sql_export."</span>
-		<span id='occurdate_exist'>".$occur_date_exist."</span>
-		<span id='option'>".$option."</span>
-	<div>";
-		
-		return response ()->json ( $str );
+		$pagingDiv .= $page_list."<input type='text' value='' size='4' id='txtpage'><input type='button' value='Go' id='go'></div>
+				<div style='display:none'>
+					<span id='sql_export'>".$sql_export."</span>
+					<span id='occurdate_exist'>".$occur_date_exist."</span>
+					<span id='option'>".$option."</span>
+				<div>";
+		return response ()->json ( $str.$pagingDiv );
 	}
 	
 	private function check_exist_field($field, $table_view, $option, $selected)

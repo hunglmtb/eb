@@ -19,14 +19,28 @@ Dashboard
 	<script src="/common/js//base64.js"></script>	
 	<script src="/common/js/jquery-ui-timepicker-addon.js"></script>
 
-	<style type="text/css">
+@stop
+
+@section('action_extra')
+<div style="right:5px;top:5px;z-index:10;text-align:right;margin-right: 10px;">
+	<b><span id="dashboard_name"><?php echo $dashboard_row->NAME; ?></span></b><br>
+	<a style="font-size:8pt" href="javascript:loaddashboards()">Change Dashboard</a>
+</div>
+@stop
+
+@section('content')
+<style type="text/css">
+		.documentBody{
+		    overflow-x: scroll;
+		}
 		.filterContainer {
 			width	:100%;
+		    background-color: #E6E6E6;
 		}
 		div.container{
-			padding:5px;
-			position:absolute;
-			border:1px solid #888888;
+			padding		:5px;
+			position	:absolute;
+			border		:1px solid #888888;
 		}
 		div.container span.title{
 			display:block;
@@ -46,17 +60,12 @@ Dashboard
 			width:100%;
 			height:100%;
 		}
+		.dashboardContainer{
+			background	: white;
+		    overflow: scroll;
+		}
+		
 	</style>
-@stop
-
-@section('action_extra')
-<div style="right:5px;top:5px;z-index:10;text-align:right;">
-	<b><span id="dashboard_name"><?php echo $dashboard_row->NAME; ?></span></b><br>
-	<a style="font-size:8pt" href="javascript:loaddashboards()">Change Dashboard</a>
-</div>
-@stop
-
-@section('content')
 <div id="boxDashboardList" style="display:none">
 </div>
 <div id="boxImpLog" style="display:none;position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:2">
@@ -118,10 +127,14 @@ function create_container(config, d_id){
 	'</div>';
 	}
 	else if(config.type=="6"){
-		html='<div class="container">'+
+		/* html='<div class="container">'+
 	//'<span class="title" onclick="selectReport()">Data View</span>'+
 	'<iframe class="dashboardContainer" id="if'+d_id+'" src="">'+
-	'</div>';
+	'</div>'; */
+
+		html='<div class="container">'+
+		'<div class="dashboardContainer" style="width: 100%;height: 100%;"></div>'+
+		'</div>';
 	}
 	else if(config.type=="7"){
 		html='<div class="container">'+
@@ -317,11 +330,67 @@ function loadNetworkModel(o){
 	//document.getElementById("ifReport").contentWindow.document.write("<font family='Open Sans'>Loading...</font>");
 	$(o).attr("src","../diagram/show.php?bgcolor="+bgcolor+"&id="+$(o).parent().attr("d_obj")+"&onlyshow&date="+$("#date_end").val());	
 }
-function loadDataView(o){
+function loadDataView(o,rows_in_page,page){
 	var d1=$("#date_begin").val();
 	var d2=$("#date_end").val();
 	//document.getElementById("ifReport").contentWindow.document.write("<font family='Open Sans'>Loading...</font>");
-	$(o).attr("src","../view/show.php?bgcolor="+bgcolor+"&v="+$(o).parent().attr("d_obj")+"&begin_date="+d1+"&end_date="+d2);
+// 	$(o).attr("src","../view/show.php?bgcolor="+bgcolor+"&v="+$(o).parent().attr("d_obj")+"&begin_date="+d1+"&end_date="+d2);
+	var date_begin	= $("#date_begin").datepicker( "getDate" );
+ 	var month 		= date_begin.getMonth() + 1;              
+ 	var year 		= date_begin.getFullYear();
+ 	var day 		= date_begin.getDate();
+ 	d1				= ""+year+"-"+month+"-"+day;
+
+ 	date_begin		= $("#date_end").datepicker( "getDate" );
+ 	month 			= date_begin.getMonth() + 1;              
+ 	year 			= date_begin.getFullYear();
+ 	day 			= date_begin.getDate();
+ 	d2				= ""+year+"-"+month+"-"+day;
+
+    	var cond="SQLID:"+$(o).parent().attr("d_obj")+";{OCCUR_DATE}:OCCUR_DATE>='"+d1+"' and OCCUR_DATE<='"+d2+"'";
+//    	var cond="SQLID:7;{OCCUR_DATE}:OCCUR_DATE>='"+d1+"' and OCCUR_DATE<='"+d2+"'";
+	$.ajax({
+		   url: "/loaddataview",
+		   data:{
+			   'sql': cond,
+			   'rows_in_page': rows_in_page,
+			   'page': page,
+			   from_date	: d1,
+			   to_date		: d2,
+		   },
+		   type: "POST",
+		   success: function(re){
+			   console.log("loaddataview success ");
+			   o.html(re);
+			   
+			   table=$(".dataViewTable").dataTable({
+					scrollY		: false,
+					scrollX		: true,
+					autoWidth	: true,
+					searching	: false,
+					paging		: false,
+					info		: false,
+					destroy		: true
+				});
+			   new $.fn.dataTable.FixedColumns(table,{leftColumns: 1});
+
+			   $("#paging").find("span").addClass("clickable").on("click", function(){
+				   loadDataView(o,rows_in_page,$(this).attr("page"));
+				})
+			   $("#go").click(function(){
+							var pi=Number($("#txtpage").val());
+							var pr=Number($("#paging span:last").attr("page"));
+							if(pi<=pr && pi>0)
+								{loadDataView(o,rows_in_page,pi);}
+							else
+								{alert("Invalid page");}
+								
+						});
+		   },
+		   error	: function(xhr, status, errorThrown){
+						   console.log("loaddataview fail "+errorThrown);
+					   }
+		   });
 }
 function loadStorageDisplay(o){
 	var d1=$("#date_begin").val();
@@ -358,7 +427,7 @@ function reload(){
 // 			loadNetworkModel(iframe);
 		}
 		if(dtype=="6"){
-// 			loadDataView(iframe);
+ 			loadDataView($(this),25,1);
 		}
 		if(dtype=="7"){
 // 			loadStorageDisplay(iframe);
