@@ -20,6 +20,7 @@ public function getProperties($dcTable,$facility_id=false,$occur_date=null,$post
 				(object)['data' =>	"COLUMN_NAME",	'title' => 'Column',	'width'	=>	0,'INPUT_TYPE'=>1,	'DATA_METHOD'=>5,'FIELD_ORDER'=>8],
 				(object)['data' =>	"OLD_VALUE",	'title' => 'Old Value',	'width'	=>	0,'INPUT_TYPE'=>2,	'DATA_METHOD'=>5,'FIELD_ORDER'=>9],
 				(object)['data' =>	"NEW_VALUE",	'title' => 'New Value',	'width'	=>	0,'INPUT_TYPE'=>2,	'DATA_METHOD'=>5,'FIELD_ORDER'=>10],
+				(object)['data' =>	"AUDIT_NOTE",	'title' => 'MEMO',		'width'	=>	0,'INPUT_TYPE'=>1,	'DATA_METHOD'=>5,'FIELD_ORDER'=>11],
 		]);
 		$results 	= ['properties'		=> $properties,
 	    				'locked'		=> true,
@@ -28,9 +29,8 @@ public function getProperties($dcTable,$facility_id=false,$occur_date=null,$post
 	}
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
-    		
     	$date_end 			= $postData['date_end'];
-    	$date_end 			= \Helper::parseDate($date_end);
+    	$date_end			= $date_end&&$date_end!=""?\Helper::parseDate($date_end):Carbon::now();
     	$auditTrail 		= AuditTrail::getTableName();
     	$codeAuditReason 	= CodeAuditReason::getTableName();
     	$beginDate 			= $occur_date;
@@ -42,8 +42,6 @@ public function getProperties($dcTable,$facility_id=false,$occur_date=null,$post
     	}else{
     		$objectType = '%';
     	}
-    	
-//     	$result = array();
     	
     	// 		\DB::enableQueryLog();
     	$dataSet = AuditTrail::leftjoin($codeAuditReason, "$auditTrail.REASON", '=', "$codeAuditReason.ID")
@@ -60,29 +58,10 @@ public function getProperties($dcTable,$facility_id=false,$occur_date=null,$post
 						    			'OBJECT_DESC',
 						    			'OLD_VALUE',
 						    			'NEW_VALUE', 
+						    			'AUDIT_NOTE', 
 						    			"$codeAuditReason.NAME AS REASON"])
 						    	->get();
     	// 		\Log::info(\DB::getQueryLog());
-    	/* 
-    	foreach ($loadAudittrail as $v){
-    		$v->WHEN = date('m-d-Y', strtotime($v->WHEN));
-    		array_push($result, $v);
-    	}
-    	
-    	return response ()->json ( array (
-    			'result' => $result
-    	) ); */
-    	
-    	/* $dataSet = $mdl::whereDate("$dcTable.BEGIN_DATE",'>=',$occur_date)
-    					->whereDate("$dcTable.BEGIN_DATE",'<=',$date_end)
-				    	->select(
-				    			"$dcTable.ID as $dcTable",
-				    			"$dcTable.ID as DT_RowId",
-				    			"$dcTable.*") 
-  		    			->get(); */
-    	
-  		    			
- 		    			
     	return ['dataSet'=>$dataSet];
     }
 }

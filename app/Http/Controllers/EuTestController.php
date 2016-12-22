@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\EnergyUnit;
+use Carbon\Carbon;
 
 class EuTestController extends CodeController {
     
@@ -26,10 +27,10 @@ class EuTestController extends CodeController {
     	$mdlName = $postData[config("constants.tabTable")];
     	$mdl = "App\Models\\$mdlName";
     	
-    	$object_id = $postData['EnergyUnit'];
-    	$date_end = $postData['date_end'];
-    	$date_end		= 	\Helper::parseDate($date_end);
-    	
+    	$object_id 	= $postData['EnergyUnit'];
+    	$date_end 	= $postData['date_end'];
+    	$date_end	= $date_end&&$date_end!=""?\Helper::parseDate($date_end):Carbon::now();
+    	 
     	$euWheres = ['EU_ID' => $object_id];
     	
 //     	\DB::enableQueryLog();
