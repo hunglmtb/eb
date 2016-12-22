@@ -39,10 +39,9 @@ class DefermentController extends CodeController {
     	$dataSet		= [];
     	$extraDataSet	= [];
     	if ($mdlName=="Deferment") {
-	    	$date_end = $postData['date_end'];
-	    	$date_end = \Helper::parseDate($date_end);
-	    	
-	    	$dataSet = null;
+	    	$date_end 	= $postData['date_end'];
+    		$date_end 	= $date_end&&$date_end!=""?\Helper::parseDate($date_end):Carbon::now();
+	    	$dataSet 	= null;
 	    	$codeDeferGroupType = CodeDeferGroupType::getTableName();
 		    
 		    $where = ['FACILITY_ID' => $facility_id];

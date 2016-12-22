@@ -31,12 +31,12 @@ class QualityController extends CodeController {
 	}
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
-    	$mdlName = $postData[config("constants.tabTable")];
-    	$mdl = "App\Models\\$mdlName";
-    	$src_type_id = $postData['CodeQltySrcType'];
-    	$date_end = $postData['date_end'];
-    	$date_end		= 	\Helper::parseDate($date_end);
-    	$filterBy = $postData['cboFilterBy'];
+    	$mdlName 		= $postData[config("constants.tabTable")];
+    	$mdl 			= "App\Models\\$mdlName";
+    	$src_type_id 	= $postData['CodeQltySrcType'];
+    	$date_end 		= $postData['date_end'];
+    	$date_end		= $date_end&&$date_end!=""?\Helper::parseDate($date_end):Carbon::now();
+    	$filterBy 		= $postData['cboFilterBy'];
     	
     	$extraDataSet = [];
     	$dataSet = null;

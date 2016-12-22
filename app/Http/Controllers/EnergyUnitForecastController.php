@@ -35,15 +35,15 @@ class EnergyUnitForecastController extends CodeController {
     }
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
-    	$date_end 		= 	$postData['date_end'];
-		$date_end		= 	\Helper::parseDate($date_end);
-    	$id 			= 	$postData['EnergyUnit'];
+    	$date_end 		= $postData['date_end'];
+    	$date_end		= $date_end&&$date_end!=""?\Helper::parseDate($date_end):Carbon::now();
+    	$id 			= $postData['EnergyUnit'];
 		
-		$phase_type 	= 	$postData['ExtensionPhaseType'];
-		$value_type 	= 	$postData['ExtensionValueType'];
-		$data_source 	= 	$postData['ExtensionDataSource'];
-		$table			=	$this->getWorkingTable($postData);
-		$mdl 			= 	\Helper::getModelName($table);
+		$phase_type 	= $postData['ExtensionPhaseType'];
+		$value_type 	= $postData['ExtensionValueType'];
+		$data_source 	= $postData['ExtensionDataSource'];
+		$table			= $this->getWorkingTable($postData);
+		$mdl 			= \Helper::getModelName($table);
 	   
 	    $where = [	"EU_ID" 			=> $id,
 	    			"FLOW_PHASE" 		=> $phase_type,];
