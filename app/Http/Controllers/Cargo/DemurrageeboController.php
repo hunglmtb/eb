@@ -21,7 +21,7 @@ class DemurrageeboController extends CodeController {
 		$mdlName 					= $postData[config("constants.tabTable")];
 		$mdl 						= "App\Models\\$mdlName";
 		$date_end 					= $postData['date_end'];
-		$date_end 					= \Helper::parseDate($date_end);
+    	$date_end					= $date_end&&$date_end!=""?\Helper::parseDate($date_end):Carbon::now();
 		$storage_id 				= $postData['Storage'];
 		
 		$pdCargoLoad 				= PdCargoLoad::getTableName();

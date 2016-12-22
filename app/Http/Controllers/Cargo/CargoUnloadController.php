@@ -9,7 +9,7 @@ class CargoUnloadController extends CargoLoadController {
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	$storage_id		= $postData['Storage'];
     	$date_end 		= $postData['date_end'];
-    	$date_end 		= \Helper::parseDate($date_end);
+    	$date_end		= $date_end&&$date_end!=""?\Helper::parseDate($date_end):Carbon::now();
     	
     	$mdlName 		= $postData[config("constants.tabTable")];
     	$mdl 			= "App\Models\\$mdlName";

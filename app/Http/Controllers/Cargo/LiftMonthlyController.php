@@ -14,9 +14,8 @@ class LiftMonthlyController extends CodeController {
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	$accountId 			= $postData['PdLiftingAccount'];
     	$date_end 			= array_key_exists('date_end',  $postData)?$postData['date_end']:null;
-    	if ($date_end) {
-	    	$date_end 		= \Helper::parseDate($date_end);
-    	}
+    	$date_end			= $date_end&&$date_end!=""?\Helper::parseDate($date_end):Carbon::now();
+    	
 //     	\DB::enableQueryLog();
 //     	$sSQL="SELECT a.ID, $fields FROM PD_LIFTING_ACCOUNT_MTH_DATA a WHERE LIFTING_ACCOUNT_ID = $accountId order by BALANCE_MONTH";
 //  	\Log::info(\DB::getQueryLog());

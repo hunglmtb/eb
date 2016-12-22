@@ -44,9 +44,8 @@ class LiftDailyController extends CodeController {
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	$accountId 			= $postData['PdLiftingAccount'];
     	$date_end 			= array_key_exists('date_end',  $postData)?$postData['date_end']:null;
-    	if ($date_end) {
-	    	$date_end 		= \Helper::parseDate($date_end);
-    	}
+    	$date_end			= $date_end&&$date_end!=""?\Helper::parseDate($date_end):Carbon::now();
+    	
 //     	\DB::enableQueryLog();
 //  		\Log::info(\DB::getQueryLog());
   		

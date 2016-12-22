@@ -26,7 +26,7 @@ class CustomizeDateCollection {
 			} else
 				$date_end 		= $this->date_end;
 		
-			$date_end 		= \Helper::parseDate($date_end);
+			$date_end			= $date_end&&$date_end!=""?\Helper::parseDate($date_end):Carbon::now();
 				
 			$sourceData = [ 
 					'date_begin' 	=> $date_begin,

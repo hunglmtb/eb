@@ -14,7 +14,7 @@ class CargoScheduleController extends CargoAdminController {
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	
     	$date_end 		= $postData['date_end'];
-    	$date_end 		= \Helper::parseDate($date_end);
+    	$date_end		= $date_end&&$date_end!=""?\Helper::parseDate($date_end):Carbon::now();
     	$storage_id 	= $postData['Storage'];
     	$mdlName 		= $postData[config("constants.tabTable")];
     	$mdl 			= "App\Models\\$mdlName";

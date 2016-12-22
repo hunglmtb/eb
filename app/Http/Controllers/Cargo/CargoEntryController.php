@@ -17,9 +17,7 @@ class CargoEntryController extends CodeController {
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	
     	$date_end 		= array_key_exists('date_end',  $postData)?$postData['date_end']:null;
-    	if ($date_end) {
-	    	$date_end 		= \Helper::parseDate($date_end);
-    	}
+    	$date_end		= $date_end&&$date_end!=""?\Helper::parseDate($date_end):Carbon::now();
     	
     	$mdlName = $postData[config("constants.tabTable")];
     	$mdl = "App\Models\\$mdlName";
