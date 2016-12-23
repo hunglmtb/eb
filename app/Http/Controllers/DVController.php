@@ -955,17 +955,18 @@ class DVController extends Controller {
 				
 		);
 		$current_username 	= auth()->user()->username;
+		$cquery0 			= Dashboard::where("IS_DEFAULT",1);
 		$cquery1 			= Dashboard::where("IS_DEFAULT",1)->where("USER_NAME",$current_username);
 		$cquery2 			= Dashboard::where("USER_NAME",$current_username)->take(0,1);
 		$cquery3 			= Dashboard::where("IS_DEFAULT",1)->where("TYPE",1)->take(0,1);
 		$cquery4 			= Dashboard::where("TYPE",1)->take(0,1);
-		$query 				= $cquery1->union($cquery2)->union($cquery3)->union($cquery4);
+		$query 				= $cquery0->union($cquery1)->union($cquery2)->union($cquery3)->union($cquery4);
 		$dashboard_row 		= $query->first();
 
 		return view ( 
 				'front.dashboard',
 				['filters'			=> $filterGroups,
-				'dashboard_id'		=> $dashboard_row->ID,
+				'dashboard_id'		=> $dashboard_row?$dashboard_row->ID:null,
 				'dashboard_row'		=> $dashboard_row
 		]);
 	}
