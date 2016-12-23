@@ -31,10 +31,18 @@ $enableFooter	= isset($enableFooter)	? $enableFooter	:true;
 var configuration =  <?php echo json_encode($configuration); ?>;
 var func_code='{{$rightCode}}';
 var jsFormat = configuration['picker']['DATE_FORMAT_JQUERY'];//'mm/dd/yy';
+var ebtoken = $('meta[name="_token"]').attr('content');
+$.ajaxSetup({
+	headers: {
+		'X-XSRF-Token': ebtoken
+	}
+});
+
 </script>
 <script src="/common/js/moment.js"></script>
 <script type="text/javascript" src="/common/js/utils.js"></script>
 <script src="/common/js/jquery-ui.js"></script>
+
 @yield('script')
 <link rel="stylesheet" href="/common/css/style.css" />
 </head>

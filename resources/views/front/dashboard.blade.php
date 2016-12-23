@@ -328,7 +328,10 @@ function loadReport(o){
 function loadNetworkModel(o){
 	var ds=$("#date_begin").val().split("/");
 	//document.getElementById("ifReport").contentWindow.document.write("<font family='Open Sans'>Loading...</font>");
-	$(o).attr("src","../diagram/show.php?bgcolor="+bgcolor+"&id="+$(o).parent().attr("d_obj")+"&onlyshow&date="+$("#date_end").val());	
+ 	$(o).attr("src","/diagram/networkmodel?bgcolor="+bgcolor+"&id="+$(o).parent().attr("d_obj")+"&onlyshow&date="+$("#date_end").val());
+// 	$(o).attr("src","/diagram/networkmodel?bgcolor="+bgcolor+"&id=46&onlyshow&date="+$("#date_end").val());
+
+// 	loadSavedDiagram("network diagram",$(o).parent().attr("d_obj"));
 }
 function loadDataView(o,rows_in_page,page){
 	var d1=$("#date_begin").val();
@@ -397,6 +400,27 @@ function loadStorageDisplay(o){
 	var d2=$("#date_end").val();
 	//document.getElementById("ifReport").contentWindow.document.write("<font family='Open Sans'>Loading...</font>");
 	$(o).attr("src","../pd/storagedisplay_loadchart.php?bgcolor="+bgcolor+"&sdid="+$(o).parent().attr("d_obj")+"&date_begin="+d1+"&date_end="+d2);
+
+	var title = encodeURIComponent($("#chartTitle").val());
+	if(title == "") title = null;
+	
+	var minvalue = $("#txt_min").val();
+	if(minvalue == "") minvalue = null;
+	
+	var maxvalue = $("#txt_max").val();
+	if(maxvalue == "") maxvalue = null;
+	
+	var date_begin = $("#date_begin").val();
+	var date_end = $("#date_end").val();
+	var input = encodeURIComponent(_graph.getChartConfig());
+	var iurl = "/loadchart?title="+title+
+							"&minvalue="+minvalue+
+							"&maxvalue="+maxvalue+
+							"&date_begin="+date_begin+
+							"&date_end="+date_end+
+							"&input="+input;	
+	$("#frameChart").attr("src",iurl);
+	
 }
 function loadCons(o){
 	var d1=$("#date_begin").val();
@@ -424,13 +448,13 @@ function reload(){
  			loadReport(iframe);
 		}
 		if(dtype=="5"){
-// 			loadNetworkModel(iframe);
+ 			loadNetworkModel(iframe);
 		}
 		if(dtype=="6"){
  			loadDataView($(this),25,1);
 		}
 		if(dtype=="7"){
-// 			loadStorageDisplay(iframe);
+//  			loadStorageDisplay(iframe);
 		}
 		if(dtype=="8"){
  			loadCons($(this));

@@ -114,6 +114,24 @@ class DVController extends Controller {
 		] )->select ( 'XML_CODE' )->first ();
 		return response ( $tmp->XML_CODE );
 	}
+	
+
+	public function loadNetworkModel(Request $request) {
+		$postData       = $request->all();
+		$diagram_id     = $postData['id'];
+		$occur_date		= $postData["date"];
+// 		$diagram_id		= 52;
+		
+		$tmp            = NetWork::where ( ['ID' => $diagram_id] )
+								->select ( 'XML_CODE' )
+								->first ();
+		return view ( 'graph.networkmodel',['xml'			=> $tmp?$tmp->XML_CODE:null,
+											'diagram_id'	=> $diagram_id,
+											'occur_date'	=> $occur_date,
+		]);
+		
+	}
+	
 	public function deletediagram(Request $request) {
 		//\DB::enableQueryLog ();
 		NetWork::where ( [ 
@@ -245,17 +263,21 @@ class DVController extends Controller {
 		$data = $request->all ();
 		$flow_phase = $data ['flow_phase'];
 		$vparam = $data ['vparam'];
-		$occur_date = Carbon::createFromFormat('m/d/Y',$data ['occur_date'])->format('Y-m-d');
-		$ret = "";
+		$occur_date	= $data ['occur_date'];
+		$occur_date = $occur_date&&$occur_date!=""?\Helper::parseDate($occur_date):Carbon::now();
+// 		$occur_date = Carbon::createFromFormat('m/d/Y',$data ['occur_date'])->format('Y-m-d');
+		$ret 		= "";
 		
-		$date_begin = $occur_date;
-		$date_end = $occur_date;
+		$date_begin = $occur_date->startOfDay();
+		$date_end 	= $occur_date->endOfDay();
+		
+		if (!$vparam || !is_array($vparam) ||count($vparam)<=0)  return response ()->json ( "empty param" );
 		
 		foreach ( $vparam as $v ) {
 			$cell_id = $v ['ID'];
 			$object_type = $v ['OBJECT_TYPE'];
-			$object_id = $v ['OBJECT_ID'];
-			$conn_id = $v ['CONN_ID'];
+			$object_id 	= $v ['OBJECT_ID'];
+			$conn_id 	= array_key_exists('CONN_ID', $v)?$v ['CONN_ID']:-1;
 			$phase_config = $v ['SUR_PHASE_CONFIG'];
 			$su = $v ['SU'];
 			
@@ -285,7 +307,7 @@ class DVController extends Controller {
 					$table = strtolower ( $table );
 					$table = str_replace ( ' ', '', ucwords ( str_replace ( '_', ' ', $table ) ) );
 					$model = 'App\\Models\\' . $table;
-					\DB::enableQueryLog ();
+// 					\DB::enableQueryLog ();
 					$conditions = explode ( ',', $flow_phases );
 					$tmps = $model::where ( [ 
 							'EU_ID' => $object_id 
@@ -293,7 +315,7 @@ class DVController extends Controller {
 							$field . ' AS FIELD_VALUE',
 							'FLOW_PHASE' 
 					] );
-					\Log::info ( \DB::getQueryLog () );
+// 					\Log::info ( \DB::getQueryLog () );
 					$arr = array ();
 					foreach ( $tmps as $tmp ) {
 						$value = $tmp->FIELD_VALUE;
@@ -363,11 +385,11 @@ class DVController extends Controller {
 							}
 						}
 						
-						\DB::enableQueryLog ();
+// 						\DB::enableQueryLog ();
 						$values = $model::where ( $condition )->whereDate ( 'OCCUR_DATE', '=', $occur_date)->SELECT ( [ 
 								$field . ' AS FIELD_VALUE' 
 						] )->first ();
-						\Log::info ( \DB::getQueryLog () );
+// 						\Log::info ( \DB::getQueryLog () );
 						
 						if (count ( $values ) > 0) {
 							$value = $values->FIELD_VALUE;
@@ -944,7 +966,6 @@ class DVController extends Controller {
 		return $result;
 	}
 	
-	
 	public function dashboard() {
 		$filterGroups = array(	'productionFilterGroup'	=> [],
 								'frequenceFilterGroup'	=> [],
@@ -969,5 +990,9 @@ class DVController extends Controller {
 				'dashboard_id'		=> $dashboard_row?$dashboard_row->ID:null,
 				'dashboard_row'		=> $dashboard_row
 		]);
+	}
+	
+	public function editor() {
+		return response()->file("/config/diagrameditor.xml");
 	}
 }

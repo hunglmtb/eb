@@ -14,6 +14,7 @@ $subMenus = [
 	<script type="text/javascript" src="/common/js/mxClient.js"></script>
 	<script type="text/javascript" src="/common/js/utils.js"></script>
 	<script type="text/javascript" src="/common/js/mxApplication.js?3"></script>
+	<script  type="text/javascript" src="/common/js/base64.js"></script>
 	<script src="/common/js/svgtopng.js"></script>
 	<script src="/common/js/skinable_tabs.min.js"></script>
 	<link rel="stylesheet" href="/common/css/diagram.css"/>

@@ -7,7 +7,7 @@
 	in the java and dotnet directories, respectively.
  -->
 <!--	<include name="/Config.ashx"/> -->
-	<include name="config/editor-commons.xml?2"/>
+	<include name="/config/editor-commons.xml?2"/>
 	<add as="onInit"><![CDATA[
 		function ()
 		{

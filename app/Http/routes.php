@@ -339,6 +339,8 @@ Route::post('getdiagram', 'DVController@getdiagram');
 Route::get('loaddiagram/{id}', 'DVController@loaddiagram');
 Route::post('savediagram', 'DVController@savediagram');
 Route::post('deletediagram', 'DVController@deletediagram');
+Route::get('diagram/networkmodel', 'DVController@loadNetworkModel');
+Route::get('/diagram/editor', 'DVController@editor');
 
 Route::post('onChangeObj', 'DVController@onChangeObj');
 Route::post('getSurveillanceSetting', 'DVController@getSurveillanceSetting');

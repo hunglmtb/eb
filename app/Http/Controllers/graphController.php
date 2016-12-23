@@ -233,7 +233,7 @@ class graphController extends Controller {
 		
 		$isrange	=(is_numeric($minvalue) && $maxvalue>$minvalue);
 		$date_begin = \Helper::parseDate($date_begin);
-		$date_end 	= \Helper::parseDate($date_end);
+    	$date_end	= $date_end&&$date_end!=""?\Helper::parseDate($date_end):Carbon::now();
 		
 		$ss=explode(",",$input);
 		$k=0;
