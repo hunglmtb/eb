@@ -303,7 +303,7 @@ class AdminController extends Controller {
 				'LAST_NAME', 'MIDDLE_NAME', 'FIRST_NAME', 'EMAIL', 'a.EXPIRE_DATE', 'a.ACTIVE'
 		];
 		
-		\DB::enableQueryLog();
+// 		\DB::enableQueryLog();
 		$user = DB::table($user.' AS a')
 		->leftJoin($userDataScope.' AS b', 'a.id', '=', 'b.user_id')
 		->leftJoin($loProductionUnit.' AS pu', 'pu.id', '=', 'b.PU_ID')
@@ -311,7 +311,7 @@ class AdminController extends Controller {
 		->leftJoin($facility.' AS fa', 'fa.id', '=', 'b.FACILITY_ID')
 		->where(['a.ID' => $id])
 		->select($listColumn)->first();	
-		\Log::info(\DB::getQueryLog());
+// 		\Log::info(\DB::getQueryLog());
 		
 			$user->EXPIRE_DATE = date('m/d/Y',strtotime($user->EXPIRE_DATE));
 			
@@ -439,9 +439,9 @@ class AdminController extends Controller {
 					$now = Carbon::now('Europe/London');
 					$pUser->PASSWORD_CHANGED = date('Y-m-d H:i:s', strtotime($now));
 					$pUser->PASSWORD = $obj->myencrypt($data['pass']);
-					\DB::enableQueryLog();
+// 					\DB::enableQueryLog();
 					User::where(['ID'=>$data['ID']])->update(json_decode(json_encode($pUser), true));
-					\Log::info(\DB::getQueryLog());
+// 					\Log::info(\DB::getQueryLog());
 				}
 				
 				
@@ -574,7 +574,7 @@ class AdminController extends Controller {
 		->select(['b.ID', 'b.NAME'])
 		->get();
 		
-		\DB::enableQueryLog();
+// 		\DB::enableQueryLog();
 		$roleRight = DB::table($userRight.' AS a')
 		->whereNotExists(function($query) use ($userRoleRight, $data){
 			$query->select(DB::raw('A.ID'))
@@ -582,7 +582,7 @@ class AdminController extends Controller {
 			->whereRaw('b.RIGHT_ID = a.ID')
 			->where(['b.ROLE_ID'=>$data['ROLE_ID']]);
 		}) ->get();
-		\Log::info(\DB::getQueryLog());
+// 		\Log::info(\DB::getQueryLog());
 		
 		return response ()->json ( array (
 				'roleLeft' => $roleLeft, 'roleRight' => $roleRight
@@ -669,76 +669,98 @@ class AdminController extends Controller {
 	}
 	
 	public function validateData(Request $request){
-		$data = $request->all();		
-		$table_names = explode(',',$data['TABLE_NAMES']);
+		$data = $request->all();	
 		
-		$current_username = '';
-		if((auth()->user() != null)){
-			$current_username = auth()->user()->username;
+		try{
+			$result = \DB::transaction(function () use ($data){
+				
+				$table_names = explode(',',$data['TABLE_NAMES']);
+				
+				$current_username 	= '';
+				$userId				= null;
+				if((auth()->user() != null)){
+					$current_username = auth()->user()->username;
+					$userId			= auth()->user()->ID;
+				}
+				$dateFrom			= \Helper::parseDate($data['DATE_FROM']);
+				$dateTo				= \Helper::parseDate($data['DATE_TO']);
+				$facility_id 		= $data['FACILITY_ID'];
+				$obj['DATE_FROM'] 	= $dateFrom;
+				$obj['DATE_TO'] 	= $dateTo;
+				$obj['USER_ID'] 	= $userId;
+				$obj['FACILITY_ID'] = $facility_id;
+				foreach ($table_names as $table){
+				
+					$condition = array(
+							'TABLE_NAME'=>$table,
+							'FACILITY_ID'=>$data['FACILITY_ID']
+					);
+						
+					$obj['TABLE_NAME'] = $table;
+						
+					//\DB::enableQueryLog();
+					AuditValidateTable::updateOrCreate($condition,$obj);
+					$this->updateRecordStatus("V",$table,$facility_id,$dateFrom,$dateTo,$current_username);
+					//\Log::info(\DB::getQueryLog());
+				}
+				
+				$objType_id = $data['OBJECTTYPE'];
+				$group_id = $data['GROUP_ID'];
+				$result = array();
+				
+				$intMapTable = IntMapTable::getTableName();
+				$auditValidateTable = AuditValidateTable::getTableName();
+				
+				if($group_id != 0){
+					$datatablegroup = DataTableGroup::where(['ID'=>$group_id])->select('TABLES')->first();	;
+					$group = $datatablegroup->TABLES;
+					$group=str_replace("\r","",$group);
+					$group=str_replace(" ","",$group);
+					$group=str_replace("\t","",$group);
+					$group=",".str_replace("\n",",",$group).",";
+				}else{
+					$group = '';
+				}
+				
+				// 		\DB::enableQueryLog();
+				$loadValidateData = DB::table($intMapTable.' AS a')
+				->leftjoin($auditValidateTable.' AS b', function ($join) use ($facility_id){
+					$join->on('a.TABLE_NAME', '=', 'b.TABLE_NAME')
+					->where('b.FACILITY_ID', '=', $facility_id);
+				})
+				->where(function($q) use ($objType_id) {
+					if($objType_id != 0){
+						$q->where(['a.OBJECT_TYPE' => $objType_id]);
+					}
+				})
+				->select(['b.ID AS T_ID', 'a.ID', 'a.TABLE_NAME', 'a.FRIENDLY_NAME', 'b.DATE_FROM', 'b.DATE_TO'])
+				->get();
+				// 		\Log::info(\DB::getQueryLog());
+				
+				foreach ($loadValidateData as $v){
+				
+					if($group){
+				
+						if (strpos($group,",$v->TABLE_NAME,") === false)
+							continue;
+					}
+				
+					$v->T_ID = ($v->T_ID?"checked":"");
+				
+					array_push($result, $v);
+				}
+				return $result;
+			});
+				
 		}
-		$obj['DATE_FROM'] 	= \Helper::parseDate($data['DATE_FROM']);
-		$obj['DATE_TO'] 	= \Helper::parseDate($data['DATE_TO']);
-		$obj['USER_ID'] = $current_username; 
-		$obj['FACILITY_ID'] = $data['FACILITY_ID'];
-		foreach ($table_names as $table){
-		
-			$condition = array(
-					'TABLE_NAME'=>$table,
-					'FACILITY_ID'=>$data['FACILITY_ID']
-			);
-			
-			$obj['TABLE_NAME'] = $table;
-			
-			//\DB::enableQueryLog();
-			AuditValidateTable::updateOrCreate($condition,$obj);
-			//\Log::info(\DB::getQueryLog());
-		}
-		
-		$objType_id = $data['OBJECTTYPE'];
-		$facility_id = $data['FACILITY_ID'];
-		$group_id = $data['GROUP_ID'];
-		$result = array();
-		
-		$intMapTable = IntMapTable::getTableName();
-		$auditValidateTable = AuditValidateTable::getTableName();
-		
-		if($group_id != 0){
-			$datatablegroup = DataTableGroup::where(['ID'=>$group_id])->select('TABLES')->first();	;
-			$group = $datatablegroup->TABLES;
-			$group=str_replace("\r","",$group);
-			$group=str_replace(" ","",$group);
-			$group=str_replace("\t","",$group);
-			$group=",".str_replace("\n",",",$group).",";
-		}else{
-			$group = '';
-		}
-		
-// 		\DB::enableQueryLog();
-		$loadValidateData = DB::table($intMapTable.' AS a')
-		->leftjoin($auditValidateTable.' AS b', function ($join) use ($facility_id){
-			$join->on('a.TABLE_NAME', '=', 'b.TABLE_NAME')
-			->where('b.FACILITY_ID', '=', $facility_id);
-		})
-		->where(function($q) use ($objType_id) {
-			if($objType_id != 0){
-				$q->where(['a.OBJECT_TYPE' => $objType_id]);
-			}
-		})
-		->select(['b.ID AS T_ID', 'a.ID', 'a.TABLE_NAME', 'a.FRIENDLY_NAME', 'b.DATE_FROM', 'b.DATE_TO'])
-		->get();
-// 		\Log::info(\DB::getQueryLog());
-		
-		foreach ($loadValidateData as $v){
-		
-			if($group){
-		
-				if (strpos($group,",$v->TABLE_NAME,") === false)
-					continue;
-			}
-		
-			$v->T_ID = ($v->T_ID?"checked":""); 
-		
-			array_push($result, $v);
+		catch (\Exception $e)
+		{
+			\Log::info("\nApproveData\nException wher run transation ApproveData\n ");
+			\Log::info($e->getMessage());
+			\Log::info($e->getTraceAsString());
+			// 			return response($e->getMessage(), 400);
+			return response ()->json ("error: ".$e->getMessage());
+			// 			throw $e;
 		}
 		
 		return response ()->json ( array (
@@ -808,74 +830,127 @@ class AdminController extends Controller {
 	
 	public function ApproveData(Request $request){
 		$data = $request->all();
-		$table_names = explode(',',$data['TABLE_NAMES']);
-		
-		$current_username = '';
-		if((auth()->user() != null)){ 
-			$current_username = auth()->user()->ID;
+		try{
+			$result = \DB::transaction(function () use ($data){
+				$table_names = explode(',',$data['TABLE_NAMES']);
+				
+				$current_username 	= '';
+				$userId				= null;
+				if((auth()->user() != null)){ 
+					$current_username = auth()->user()->username;
+					$userId			= auth()->user()->ID;
+				}
+				$dateFrom			= \Helper::parseDate($data['DATE_FROM']);
+				$dateTo				= \Helper::parseDate($data['DATE_TO']);
+				$facility_id 		= $data['FACILITY_ID'];
+				$obj['DATE_FROM'] 	= $dateFrom;
+				$obj['DATE_TO'] 	= $dateTo;
+				$obj['USER_ID'] 	= $userId;
+				$obj['FACILITY_ID'] = $facility_id;
+				
+				foreach ($table_names as $table){
+					$condition = array(
+							'TABLE_NAME'	=>$table,
+							'FACILITY_ID'	=>$facility_id
+					);
+					$obj['TABLE_NAME'] = $table;
+					AuditApproveTable::updateOrCreate($condition,$obj);
+					$this->updateRecordStatus("A",$table,$facility_id,$dateFrom,$dateTo,$current_username);
+				}
+				
+				$objType_id 	= $data['OBJECTTYPE'];
+				$group_id 		= $data['GROUP_ID'];
+				$result 		= array();
+				
+				$intMapTable = IntMapTable::getTableName();
+				$auditApproveTable = AuditApproveTable::getTableName();
+				
+				if($group_id != 0){
+					$datatablegroup = DataTableGroup::where(['ID'=>$group_id])->select('TABLES')->first();	;
+					$group = $datatablegroup->TABLES;
+					$group=str_replace("\r","",$group);
+					$group=str_replace(" ","",$group);
+					$group=str_replace("\t","",$group);
+					$group=",".str_replace("\n",",",$group).",";
+				}else{
+					$group = '';
+				}
+				
+				$loadApproveData = DB::table($intMapTable.' AS a')
+				->leftjoin($auditApproveTable.' AS b', function ($join) use ($facility_id){
+					$join->on('a.TABLE_NAME', '=', 'b.TABLE_NAME')
+					->where('b.FACILITY_ID', '=', $facility_id);
+				})
+				->where(function($q) use ($objType_id) {
+					if($objType_id != 0){
+						$q->where(['a.OBJECT_TYPE' => $objType_id]);
+					}
+				})
+				->select(['b.ID AS T_ID', 'a.ID', 'a.TABLE_NAME', 'a.FRIENDLY_NAME', 'b.DATE_FROM', 'b.DATE_TO'])
+				->get();
+				
+				foreach ($loadApproveData as $v){
+				
+					if($group){
+				
+						if (strpos($group,",$v->TABLE_NAME,") === false)
+							continue;
+					}
+				
+					$v->T_ID = ($v->T_ID?"checked":"");
+				
+					array_push($result, $v);
+				}
+				return $result;
+			});
 		}
-		$obj['DATE_FROM'] 	= \Helper::parseDate($data['DATE_FROM']);
-		$obj['DATE_TO'] 	= \Helper::parseDate($data['DATE_TO']);
-		$obj['USER_ID'] 	= $current_username;
-		$obj['FACILITY_ID'] = $data['FACILITY_ID'];
-		
-		foreach ($table_names as $table){
-			$condition = array(
-					'TABLE_NAME'=>$table,
-					'FACILITY_ID'=>$data['FACILITY_ID']
-			);
-			$obj['TABLE_NAME'] = $table;
-			AuditApproveTable::updateOrCreate($condition,$obj);
-		}
-		
-		$objType_id = $data['OBJECTTYPE'];
-		$facility_id = $data['FACILITY_ID'];
-		$group_id = $data['GROUP_ID'];
-		$result = array();
-		
-		$intMapTable = IntMapTable::getTableName();
-		$auditApproveTable = AuditApproveTable::getTableName();
-		
-		if($group_id != 0){
-			$datatablegroup = DataTableGroup::where(['ID'=>$group_id])->select('TABLES')->first();	;
-			$group = $datatablegroup->TABLES;
-			$group=str_replace("\r","",$group);
-			$group=str_replace(" ","",$group);
-			$group=str_replace("\t","",$group);
-			$group=",".str_replace("\n",",",$group).",";
-		}else{
-			$group = '';
-		}
-		
-		$loadApproveData = DB::table($intMapTable.' AS a')
-		->leftjoin($auditApproveTable.' AS b', function ($join) use ($facility_id){
-			$join->on('a.TABLE_NAME', '=', 'b.TABLE_NAME')
-			->where('b.FACILITY_ID', '=', $facility_id);
-		})
-		->where(function($q) use ($objType_id) {
-			if($objType_id != 0){
-				$q->where(['a.OBJECT_TYPE' => $objType_id]);
-			}
-		})
-		->select(['b.ID AS T_ID', 'a.ID', 'a.TABLE_NAME', 'a.FRIENDLY_NAME', 'b.DATE_FROM', 'b.DATE_TO'])
-		->get();
-		
-		foreach ($loadApproveData as $v){
-		
-			if($group){
-		
-				if (strpos($group,",$v->TABLE_NAME,") === false)
-					continue;
-			}
-		
-			$v->T_ID = ($v->T_ID?"checked":"");
-		
-			array_push($result, $v);
+		catch (\Exception $e)
+		{
+			\Log::info("\nApproveData\nException wher run transation ApproveData\n ");
+			\Log::info($e->getMessage());
+			\Log::info($e->getTraceAsString());
+			// 			return response($e->getMessage(), 400);
+			return response ()->json ("error: ".$e->getMessage());
+// 			throw $e;
 		}
 		
 		return response ()->json ( array (
 				'result' => $result
 		) );
+	}
+	
+	public function updateRecordStatus($value,$table,$facility_id,$dateFrom,$dateTo,$current_username=null){
+		$mtableRecord	= IntMapTable::where("TABLE_NAME",$table)->select("MASTER_TABLE")->first();
+		if($mtableRecord){
+			$mtable			= $mtableRecord->MASTER_TABLE;
+// 			\DB::enableQueryLog();
+			$mdl			= \Helper::getModelName($table);
+			$dbtable		= $mdl::getTableName();
+			\DB::table($table)
+			->join($mtable,function ($query) use ($mtable,$table,$facility_id) {
+				$query->on("$table.".$mtable."_ID",'=',"$mtable.ID");
+				$query->on("$mtable.FACILITY_ID",'=',\DB::raw("$facility_id")) ;
+			})
+			->where("$table.RECORD_STATUS",$value)
+			->whereDate("$table.OCCUR_DATE" ,"<", $dateFrom)
+			->orWhereDate("$table.OCCUR_DATE" ,">", $dateTo)
+			->update([	"$table.RECORD_STATUS" 	=> null,
+						"$table.STATUS_BY" 		=> $current_username,
+						"$table.STATUS_DATE" 	=> Carbon::now(),
+			]);
+			
+			$mdl::join($mtable,function ($query) use ($mtable,$dbtable,$facility_id) {
+				$query->on("$mtable.ID",'=',"$dbtable.".$mtable."_ID");
+				$query->on("$mtable.FACILITY_ID",'=',\DB::raw("$facility_id")) ;
+			})
+			->whereDate("$table.OCCUR_DATE" ,">=", $dateFrom)
+			->whereDate("$table.OCCUR_DATE" ,"<=", $dateTo)
+			->update([	"$table.RECORD_STATUS" 	=> $value,
+						"$table.STATUS_BY" 		=> $current_username,
+						"$table.STATUS_DATE" 	=> Carbon::now(),
+			]);
+// 			\Log::info(\DB::getQueryLog());
+		}
 	}
 	
 	public function _indexLockData() {
@@ -1070,9 +1145,9 @@ class AdminController extends Controller {
 		$obj['NAME'] = $data['NAME'];
 		$obj['TABLES'] = $data['TABLES'];
 		
-		\DB::enableQueryLog();
+// 		\DB::enableQueryLog();
 		DataTableGroup::updateOrCreate($condition,$obj);
-		\Log::info(\DB::getQueryLog());
+// 		\Log::info(\DB::getQueryLog());
 	
 		$data = DataTableGroup::all(['ID', 'NAME']);
 	
@@ -1092,9 +1167,9 @@ class AdminController extends Controller {
 	
 	public function getFunction(Request $request) {
 		$data = $request->all();
-		\DB::enableQueryLog();
+// 		\DB::enableQueryLog();
 		$subEbFunctions = EbFunctions::where(['PARENT_CODE'=>$data['CODE']])->orderBy('CODE')->get();
-		\Log::info(\DB::getQueryLog());
+// 		\Log::info(\DB::getQueryLog());
 		return response ()->json ($subEbFunctions);
 	}
 	
