@@ -3,6 +3,9 @@
 namespace App\Http\ViewComposers;
 
 use App\Models\LoProductionUnit;
+use App\Models\LoArea;
+use App\Models\Facility;
+use App\Models\UserDataScope;
 use App\Repositories\UserRepository as UserRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -109,11 +112,35 @@ class ProductionGroupComposer
     		$fid = array_key_exists('Facility', $this->currentData)?$this->currentData["Facility"]:$fid;
     	}
     	
-    	$productionUnits = LoProductionUnit::all(['ID', 'NAME']);
+    	$userDataScope	= UserDataScope::where("USER_ID",$this->user->ID)->first();
+    	if ($userDataScope) {
+    		$DATA_SCOPE_PU			=$userDataScope->PU_ID;
+			$DATA_SCOPE_AREA		=$userDataScope->AREA_ID;
+			$DATA_SCOPE_FACILITY	=$userDataScope->FACILITY_ID;
+    	}
+    	else {
+    		$DATA_SCOPE_PU			=null;
+    		$DATA_SCOPE_AREA		=null;
+    		$DATA_SCOPE_FACILITY	=null;
+    	}
+    	
+    	if($DATA_SCOPE_PU&&$DATA_SCOPE_PU>0)
+    		$productionUnits = LoProductionUnit::where('ID',$DATA_SCOPE_PU)->get();
+    	else 
+    		$productionUnits = LoProductionUnit::all(['ID', 'NAME']);
+
     	$currentProductUnit = ProductionGroupComposer::getCurrentSelect($productionUnits,$pid);
-    	$areas = $currentProductUnit->LoArea()->getResults();
+    	
+    	if($currentProductUnit) $areas = $currentProductUnit->LoArea()->getResults();
+    	else if($DATA_SCOPE_AREA&&$DATA_SCOPE_AREA>0) $areas = LoArea::where('ID',$DATA_SCOPE_AREA)->get();
+	    else  $areas 	=	null;
+    			
     	$currentArea = ProductionGroupComposer::getCurrentSelect($areas,$aid);
-    	$facilities = $currentArea->Facility()->getResults();
+    	
+    	if($currentArea) $facilities = $currentArea->Facility()->getResults();
+    	else if($DATA_SCOPE_FACILITY&&$DATA_SCOPE_FACILITY>0) $areas = Facility::where('ID',$DATA_SCOPE_FACILITY)->get();
+    	else  $facilities 	=	null;
+    	
     	$currentFacility = ProductionGroupComposer::getCurrentSelect($facilities,$fid);
 	    $productionFilterGroup =['LoProductionUnit'	=>	$this->getFilterArray('LoProductionUnit',$productionUnits,$currentProductUnit),
 					    		'LoArea'			=>	$this->getFilterArray('LoArea',$areas,$currentArea),

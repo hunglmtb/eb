@@ -61,12 +61,14 @@ class Helper {
 		$currentId = array_key_exists('currentId', $option)?$option['currentId']:'';
 		if ($collection) {
 			foreach($collection as $item ){
-				$fvalue = $item->ID!=""?$item->ID:(isset($item->CODE)?$item->CODE:"");
-				$optionName	= $item->NAME;
-				$optionName	= Lang::has("front/site.$optionName", $lang)?trans("front/site.$optionName"):$optionName;
-				$htmlFilter .= '<option name="'.(isset($item->CODE)?$item->CODE:"")
-							.'" value="'.$fvalue.'"'.($currentUnit&&$currentUnit==$item?'selected="selected"':'')
-							.'>'.$optionName.'</option>';
+				if($item){
+					$fvalue = $item->ID!=""?$item->ID:(isset($item->CODE)?$item->CODE:"");
+					$optionName	= $item->NAME;
+					$optionName	= Lang::has("front/site.$optionName", $lang)?trans("front/site.$optionName"):$optionName;
+					$htmlFilter .= '<option name="'.(isset($item->CODE)?$item->CODE:"")
+								.'" value="'.$fvalue.'"'.($currentUnit&&$currentUnit==$item?'selected="selected"':'')
+								.'>'.$optionName.'</option>';
+				}
 			}
 		}
 		
