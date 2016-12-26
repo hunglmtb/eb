@@ -111,7 +111,6 @@ AND a.id=$P{facility}]]>
 			</textField>
 			<image>
 				<reportElement x="0" y="0" width="280" height="70" uuid="d39cea56-f0dc-43ed-8681-a62c2e42361d"/>
-				<imageExpression><![CDATA[$P{ROOT_DIR}+"/res/cplogo.png"]]></imageExpression>
 			</image>
 		</band>
 	</title>

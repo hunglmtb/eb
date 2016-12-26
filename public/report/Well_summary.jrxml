@@ -56,7 +56,6 @@
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 				</reportElement>
-				<imageExpression><![CDATA[$P{ROOT_DIR}+"/res/cplogo.png"]]></imageExpression>
 			</image>
 		</band>
 	</title>

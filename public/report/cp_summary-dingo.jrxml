@@ -115,7 +115,6 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 			</textField>
 			<image>
 				<reportElement x="410" y="20" width="140" height="50" uuid="12b2000f-8bd2-48db-8871-7e93e58bdd9e"/>
-				<imageExpression><![CDATA[$P{ROOT_DIR}+"/res/cplogo.png"]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement x="20" y="76" width="260" height="16" uuid="98173485-fad1-44cf-9a15-a76bf4d185b1"/>
