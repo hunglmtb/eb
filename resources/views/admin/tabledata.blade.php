@@ -245,6 +245,9 @@ function scopeChange(c){
 "<option value='CODE_AUDIT_REASON'>CODE_AUDIT_REASON</option>"+
 "<option value='CODE_AUDIT_LOCK_STATUS'>CODE_AUDIT_LOCK_STATUS</option>"+
 "<option value='CODE_AUDIT_RECORD_STATUS'>CODE_AUDIT_RECORD_STATUS</option>"+
+"<option value='AUDIT_VALIDATE_TABLE'>AUDIT_VALIDATE_TABLE</option>"+
+"<option value='AUDIT_APPROVE_TABLE'>AUDIT_APPROVE_TABLE</option>"+
+"<option value='LOCK_TABLE'>LOCK_TABLE</option>"+
 		"";
 	}
 	else if($("#cboObjectScope").val()=="DEFER")

@@ -5,7 +5,7 @@ use App\Models\DynamicModel;
 
 class LockTable extends DynamicModel
 {
-	protected $table = 'lock_table';
+	protected $table = 'LOCK_TABLE';
 	
 	public $timestamps = false;
 	public $primaryKey  = 'ID';
