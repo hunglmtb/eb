@@ -35,7 +35,7 @@
 				<textElement verticalAlignment="Bottom">
 					<font fontName="SansSerif" size="14" pdfFontName="Helvetica-Bold" pdfEncoding=""/>
 				</textElement>
-				<text><![CDATA[Mereenie Summary Report]]></text>
+				<text><![CDATA[Marine Summary Report]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="20" y="35" width="80" height="15" uuid="eea15840-3bc5-4b86-bb80-e23dc6946b67"/>

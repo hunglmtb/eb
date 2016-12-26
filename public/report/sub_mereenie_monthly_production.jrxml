@@ -1,0 +1,828 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.1.0.final using JasperReports Library version 6.1.0  -->
+<!-- 2016-02-10T00:24:12 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_mereenie_monthly_production" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="1ec0eccc-40e5-4724-a3e7-783ce0d26ecf">
+	<property name="com.jaspersoft.studio.data.sql.tables" value="ZWIuZW5lcmd5X3VuaXRfZGF5X2FsbG9jIEFTICwxODMsOTs="/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter "/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="startTime" class="java.util.Date">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<parameter name="endTime" class="java.util.Date">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<parameter name="facility_id" class="java.lang.Integer"/>
+	<queryString language="SQL">
+		<![CDATA[select eu_id,res_id,well_name,res_name,active_days,
+(select case h.status when 1 then 'ONLINE' else 'OFFLINE' end well_status from energy_unit_history h where h.eu_id=x.eu_id and date_format(h.CHANGED_DATE,'%Y/%m')<=date_format($P{startTime},'%Y/%m') order by h.CHANGED_DATE desc  limit 1 ) well_status,
+round(v_gas/1000,2) v_gas,round(v_oil,2) v_oil,round(v_water,2) v_water,
+round(month_gas/1000,2) month_gas,round(month_oil,2) month_oil,round(month_water,2) month_water,
+round(case when x.active_days=0 then 0 else x.month_gas/1000/x.active_days end,2) day_gas,
+round(case when x.active_days=0 then 0 else x.month_oil/x.active_days end,2) day_oil,
+round(case when x.active_days=0 then 0 else x.month_water/x.active_days end,2) day_water,
+round(case when x.v_oil=0 then 0 else x.v_gas/1000/x.v_oil end,2) gor,
+round(case when x.v_water=0 then 0 else x.v_water/(x.v_oil+x.v_water) end,2) water_cut
+from(
+select eu_id,res_id,well_name,res_name, max(active_days) active_days,
+sum(v_gas) v_gas,sum(v_oil) v_oil,sum(v_water) v_water,sum(month_gas) month_gas,sum(month_oil) month_oil,sum(month_water) month_water
+from(
+SELECT a.eu_id,e.id res_id,b.name well_name,e.name res_name,
+(select round(sum(f.active_hrs)/24,2) active_days from energy_unit_day_fdc_value f 
+where f.eu_id=a.eu_id and date_format(f.occur_date,'%Y/%m/01')=date_format($P{startTime},'%Y/%m/01') and f.FLOW_PHASE=1 and f.event_type=1) active_days,
+null v_gas, sum(c.GRS_VOL) v_oil,null v_water,
+null month_gas, sum(case when date_format(c.occur_date,'%Y/%m/01')=date_format($P{startTime},'%Y/%m/01') then c.GRS_VOL else 0 end) month_oil, null month_water
+FROM `well_comp_interval_perf` a, energy_unit b, well_comp_interval_perf_day_alloc c, reservoir_formation d, reservoir e, well_comp_interval i
+WHERE a.eu_id=b.id and b.facility_id in (18,19)
+and a.comp_interval_id=i.id and i.RESERVOIR_FORMATION=d.id and d.reservoir_id=e.id
+and c.comp_interval_perf_id=a.id
+and date_format(c.occur_date,'%Y/%m/01')<=date_format($P{startTime},'%Y/%m/01')
+and c.FLOW_PHASE=1 and c.event_type=1
+group by res_id,eu_id
+union all
+SELECT a.eu_id,e.id res_id,b.name well_name,e.name res_name,
+(select round(sum(f.active_hrs)/24,2) active_days from energy_unit_day_fdc_value f 
+where f.eu_id=a.eu_id and date_format(f.occur_date,'%Y/%m/01')=date_format($P{startTime},'%Y/%m/01') and f.FLOW_PHASE=2 and f.event_type=1) active_days,
+sum(c.GRS_VOL) v_gas, null v_oil,null v_water,
+sum(case when date_format(c.occur_date,'%Y/%m/01')=date_format($P{startTime},'%Y/%m/01') then c.GRS_VOL else 0 end) month_gas, null month_oil, null month_water
+FROM `well_comp_interval_perf` a, energy_unit b, well_comp_interval_perf_day_alloc c, reservoir_formation d, reservoir e, well_comp_interval i
+WHERE a.eu_id=b.id and b.facility_id in (18,19)
+and a.comp_interval_id=i.id and i.RESERVOIR_FORMATION=d.id and d.reservoir_id=e.id
+and c.comp_interval_perf_id=a.id
+and date_format(c.occur_date,'%Y/%m/01')<=date_format($P{startTime},'%Y/%m/01')
+and c.FLOW_PHASE=2 and c.event_type=1
+group by res_id,eu_id
+union all
+SELECT a.eu_id,e.id res_id,b.name well_name,e.name res_name,
+(select round(sum(f.active_hrs)/24,2) active_days from energy_unit_day_fdc_value f 
+where f.eu_id=a.eu_id and date_format(f.occur_date,'%Y/%m/01')=date_format($P{startTime},'%Y/%m/01') and f.FLOW_PHASE=3 and f.event_type=1) active_days,
+null v_gas, null v_oil,sum(c.GRS_VOL) v_water,
+null month_gas, null month_oil, sum(case when date_format(c.occur_date,'%Y/%m/01')=date_format($P{startTime},'%Y/%m/01') then c.GRS_VOL else 0 end) month_water
+FROM `well_comp_interval_perf` a, energy_unit b, well_comp_interval_perf_day_alloc c, reservoir_formation d, reservoir e, well_comp_interval i
+WHERE a.eu_id=b.id and b.facility_id in (18,19)
+and a.comp_interval_id=i.id and i.RESERVOIR_FORMATION=d.id and d.reservoir_id=e.id
+and c.comp_interval_perf_id=a.id
+and date_format(c.occur_date,'%Y/%m/01')<=date_format($P{startTime},'%Y/%m/01')
+and c.FLOW_PHASE=3 and c.event_type=1
+group by res_id,eu_id
+) x group by res_id,eu_id) x
+group by x.res_id,x.eu_id order by x.res_name,x.well_name]]>
+	</queryString>
+	<field name="eu_id" class="java.lang.Integer"/>
+	<field name="res_id" class="java.lang.Integer"/>
+	<field name="well_name" class="java.lang.String"/>
+	<field name="well_status" class="java.lang.String"/>
+	<field name="res_name" class="java.lang.String"/>
+	<field name="active_days" class="java.math.BigDecimal"/>
+	<field name="v_gas" class="java.math.BigDecimal"/>
+	<field name="v_oil" class="java.math.BigDecimal"/>
+	<field name="v_water" class="java.math.BigDecimal"/>
+	<field name="month_gas" class="java.math.BigDecimal"/>
+	<field name="month_oil" class="java.math.BigDecimal"/>
+	<field name="month_water" class="java.math.BigDecimal"/>
+	<field name="day_gas" class="java.math.BigDecimal"/>
+	<field name="day_oil" class="java.math.BigDecimal"/>
+	<field name="day_water" class="java.math.BigDecimal"/>
+	<field name="gor" class="java.math.BigDecimal"/>
+	<field name="water_cut" class="java.math.BigDecimal"/>
+	<variable name="subTotalGas" class="java.math.BigDecimal" resetType="Group" resetGroup="GroupEventType" calculation="Sum">
+		<variableExpression><![CDATA[$F{v_gas}]]></variableExpression>
+	</variable>
+	<variable name="subTotalOil" class="java.math.BigDecimal" resetType="Group" resetGroup="GroupEventType" calculation="Sum">
+		<variableExpression><![CDATA[$F{v_oil}]]></variableExpression>
+	</variable>
+	<variable name="subTotalWater" class="java.math.BigDecimal" resetType="Group" resetGroup="GroupEventType" calculation="Sum">
+		<variableExpression><![CDATA[$F{v_water}]]></variableExpression>
+	</variable>
+	<variable name="monthTotalGas" class="java.math.BigDecimal" resetType="Group" resetGroup="GroupEventType" calculation="Sum">
+		<variableExpression><![CDATA[$F{month_gas}]]></variableExpression>
+	</variable>
+	<variable name="monthTotalOil" class="java.math.BigDecimal" resetType="Group" resetGroup="GroupEventType" calculation="Sum">
+		<variableExpression><![CDATA[$F{month_oil}]]></variableExpression>
+	</variable>
+	<variable name="monthTotalWater" class="java.math.BigDecimal" resetType="Group" resetGroup="GroupEventType" calculation="Sum">
+		<variableExpression><![CDATA[$F{month_water}]]></variableExpression>
+	</variable>
+	<variable name="all_subTotalGas" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{v_gas}]]></variableExpression>
+	</variable>
+	<variable name="all_subTotalOil" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{v_oil}]]></variableExpression>
+	</variable>
+	<variable name="all_subTotalWater" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{v_water}]]></variableExpression>
+	</variable>
+	<variable name="all_monthTotalGas" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{month_gas}]]></variableExpression>
+	</variable>
+	<variable name="all_monthTotalOil" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{month_oil}]]></variableExpression>
+	</variable>
+	<variable name="all_monthTotalWater" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{month_water}]]></variableExpression>
+	</variable>
+	<group name="GroupEventType" isReprintHeaderOnEachPage="true">
+		<groupExpression><![CDATA[$F{res_name}]]></groupExpression>
+		<groupHeader>
+			<band height="130">
+				<textField>
+					<reportElement mode="Opaque" x="0" y="0" width="830" height="20" forecolor="#FFFFFF" backcolor="#EF7521" uuid="affd9a36-38a4-44c4-b3bf-b5c143e2f78d"/>
+					<box padding="3">
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="11" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Reservoir Layer: "+$F{res_name}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="80" width="170" height="50" backcolor="#F9C7A6" uuid="b0a120bb-3791-4304-ac99-57483c5bafd8"/>
+					<box leftPadding="3">
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Production Well]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="170" y="80" width="50" height="50" backcolor="#F9C7A6" uuid="9588adb8-ee01-44ff-9236-38ce88345124"/>
+					<box>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[End of Month Status]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="220" y="80" width="60" height="50" backcolor="#F9C7A6" uuid="d222e064-992a-4297-85e1-6cabf889f74b"/>
+					<box>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Days on Production]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="280" y="100" width="50" height="30" backcolor="#F9C7A6" uuid="a0b57373-ca62-422d-86e9-c5c61e8f9290"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Gas
+(ksm3)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="330" y="100" width="50" height="30" backcolor="#F9C7A6" uuid="fc62c072-7b59-40cc-a6cd-88d64deb26a6"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Oil
+(kL)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="380" y="100" width="50" height="30" backcolor="#F9C7A6" uuid="eda25c1d-3cad-4696-a3d4-b5d1a4052c33"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Water
+(kL)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="280" y="80" width="150" height="20" backcolor="#F9C7A6" uuid="96d79be0-db0e-4725-837d-edcce883eea5"/>
+					<box>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Allocated Production]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="730" y="100" width="50" height="30" backcolor="#F9C7A6" uuid="923da00a-ab69-431f-82c8-815c5c5fbfcb"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Oil
+(kL)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="780" y="100" width="50" height="30" backcolor="#F9C7A6" uuid="e2bda216-b4a9-480b-9ec5-787501229bbe"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Water
+(kL)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="680" y="100" width="50" height="30" backcolor="#F9C7A6" uuid="6d8fd244-3085-4553-b49d-1bcd61f40451"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Gas
+(ksm3)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="680" y="80" width="150" height="20" backcolor="#F9C7A6" uuid="da0db4e0-14a4-4a80-9b57-e8ada14c587b"/>
+					<box>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Cumulative Production]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="480" y="100" width="50" height="30" backcolor="#F9C7A6" uuid="35fd4e70-d382-4586-8097-10561c2b2fe3"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Oil
+(kL/day)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="530" y="100" width="50" height="30" backcolor="#F9C7A6" uuid="483a28bf-bed7-49bf-b825-f7d9d15a3c29"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Water
+(kL/day)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="430" y="80" width="250" height="20" backcolor="#F9C7A6" uuid="6655ac80-b1d8-49b8-a5e4-d7e70b24639b"/>
+					<box>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Average Daily Production]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="580" y="100" width="50" height="30" backcolor="#F9C7A6" uuid="d11400b0-8b4a-4d67-bbd2-5c51d752e447"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Gas-Oil Ratio]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="630" y="100" width="50" height="30" backcolor="#F9C7A6" uuid="779bc663-92d1-423a-88c9-d36cc2580a9a"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Water Cut (%)]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="0" width="830" height="80" uuid="f7f632b7-47ea-4eb2-bcf0-b7b60486edaa"/>
+				</rectangle>
+				<staticText>
+					<reportElement x="30" y="29" width="160" height="15" uuid="fd7b754e-9fd0-4640-a2cf-285a81aa6200"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[Report Monthly Total Gas (ksm3):]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="30" y="44" width="160" height="15" uuid="de571740-8e9f-43d2-bf91-ea32f6d40fef"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[Report Monthly Total Oil (kL):]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="30" y="59" width="160" height="15" uuid="63390cc2-49a2-410f-8aa0-31ec61c7b3a5"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[Report Monthly Total Water (kL):]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="580" y="29" width="140" height="15" uuid="800a2da1-523d-48cd-bd43-5669ce60742d"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[Cumulative Gas Total (ksm3):]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="580" y="44" width="140" height="15" uuid="0efdf858-1a48-4fbf-891e-5f75d48e6c00"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[Cumulative Oil Total (kL):]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="580" y="59" width="140" height="15" uuid="1bd74675-5b1e-438a-a68e-c41786544ae4"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<text><![CDATA[Cumulative Water Total (kL):]]></text>
+				</staticText>
+				<textField evaluationTime="Group" evaluationGroup="GroupEventType" isBlankWhenNull="true">
+					<reportElement mode="Transparent" x="190" y="29" width="60" height="15" backcolor="#DBDBDB" uuid="9a0fe891-b88f-46bc-b08f-aef41b08e15a"/>
+					<box rightPadding="3">
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.00").format($V{monthTotalGas})]]></textFieldExpression>
+				</textField>
+				<textField evaluationTime="Group" evaluationGroup="GroupEventType" isBlankWhenNull="true">
+					<reportElement mode="Transparent" x="190" y="44" width="60" height="15" backcolor="#DBDBDB" uuid="b9258843-64d1-40c4-97cd-67c766f70a41"/>
+					<box rightPadding="3">
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.00").format($V{monthTotalOil})]]></textFieldExpression>
+				</textField>
+				<textField evaluationTime="Group" evaluationGroup="GroupEventType" isBlankWhenNull="true">
+					<reportElement mode="Transparent" x="190" y="59" width="60" height="15" backcolor="#DBDBDB" uuid="9724ba64-a140-4828-b332-96d7a9a9a59d"/>
+					<box rightPadding="3">
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.00").format($V{monthTotalWater})]]></textFieldExpression>
+				</textField>
+				<textField evaluationTime="Group" evaluationGroup="GroupEventType" isBlankWhenNull="true">
+					<reportElement mode="Transparent" x="720" y="29" width="60" height="15" backcolor="#DBDBDB" uuid="d92ebf55-624a-4cf4-b8a3-8aa951b00b79"/>
+					<box rightPadding="3">
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.00").format($V{subTotalGas})]]></textFieldExpression>
+				</textField>
+				<textField evaluationTime="Group" evaluationGroup="GroupEventType" isBlankWhenNull="true">
+					<reportElement mode="Transparent" x="720" y="44" width="60" height="15" backcolor="#DBDBDB" uuid="48b268b0-5170-452e-8c8b-2c1225d42952"/>
+					<box rightPadding="3">
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.00").format($V{subTotalOil})]]></textFieldExpression>
+				</textField>
+				<textField evaluationTime="Group" evaluationGroup="GroupEventType" isBlankWhenNull="true">
+					<reportElement mode="Transparent" x="720" y="59" width="60" height="15" backcolor="#DBDBDB" uuid="a4a4783b-2f2e-4950-ba7f-f053954a119f"/>
+					<box rightPadding="3">
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.00").format($V{subTotalWater})]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Opaque" x="430" y="100" width="50" height="30" backcolor="#F9C7A6" uuid="700cff01-0553-4a25-b492-537016e44502"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Gas
+(ksm3/day)]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="31">
+				<line>
+					<reportElement x="0" y="0" width="830" height="1" uuid="6980cc7e-b44d-4d89-bc4e-6f7a7f4c0ec5"/>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<title>
+		<band height="74">
+			<rectangle>
+				<reportElement x="0" y="0" width="830" height="64" uuid="0ddd102b-463b-45a6-b2a6-eae29e09568f"/>
+			</rectangle>
+			<textField evaluationTime="Report" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="190" y="10" width="60" height="15" backcolor="#DBDBDB" uuid="528ff242-78e6-4e18-99a8-5b831ea723ac"/>
+				<box rightPadding="3">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.00").format($V{all_monthTotalGas})]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="190" y="40" width="60" height="15" backcolor="#DBDBDB" uuid="c76bda5e-9f39-44d3-ac20-a31fb717c629"/>
+				<box rightPadding="3">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.00").format($V{all_monthTotalWater})]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="720" y="25" width="60" height="15" backcolor="#DBDBDB" uuid="0f727f89-5a18-4b9e-8022-b70158bbfb21"/>
+				<box rightPadding="3">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.00").format($V{all_subTotalOil})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="580" y="10" width="140" height="15" uuid="64267491-b075-4ae9-a77e-154e453abc83"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Cumulative Gas Total (ksm3):]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="30" y="25" width="160" height="15" uuid="584a974f-7a30-44ed-b429-935df7e40c63"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Report Monthly Total Oil (kL):]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="30" y="40" width="160" height="15" uuid="57bcd2d5-1da5-43ac-88e8-c97f1396881b"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Report Monthly Total Water (kL):]]></text>
+			</staticText>
+			<textField evaluationTime="Report" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="720" y="40" width="60" height="15" backcolor="#DBDBDB" uuid="b8657e44-e32b-4ab8-9f41-ae89c95f882c"/>
+				<box rightPadding="3">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.00").format($V{all_subTotalWater})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="30" y="10" width="160" height="15" uuid="ee719729-3ae3-4963-a2b5-f74d74d9e20f"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Report Monthly Total Gas (ksm3):]]></text>
+			</staticText>
+			<textField evaluationTime="Report" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="720" y="10" width="60" height="15" backcolor="#DBDBDB" uuid="f09fa9aa-a283-49d4-86b1-46b2fe67b968"/>
+				<box rightPadding="3">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.00").format($V{all_subTotalGas})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="580" y="40" width="140" height="15" uuid="0039720e-4268-41a4-9b4d-2d624f17b377"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Cumulative Water Total (kL):]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="580" y="25" width="140" height="15" uuid="31373e6a-b8d4-4f08-a578-96581691ea2f"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Cumulative Oil Total (kL):]]></text>
+			</staticText>
+			<textField evaluationTime="Report" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="190" y="25" width="60" height="15" backcolor="#DBDBDB" uuid="1cb8fefd-e244-4020-bf93-1b68996520c5"/>
+				<box rightPadding="3">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.00").format($V{all_monthTotalOil})]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="16">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<textField>
+				<reportElement x="0" y="0" width="170" height="16" uuid="a37cb151-38a7-4d0c-8a28-91c85cd882a1"/>
+				<box leftPadding="3">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{well_name}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="170" y="0" width="50" height="16" uuid="315d0074-f0f6-4f9a-bd58-ca588309d0a4"/>
+				<box leftPadding="3">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{well_status}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="220" y="0" width="60" height="16" uuid="7c45fb4a-4b18-4c9f-874e-8716465176ab"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<leftPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{active_days}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="280" y="0" width="50" height="16" uuid="4f927494-cfff-43e4-a2e9-ce3ff8fd60fa"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{month_gas}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="330" y="0" width="50" height="16" uuid="28cd86d2-c6fd-4da7-b03c-76e0e28d082e"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<leftPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{month_oil}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="380" y="0" width="50" height="16" uuid="08e20227-cd6d-46c6-90af-f1b0879a601d"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<leftPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{month_water}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="430" y="0" width="50" height="16" uuid="0ddf33d4-8f5b-4a80-af8d-3888f53fa314"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{day_gas}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="480" y="0" width="50" height="16" uuid="07a4667a-2d83-45b2-bedf-1541ad521ef2"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<leftPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{day_oil}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="530" y="0" width="50" height="16" uuid="888f8f2e-57a0-46fd-9f34-0006bc683533"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<leftPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{day_water}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="580" y="0" width="50" height="16" uuid="7282cd7a-cb7d-4283-b0da-7239fc0474a8"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<leftPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{gor}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="630" y="0" width="50" height="16" uuid="0ba03168-3528-4ad1-9723-42f54d3e795d"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<leftPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{water_cut}+"%"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="680" y="0" width="50" height="16" uuid="31040a2e-ee8e-4be8-bd01-1a2cab6bc47f"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{v_gas}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="730" y="0" width="50" height="16" uuid="82772ebb-d461-49b8-a29c-311baee00657"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<leftPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{v_oil}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="780" y="0" width="50" height="16" uuid="a19d1d09-de50-4878-ae85-91f59ab445fd"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<leftPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{v_water}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="21"/>
+	</summary>
+</jasperReport>

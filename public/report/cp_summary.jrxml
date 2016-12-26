@@ -250,7 +250,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement verticalAlignment="Bottom">
 					<font fontName="SansSerif" size="14" isBold="true" pdfFontName="Helvetica-Bold" pdfEncoding=""/>
 				</textElement>
-				<text><![CDATA[Mereenie Production Summary Report]]></text>
+				<text><![CDATA[Marine Production Summary Report]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="20" y="50" width="80" height="16" uuid="eea15840-3bc5-4b86-bb80-e23dc6946b67"/>
@@ -266,10 +266,6 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				</textElement>
 				<textFieldExpression><![CDATA[$P{report_time}]]></textFieldExpression>
 			</textField>
-			<image>
-				<reportElement x="410" y="20" width="140" height="50" uuid="12b2000f-8bd2-48db-8871-7e93e58bdd9e"/>
-				<imageExpression><![CDATA[$P{ROOT_DIR}+"/res/cplogo.png"]]></imageExpression>
-			</image>
 			<staticText>
 				<reportElement x="20" y="76" width="260" height="16" uuid="98173485-fad1-44cf-9a15-a76bf4d185b1"/>
 				<textElement>

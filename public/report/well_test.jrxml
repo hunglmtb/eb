@@ -83,13 +83,6 @@ and date_format(a.EFFECTIVE_DATE,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/0
 				</textElement>
 				<textFieldExpression><![CDATA[$P{report_time}]]></textFieldExpression>
 			</textField>
-			<image>
-				<reportElement x="660" y="10" width="140" height="50" uuid="bafdfa93-514b-4468-8d53-bdc2feef5ecc">
-					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-				</reportElement>
-				<imageExpression><![CDATA[$P{ROOT_DIR}+"/res/cplogo.png"]]></imageExpression>
-			</image>
 		</band>
 	</title>
 	<pageHeader>

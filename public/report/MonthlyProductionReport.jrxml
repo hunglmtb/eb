@@ -43,7 +43,7 @@
 				<textElement verticalAlignment="Bottom">
 					<font fontName="SansSerif" size="14" pdfFontName="Helvetica-Bold" pdfEncoding=""/>
 				</textElement>
-				<text><![CDATA[Mereenie - Monthly Production Report]]></text>
+				<text><![CDATA[Marine - Monthly Production Report]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="20" y="39" width="80" height="20" uuid="eea15840-3bc5-4b86-bb80-e23dc6946b67"/>
@@ -59,13 +59,6 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$P{report_time}]]></textFieldExpression>
 			</textField>
-			<image>
-				<reportElement x="680" y="6" width="160" height="50" uuid="12b2000f-8bd2-48db-8871-7e93e58bdd9e">
-					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-				</reportElement>
-				<imageExpression><![CDATA[$P{ROOT_DIR}+"/res/cplogo.png"]]></imageExpression>
-			</image>
 		</band>
 	</title>
 	<pageHeader>

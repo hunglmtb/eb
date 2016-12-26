@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.1.0.final using JasperReports Library version 6.1.0  -->
-<!-- 2016-02-24T19:24:20 -->
+<!-- 2016-02-17T22:26:24 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Well_summary" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="13a397aa-fce7-40fe-b679-f115a7b2ae9c">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter "/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
@@ -12,7 +12,6 @@
 	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
-	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true"/>
 	<parameter name="begin_date" class="java.util.Date">
 		<parameterDescription><![CDATA[]]></parameterDescription>
 	</parameter>
@@ -31,7 +30,6 @@
 		<![CDATA[select 
 date_format(LAST_DAY(DATE_SUB($P{begin_date}, INTERVAL 1 MONTH)),'%m/%d/%Y') day1,
 date_format(LAST_DAY(DATE_SUB($P{begin_date}, INTERVAL 0 MONTH)),'%m/%d/%Y') day2,
-round(100*round(c28,2)/round(c17,2),2) C29,
 round(c9,2) c9,
 round(c10,2) c10,
 round(c11,2) c11,
@@ -48,6 +46,7 @@ round(c25,2) c25,
 round(c26,2) c26,
 round(c27,2) c27,
 round(c28,2) c28,
+round(c29,2) c29,
 round(c32,2) c32,
 round(c33,2) c33,
 round(c34,2) c34,
@@ -60,22 +59,22 @@ round(c40,2) c40,
 round(c42,2) c42,
 round(c45,2) c45,
 round(c46,2) c46,
-round(c9*6.2898,2) d9,
-round(c10*6.2898,2) d10,
-round(c11*6.2898,2) d11,
-round(c12*6.2898,2) d12,
-round(c14*6.2898,2) d14,
-round(c15*6.2898,2) d15,
-round(c16*6.2898,2) d16,
-round(c17*6.2898,2) d17,
-round(c19*6.2898,2) d19,
-round(c22*6.2898,2) d22,
-round(c23*6.2898,2) d23,
-round(c24*6.2898,2) d24,
-round(c25*6.2898,2) d25,
-round(c26*6.2898,2) d26,
-round(c27*6.2898,2) d27,
-round(c28*6.2898,2) d28,
+round(c9*1000/158.9,2) d9,
+round(c10*1000/158.9,2) d10,
+round(c11*1000/158.9,2) d11,
+round(c12*1000/158.9,2) d12,
+round(c14*1000/158.9,2) d14,
+round(c15*1000/158.9,2) d15,
+round(c16*1000/158.9,2) d16,
+round(c17*1000/158.9,2) d17,
+round(c19*1000/158.9,2) d19,
+round(c22*1000/158.9,2) d22,
+round(c23*1000/158.9,2) d23,
+round(c24*1000/158.9,2) d24,
+round(c25*1000/158.9,2) d25,
+round(c26*1000/158.9,2) d26,
+round(c27*1000/158.9,2) d27,
+round(c28*1000/158.9,2) d28,
 round(c32*35.314725/1000000,2) d32,
 round(c33*35.314725/1000000,2) d33,
 round(c34*35.314725/1000000,2) d34,
@@ -87,7 +86,7 @@ round(c39*35.314725/1000000,2) d39,
 round(c40*35.314725/1000000,2) d40,
 round(c42*35.314725/1000000,2) d42
 from(
-select *, C17-C27 c28, C17/DAY(LAST_DAY(date_format($P{begin_date},'%Y/%m/01'))) C19 from(
+select *, C17-C27 c28, C17/DAY(LAST_DAY(date_format($P{begin_date},'%Y/%m/01'))) C19, round((C17-C27)/C26,2) C29 from(
 select *, c12+c16 c17 from(
 select *, c9+c10+c11 c12, c14+c15 c16,C25-C24+C26 c27, (c32+c33+c34+c35+c36+c37+c38+c39) C40, case when c33=0 then 0 else round(c46e*1000/c33,2) end c46 from
 (
@@ -191,7 +190,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 	<field name="c15" class="java.math.BigDecimal"/>
 	<field name="c16" class="java.math.BigDecimal"/>
 	<field name="c17" class="java.math.BigDecimal"/>
-	<field name="c19" class="java.math.BigDecimal"/>
+	<field name="c19" class="java.lang.Long"/>
 	<field name="c22" class="java.lang.Long"/>
 	<field name="c23" class="java.lang.Long"/>
 	<field name="c24" class="java.math.BigDecimal"/>
@@ -251,7 +250,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement verticalAlignment="Bottom">
 					<font fontName="SansSerif" size="14" isBold="true" pdfFontName="Helvetica-Bold" pdfEncoding=""/>
 				</textElement>
-				<text><![CDATA[Mereenie Production Summary Report]]></text>
+				<text><![CDATA[Marine Production Summary Report]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="20" y="50" width="80" height="16" uuid="eea15840-3bc5-4b86-bb80-e23dc6946b67"/>
@@ -267,10 +266,6 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				</textElement>
 				<textFieldExpression><![CDATA[$P{report_time}]]></textFieldExpression>
 			</textField>
-			<image>
-				<reportElement x="410" y="20" width="140" height="50" uuid="12b2000f-8bd2-48db-8871-7e93e58bdd9e"/>
-				<imageExpression><![CDATA[$P{ROOT_DIR}+"/res/cplogo.png"]]></imageExpression>
-			</image>
 			<staticText>
 				<reportElement x="20" y="76" width="260" height="16" uuid="98173485-fad1-44cf-9a15-a76bf4d185b1"/>
 				<textElement>
@@ -364,7 +359,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c9}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c9}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c9})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="42" width="70" height="16" uuid="78c70712-03e6-4092-b990-e71b22671c7f"/>
@@ -377,7 +372,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d9}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d9}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d9})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Transparent" x="20" y="58" width="390" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="d77c97a3-da85-44bb-b301-0b4bc0f56451"/>
@@ -403,7 +398,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c10}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c10}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c10})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="58" width="70" height="16" uuid="1f613b14-4186-4d32-934c-f39b522f8acd"/>
@@ -416,7 +411,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d10}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d10}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d10})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Transparent" x="20" y="74" width="390" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="766f93c7-a908-438c-9346-3c899c93f922"/>
@@ -442,7 +437,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c11}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c11}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c11})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="74" width="70" height="16" uuid="42420104-aba3-4d6b-96e2-2e31b6d48439"/>
@@ -455,7 +450,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d11}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d11}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d11})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Opaque" x="20" y="90" width="390" height="16" forecolor="#000000" backcolor="#F0F0F0" uuid="d85c028d-8a1a-48a7-b766-d83599317dea"/>
@@ -481,7 +476,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c12}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c12}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c12})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="480" y="90" width="70" height="16" backcolor="#F0F0F0" uuid="ba57ddb1-9068-4321-8b78-1ff2a3dc3391"/>
@@ -494,7 +489,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d12}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d12}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d12})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Transparent" x="20" y="106" width="390" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="8fc8067a-9e1f-4f50-a9e7-514f36ebbbb7"/>
@@ -520,7 +515,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c14}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c14}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c14})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="106" width="70" height="16" uuid="d89fabee-5b0c-4943-88c3-102329c6bae5"/>
@@ -533,7 +528,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d14}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d14}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d14})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Transparent" x="20" y="122" width="390" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="564922b7-e7ac-4be4-bb80-35c9a95cf59f"/>
@@ -559,7 +554,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c15}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c15}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c15})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="122" width="70" height="16" uuid="422514f4-b736-48c1-ae2f-9f9fa444ced6"/>
@@ -572,7 +567,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d15}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d15}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d15})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Transparent" x="20" y="138" width="390" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="1cd5bb29-dbf4-4c70-b9fc-9bf87f0c8290"/>
@@ -598,7 +593,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c16}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c16}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c16})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="138" width="70" height="16" uuid="ed5f29b8-992a-46db-979e-946b3d90b759"/>
@@ -611,7 +606,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d16}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d16}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d16})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Opaque" x="20" y="154" width="390" height="16" forecolor="#000000" backcolor="#E3E3E3" uuid="af2cfb96-0b83-4361-a754-10ef18fc7ae7"/>
@@ -637,7 +632,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c17}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c17}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c17})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="480" y="154" width="70" height="16" backcolor="#E3E3E3" uuid="72d39c9d-e0a5-4a92-9392-4d9b97a2c322"/>
@@ -650,7 +645,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d17}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d17}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d17})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Transparent" x="20" y="170" width="390" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="2f2ad1ca-eda4-4696-8ab2-c4c79883bc0d"/>
@@ -676,7 +671,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c19}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c19}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c19})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="170" width="70" height="16" uuid="326d19ef-bf8e-4643-8ac8-d9484e7cfc46"/>
@@ -689,7 +684,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d19}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d19}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d19})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Opaque" x="20" y="186" width="530" height="16" forecolor="#000000" backcolor="#F9C7A6" uuid="d4c1c93c-14c1-4263-9b05-92abbbda3fc6"/>
@@ -728,7 +723,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c22}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c22}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c22})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="202" width="70" height="16" uuid="42c1096e-e3a6-4220-9f98-c38010615f3e"/>
@@ -741,7 +736,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d22}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d22}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d22})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Transparent" x="20" y="218" width="390" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="9d94e402-7260-489a-9bde-7b8cd5ea4b0c"/>
@@ -767,7 +762,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c23}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c23}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c23})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="218" width="70" height="16" uuid="6c0d9921-a381-46e6-b34e-ac36df08054d"/>
@@ -780,7 +775,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d23}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d23}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d23})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Transparent" x="20" y="234" width="390" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="b04eb4ec-ab81-4ec5-9471-664e29603840"/>
@@ -806,7 +801,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c24}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c24}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c24})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="234" width="70" height="16" uuid="373d59e7-c4bc-4068-9120-4b0ded8b8563"/>
@@ -819,7 +814,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d24}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d24}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d24})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Transparent" x="20" y="250" width="390" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="1d1d4c86-39be-469a-ad9b-55356f732ae0"/>
@@ -845,7 +840,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c25}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c25}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c25})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="250" width="70" height="16" uuid="57be6dce-7d1a-4b39-8273-b2738f405205"/>
@@ -858,7 +853,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d25}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d25}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d25})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Transparent" x="20" y="266" width="390" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="1ce1858e-6202-487c-91ed-45fb28835850"/>
@@ -884,7 +879,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c26}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c26}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c26})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="266" width="70" height="16" uuid="8da49cc0-d930-4917-8ea6-34d892bdd321"/>
@@ -897,7 +892,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d26}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d26}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d26})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Opaque" x="20" y="282" width="390" height="16" forecolor="#000000" backcolor="#E3E3E3" uuid="40500c29-0371-4070-b208-3850b55c279f"/>
@@ -923,7 +918,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9" pdfFontName="Helvetica-Bold"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c27}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c27}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c27})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="480" y="282" width="70" height="16" backcolor="#E3E3E3" uuid="b62baeb1-6dff-46a8-8c04-e2e1ffce5754"/>
@@ -936,7 +931,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9" pdfFontName="Helvetica-Bold"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d27}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d27}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d27})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Transparent" x="20" y="298" width="390" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="5ff95f43-f3d8-433b-9995-dcada235ccff"/>
@@ -962,7 +957,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c28}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c28}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c28})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="298" width="70" height="16" uuid="36f4e7fc-cd4f-4331-ba5c-8b5032b97ac9"/>
@@ -975,7 +970,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d28}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d28}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d28})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Transparent" x="20" y="314" width="390" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="9279968e-2b9e-4990-8402-538a9d15e1f6"/>
@@ -1001,7 +996,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c29}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c29}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c29})+"%"]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Transparent" x="20" y="366" width="390" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="2d397479-2052-42a8-985b-61b7010aadc7"/>
@@ -1027,7 +1022,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c32}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c32}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c32})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="366" width="70" height="16" uuid="01d9db68-8a75-48a9-a5fc-7c47b29a2061"/>
@@ -1040,7 +1035,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d32}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d32}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d32})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Transparent" x="20" y="382" width="390" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="e8a0a345-3bb9-42aa-b1f0-69a44dbdad09"/>
@@ -1066,7 +1061,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c33}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c33}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c33})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="382" width="70" height="16" uuid="ebad43c8-24c6-4eb8-b459-e23c386be6eb"/>
@@ -1079,7 +1074,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d33}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d33}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d33})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="462" width="70" height="16" uuid="e001773b-ffd0-454a-a716-7d2dffd4878a"/>
@@ -1092,7 +1087,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d38}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d38}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d38})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="410" y="478" width="70" height="16" uuid="a4e59d03-5455-4f33-a635-39c56b56c315"/>
@@ -1105,7 +1100,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c39}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c39}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c39})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="410" y="494" width="70" height="16" backcolor="#E3E3E3" uuid="dcab4b2f-7b20-4dc5-8642-d4bbfc4ff4f7"/>
@@ -1118,7 +1113,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9" pdfFontName="Helvetica-Bold"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c40}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c40}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c40})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="410" y="398" width="70" height="16" uuid="30979f58-1391-4bbc-8e9b-9cef3753daee"/>
@@ -1131,7 +1126,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c34}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c34}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c34})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Transparent" x="20" y="398" width="390" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="382f013b-607c-4a59-b75b-be2a940e28c6"/>
@@ -1157,7 +1152,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d37}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d37}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d37})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Transparent" x="20" y="430" width="390" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="a4d09a22-460d-4125-99e6-f8dc46c0d6f0"/>
@@ -1183,7 +1178,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d39}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d39}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d39})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="410" y="446" width="70" height="16" uuid="06c3addf-bf15-4324-8190-ad7398922c9a"/>
@@ -1196,7 +1191,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c37}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c37}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c37})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="410" y="462" width="70" height="16" uuid="a942df21-4284-471f-8cee-261c17766c28"/>
@@ -1209,7 +1204,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c38}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c38}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c38})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="430" width="70" height="16" uuid="6acddeee-0eee-4ec7-98cd-40acaf531e11"/>
@@ -1222,7 +1217,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d36}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d36}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d36})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="480" y="494" width="70" height="16" backcolor="#E3E3E3" uuid="f41472ad-8f58-47fc-93d5-7ef8a5665933"/>
@@ -1235,7 +1230,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9" pdfFontName="Helvetica-Bold"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d40}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d40}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d40})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="410" y="430" width="70" height="16" uuid="88d9da94-449b-4b38-aba5-5ca0205b8abf"/>
@@ -1248,7 +1243,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c36}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c36}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c36})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="398" width="70" height="16" uuid="88b859be-5120-4da8-b842-d58b0e8bb992"/>
@@ -1261,7 +1256,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d34}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d34}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d34})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="410" y="414" width="70" height="16" uuid="96182ee2-99d5-4534-840a-98a4bc8c60be"/>
@@ -1274,7 +1269,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c35}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c35}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c35})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="414" width="70" height="16" uuid="a1de0536-33d2-4ed5-9604-3a52f47fd1b8"/>
@@ -1287,7 +1282,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d35}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d35}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d35})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Transparent" x="20" y="446" width="390" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="af6e3a2a-3bc1-43a8-b7a2-2c909057e1ff"/>
@@ -1378,7 +1373,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c42}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c42}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c42})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="510" width="70" height="16" uuid="57c3c662-a1e4-46c7-bd51-050b486d363d"/>
@@ -1391,7 +1386,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{d42}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{d42}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{d42})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Transparent" x="20" y="556" width="390" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="846d53b0-d2a9-40e0-b965-ad5a33ae03fb"/>
@@ -1417,7 +1412,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c45}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c45}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c45})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Transparent" x="20" y="572" width="390" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="d3825dfc-99c8-4475-891e-68ba0d759a51"/>
@@ -1443,7 +1438,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{c46}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{c46}==null?"":new java.text.DecimalFormat("#,##0.00").format($F{c46})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Opaque" x="20" y="540" width="460" height="16" forecolor="#000000" backcolor="#F9C7A6" uuid="af692d24-593f-4479-abf1-a87be97e3db3"/>
