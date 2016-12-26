@@ -1,6 +1,7 @@
 <?php
 
 return [
+		'Dashboard'				=> 'Dashboard',
 		'title' 				=> 'Laravel 5'			,
 		'sub-title' 					=> 'An awesome PHP framework'			,
 		'home' 					=> 'Home'			,
