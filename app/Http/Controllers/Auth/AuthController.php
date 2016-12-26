@@ -171,7 +171,9 @@ class AuthController extends Controller
 				$request->session()->forget('user_id');
 			}
 				
-			return response(['msg' => 'ok'], 200) // 200 Status Code: Standard response for successful HTTP request
+			return response(['msg' 		=> 'ok',
+							"language"	=> $user->language
+			], 200) // 200 Status Code: Standard response for successful HTTP request
 			->header('Content-Type', 'application/json');
 // 		}
 	}

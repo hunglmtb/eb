@@ -31,6 +31,12 @@ class HomeController extends Controller
 		$changeLocale->lang = $lang;
 		$this->dispatch($changeLocale);
 
+		$au = auth();
+		$un  = $au->user();
+		if ($un) {
+			$un->language	= $lang;
+			$un->save();
+		}
 		return redirect()->back();
 	}
 

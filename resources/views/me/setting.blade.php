@@ -16,7 +16,7 @@ $currentSubmenu ='/me/setting';
 @section('main')
 <div class="rootMain {{$currentSubmenu}}">
 	<div style="margin-left:10px;">
-		<table>
+		<table style="float:left">
 			<tr>
 				<td colspan="2"><p class="function_title">USER INFORMATION</p>	</td>
 			</tr>
@@ -79,8 +79,20 @@ $currentSubmenu ='/me/setting';
 				<td></td>
 				<td><input type="button" style="width:120px;margin-top:5px" value="Apply" onclick="submitDecimalMarkConfiguration()"></td>
 			</tr>
-			
 		</table>
+		<div style="float:left">
+			<p class="function_title">Change language</p>
+			<div class="dropdown">
+				<a data-toggle="dropdown" class="dropdown-toggle" href="#"><img width="32" height="32" alt="{{ session('locale') }}"  src="{!! asset('img/' . session('locale') . '-flag.png') !!}" />&nbsp; <b class="caret"></b></a>
+				<ul class="dropdown-menu">
+				@foreach ( config('app.languages') as $user)
+					@if($user !== config('app.locale'))
+						<li><a href="{!! url('language') !!}/{{ $user }}"><img width="32" height="32" alt="{{ $user }}" src="{!! asset('img/' . $user . '-flag.png') !!}"></a></li>
+					@endif
+				@endforeach
+				</ul>
+			</div>
+		</div>
 	</div>
 </div>
 	

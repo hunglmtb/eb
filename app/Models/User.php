@@ -233,7 +233,7 @@ class User extends DynamicModel implements AuthenticatableContract, CanResetPass
 		$values = [	'USERNAME'		=>	$this->username, 
 					'LOGIN_TIME'	=>	Carbon::now(), 
 					'IP'			=>	request()->ip(),
-					'SESSION_ID'=>session()->getId()
+					'SESSION_ID'	=> session()->getId()
 		];
 		$logUser->fill($values)->save();
 	}

@@ -482,7 +482,7 @@ menu["visual"]=[
 		{menutext:"Advanced Graph",desc:"",url:"/graph"},
 		{menutext:"Workflow",desc:"",url:"/workflow"},
 		{menutext:"Choke Model",desc:"",url:"/fp/choke"},
-		{menutext:"Dashboard",desc:"",url:"/dashboard"},
+		{menutext:'{{ trans("front/site.dashboard") }}',desc:"",url:"/dashboard"},
 		{menutext:"Task Manager",desc:"",url:"/taskman/?com=task"},
 	];
 menu["allocation"]=[
@@ -656,6 +656,9 @@ function logineb(){
 			layoutUserLoggedIn(true);
 			$('#textUsername').html(username);
 			loadTasksCounting();
+			language	= data.language;
+			oldLanguage	= "{{session('locale')}}";
+			if(typeof language == 'string' &&language!=oldLanguage) location.reload();
 		}
     },
     error: function(data) {
