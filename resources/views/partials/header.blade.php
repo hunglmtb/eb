@@ -73,7 +73,7 @@ var xmenu=
 							{"name":"Reports","title":"Reports","link":"/workreport"},
 							{"name":"Advanced Graph","title":"Advanced Graph","link":"/graph"},
 							{"name":"Workflow","title":"Workflow","link":"/workflow"},
-							{"name":'{{ trans("front/site.dashboard") }}',"title":'{{ trans("front/site.dashboard") }}',"link":"/dashboard"},
+							{"name":'{{ trans("front/site.Dashboard") }}',"title":'{{ trans("front/site.Dashboard") }}',"link":"/dashboard"},
 							{"name":"Choke Model","title":"Choke Model","link":"/fp/choke"},
 							{"name":"Task Manager","title":"Task Manager","link":"#"},
 						]

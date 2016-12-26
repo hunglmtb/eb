@@ -482,7 +482,7 @@ menu["visual"]=[
 		{menutext:"Advanced Graph",desc:"",url:"/graph"},
 		{menutext:"Workflow",desc:"",url:"/workflow"},
 		{menutext:"Choke Model",desc:"",url:"/fp/choke"},
-		{menutext:'{{ trans("front/site.dashboard") }}',desc:"",url:"/dashboard"},
+		{menutext:'{{ trans("front/site.Dashboard") }}',desc:"",url:"/dashboard"},
 		{menutext:"Task Manager",desc:"",url:"/taskman/?com=task"},
 	];
 menu["allocation"]=[
