@@ -572,7 +572,8 @@ function func(o)
 		var i;
 		for(i=0;i<a.length;i++)
 		{
-			$("#menu"+i+" h4").html(a[i]["menutext"].toUpperCase());
+ 			$("#menu"+i+" h4").html(a[i]["menutext"].toUpperCase());
+// 			$("#menu"+i+" h4").html(a[i]["menutext"]);
 			$("#menu"+i+" a").attr("href",a[i]["url"]);
 			$("#menu"+i).attr("class",$("#menu"+i).attr("old_class"));
 			$("#menu"+i).css("opacity","none");

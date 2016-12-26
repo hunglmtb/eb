@@ -1,12 +1,13 @@
 <?php
 	$currentSubmenu ='/dc/eu';
-	$tables = ['EnergyUnitDataFdcValue'	=>['name'=>'FDC VALUE'],
-			'EnergyUnitDataValue'		=>['name'=>'STD VALUE'],
-			'EnergyUnitDataTheor'		=>['name'=>'THEORETICAL'],
-			'EnergyUnitDataAlloc'		=>['name'=>'ALLOCATION'],
-			'EnergyUnitCompDataAlloc'	=>['name'=>'COMPOSITION ALLOC'],
-			'EnergyUnitDataPlan'		=>['name'=>'PLAN'],
-			'EnergyUnitDataForecast'	=>['name'=>'FORECAST'], 
+	$lang			= session()->get('locale', "en");
+	$tables = ['EnergyUnitDataFdcValue'	=> ['name'=>'FDC Value'],
+			'EnergyUnitDataValue'		=> ['name'=>'STD Value'],
+			'EnergyUnitDataTheor'		=> ['name'=>Lang::has("front/site.Theoretical", $lang)?trans("front/site.Theoretical"):"Theoretical"],       
+			'EnergyUnitDataAlloc'		=> ['name'=>Lang::has("front/site.Allocation", $lang)?trans("front/site.Allocation"):"Allocation"],          
+			'EnergyUnitCompDataAlloc'	=> ['name'=>Lang::has("front/site.Composition", $lang)?trans("front/site.Composition"):"Composition Alloc"], 
+			'EnergyUnitDataPlan'		=> ['name'=>Lang::has("front/site.Plan", $lang)?trans("front/site.Plan"):"Plan"],                            
+			'EnergyUnitDataForecast'	=> ['name'=>Lang::has("front/site.Forecast", $lang)?trans("front/site.Forecast"):"Forecast"],                
 	];
  	$active = 1;
 ?>

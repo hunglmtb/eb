@@ -3,7 +3,7 @@ use App\Models\LockTable;
 use App\Models\AuditValidateTable;
 use App\Models\AuditApproveTable;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Lang;
 class Helper {
 	
 	public static function getFilterArray($id,$collection=null,$currentUnit=null,$option=null){
@@ -49,7 +49,8 @@ class Helper {
 		$id				= array_key_exists('id', $option)?$option['id']:false;
 		$name			= array_key_exists('name', $option)?$option['name']:false;
 		$filterName 	= array_key_exists('filterName', $option)?$option['filterName']:$name;
-		
+		$lang			= session()->get('locale', "en");
+		$filterName		= Lang::has("front/site.$filterName", $lang)?trans("front/site.$filterName"):$filterName;
 		$htmlFilter 	= "<div  class=\"filter $name\" id='container_$id'><div><b id=\"title_$id\">$filterName</b>".
 							'</div>
 							<select id="'.$id.'" name="'.$name.'">';
@@ -61,9 +62,11 @@ class Helper {
 		if ($collection) {
 			foreach($collection as $item ){
 				$fvalue = $item->ID!=""?$item->ID:(isset($item->CODE)?$item->CODE:"");
+				$optionName	= $item->NAME;
+				$optionName	= Lang::has("front/site.$optionName", $lang)?trans("front/site.$optionName"):$optionName;
 				$htmlFilter .= '<option name="'.(isset($item->CODE)?$item->CODE:"")
 							.'" value="'.$fvalue.'"'.($currentUnit&&$currentUnit==$item?'selected="selected"':'')
-							.'>'.($item->NAME).'</option>';
+							.'>'.$optionName.'</option>';
 			}
 		}
 		
