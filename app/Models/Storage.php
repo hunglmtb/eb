@@ -11,4 +11,7 @@ class Storage extends FeatureStorageModel
 		return PdLiftingAccount::where("STORAGE_ID",$this->ID)->get();
 	}
 	
+	public function Tank(){
+		return $this->hasMany('App\Models\Tank', 'STORAGE_ID', 'ID');
+	}
 }

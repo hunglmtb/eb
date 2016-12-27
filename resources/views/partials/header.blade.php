@@ -103,7 +103,7 @@ var xmenu=
 							{"name":"Cargo Entry","title":"Cargo Entry","link":"/pd/cargoentry"},
 							{"name":"Cargo Nomination","title":"Cargo Nomination","link":"/pd/cargonomination"},
 							{"name":"Cargo Schedule","title":"Cargo Schedule","link":"/pd/cargoschedule"},
-							{"name":"Storage Display","title":"Storage Display","link":"/pd/cargodisplay"},
+							{"name":"Storage Display","title":"Storage Display","link":"/pd/storagedisplay"},
 						]
 					},
 				]

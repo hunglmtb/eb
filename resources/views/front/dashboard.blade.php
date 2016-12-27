@@ -398,7 +398,6 @@ function loadDataView(o,rows_in_page,page){
 function loadStorageDisplay(o){
 	var d1=$("#date_begin").val();
 	var d2=$("#date_end").val();
-	//document.getElementById("ifReport").contentWindow.document.write("<font family='Open Sans'>Loading...</font>");
 	$(o).attr("src","../pd/storagedisplay_loadchart.php?bgcolor="+bgcolor+"&sdid="+$(o).parent().attr("d_obj")+"&date_begin="+d1+"&date_end="+d2);
 
 	var title = encodeURIComponent($("#chartTitle").val());

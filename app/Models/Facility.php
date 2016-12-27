@@ -47,4 +47,10 @@ class Facility extends UomModel
 		return $entries;
 	}
 	
+	public function PlotViewConfig(){
+		$result	= PlotViewConfig::where("CONFIG",'like',"%#$this->ID:%")->get();
+		return $result;
+	}
+	
+	
 }

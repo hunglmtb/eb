@@ -30,6 +30,14 @@ function isFloat(n){
 }
 
 var filters = {};
+var renderDependenceHtml = function(elementId,dependenceData) {
+	var option = $('<option />');
+	var name = typeof(dependenceData.CODE) !== "undefined"?dependenceData.CODE:dependenceData.NAME;
+	option.attr('name', name);
+	option.attr('value', dependenceData.ID).text(dependenceData.NAME);
+	return option;
+};
+
 var enableSelect = function(dependentIds, value) {
 	for (var i = 0; i < dependentIds.length; i++) {
 		$('#'+dependentIds[i]).prop('disabled', value);
@@ -89,7 +97,17 @@ var registerOnChange = function(sourceObject, dependentIds,more) {
 		};
 	}
 	$('#'+id).change(function(e){
-		var tmpDependentIds = $.merge([], dependentIds);
+		if($.isArray(tmpDependentIds)){
+			var tmpDependentIds = $.merge([], dependentIds);
+		}
+		else {
+			var tmpDependentIds = Object.keys(dependentIds).map(function (key) {
+				return dependentIds[key];
+				/*if(typeof dependentIds[key] == "string") return dependentIds[key]; 
+				else if(typeof dependentIds[key] == "object") return dependentIds[key]['name']; */
+			});
+		}
+		
 		if (typeof(filters.preOnchange) == "function") {
 			filters.preOnchange(id,tmpDependentIds,more,prefix);
 		}
@@ -134,10 +152,7 @@ var registerOnChange = function(sourceObject, dependentIds,more) {
 				for (var i = 0; i < results.length; i++) {
 					var elementId = dependeceNameFn(results[i].id);
 					$(results[i].collection).each(function(){
-						var option = $('<option />');
-						var name = typeof(this.CODE) !== "undefined"?this.CODE:this.NAME;
-						option.attr('name', name);
-						option.attr('value', this.ID).text(this.NAME);
+						var option = renderDependenceHtml(elementId,this);
 						$('#'+elementId).append(option);
 					});
 					$('#'+elementId).val(results[i].currentId);

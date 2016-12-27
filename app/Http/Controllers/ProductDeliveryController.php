@@ -53,6 +53,36 @@ class ProductDeliveryController extends CodeController {
 		return view ( 'front.cargoadmin.cargoschedule',['filters'=>$filterGroups]);
 	}
 	
+	public static function storagedisplayFilter() {
+		$filterGroups = array(
+							'productionFilterGroup'	=>[
+														['name'			=>'Storage',
+														"source"		=> "Facility",
+														'dependences'	=> ["Tank"]],
+														"Storage"		=> ['name'			=>'Tank',
+																			"source"		=> "Storage"],
+														],
+							'frequenceFilterGroup'	=> [["name"			=> "PlotViewConfig",
+														"getMethod"		=> "loadBy",
+														"filterName"	=>	"Plot item",
+														"source"		=>  ['productionFilterGroup'=>["Facility"]]],
+														],
+							'FacilityDependentMore'	=> [["name"			=> "PlotViewConfig",
+														"source"		=> "Facility"]],
+							'enableButton'			=> false,
+		);
+		return $filterGroups;
+	}
+	
+	public function storagedisplay() {
+		$filterGroups						= static::storagedisplayFilter();
+		$filterGroups['dateFilterGroup']	= [['id'=>'date_begin','name'=>'From date'],
+												['id'=>'date_middle','name'=>'Middle date'],
+												['id'=>'date_end','name'=>'To date']
+											];
+		return view ( 'front.cargoadmin.storagedisplay',['filters'=>$filterGroups]);
+	}
+	
 	public function cargodocuments() {
 		$filterGroups = array(	'productionFilterGroup'	=>['Storage'],
 								'enableSaveButton'		=> 	false,

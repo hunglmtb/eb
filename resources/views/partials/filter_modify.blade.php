@@ -127,6 +127,7 @@
 					selects.each(function(index, element) {
 						texts[element.name]		= $("#"+element.id+" option:selected").text();
 					});
+					if(typeof editBox.addMoreFilterText == 'function') editBox.addMoreFilterText(texts);
 					if(typeof editBox.renderOutputText == "function")
 						resultText	= editBox.renderOutputText(texts);
 					else 
@@ -141,7 +142,7 @@
 				var select			= $(sel);
 				var colorSelect		= $(inputColor);
 				var span 			= $("<span></span>");
-				var edit 			= $("<img valign='middle' onclick='renameItem(this)' class='xclose' src='/img/edit.png'>");
+				var edit 			= $("<img valign='middle' class='xclose' src='/img/edit.png'>");
 				var del				= $('<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="/img/x.png">');
 
 				if(dataStore.hasOwnProperty('chartType')) select.val(dataStore.chartType);
@@ -159,7 +160,7 @@
 				
 				currentSpan 		= span;
 				span.click(function() {
-					editBox.editRow(span,span);
+					editBox.editRow(span,{CODE:span.text()});
 				});
 				span.addClass("clickable");
 				var rstext 			= typeof texts =="string"? texts:editBox.renderOutputText(texts);

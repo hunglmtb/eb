@@ -1,6 +1,6 @@
 <?php
-$currentSubmenu 	= '/graph';
-$functionName		= "graph";
+$currentSubmenu 	= isset($currentSubmenu)?$currentSubmenu:'/graph';
+$functionName		= isset($functionName)?$functionName:"graph";
 $useFeatures		= [
 						['name'	=>	"filter_modify",
 						"data"	=>	["isFilterModify"	=> true]],
@@ -59,6 +59,7 @@ $subMenus = [
 			<ul id="chartObjectContainer" class="ListStyleNone">
 			</ul>
 		</td>
+		<td>@yield("graph_extra_view")</td>
 		<td rowspan="2" valign="top" align="center" width="180px">
 			<button class="myButton" onClick="_graph.draw()"
 				style="margin-bottom: 10px; width: 160px; height: 50px">Generate chart</button>
@@ -124,7 +125,7 @@ $subMenus = [
 
 <body style="margin: 0; min-width: 1000px;">
 	<div id="listCharts" style="display: none; overflow: auto"></div>
-	 <iframe id="frameChart" style="width:100%;border:none;height: 400px; margin-top: 10" onload="iframeOnload()"></iframe>
+	 <iframe id="frameChart" style="width:100%;border:none;height: 400px; margin-top: 10"></iframe>
 </body>
 
 

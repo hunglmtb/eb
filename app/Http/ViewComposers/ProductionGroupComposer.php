@@ -85,6 +85,7 @@ class ProductionGroupComposer
     				$item['value'] = $endDate;
     				break;
     			default:
+    				$item['value'] = Carbon::now();
     				break;
     		}
     		$extra[$id] = $item;
