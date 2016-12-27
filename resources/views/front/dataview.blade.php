@@ -225,7 +225,7 @@ var _dataview = {
 					    } );
 					   
 					   table=$("#data").dataTable({
-							scrollY: $("#data_container").height()-50,
+							scrollY: $("#data_container").height()-90,
 							scrollX: true,
 							searching: false,
 							paging: false,
@@ -525,7 +525,7 @@ thead{background-color:#f5f5f5;}
 		</table>
 		</td>
 		<td valign="top">
-        <table style = "height:600px;">
+        <table style = "height:100%;">
         <tr style="height: 40px;vertical-align: top"><td style="text-align:left">
         <div id="control">
         	<span id="number_row">
