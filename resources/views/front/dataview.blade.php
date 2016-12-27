@@ -525,7 +525,7 @@ thead{background-color:#f5f5f5;}
 		</table>
 		</td>
 		<td valign="top">
-        <table style = "height:100%;">
+        <table style = "height:500px;">
         <tr style="height: 40px;vertical-align: top"><td style="text-align:left">
         <div id="control">
         	<span id="number_row">
@@ -552,7 +552,7 @@ thead{background-color:#f5f5f5;}
         </div>
         </td></tr>
         <tr><td>
-        	<div style="width:1060; height:530px; overflow:visible" id="data_container">
+        	<div style="width:1060; height:600px; overflow: scroll" id="data_container">
             </div>
          </td></tr>
          </table>
