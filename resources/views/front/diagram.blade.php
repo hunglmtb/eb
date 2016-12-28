@@ -20,8 +20,12 @@ $(function(){
 
 	$('#cboProdUnit').on('change', function() {
 		diagram.change('cboProdUnit');
+// 		diagram.change('cboArea');
+// 		diagram.change('cboFacility');
+	});
+
+	$('#cboArea').on('change', function() {
 		diagram.change('cboArea');
-		diagram.change('cboFacility');
 	});
 
 	$('select').on('change', function() {
@@ -116,6 +120,8 @@ var diagram = {
 				$("#"+cboSet).prop("disabled", true);  
 				sendAjax('/onChangeObj', param, function(data){
 					diagram.loadCbo(cboSet, data);
+					if(cboSet=="cboArea") diagram.change("cboArea");
+					else if(cboSet=="cboFacility") diagram.change("cboFacility"); 
 				});
 			}
 		},
