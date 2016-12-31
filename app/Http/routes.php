@@ -196,8 +196,11 @@ Route::get('pd/cargoschedule',			['uses' =>'ProductDeliveryController@cargosched
 Route::post('cargoschedule/load',		['uses' =>	'Cargo\CargoScheduleController@load','middleware' => 'saveWorkspace']);
 Route::post('cargoschedule/save', 		'Cargo\CargoScheduleController@save');
 
-Route::get('pd/storagedisplay',			['uses' =>'ProductDeliveryController@storagedisplay',	'middleware' => 'checkRight:PD_CARGO_ADMIN_DISPLAY']);
-Route::post('storagedisplay/filter', 	['uses' =>'Cargo\StorageDisplayController@filter',		'middleware' => 'checkRight:PD_CARGO_ADMIN_DISPLAY']);
+Route::get('pd/storagedisplay',			['uses' =>'ProductDeliveryController@storagedisplay','middleware' => 'checkRight:PD_CARGO_ADMIN_DISPLAY']);
+Route::post('storagedisplay/filter', 	['uses' =>'Cargo\StorageDisplayController@filter'	,'middleware' => 'checkRight:PD_CARGO_ADMIN_DISPLAY']);
+Route::post('storagedisplay/loadchart', ['uses' =>'Cargo\StorageDisplayController@summary'	,'middleware' => 'checkRight:PD_CARGO_ADMIN_DISPLAY']);
+Route::post('storagedisplay/load',		['uses' =>'Cargo\StorageDisplayController@load'		,'middleware' => 'checkRight:PD_CARGO_ADMIN_DISPLAY']);
+Route::post('storagedisplay/save',		['uses' =>'Cargo\StorageDisplayController@save'		,'middleware' => 'checkRight:PD_CARGO_ADMIN_DISPLAY']);
 
 Route::get('pd/cargovoyage',			['uses' =>'ProductDeliveryController@cargovoyage',	'middleware' => 'checkRight:PD_CARGO_ACTION_VOYAGE']);
 Route::post('cargovoyage/load',			['uses' =>'Cargo\CargoVoyageController@load',		'middleware' => 'saveWorkspace']);

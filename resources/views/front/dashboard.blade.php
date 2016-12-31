@@ -473,6 +473,6 @@ $(function() {
 </script>
 
 <div id="constrainContain" class="container" style="display:none">
-	@include('choke.diagram')
+	@include('choke.choke_diagram')
 </div>
 @stop

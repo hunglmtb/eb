@@ -117,9 +117,45 @@ _graph.addObject = function(){
 		editBox.addObjectItem(color,dataStore,texts);
 	}
 }
+
+_graph.buildChartUrl	=  function(){
+	var chartTitle		= $("#chartTitle").val();
+	var currentDiagram 	= [];
+	var constraintPostData 	= {	
+		date_begin	: $("#date_begin").val(),
+		date_end	: $("#date_end").val(),
+		title		: chartTitle,
+		constraints	: currentDiagram,
+		constraintId: 9,
+	};
+	editBox.requestGenDiagram(constraintPostData,false,true,function(data){
+// 		editBox.renderContrainTable(data.constraints,false);
+	});
+	return false;
+}
+
 </script>
 @stop
 
+
+@section('extraAdaptData')
+@parent
+<script>
+	var opreOnchange	= filters.preOnchange;
+	filters.preOnchange		= function(id, dependentIds,more){
+					var partials 		= id.split("_");
+					var prefix 			= partials.length>1?partials[0]+"_":"";
+					var model 			= partials.length>1?partials[1]:id;
+					switch(model){
+						case "Storage":
+							$('#Tank').html("");
+							return;
+						break;
+					}
+					if(typeof opreOnchange == "function" ) opreOnchange(id, dependentIds,more);
+				};
+</script>
+@stop
 
 @section('editBoxParams')
 @parent
@@ -130,4 +166,9 @@ _graph.addObject = function(){
 		return 	prefix+texts.PlotViewConfig+" ";
 	};
 </script>
+@stop
+
+
+@section('chartContainer')
+	@include('front.cargoadmin.storage_diagram')
 @stop

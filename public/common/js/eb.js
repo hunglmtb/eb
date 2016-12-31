@@ -21,6 +21,15 @@ function arrayUnique(array,equalFunction) {
     return a;
 }
 
+function getJsDate(dateString){
+	date = moment.utc(dateString,configuration.time.DATE_FORMAT_UTC);
+	y = date.year();
+	m = date.month();
+	d = date.date();
+	date = Date.UTC(y,m,d);
+    return date;
+}
+
 function isInt(n){
     return Number(n) === n && n % 1 === 0;
 }
@@ -224,7 +233,7 @@ var actions = {
 	objectIds 			: [],
 	extraDataSetColumns : {},
 	extraDataSet 		: {},
-	loadSuccess 		: function(data){alert("success");},
+	loadSuccess 		: function(data){/*alert("success");*/},
 	loadError 			: function(data){/*alert(JSON.stringify(data.responseText));*/alert('loading data error!');},
 	shouldLoad 			: function(data){return false;},
 	addingNewRowSuccess	: function(data,table,tab,isAddingNewRow){},
@@ -498,6 +507,7 @@ var actions = {
 		var  editable = {
 	    	    title: 'edit',
 	    	    emptytext: '',
+	    	    onblur		: 'submit',
 	    	    showbuttons:false,
 	    	    success: successFunction,
 	    	};
@@ -507,7 +517,7 @@ var actions = {
 		case "number":
 		case "date":
 			editable['type'] = type;
-    	    editable['onblur'] = 'cancel';
+    	    editable['onblur'] = 'submit';
 			if (type=='date') {
 				editable['onblur'] 	= 'submit';
 				editable['format'] 	= configuration.picker.DATE_FORMAT_UTC;
@@ -886,6 +896,16 @@ var actions = {
 		return rules;
 	},
 	
+	createCommonCell	: function(td,data,type,property,rowData){
+		colName 			= property.data;
+		$(td).addClass( "contenBoxBackground");
+		$(td).addClass( "cell"+type );
+		$(td).addClass( colName );
+		var isEdittable = !data.locked&&actions.isEditable(property,rowData,data.rights);
+		if(isEdittable) $(td).addClass( "editInline" );
+		return isEdittable;
+	},
+	
 	getCellProperty : function(data,tab,type,cindex){
 		var cell = {"targets"	: cindex};
 		type = actions.getCellType(data,type,cindex);
@@ -895,61 +915,77 @@ var actions = {
 			cell["createdCell"] = type;
 			return cell;
 		}
-		if (type!='checkbox') {
-			cell["createdCell"] = function (td, cellData, rowData, row, col) {
-					var property 		= data.properties[col];
-					var objectRules		= actions.getObjectRules(property,rowData);
-					if(objectRules!=null&&typeof(objectRules) == "object"&& typeof objectRules.advance=="object"){
-						//TODO more ruless
-						$(td).css("background-color","#"+objectRules.advance.COLOR);
-					}
+		cell["createdCell"] 	= function (td, cellData, rowData, row, col) {
+			var property 		= data.properties[col];
+			var isEdittable		= actions.createCommonCell(td,data,type,property,rowData);
+			if (type=='checkbox') {
+				/*checked 		= cellData?'checked':'';
+ 				var disabled 	= isEdittable?"":"disabled"; 
+				var checkBox	= $('<input '+disabled+' class="cellCheckboxInput" type="checkbox" value="'+cellData+'"size="15" '+checked+'>');
+				var checkBox	= $('<div  class="checkboxCell" ><input '+disabled+' class="cellCheckboxInput" type="checkbox" value="'+cellData+'"size="15" '+checked+'></div>');
+				checkBox.change(function(){
+// 					fn = actions.getEditSuccessfn(property,tab,td, rowData, columnName,collection);
+ 					var val = $(this).is(':checked');
+// 					fn(null,val?1:0);
+ 					rowData.columnName	= val;
+ 				});
+ 				$(td).append(checkBox);*/
+				$(td).click(function(){
+					var val = rowData[columnName]==""?false:rowData[columnName];
+					val		= !val;
+	 				var fn = actions.getEditSuccessfn(property,tab,td, rowData, columnName,collection);
+ 					fn(null,val?1:0);
+ 				});
+ 				return;
+			};
 
-					colName 			= property.data;
-					$(td).addClass( "contenBoxBackground");
-					$(td).addClass( "cell"+type );
-	 				$(td).addClass( colName );
-	 				
-		 			if(!data.locked&&actions.isEditable(property,rowData,data.rights)){
-		 				$(td).addClass( "editInline" );
-		 	        	var table = $('#table_'+tab).DataTable();
-		 	        	collection = null;
-		 	        	if(type=='select'){
-		 	        		collection = actions.getExtraDataSetColumn(data,cindex,rowData);
-		 	        	}
-		 				actions.applyEditable(tab,type,td, cellData, rowData, property,collection);
-		 			}
-		 			else if (type=='number'&&actions.historyUrl) {
-		 				$(td).click(function(e){
-		 					var hid ='eb_' +tab+"_"+rowData.DT_RowId+"_"+columnName;
-		 					if( $('#'+hid).length ){
-		 					}
-		 					else{
-		 						$("#more_actions").html("");
-		 						var extensionButton = $("<div class=\"extension-buttons\"><img src=\"/common/css/images/hist.png\" height=\"16\" class=\"editable-extension\"></div>");
-		 						extensionButton.css("display","block");
-		 						extensionButton.attr( 'id', hid);
-		 						extensionButton.attr('tabindex',-1);
-		 						extensionButton.blur(function() {
-		 							var hid ='eb_' +tab+"_"+rowData.DT_RowId+"_"+columnName;
-		 							$("#" +hid).remove();
+			var objectRules		= actions.getObjectRules(property,rowData);
+			if(objectRules!=null&&typeof(objectRules) == "object"&& typeof objectRules.advance=="object"){
+				//TODO more ruless
+				$(td).css("background-color","#"+objectRules.advance.COLOR);
+			}
+			
+ 			if(isEdittable){
+ 				$(td).addClass( "editInline" );
+ 	        	var table = $('#table_'+tab).DataTable();
+ 	        	collection = null;
+ 	        	if(type=='select'){
+ 	        		collection = actions.getExtraDataSetColumn(data,cindex,rowData);
+ 	        	}
+ 				actions.applyEditable(tab,type,td, cellData, rowData, property,collection);
+ 			}
+ 			else if (type=='number'&&actions.historyUrl) {
+ 				$(td).click(function(e){
+ 					var hid ='eb_' +tab+"_"+rowData.DT_RowId+"_"+columnName;
+ 					if( $('#'+hid).length ){
+ 					}
+ 					else {
+ 						$("#more_actions").html("");
+ 						var extensionButton = $("<div class=\"extension-buttons\"><img src=\"/common/css/images/hist.png\" height=\"16\" class=\"editable-extension\"></div>");
+ 						extensionButton.css("display","block");
+ 						extensionButton.attr( 'id', hid);
+ 						extensionButton.attr('tabindex',-1);
+ 						extensionButton.blur(function() {
+ 							var hid ='eb_' +tab+"_"+rowData.DT_RowId+"_"+columnName;
+ 							$("#" +hid).remove();
 //				 		    		$(td ).removeAttr( "tabindex" );
-		 						});
-		 						extensionButton.click(function(e){
-		 							actions.extensionHandle(tab,columnName,rowData,false,null,true);
+ 						});
+ 						extensionButton.click(function(e){
+ 							actions.extensionHandle(tab,columnName,rowData,false,null,true);
 //				 		    		$("#" +hid).remove();
-		 						});
-		 						$("#more_actions").append(extensionButton);
-		 						extensionButton.focus();
-		 					}
-		 				});
-		 			}
-		 			if(type=='number'){
-		        		var basicRules		= actions.getBasicRules(property,objectRules);
-		        		var originColor		= $(td).css('background-color');
-		        		actions.addCellNumberRules(td,basicRules,cellData,originColor,"loading");
-		        	}
-			    };
-		}
+ 						});
+ 						$("#more_actions").append(extensionButton);
+ 						extensionButton.focus();
+ 					}
+ 				});
+ 			}
+ 			if(type=='number'){
+        		var basicRules		= actions.getBasicRules(property,objectRules);
+        		var originColor		= $(td).css('background-color');
+        		actions.addCellNumberRules(td,basicRules,cellData,originColor,"loading");
+        	}
+		};
+
 		switch(type){
 		case "text":
 		case "color":
@@ -1026,18 +1062,6 @@ var actions = {
 				 				disabled = disabled?"disabled":''; 
 								return '<div  class="checkboxCell" ><input '+disabled+' class="cellCheckboxInput" type="checkbox" value="'+data2+'"size="15" '+checked+'></div>';
 							};
-			cell["createdCell"] = function (td, cellData, rowData, row, col) {
-				var cproperty = data.properties[col];
-				colName = cproperty.data;
- 				$(td).addClass( colName );
- 				$(td).addClass( "cell"+type );
- 				$(td).find(".cellCheckboxInput").click(function(){
- 					fn = actions.getEditSuccessfn(cproperty,tab,td, rowData, columnName,collection);
- 					fn(null,$(this).is(':checked')?1:0);
- 				});
- 				var disabled = data.locked||!(actions.isEditable(data.properties[col],rowData,data.rights));
- 				$(td).find(".cellCheckboxInput").prop('disabled', disabled);
-		    };
 	    	break;
 		case "select":
 			cell["render"] = function ( data2, type2, row ) {

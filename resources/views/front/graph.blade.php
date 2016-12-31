@@ -1,4 +1,5 @@
 <?php
+$isAction 		= true;
 $currentSubmenu 	= isset($currentSubmenu)?$currentSubmenu:'/graph';
 $functionName		= isset($functionName)?$functionName:"graph";
 $useFeatures		= [
@@ -51,119 +52,25 @@ $subMenus = [
 </table>
 @stop
 
-@section('action_extra')
-<table border="0" class="floatLeft" style="">
-	<tr>
-		<td id="tdObjectContainer" valign="top"
-			style="min-width:420px;overflow:hidden;box-sizing: border-box; overflow: auto; height: 113px; padding: 5px; border: 1px solid #bbbbbb; background: #eeeeee">
-			<ul id="chartObjectContainer" class="ListStyleNone">
-			</ul>
-		</td>
-		<td>@yield("graph_extra_view")</td>
-		<td rowspan="2" valign="top" align="center" width="180px">
-			<button class="myButton" onClick="_graph.draw()"
-				style="margin-bottom: 10px; width: 160px; height: 50px">Generate chart</button>
-			<button class="myButton" onClick="_graph.saveChart()"
-				style="display: none; margin-bottom: 3px; width: 160px; height: 30px">Save
-				chart</button>
-			<button class="myButton" onClick="_graph.newChart()"
-				style="display:; margin-bottom: 3px; width: 78px; height: 35px">New</button>
-			<button class="myButton" onClick="_graph.loadCharts()"
-				style="display:; margin-bottom: 3px; width: 78px; height: 35px">Load</button>
-			<button class="myButton" onClick="_graph.saveChart()"
-				style="display:; margin-bottom: 0px; width: 78px; height: 35px">Save</button>
-			<button class="myButton" onClick="_graph.saveChart(true)"
-				style="display:; margin-bottom: 0px; width: 78px; height: 35px">Save
-				as</button>
-		</td>
-	</tr>
-</table>
+@section('graph_object_view')
+<div id="tdObjectContainer" valign="top"
+	style="min-width:420px;
+		overflow:hidden;
+		box-sizing: border-box;
+		 overflow: auto;
+	  	height: 113px;
+	  	padding: 5px;
+	    border: 1px solid #bbbbbb;
+	    background: #eeeeee">
+     <ul id="chartObjectContainer" class="ListStyleNone">
+	</ul>
+</div>
 @stop
 
-@extends('core.bsmain',['subMenus' => array('pairs' => $subMenus, 'currentSubMenu' => $currentSubmenu)])
 
-@section('content')
-<style>
-#filterFrequence {
-	clear: both;
-}
-.alloc_type {
-	display: none
-}
-
-.plan_type {
-	display: none
-}
-
-.forecast_type {
-	display: none
-}
-
-#chartObjectContainer {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-}
-
-#chartObjectContainer li {
-	padding: 1;
-}
-
-#chartObjectContainer li span {
-	
-}
-
-._colorpicker{border:1px solid #bbbbbb;cursor:pointer;margin:2px;width:30px}
-
-</style>
-<meta http-equiv="Content-Language" content="en-us">
-<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-<link rel="stylesheet" href="/common/css/admin.css">
-<link rel="stylesheet" href="/common/css/graph/style.css" />
-<link rel="stylesheet" media="screen" type="text/css" href="/common/colorpicker/css/colorpicker.css" />
-<script type="text/javascript" src="/common/colorpicker/js/colorpicker.js"></script>
-
-<body style="margin: 0; min-width: 1000px;">
-	<div id="listCharts" style="display: none; overflow: auto"></div>
-	 <iframe id="frameChart" style="width:100%;border:none;height: 400px; margin-top: 10"></iframe>
-</body>
-
-
+@section("handleAction")
 <script>
-
-	$(function(){
-		var ebtoken = $('meta[name="_token"]').attr('content');
-		$.ajaxSetup({
-			headers: {
-				'X-XSRF-Token': ebtoken
-			}
-		});
-
-		$('#txtObjectName').val('Flow');
-		$("#chartObjectContainer").sortable();
-
-		$(".phase_type").hide();
-
-		$('#cboObjectNameTable').change();
-		filters.afterRenderingDependences("ObjectName");
-		filters.preOnchange("IntObjectType");
-		filters.preOnchange("ObjectDataSource");
-	});
-
-	function setColorPicker(){
-		$('._colorpicker').ColorPicker({
-			onSubmit: function(hsb, hex, rgb, el) {
-				$(el).val(hex);
-				$(el).css({"background":"#"+hex,"color":"#"+hex});
-				$(el).ColorPickerHide();
-			},
-			onBeforeShow: function () {
-				$(this).ColorPickerSetColor(this.value);
-			}
-		});
-	}
-
-	var _graph = {
+var _graph = {
 
 		loadObjType : 1,
 
@@ -315,18 +222,10 @@ $subMenus = [
 				}
 			}
 		},
-		editColumn	:  function(element){
+		editColumn		:  function(element){
 		},
-		draw : function()
-		{
-			if($(".x_item").length<=0) {
-				alert("Please add object");
-				return;
-			}
-			
-			$("html, body").animate({ scrollTop: $(document).height() }, 1000);
+		buildChartUrl	:  function(){
 			document.getElementById("frameChart").contentWindow.document.write("<font family='Open Sans'>Generating chart...</font>");
-			
 			var title = encodeURIComponent($("#chartTitle").val());
 			if(title == "") title = null;
 			
@@ -344,8 +243,19 @@ $subMenus = [
 									"&maxvalue="+maxvalue+
 									"&date_begin="+date_begin+
 									"&date_end="+date_end+
-									"&input="+input;	
-			$("#frameChart").attr("src",iurl);
+									"&input="+input;
+			return iurl;
+		},
+		draw : function()
+		{
+			if($(".x_item").length<=0) {
+				alert("Please add object");
+				return;
+			}
+			
+			$("html, body").animate({ scrollTop: $(document).height() }, 1000);
+			var iurl	= _graph.buildChartUrl();
+			if(typeof iurl == "string") $("#frameChart").attr("src",iurl);
 		},
 		newChart : function()
 		{
@@ -520,6 +430,104 @@ $subMenus = [
 				}
 			});
 		}
+	}
+	
+	$("#genChartBtn").click(_graph.draw);
+	$("#newChartBtn").click(_graph.newChart);
+	$("#loadChartBtn").click(_graph.loadCharts);
+	$("#saveChartBtn").click(_graph.saveChart);
+	$("#saveAssChartBtn").click(function(){_graph.saveChart(true)});
+</script>
+@stop
+
+@section('action_extra')
+	@include('partials.diagram_action')
+@stop
+
+@extends('core.bsmain',['subMenus' => array('pairs' => $subMenus, 'currentSubMenu' => $currentSubmenu)])
+
+@section('chartContainer')
+	 <iframe id="frameChart" style="width:100%;border:none;height: 400px; margin-top: 10"></iframe>
+@stop
+
+@section('content')
+<style>
+#filterFrequence {
+	clear: both;
+}
+.alloc_type {
+	display: none
+}
+
+.plan_type {
+	display: none
+}
+
+.forecast_type {
+	display: none
+}
+
+#chartObjectContainer {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+#chartObjectContainer li {
+	padding: 1;
+}
+
+#chartObjectContainer li span {
+	
+}
+
+._colorpicker{border:1px solid #bbbbbb;cursor:pointer;margin:2px;width:30px}
+
+</style>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<link rel="stylesheet" href="/common/css/admin.css">
+<link rel="stylesheet" href="/common/css/graph/style.css" />
+<link rel="stylesheet" media="screen" type="text/css" href="/common/colorpicker/css/colorpicker.css" />
+<script type="text/javascript" src="/common/colorpicker/js/colorpicker.js"></script>
+
+<body style="margin: 0; min-width: 1000px;">
+	<div id="listCharts" style="display: none; overflow: auto"></div>
+	@yield("chartContainer")
+</body>
+
+<script>
+
+	$(function(){
+		var ebtoken = $('meta[name="_token"]').attr('content');
+		$.ajaxSetup({
+			headers: {
+				'X-XSRF-Token': ebtoken
+			}
+		});
+
+		$('#txtObjectName').val('Flow');
+		$("#chartObjectContainer").sortable();
+
+		$(".phase_type").hide();
+
+		$('#cboObjectNameTable').change();
+		filters.afterRenderingDependences("ObjectName");
+		filters.preOnchange("IntObjectType");
+		filters.preOnchange("ObjectDataSource");
+	});
+
+	function setColorPicker(){
+		$('._colorpicker').ColorPicker({
+			onSubmit: function(hsb, hex, rgb, el) {
+				$(el).val(hex);
+				$(el).css({"background":"#"+hex,"color":"#"+hex});
+				$(el).ColorPickerHide();
+			},
+			onBeforeShow: function () {
+				$(this).ColorPickerSetColor(this.value);
+			}
+		});
 	}
 
 	function showChartList()

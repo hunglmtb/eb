@@ -1,48 +1,22 @@
-<div id="diagramContainer" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
-	
+@extends('choke.choke_diagram')
+@section("renderChart")
+@parent
 <script type="text/javascript">
-	editBox.requestGenDiagram = function (constraintPostData,container,isShowWaiting=false,successFn){
-		container			= typeof container == "object" && container!=null? container:$('#diagramContainer');
-		if(isShowWaiting)	showWaiting();
-		container.html("");
-		$.ajax({
-			url			: "/choke/summary",
-			type		: "post",
-			data		: constraintPostData,
-			success		: function(data){
-				if(isShowWaiting)	hideWaiting();
-				console.log ( "requestGenDiagram success ");
-				editBox.genDiagram(data.diagram,container);
-				if(typeof successFn == 'function') successFn(data);
-			},
-			error		: function(data) {
-				if(isShowWaiting)	hideWaiting();
-				console.log ( "requestGenDiagram error "/*+JSON.stringify(data)*/);
-				container.html("error when generate diagram");
-			}
-		});
-	}
+	chartParameter.url = "/storagedisplay/loadchart";
 
 	editBox.genDiagram = function (diagram,view){
 		if(typeof diagram == "undefined") return;
-		var series 		= [];
-		var groupIndex	= 0;
-		var serieGroup;
-		for (var group in diagram.series) {
-			serieGroup	= diagram.series[group];
-			groupIndex = diagram.groups.indexOf(group);
-			for (var category in serieGroup) {
-				serie		= serieGroup[category];
-				serie.type	= 'column';
-				serie.name	+= ' LIP';
-				for(var i = 0; i< groupIndex;i++){
-					serie.data.unshift(0);
-				}
-				series.push(serie);
-			}
-		}
+		var series 		= diagram.series;
+		$.each(series, function( index, value ) {
+			$.each(value.data, function( index, data ) {
+				day	= getJsDate(data.D);
+				pvalue = parseFloat(data.V);
+				pvalue	= isNaN(pvalue)?null:pvalue;
+				value.data[index]	= [day,pvalue];
+	         });
+         });
 		
-		if(diagram.minY>0){
+		/* if(diagram.minY>0){
 			var lineData = Array.apply(null, Array(diagram.groups.length)).map(function (_, i) {return diagram.minY;});
 			series.push({
 				type: 'line',
@@ -55,7 +29,8 @@
 				tooltip: {enabled: false,pointFormat: '{point.y:.2f}'},
 				data: lineData,
 			});
-		}	
+		}	 */
+
 		var diagramOption	= {
 				chart: {
 		            zoomType		: 'xy',
@@ -83,17 +58,36 @@
 		                subtitle: null
 		            }
 		        },
-				plotOptions: {
-		            column: {
-						stacking: 'normal',
-		                pointPadding: 0.2,
-		                borderWidth: 0
-		            }
-        		},
+        		plotOptions: {
+                    series: {
+                        marker: {
+                            enabled: true,
+        					symbol:"circle",
+        					radius : 3,
+                        }
+                    },
+                    spline: {
+                        marker: {
+                            enabled: true
+                        }
+                    },
+        			column: {
+                        stacking: 'normal'
+                    }
+                },
         		series: series,
-        		xAxis: {
-                    categories:  diagram.groups,
-                    crosshair: false
+                xAxis: {
+                    type: 'datetime',
+                    dateTimeLabelFormats: { // don't display the dummy year
+                        month: '%e. %b',
+                        year: '%b'
+                    },
+                    title: {
+                        text: 'Occur date',
+                        style: {
+                            fontWeight:"bold"
+                        }
+                    }
                 },
                 yAxis: { // Primary yAxis
                     labels: {
@@ -111,6 +105,5 @@
         };
 		view.highcharts(diagramOption);
 	}
-	
 </script>
-	
+@stop
