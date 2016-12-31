@@ -1,8 +1,17 @@
 <?php 
 namespace App\Models; 
-use App\Models\DynamicModel; 
 
- class StorageDisplayChart extends DynamicModel 
+ class StorageDisplayChart extends EbBussinessModel 
 { 
-	protected $table = 'storage_display_chart'; 
-} 
+	protected $table 		= 'STORAGE_DISPLAY_CHART';
+// 	protected $dates 		= ['FROM_DATE','MID_DATE','TO_DATE','CREATE_DATE'];
+
+	protected $fillable  	= ['TITLE',
+							 'CONFIG',
+							 'FROM_DATE',
+							 'MID_DATE',
+							 'TO_DATE',
+							 'STORAGE_ID',
+							 'CREATE_BY',
+							 'CREATE_DATE'];
+}  

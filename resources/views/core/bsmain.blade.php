@@ -30,6 +30,7 @@ $useFeatures	= isset($useFeatures)	? $useFeatures	:[];
 </div>
 @yield('extraAdaptData')
 @yield('adaptData')
+@yield('endDdaptData')
 @stop
 
 @section('script')

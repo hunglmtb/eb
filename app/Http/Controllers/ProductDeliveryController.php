@@ -80,7 +80,7 @@ class ProductDeliveryController extends CodeController {
 												['id'=>'date_middle','name'=>'Middle date'],
 												['id'=>'date_end','name'=>'To date']
 											];
-		return view ( 'front.cargoadmin.storagedisplay',['filters'=>$filterGroups]);
+		return view ( 'datavisualization.storagedisplay',['filters'=>$filterGroups]);
 	}
 	
 	public function cargodocuments() {
