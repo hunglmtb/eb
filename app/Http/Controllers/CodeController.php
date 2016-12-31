@@ -899,8 +899,31 @@ class CodeController extends EBController {
 	    			$selectData['data'] = \App\Models\PdCodeLiftAcctAdj::all();
 	    			$rs[] = $selectData;
 	    			break;
-    				
-    				
+	    		case 'OBJECT_TYPE' :
+	    			$selectData = ['id'=>'IntObjectType','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = \App\Models\IntObjectType::all();
+	    			$rs[] = $selectData;
+	    			break;
+	    		case 'MMR_CLASS' :
+	    			$selectData = ['id'=>'CodeMmrClass','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = \App\Models\CodeMmrClass::all();
+	    			$rs[] = $selectData;
+	    			break;
+	    		case 'MMR_REASON' :
+	    			$selectData = ['id'=>'CodeMmrReason','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = \App\Models\CodeMmrReason::all();
+	    			$rs[] = $selectData;
+	    			break;
+	    		case 'MMR_ROOT_CAUSE' :
+	    			$selectData = ['id'=>'CodeMmrRootCause','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = \App\Models\CodeMmrRootCause::all();
+	    			$rs[] = $selectData;
+	    			break;
+    			case 'WO_ACTION' :
+	    			$selectData = ['id'=>'CodeMmrWOAction','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = \App\Models\CodeMmrWOAction::all();
+	    			$rs[] = $selectData;
+	    			break;
     		}
     		$i++;
     	}

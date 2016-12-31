@@ -139,6 +139,11 @@ function scopeChange(c){
 "<option value='CODE_TESTING_USAGE'>CODE_TESTING_USAGE</option>"+
 "<option value='CODE_THEORETICAL_METHOD'>CODE_THEORETICAL_METHOD</option>"+
 "<option value='CODE_PORTABLE_TANK_LOCATION'>CODE_PORTABLE_TANK_LOCATION</option>"+
+"<option>CODE_MMR_CLASS</option>"+
+"<option>CODE_MMR_ROOT_CAUSE</option>"+
+"<option>CODE_MMR_STATUS</option>"+
+"<option>CODE_MMR_WO_ACTION</option>"+
+"<option>CODE_MMR_REASON</option>"+
 				'';
 	}
 	else if($("#cboObjectScope").val()=="UOM")
@@ -258,6 +263,8 @@ function scopeChange(c){
 "<option value='DEFERMENT_GROUP'>DEFERMENT_GROUP</option>"+
 "<option value='DEFERMENT_GROUP_EU'>DEFERMENT_GROUP_EU</option>"+
 "<option value='WORK_ORDER'>WORK_ORDER</option>"+
+"<option>MIS_MEASUREMENT</option>"+
+"<option>WORK_ORDER_MMR</option>"+
 		"";
 	}
 	else if($("#cboObjectScope").val()=="TEST")

@@ -120,6 +120,8 @@ Route::post('deferment/detail/load', 	'DefermentController@load');
 Route::post('deferment/detail/save', 	'DefermentController@editSaving');
 Route::post('deferment/wo/load', 		'DefermentController@load');
 Route::post('deferment/wo/save', 		'DefermentController@save');
+Route::post('deferment/wommr/load', 		'DefermentController@load');
+Route::post('deferment/wommr/save', 		'DefermentController@save');
 Route::post('deferment/history', 		'DefermentController@history');
 
 

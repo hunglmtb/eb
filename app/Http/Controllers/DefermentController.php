@@ -8,6 +8,7 @@ use App\Models\DefermentGroup;
 use App\Models\DefermentGroupEu;
 use App\Models\EnergyUnit;
 use App\Models\WorkOrder;
+use App\Models\WorkOrderMmr;
 
 use Illuminate\Http\Request;
 
@@ -17,6 +18,8 @@ class DefermentController extends CodeController {
 		parent::__construct();
 		$this->extraDataSetColumns = [	'DEFER_GROUP_TYPE'	=>	[	'column'	=>'DEFER_TARGET',
 																	'model'		=>'DefermentGroup'],
+										'OBJECT_TYPE'				=>	[	'column'	=>'OBJECT_ID',
+																	'model'		=>''],
 										'CODE1'				=>	[	'column'	=>'CODE2',
 																	'model'		=>'CodeDeferCode2'],
 										'CODE2'				=>	[	'column'	=>'CODE3',
@@ -27,12 +30,13 @@ class DefermentController extends CodeController {
 	}
 	
 	public function getFirstProperty($dcTable){
-		if ($dcTable=="DEFERMENT") 	return  	['data'=>$dcTable,'title'=>'','width'=>120];
-		if ($dcTable=="WORK_ORDER") return  	['data'=>$dcTable,'title'=>'','width'=>50];
+		if ($dcTable=="DEFERMENT" || $dcTable=="MIS_MEASUREMENT") 	return  	['data'=>$dcTable,'title'=>'','width'=>120];
+		if ($dcTable=="WORK_ORDER" || $dcTable=="WORK_ORDER_MMR") return  	['data'=>$dcTable,'title'=>'','width'=>50];
 		return null;
 	}
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
+
     	
     	$mdlName = $postData[config("constants.tabTable")];
     	$mdl = "App\Models\\$mdlName";
@@ -62,6 +66,32 @@ class DefermentController extends CodeController {
 	    	$bunde = ['FACILITY_ID' => $facility_id];
 	    	$extraDataSet 	= $this->getExtraDataSet($dataSet, $bunde);
     	}
+    	else if ($mdlName=="MisMeasurement") {
+	    	$object_type 	= $postData['IntObjectType'];
+	    	$date_end 	= $postData['date_end'];
+    		$date_end 	= $date_end&&$date_end!=""?\Helper::parseDate($date_end):Carbon::now();
+	    	$dataSet 	= null;
+	    	$codeDeferGroupType = CodeDeferGroupType::getTableName();
+		    
+			if($object_type)
+				$where = ['FACILITY_ID' => $facility_id, 'OBJECT_TYPE' => $object_type];
+			else
+				$where = ['FACILITY_ID' => $facility_id];
+	    	$dataSet = $mdl::where($where)
+								    	->whereDate("$dcTable.BEGIN_TIME", '>=', $occur_date)
+								    	->whereDate("$dcTable.END_TIME", '<=', $date_end)
+								    	->select(
+	 							    			"$dcTable.ID as $dcTable",
+								    			"$dcTable.ID as DT_RowId",
+								    			"$dcTable.ID as MMR_ID",
+								    			"$dcTable.*"
+								    			)
+	// 					    			->orderBy($dcTable)
+	 									->get();
+		    
+	    	$bunde = ['FACILITY_ID' => $facility_id];
+	    	$extraDataSet 	= $this->getExtraDataSet($dataSet, $bunde);
+    	}
     	else if ($mdlName=="DefermentDetail"){
     		$id				= $postData["id"];
     		$dataSet 		= $this->getDefermentDetails($id);
@@ -69,6 +99,10 @@ class DefermentController extends CodeController {
     	else if ($mdlName=="WorkOrder"){
     		$id				= $postData["id"];
     		$dataSet 		= $this->getWorkOrder($id);
+    	}
+    	else if ($mdlName=="WorkOrderMmr"){
+    		$id				= $postData["id"];
+    		$dataSet 		= $this->getWorkOrderMmr($id);
     	}
     	 
     	return ['dataSet'		=>$dataSet,
@@ -117,6 +151,18 @@ class DefermentController extends CodeController {
 	    			}
     			}
     			break;
+    		case 'OBJECT_TYPE':
+				if ($sourceColumnValue) {
+					$obj_code = \App\Models\IntObjectType::find($sourceColumnValue)->CODE;
+					$facility_id = $bunde['FACILITY_ID'];
+					$mdl    = \Helper::getModelName ($obj_code);
+					$data = $mdl::where(['FACILITY_ID'=>$facility_id
+								])
+								->select("ID","NAME","ID as value","NAME as text")
+								->orderBy('text')
+								->get();
+				}
+    			break;
     	}
     	return $data;
     }
@@ -134,6 +180,10 @@ class DefermentController extends CodeController {
     		$entry = CodeDeferGroupType::select("CODE as $codeColumn")->find($sourceColumnValue);
 	    	$bunde[$codeColumn] = $entry->$codeColumn;
 	    	
+	    	$facility_id = $postData['Facility'];
+	    	$bunde['FACILITY_ID'] = $facility_id;
+    	}
+    	else if ($sourceColumn=='OBJECT_TYPE') {
 	    	$facility_id = $postData['Facility'];
 	    	$bunde['FACILITY_ID'] = $facility_id;
     	}
@@ -174,6 +224,18 @@ class DefermentController extends CodeController {
 	 							    			"ID as $workOrder",
 								    			"ID as DT_RowId",
 								    			"$workOrder.*"
+								    			)
+								    	->get();
+    	return $dataSet;
+    }
+    
+    public function getWorkOrderMmr($id){
+    	$workOrderMmr		= WorkOrderMmr::getTableName();
+    	$dataSet 			= WorkOrderMmr::where("MMR_ID",$id)
+								    	->select(
+	 							    			"ID as $workOrderMmr",
+								    			"ID as DT_RowId",
+								    			"$workOrderMmr.*"
 								    			)
 								    	->get();
     	return $dataSet;
