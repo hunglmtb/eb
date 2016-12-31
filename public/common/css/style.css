@@ -250,13 +250,16 @@ table.dataTable {
 	width: 100px;
 }
 
-#table_Deferment .THEOR_OIL_PERDAY,#table_Deferment  .THEOR_GAS_PERDAY,#table_Deferment  .THEOR_WATER_PERDAY ,
+#table_Deferment .THEOR_OIL_PERDAY,#table_Deferment .THEOR_GAS_PERDAY,#table_Deferment .THEOR_WATER_PERDAY ,
+#table_MisMeasurement .MMR_ACCUM_QTY_TODATE,#table_MisMeasurement .MMR_CORRECT_TODATE,#table_MisMeasurement .MMR_ACCUM_DIFF ,
 #table_PdCargoNomination .REQUEST_DATE, #table_PdCargoNomination .REQUEST_QTY , #table_PdCargoNomination .REQUEST_QTY_UOM {
 	background-clip: content-box;
 	background-color: yellow;
 }
 
-#table_Deferment .CALC_DEFER_OIL_VOL,#table_Deferment  .CALC_DEFER_GAS_VOL,#table_Deferment  .CALC_DEFER_WATER_VOL {
+#table_Deferment .CALC_DEFER_OIL_VOL,#table_Deferment .CALC_DEFER_GAS_VOL,#table_Deferment .CALC_DEFER_WATER_VOL,
+#table_MisMeasurement .MMR_ACCUM_QTY_TOTAL,#table_MisMeasurement .MMR_CORRECT_TOTAL,#table_MisMeasurement .MMR_TOTAL_DIFF
+ {
 	background-clip: content-box;
 	background-color: orange;
 }

@@ -57,7 +57,8 @@ class ProductManagementController extends EBController {
 	}
 	
 	public function deferment() {
-		$filterGroups = array('productionFilterGroup'	=> [],
+		$filterGroups = array('productionFilterGroup'	=> [['name'=>'IntObjectType',
+                'independent'=>true,'default'  =>['ID'=>0,'NAME'=>'All']]],
 				'dateFilterGroup'=> array(
 						['id'=>'date_begin','name'=>'From Date'],
 						['id'=>'date_end','name'=>'To Date'],
