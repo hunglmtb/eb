@@ -143,7 +143,7 @@ function scopeChange(c){
 "<option>CODE_MMR_ROOT_CAUSE</option>"+
 "<option>CODE_MMR_STATUS</option>"+
 "<option>CODE_MMR_WO_ACTION</option>"+
-"<option>CODE_MMR_CLASS</option>"+
+"<option>CODE_MMR_REASON</option>"+
 				'';
 	}
 	else if($("#cboObjectScope").val()=="UOM")
