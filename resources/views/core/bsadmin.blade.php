@@ -6,6 +6,11 @@ if (!isset($currentSubmenu)) $currentSubmenu ='';
 @section('main')
 <link rel="stylesheet" href="/common/css/admin.css">
 <script type="text/javascript" src="/common/js/utils.js"></script>
+<style>
+table.dataTable thead .sorting, table.dataTable thead .sorting_asc, table.dataTable thead .sorting_desc {
+    text-align: left;
+}
+</style>
 <div id="content">
 	<div class="title">
 		@yield('title')

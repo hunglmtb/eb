@@ -599,8 +599,7 @@ var actions = {
 			case "text":
 			case "number":
 			case "date":
-				if(strimValue == '') 
-					validateResult =  'inputted data must not empty';
+//				if(strimValue == '')  validateResult =  'inputted data must not empty';
 				if(type=="number"&&typeof property !== 'string'){
 					var basicRules	= actions.getBasicRules(property,objectRules);
 					validateResult 	= actions.validateNumberWithRules(basicRules,strimValue);
@@ -663,7 +662,7 @@ var actions = {
     	$(td).on('save', function(e, params) {
     	    if(type=="number") {
     	    	value = params.newValue;
-    	    	if(value!=null){
+    	    	if(value!=null&&value!=""){
     	    		if(configuration.number.DECIMAL_MARK=='comma') value = parseFloat(value.replace(',','.'));
 					else value = parseFloat(value);
     	    		var numberValue = value;
@@ -672,6 +671,10 @@ var actions = {
 					params.newValue = value;
 					params.submitValue = numberValue;
 				}
+    	    	/*else {
+    	    		params.newValue = value;
+					params.submitValue = value;
+    	    	}*/
     	    }
     	});
 	},

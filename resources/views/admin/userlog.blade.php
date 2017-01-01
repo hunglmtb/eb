@@ -39,7 +39,7 @@ $listControls = [
 
 <script type="text/javascript">
 $(function(){	
-	$('#listValidate').css('width', 855);
+// 	$('#bodyUsersList').css('width', 855);
 });
 
 var _userLog = {
@@ -59,7 +59,18 @@ var _userLog = {
 		
 		listData : function(data){
 			var str = '';
-			$('#bodyList').html('');
+			
+ 			$('#usersTable').html('<thead>'+
+					 					'<tr>                         '+
+					 					'<td class="">Username</td>   '+
+					 					'<td class="">Login time</td> '+
+					 					'<td class="">Logout time</td>'+
+					 					'<td class="">IP address</td> '+
+					 			'	</tr>                             '+
+					 			'</thead>                             '+
+					 			'<tbody id="bodyUsersList">           '+
+					 			'</tbody>');
+// 			$('#bodyUsersList').html('');
 			
 			for(var i = 0; i< data.length; i++){
 				var id = data[i].ID;
@@ -75,28 +86,33 @@ var _userLog = {
 				str += '</tr>';
 			}
 
-			$('#bodyList').html(str);			
+			$('#bodyUsersList').html(str);	
+			$("#usersTable").dataTable({
+				scrollX: false,
+				autoWidth	: false,
+				searching: true,
+				paging: false,
+				info: false,
+				destroy: true
+			});		
 		}
 }
 </script>
 
-<div>
-	<table style="table-layout: fixed;">
-		<thead id="table5">
+<div id="boxUsersList">
+	<strong>&nbsp;Users list</strong> ( <a href="#" onclick="_users.onclickLinkAddNew()">Add
+		User</a> )<br>
+	<table id="usersTable" class="display " >
+		<thead>
 			<tr>
-				<td class="column200">Username</td>
-				<td class="column200">Login time</td>
-				<td class="column200">Logout time</td>
-				<td class="column200">IP address</td>
+				<td class="">Username</td>
+				<td class="">Login time</td>
+				<td class="">Logout time</td>
+				<td class="">IP address</td>
 			</tr>
 		</thead>
+		<tbody id="bodyUsersList">
+		</tbody>
 	</table>
-
-	<div id="listValidate">
-		<table style="table-layout: fixed;">
-			<tbody id="bodyList">
-			</tbody>
-		</table>
-	</div>
 </div>
 @stop

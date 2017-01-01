@@ -205,7 +205,7 @@ var xmenu=
 							{"name":"User Logs","title":"USERS LOG","link":"/am/userlog"},
 							{"name":"Audit Trail","title":"Audit Trail","link":"/am/audittrail"},
 // 							{"name":"User Settings","title":"","link":"#"},
-							{"name":"Change Password","title":"Change Password","link":"/me/setting"},
+							{"name":"Password & Preferences","title":"Password & Preferences","link":"/me/setting"},
 							{"name":"Help Editor","title":"HELP EDITOR","link":"/am/helpeditor"},
 						]
 					},

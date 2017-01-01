@@ -109,9 +109,24 @@ var _users = {
 		
 		listData : function(data){
 			var str = '';
-			$('#bodyUsersList').html('');
-			
-			for(var i = 0; i< data.length; i++){
+ 			$('#usersTable').html('<thead> '+                                   
+					 			'	<tr>                                   '+
+					 			'		<td class="">Username</td>         '+
+					 			'		<td class="">Roles</td>            '+
+					 			'		<td class="">Production Unit</td>  '+
+					 			'		<td class="">Area</td>             '+
+								'		<td class="">Falicity</td>         '+
+								'		<td class="">Status</td>           '+
+								'		<td class="">Expire date</td>      '+
+								'		<td class="">Password changed</td> '+
+                                '		<td class="">&nbsp;</td>           '+
+                                '	</tr>                                  '+
+                                '</thead>                                  '+
+                                '<tbody id="bodyUsersList">                '+
+                                '</tbody>                                  '
+                                );
+ 			
+ 			for(var i = 0; i< data.length; i++){
 				var id = data[i].ID;
 				var cssClass = "row1";
 				if(i%2 == 0){
@@ -133,7 +148,15 @@ var _users = {
 				str += '</tr>';
 			}
 
-			$('#bodyUsersList').html(str);
+			$('#bodyUsersList').html(str);	
+			$("#usersTable").dataTable({
+				scrollX: false,
+				autoWidth	: false,
+				searching: true,
+				paging: false,
+				info: false,
+				destroy: true
+			});		
 		}
 }
 </script>
@@ -141,18 +164,18 @@ var _users = {
 <div id="boxUsersList">
 	<strong>&nbsp;Users list</strong> ( <a href="#" onclick="_users.onclickLinkAddNew()">Add
 		User</a> )<br>
-	<table>
-		<thead id="table5">
+	<table id="usersTable" class="display " >
+		<thead>
 			<tr>
-				<td class="column160">Username</td>
-				<td class="column160">Roles</td>
-				<td class="column160">Production Unit</td>
-				<td class="column120">Area</td>
-				<td class="column140">Falicity</td>
-				<td class="column120">Status</td>
-				<td class="column120">Expire date</td>
-				<td class="column160">Password changed</td>
-				<td class="column100">&nbsp;</td>
+				<td class="">Username</td>
+				<td class="">Roles</td>
+				<td class="">Production Unit</td>
+				<td class="">Area</td>
+				<td class="">Falicity</td>
+				<td class="">Status</td>
+				<td class="">Expire date</td>
+				<td class="">Password changed</td>
+				<td class="">&nbsp;</td>
 			</tr>
 		</thead>
 		<tbody id="bodyUsersList">
