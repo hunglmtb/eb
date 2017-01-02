@@ -187,6 +187,9 @@
 	    padding: 2px;
 	    top: 50%;
 	}
+	#diagramTableAction{
+		clear: both;
+	}
 </style>
 <script>
 	var orenderDependenceHtml = renderDependenceHtml;
