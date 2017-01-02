@@ -13,6 +13,7 @@
  	overflow: auto;    
     height: 100%;
     width: 300px;
+    display	:none;
     border: 1px solid #bbbbbb;
     /*max-height: 200px;*/
     background: #eeeeee;">
