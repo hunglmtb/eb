@@ -1060,7 +1060,7 @@ var actions = {
 
 			cell["render"] = function ( data2, type2, row ) {
 //								if (data2==null||data2=='') return "&nbsp";
-								checked = data2?'checked':'';
+								checked = data2&&data2=="1"||data2==true||data2=="true"?'checked':'';
 				 				var disabled = data.locked||!(actions.isEditable(data.properties[cindex],row,data.rights));
 				 				disabled = disabled?"disabled":''; 
 								return '<div  class="checkboxCell" ><input '+disabled+' class="cellCheckboxInput" type="checkbox" value="'+data2+'"size="15" '+checked+'></div>';

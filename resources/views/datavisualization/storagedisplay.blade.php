@@ -46,9 +46,21 @@
 	 	 		  					DATA_METHOD	: 1,
 	 	 		  					columnDef	: {data	: plotItems},
 	 	 		  				},
+	 	 		  				{	'data' 		: 'FROM_DATE',
+	 	 		  					'title' 	: 'From date'  ,
+	 	 		  					'width'		: 70,
+	 	 		  					'INPUT_TYPE': 3,
+	 	 		  					DATA_METHOD	: 1
+	 	 		  				},
+	 	 		  				{	'data' 		: 'TO_DATE',
+	 	 		  					'title' 	: 'To date'  ,
+	 	 		  					'width'		: 70,
+	 	 		  					'INPUT_TYPE': 3,
+	 	 		  					DATA_METHOD	: 1
+	 	 		  				},
 	 	 		  				{	'data' 		: 'CHART_TYPE',
 	 	 		  					'title' 	: 'Chart Type'  ,
-	 	 		  					'width'		: 40,
+	 	 		  					'width'		: 50,
 	 	 		  					'INPUT_TYPE': 2,
 	 	 		  					DATA_METHOD	: 1,
 	 	 		  					columnDef	: {data	: chartypes},
@@ -84,10 +96,10 @@
 		}
 
 		editBox.genMoreDiagramPostData	= function (constraintPostData){
-			constraintPostData.date_mid	= $("#date_middle").val();		   	
+// 			constraintPostData.date_mid	= $("#date_middle").val();		   	
 // 			return constraintPostData;
 		}
-		editBox.getItemName = function (value){
+		editBox.getItemName = function (value){	
 			return value.TITLE;
 		}
 	</script>
@@ -99,6 +111,12 @@
 <script>
 	actions.loadUrl = "/storagedisplay/load";
 	actions.saveUrl = "/storagedisplay/save";
+
+	actions['doMoreAddingRow'] = function(addingRow){
+ 		addingRow['FROM_DATE'] 	= moment.utc($("#date_begin").val());
+ 		addingRow['TO_DATE'] 	= moment.utc($("#date_end").val());
+		return addingRow;
+	}
 	
 	actions.getChartTitle = function (tab){
 		return "Chart title";
@@ -107,7 +125,7 @@
 	editBox.fillCurrentDiagram = function (currentDiagram){
  		currentDiagram.TITLE		= $("#txtDiagramName").val();
 		currentDiagram.FROM_DATE	= $("#date_begin").val();
-		currentDiagram.MID_DATE		= $("#date_middle").val();
+// 		currentDiagram.MID_DATE		= $("#date_middle").val();
 		currentDiagram.TO_DATE		= $("#date_end").val();
 // 		currentDiagram.CREATE_BY	= $("#txtDiagramName").val();
 // 		currentDiagram.CREATE_DATE	= $("#txtDiagramName").val();
@@ -118,9 +136,8 @@
 	}
 
 	editBox.updateFilterView = function(currentDiagram){
-		$("#date_begin").val();
 		currentDiagram.FROM_DATE	= $("#date_begin").val();
-		currentDiagram.MID_DATE		= $("#date_middle").val();
+// 		currentDiagram.MID_DATE		= $("#date_middle").val();
 		currentDiagram.TO_DATE		= $("#date_end").val();
 	}
 	 
@@ -232,7 +249,9 @@
 <script>
 	actions.renderFirsColumn = actions.deleteActionColumn;
 	editBox.updateDiagramRowValue = function( index, row) {
-//  		row.NEGATIVE			= row.NEGATIVE=="on";
+// 		currentDiagram.MID_DATE		= $("#date_middle").val();
+		row.FROM_DATE		= actions.getTimeValueBy(row.FROM_DATE);
+		row.TO_DATE			= actions.getTimeValueBy(row.TO_DATE);
 	};
 	editBox.updateCurrentDiagramData = function( rows,convertJson) {
 // 		currentDiagram.YCAPTION	= $(".dataTables_scrollHeadInner table thead th.YCAPTION:first").text();

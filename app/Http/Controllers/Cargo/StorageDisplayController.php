@@ -33,8 +33,8 @@ class StorageDisplayController extends ChokeController {
 	}
 	
 	public function summaryData($constraints,$beginDate,$endDate,$postData){
-		$midleDate		= $postData["date_mid"];
-    	$midleDate 		= \Helper::parseDate($midleDate);
+// 		$midleDate		= $postData["date_mid"];
+//     	$midleDate 		= \Helper::parseDate($midleDate);
 		$summaryData	= [];
 		$sumField		= "V";
 		if (count($constraints['CONFIG'])>0){
@@ -56,7 +56,9 @@ class StorageDisplayController extends ChokeController {
 				$objects			= $plotViewConfig->parseViewConfig();
 				if (!$objects||count($objects)<=0) continue;
 						
-				$timeline			= $plotViewConfig->TIMELINE;
+				$beginDate			= $constraint['FROM_DATE'];
+				$endDate			= $constraint['TO_DATE'];
+				/* $timeline			= $plotViewConfig->TIMELINE;
 				$date_from			= $beginDate;
 				$date_to			= $endDate;
 				if($timeline==2){
@@ -66,7 +68,7 @@ class StorageDisplayController extends ChokeController {
 				else if($timeline==5){
 					$date_from		= $midleDate;
 					$date_to		= $endDate;
-				}
+				} */
 				
 				$category			= $plotViewConfig->NAME;
 				$categories[] 		= $category;
