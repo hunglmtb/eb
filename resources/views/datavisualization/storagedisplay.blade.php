@@ -48,13 +48,13 @@
 	 	 		  				},
 	 	 		  				{	'data' 		: 'FROM_DATE',
 	 	 		  					'title' 	: 'From date'  ,
-	 	 		  					'width'		: 70,
+	 	 		  					'width'		: 100,
 	 	 		  					'INPUT_TYPE': 3,
 	 	 		  					DATA_METHOD	: 1
 	 	 		  				},
 	 	 		  				{	'data' 		: 'TO_DATE',
 	 	 		  					'title' 	: 'To date'  ,
-	 	 		  					'width'		: 70,
+	 	 		  					'width'		: 100,
 	 	 		  					'INPUT_TYPE': 3,
 	 	 		  					DATA_METHOD	: 1
 	 	 		  				},
