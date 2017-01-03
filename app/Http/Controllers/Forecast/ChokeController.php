@@ -29,6 +29,7 @@ class ChokeController extends CodeController {
     		$categories	= [];
     		$groups 	= [];
     		$minY 		= 1000000000;
+    		$minYs		= [];
     		$series		= [];
     		foreach($constraints['CONFIG'] as $key => $constraint ){
     			$rquery				= null;
@@ -64,7 +65,11 @@ class ChokeController extends CodeController {
     				$dataSet						= $rquery->get();
     				$value							= $dataSet->sum($sumField);
     				$ycaptionValue					= $value*$factor;
-    				$minY							= ($ycaptionValue < $minY && $ycaptionValue>0)?$ycaptionValue:$minY;
+    				if(array_key_exists($group, $minYs))
+    					$minYs[$group]+=$ycaptionValue;
+    				else
+    					$minYs[$group] = $ycaptionValue;
+//     				$minY							= ($minYs[$group] < $minY && $minYs[$group]>0)?$minYs[$group]:$minY;
     				$constraint['VALUE']			= $value;
     				$constraint['YCAPTION']			= $ycaptionValue;
     				$constraints['CONFIG'][$key]	= $constraint;
@@ -77,6 +82,11 @@ class ChokeController extends CodeController {
     			];
     		}
     	
+    		foreach($minYs as $gr => $min ){
+    			$minY	= $min < $minY && $min>0?$min:$minY;
+    		}
+    		
+    			
     		$groups		= array_unique($groups);
     		$groups		= array_values($groups);
     	
