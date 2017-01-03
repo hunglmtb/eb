@@ -35,6 +35,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     public function handle()
     {    	
     	$job_id = $this->param['job_id'];
+		\Log::info("job_id: ".$job_id);
     	$runner_id = isset($this->param['runner_id'])?$this->param['runner_id']:0;
     	$from_date = Carbon::createFromFormat('m/d/Y',$this->param['from_date'])->format('m-d-Y');
     	$to_date = Carbon::createFromFormat('m/d/Y',$this->param['to_date'])->format('m-d-Y');
@@ -748,7 +749,6 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     											$sSQL_alloc = DB::table ( 'TANK_DATA_VALUE AS a' )->join ( 'TANK AS b', 'a.TANK_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $arrto )->get ( [
     													'a.TANK_ID AS OBJECT_ID',
     													'b.NAME AS OBJECT_NAME',
-    													'a.ACTIVE_HRS',
     													'a.OCCUR_DATE',
     													'a.OCCUR_DATE AS OCCUR_DATE_STR',
     													'a.TANK_DATA_' . $theor_attr . ' AS ALLOC_THEOR'
@@ -757,7 +757,6 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     											$sSQL_alloc_to = DB::table ( 'TANK_DATA_VALUE AS a' )->join ( 'TANK AS b', 'a.TANK_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $arrto )->get ( [
     													'a.TANK_ID AS OBJECT_ID',
     													'b.NAME AS OBJECT_NAME',
-    													'a.ACTIVE_HRS',
     													'a.OCCUR_DATE',
     													'a.OCCUR_DATE AS OCCUR_DATE_STR',
     													'a.TANK_' . $theor_attr . ' AS ALLOC_VALUE'
@@ -768,7 +767,6 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     											$sSQL_alloc = DB::table ( 'STORAGE_DATA_VALUE AS a' )->join ( 'STORAGE AS b', 'a.STORAGE_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $arrto )->get ( [
     													'a.STORAGE_ID AS OBJECT_ID',
     													'b.NAME AS OBJECT_NAME',
-    													'a.ACTIVE_HRS',
     													'a.OCCUR_DATE',
     													'a.OCCUR_DATE AS OCCUR_DATE_STR',
     													'a.STORAGE_' . $theor_attr . ' AS ALLOC_THEOR'
@@ -777,7 +775,6 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     											$sSQL_alloc_to = DB::table ( 'STORAGE_DATA_ALLOC AS a' )->join ( 'STORAGE AS b', 'a.STORAGE_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $arrto )->get ( [
     													'a.STORAGE_ID AS OBJECT_ID',
     													'b.NAME AS OBJECT_NAME',
-    													'a.ACTIVE_HRS',
     													'a.OCCUR_DATE',
     													'a.OCCUR_DATE AS OCCUR_DATE_STR',
     													'a.STORAGE_' . $theor_attr . ' AS ALLOC_VALUE'
@@ -821,11 +818,11 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     											//\Log::info ( \DB::getQueryLog () );
     										} else if ($obj_type_to == $OBJ_TYPE_TANK) {
     											//\DB::enableQueryLog ();
-    											$rows = DB::table ( 'TANK_DATA_VALUE AS a' )->join ( 'TANK AS b', 'a.TANK_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $arrfixed )->SELECT ( 'a.TANK_ID AS OBJECT_ID', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR', 'TANK_' . $alloc_attr . ' AS FIXED_VALUE' )->get ();
+    											$rows = DB::table ( 'TANK_DATA_VALUE AS a' )->join ( 'TANK AS b', 'a.TANK_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $arrfixed )->SELECT ( 'a.TANK_ID AS OBJECT_ID', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR', 'TANK_' . $alloc_attr . ' AS FIXED_VALUE' )->get ();
     											//\Log::info ( \DB::getQueryLog () );
     										} else if ($obj_type_to == $OBJ_TYPE_STORAGE) {
     											//\DB::enableQueryLog ();
-    											$rows = DB::table ( 'STORAGE_DATA_VALUE AS a' )->join ( 'STORAGE AS b', 'a.STORAGE_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $arrfixed )->SELECT ( 'a.STORAGE_ID AS OBJECT_ID', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR', 'STORAGE_' . $alloc_attr . ' AS FIXED_VALUE' )->get ();
+    											$rows = DB::table ( 'STORAGE_DATA_VALUE AS a' )->join ( 'STORAGE AS b', 'a.STORAGE_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $arrfixed )->SELECT ( 'a.STORAGE_ID AS OBJECT_ID', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR', 'STORAGE_' . $alloc_attr . ' AS FIXED_VALUE' )->get ();
     											//\Log::info ( \DB::getQueryLog () );
     										}
     										$this->_log ( "Create allocation data from fixed objects (id: $ids_fixed):", 2 );
@@ -1554,16 +1551,17 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     	$tmps = DB::table ('alloc_runner AS a' )
     	->join ( 'alloc_job AS b', 'a.job_id', '=', 'b.ID' )
     	->join ( 'code_alloc_value_type AS c', 'c.id', '=', 'b.value_type' )
+    	->leftJoin ( 'code_alloc_value_type AS c2', 'c2.id', '=', 'a.THEOR_VALUE_TYPE' )
     	->where(['b.id'=>$job_id])
     	->orderBy('a.ORDER')
-    	->get(['a.ID AS RUNNER_ID', 'a.THEOR_VALUE_TYPE', 'a.ALLOC_TYPE', 'a.THEOR_PHASE', 'c.CODE AS ALLOC_ATTR_CODE', 'b.*']);
+    	->get(['a.ID AS RUNNER_ID', 'a.ALLOC_TYPE', 'a.THEOR_PHASE', 'c.CODE AS ALLOC_ATTR_CODE', 'c2.CODE AS THEOR_ATTR_CODE', 'b.*']);
     	//\Log::info ( \DB::getQueryLog () );
     
     	$count=0;
     	foreach ($tmps as $row){
     		$alloc_attr=$row->ALLOC_ATTR_CODE;
     		$alloc_type=$row->ALLOC_TYPE;
-    		$theor_attr=$row->THEOR_VALUE_TYPE;
+    		$theor_attr=$row->THEOR_ATTR_CODE;
     		$theor_phase=$row->THEOR_PHASE;
     
     		$alloc_oil=($row->ALLOC_OIL == 1);
@@ -1573,7 +1571,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     		$alloc_condensate=($row->ALLOC_CONDENSATE == 1);
     		$alloc_comp=($row->ALLOC_COMP == 1);
     		$runner_id=$row->RUNNER_ID;
-    
+    \Log::info ("run_runner($runner_id, $from_date, $to_date, $alloc_attr, 1,$theor_phase,$alloc_comp,$alloc_type,$theor_attr)");
     		if($alloc_oil) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 1,$theor_phase,$alloc_comp,$alloc_type,$theor_attr);
     		if($alloc_gas) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 2,$theor_phase,$alloc_comp,$alloc_type,$theor_attr);
     		if($alloc_water) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 3,$theor_phase,$alloc_comp,$alloc_type,$theor_attr);
@@ -1582,7 +1580,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     		$count++;
     	}
     	if($count==0){
-    		$this->_log("No runner to run",2);
+    		$this->_log("No runner to run!",2);
     		$this->_log("End job ID: $job_id =====================================================================",2);
     	}
     }
