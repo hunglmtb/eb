@@ -15,6 +15,7 @@ use App\Models\DynamicModel;
 			'FLOW_PHASE',
 			'ACTIVE_HRS',
 			'GRS_VOL',
+			'NET_VOL',
 			'GRS_MASS',
 			'GRS_PWR',
 			'GRS_ENGY'
