@@ -35,7 +35,6 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     public function handle()
     {    	
     	$job_id = $this->param['job_id'];
-		\Log::info("job_id: ".$job_id);
     	$runner_id = isset($this->param['runner_id'])?$this->param['runner_id']:0;
     	$from_date = Carbon::createFromFormat('m/d/Y',$this->param['from_date'])->format('m-d-Y');
     	$to_date = Carbon::createFromFormat('m/d/Y',$this->param['to_date'])->format('m-d-Y');
@@ -49,7 +48,31 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     		exit();
     	}
     	
-    	if ($job_id) {
+    	if ($runner_id) {
+    		$tmp = DB::table ( 'alloc_runner AS b' )->join ( 'alloc_job AS a', 'a.id', '=', 'b.job_id' )->where ( [
+    				'b.id' => $runner_id
+    		] )->select ( 'a.DAY_BY_DAY' )->first ();
+    			
+    		$daybyday = $tmp->DAY_BY_DAY;
+    		if ($daybyday == 1) {
+    	//\Log::info ("from_date: $from_date, $to_date");
+    			$ds = explode ( "-", $from_date );
+    			$d1 = "$ds[2]-$ds[0]-$ds[1]";
+    			
+    			$ds = explode ( "-", $to_date );
+    			$d2 = "$ds[2]-$ds[0]-$ds[1]";
+    	
+    			while ( strtotime ( $d1 ) <= strtotime ( $d2 ) ) {
+    				$ds = explode ( "-", $d1 );
+    				$dd = "$ds[1]/$ds[2]/$ds[0]";
+    				
+    				$this->exec_runner ( $runner_id, $dd, $dd );
+    				$d1 = date ( "Y-m-d", strtotime ( "+1 day", strtotime ( $d1 ) ) );
+    			}
+    		} else {
+    			$this->exec_runner ( $runner_id, $from_date, $to_date );
+    		}
+    	} else if ($job_id) {
     		$tmp = AllocJob::where ( [
     				'ID' => $job_id
     		] )->select ( 'DAY_BY_DAY' )->first ();
@@ -70,25 +93,6 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     			}
     		} else {
     			$this->exec_job ( $job_id, $from_date, $to_date );
-    		}
-    	} else if ($runner_id) {
-    		$tmp = DB::table ( 'alloc_runner AS b' )->join ( ' alloc_job AS a', 'a.id', '=', 'b.job_id' )->where ( [
-    				'b.id' => $job_id
-    		] )->select ( 'a.DAY_BY_DAY' )->first ();
-    			
-    		$daybyday = $tmp->DAY_BY_DAY;
-    		if ($daybyday == 1) {
-    			$d1 = toDateString ( $from_date );
-    			$d2 = toDateString ( $to_date );
-    			while ( strtotime ( $d1 ) <= strtotime ( $d2 ) ) {
-    				$ds = explode ( "-", $d1 );
-    				$dd = "$ds[1]/$ds[2]/$ds[0]";
-    				
-    				$this->exec_runner ( $runner_id, $dd, $dd );
-    				$d1 = date ( "Y-m-d", strtotime ( "+1 day", strtotime ( $d1 ) ) );
-    			}
-    		} else {
-    			$this->exec_runner ( $runner_id, $from_date, $to_date );
     		}
     	}
     	
@@ -241,13 +245,15 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     {
     	global $error_count;
     
-    	$row = DB::table ('alloc_runner AS a' )
-    	->join ( ' alloc_job AS b', 'a.job_id', '=', 'b.ID' )
-    	->join ( ' code_alloc_value_type AS c', 'c.id', '=', 'b.value_type' )
-    	->leftjoin(' code_alloc_value_type AS t', 'a.theor_value_type', '=', 't.id')
+    	//\DB::enableQueryLog ();
+    	$tmps = DB::table ('alloc_runner AS a' )
+    	->join ( 'alloc_job AS b', 'a.job_id', '=', 'b.ID' )
+    	->join ( 'code_alloc_value_type AS c', 'c.id', '=', 'b.value_type' )
+    	->leftjoin('code_alloc_value_type AS t', 'a.theor_value_type', '=', 't.id')
     	->where(['a.id'=>$runner_id])
     	->get(['a.ALLOC_TYPE', 'a.THEOR_PHASE', 'c.CODE AS ALLOC_ATTR_CODE', 't.CODE AS THEOR_ATTR_CODE', 'b.*']);
-    
+    	//\Log::info ( \DB::getQueryLog () );    
+		$row = $tmps[0];
     	if($row)
     	{
     		$alloc_attr=$row->ALLOC_ATTR_CODE;
@@ -1571,7 +1577,6 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     		$alloc_condensate=($row->ALLOC_CONDENSATE == 1);
     		$alloc_comp=($row->ALLOC_COMP == 1);
     		$runner_id=$row->RUNNER_ID;
-    \Log::info ("run_runner($runner_id, $from_date, $to_date, $alloc_attr, 1,$theor_phase,$alloc_comp,$alloc_type,$theor_attr)");
     		if($alloc_oil) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 1,$theor_phase,$alloc_comp,$alloc_type,$theor_attr);
     		if($alloc_gas) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 2,$theor_phase,$alloc_comp,$alloc_type,$theor_attr);
     		if($alloc_water) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 3,$theor_phase,$alloc_comp,$alloc_type,$theor_attr);

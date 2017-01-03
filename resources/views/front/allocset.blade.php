@@ -289,7 +289,7 @@ var _configallocation = {
 						</ul>
 						<div id="tabs-1" class="tab_list_div" style="padding: 0;">
 							<button onclick="showAddRunner()"
-								style="position: absolute; z-index: 10; top: 5px; right: 5px;">Add
+								style="position: absolute; z-index: 1; top: 5px; right: 5px;">Add
 								Runner</button>
 							<table class="tab_list_table" border="0" cellpadding="4"
 								cellspacing="0" id="tableRunnersList" width="100%">
