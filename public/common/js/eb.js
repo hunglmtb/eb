@@ -599,8 +599,7 @@ var actions = {
 			case "text":
 			case "number":
 			case "date":
-				if(strimValue == '') 
-					validateResult =  'inputted data must not empty';
+//				if(strimValue == '')  validateResult =  'inputted data must not empty';
 				if(type=="number"&&typeof property !== 'string'){
 					var basicRules	= actions.getBasicRules(property,objectRules);
 					validateResult 	= actions.validateNumberWithRules(basicRules,strimValue);
@@ -663,7 +662,7 @@ var actions = {
     	$(td).on('save', function(e, params) {
     	    if(type=="number") {
     	    	value = params.newValue;
-    	    	if(value!=null){
+    	    	if(value!=null&&value!=""){
     	    		if(configuration.number.DECIMAL_MARK=='comma') value = parseFloat(value.replace(',','.'));
 					else value = parseFloat(value);
     	    		var numberValue = value;
@@ -672,6 +671,10 @@ var actions = {
 					params.newValue = value;
 					params.submitValue = numberValue;
 				}
+    	    	/*else {
+    	    		params.newValue = value;
+					params.submitValue = value;
+    	    	}*/
     	    }
     	});
 	},
@@ -1057,7 +1060,7 @@ var actions = {
 
 			cell["render"] = function ( data2, type2, row ) {
 //								if (data2==null||data2=='') return "&nbsp";
-								checked = data2?'checked':'';
+								checked = data2&&data2=="1"||data2==true||data2=="true"?'checked':'';
 				 				var disabled = data.locked||!(actions.isEditable(data.properties[cindex],row,data.rights));
 				 				disabled = disabled?"disabled":''; 
 								return '<div  class="checkboxCell" ><input '+disabled+' class="cellCheckboxInput" type="checkbox" value="'+data2+'"size="15" '+checked+'></div>';

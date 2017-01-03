@@ -39,18 +39,21 @@ class ForecastPlanningController extends EBController {
 	
 	public function allocateplan(){
 		$filterGroups = array(	'productionFilterGroup'	=>[
-				['name'			=>'IntObjectType',		'independent'=>true,'getMethod'=>'getPreosObjectType'],
-				['name'			=>'ExtensionPhaseType',	'independent'=>true,'getMethod'=>'getPreosPhaseType'],
-				['name'			=>'ObjectName',
-				'extra'			=> ["Facility","IntObjectType","ExtensionPhaseType"],
-				],
-		],
-				'frequenceFilterGroup'	=> [],
+															['name'			=>'IntObjectType',
+															'independent'	=>true,
+															'extra' 		=> 	["Facility",'ExtensionPhaseType'],
+															'getMethod'=>'getPreosObjectType'],
+															['name'			=>'ExtensionPhaseType',	
+															'independent'=>true,
+															'getMethod'=>'getPreosPhaseType'],
+														],
+				'frequenceFilterGroup'	=> [["name"			=> "ObjectName",
+																"getMethod"		=> "loadBy",
+																"source"		=> ['productionFilterGroup'=>["Facility","IntObjectType","ExtensionPhaseType"]]],],
 				'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
 						['id'=>'date_end','name'=>'To date']),
-// 				'enableButton'			=> 	false,
-				'extra' 				=> 	['IntObjectType','ExtensionPhaseType'],
-				'FacilityDependentMore'	=> ["ObjectName"],
+				'extra' 				=> 	["Facility",'IntObjectType','ExtensionPhaseType'],
+ 				'FacilityDependentMore'	=> ["ObjectName"],
 		);
 		return view ( 'fp.allocateplan',['filters'=>$filterGroups]);
 	}

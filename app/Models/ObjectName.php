@@ -14,6 +14,10 @@ use App\Models\EnergyUnit;
 				$phaseType 		= $sourceData['CodeProductType'];
 				$phaseTypeId 	= $phaseType->ID;
 			}
+			else if (array_key_exists('ExtensionPhaseType', $sourceData)) {
+				$phaseType 		= $sourceData['ExtensionPhaseType'];
+				$phaseTypeId 	= $phaseType->ID;
+			}
 			else $phaseTypeId 	= 0;
 			
 			$objectType 		= $sourceData['IntObjectType'];

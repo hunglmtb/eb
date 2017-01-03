@@ -34,7 +34,6 @@ $useFeatures	= isset($useFeatures)	? $useFeatures	:[];
 @stop
 
 @section('script')
-	<link rel="stylesheet" href="/common/css/jquery.dataTables.css"/>
 	<link href="/common/css/bootstrap.css" rel="stylesheet"/>
 	<link href="/common/css/bootstrap-responsive.css" rel="stylesheet"/>
 	<link href="/common/css/bootstrap-datetimepicker.css" rel="stylesheet"/>

@@ -24,6 +24,7 @@ $enableFooter	= isset($enableFooter)	? $enableFooter	:true;
 <meta name="_token" content="{{ app('Illuminate\Encryption\Encrypter')->encrypt(csrf_token()) }}" />
 <link rel="stylesheet" href="/css/css3menu0/style.css?4" />
 <link rel="stylesheet" href="/common/css/jquery-ui.css" />
+<link rel="stylesheet" href="/common/css/jquery.dataTables.css"/>
 <script src="/common/js/jquery-2.1.3.js"></script>
 <script type="text/javascript" src="/common/js/jquery.dataTables.js"></script> 
 <script type="text/javascript" src="/common/js/dataTables.fixedColumns.min.js"></script>

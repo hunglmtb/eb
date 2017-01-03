@@ -419,7 +419,7 @@
 	</style>
 @stop
  
-<table class="floatLeft" style="">
+<table id="diagramTableAction" class="floatLeft" style="">
 	<tr>
 		<td>@yield("graph_object_view")</td>
 		<td>@yield("graph_extra_view")</td>
