@@ -535,6 +535,7 @@ menu["config"]=[
 		{menutext:"Tags Mapping",desc:"",url:"/tagsMapping"},
 		{menutext:"Formula Editor",desc:"",url:"/formula"},
 		{menutext:"View Config",desc:"",url:"/viewconfig"},
+		{menutext:"Dashboard Config",desc:"",url:"/config/dashboard"},
 	];
 menu["interface"]=[
 		{menutext:"IMPORT DATA",desc:"Import Tags Spreadsheet",url:"/importdata"},
