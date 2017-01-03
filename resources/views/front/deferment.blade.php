@@ -1,6 +1,6 @@
 <?php
 	$currentSubmenu ='/dc/deferment';
-	$tables = ['Deferment'	=>['name'=>'DEFERMENT'],'MisMeasurement'	=>['name'=>'MIS MEASUREMENT']];
+	$tables = ['Deferment'	=>['name'=>'DEFERMENT'],'MisMeasurement'	=>['name'=>'MIS-MEASUREMENT']];
  	$active = 0;
 	$isAction = true;
 	$floatContents 	= ['editBoxContentview','woList','woListMmr'];
@@ -106,7 +106,7 @@ DEFERMENT DATA CAPTURE
 		var id = rowData['DT_RowId'];
 		isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
 		if(!isAdding){
-			html += '<a onclick="actions.editWOMmr('+id+',this)" class="actionLink">Edit WOx</a>';
+			html += '<a onclick="actions.editWOMmr('+id+',this)" class="actionLink">Edit WO</a>';
 			//if(rowData.DEFER_GROUP_TYPE!='3'&&rowData.DEFER_GROUP_TYPE!=3) 
 			//	html += '<a class="actionLink" onclick="actions.editDetailMmr('+id+')">Detail</a>';
 		}
