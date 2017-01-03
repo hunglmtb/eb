@@ -17,6 +17,7 @@ use App\Models\DynamicModel;
 		'COST_INT_CTR_ID',
 		'BA_ID',
 		'EU_DATA_GRS_VOL',
+		'EU_DATA_NET_VOL',
 		'EU_DATA_GRS_MASS',
 		'EU_DATA_GRS_ENGY',
 		'EU_DATA_GRS_PWR'
