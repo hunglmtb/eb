@@ -565,6 +565,7 @@ class CodeController extends EBController {
 		    		$withs[] = 'CodeMassUom';
 		    		$uoms[] = ['id'=>'CodeMassUom','targets'=>$i,'COLUMN_NAME'=>'FL_MASS_UOM'];
 		    		break;
+		    	case 'MMR_QTY_UOM' :
 		    	case 'VOL_UOM' :
 		    	case 'FL_VOL_UOM' :
 		    	case 'EU_VOL_UOM' :
@@ -657,8 +658,10 @@ class CodeController extends EBController {
     				else
     					$selectData['data'] = PdTransitCarrier::all();
     				$rs[] = $selectData;
-    				break;
+    				break;										
     			case 'BA_ID' :
+    			case 'MMR_APPROVED_ID' :
+    			case 'MMR_ORIGINATED_ID' :
     				if ($dcTable!=Personnel::getTableName()) {
 	    				$selectData = ['id'=>'BaAddress','targets'=>$i,'COLUMN_NAME'=>$columnName];
 	    				$selectData['data'] = BaAddress::all();
@@ -904,6 +907,11 @@ class CodeController extends EBController {
 	    			$selectData['data'] = \App\Models\IntObjectType::all();
 	    			$rs[] = $selectData;
 	    			break;
+	    		case 'MMR_STATUS' :
+	    			$selectData = ['id'=>'CodeMmrStatus','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = \App\Models\CodeMmrStatus::all();
+	    			$rs[] = $selectData;
+	    			break;
 	    		case 'MMR_CLASS' :
 	    			$selectData = ['id'=>'CodeMmrClass','targets'=>$i,'COLUMN_NAME'=>$columnName];
 	    			$selectData['data'] = \App\Models\CodeMmrClass::all();
@@ -917,6 +925,11 @@ class CodeController extends EBController {
 	    		case 'MMR_ROOT_CAUSE' :
 	    			$selectData = ['id'=>'CodeMmrRootCause','targets'=>$i,'COLUMN_NAME'=>$columnName];
 	    			$selectData['data'] = \App\Models\CodeMmrRootCause::all();
+	    			$rs[] = $selectData;
+	    			break;
+	    		case 'MMR_CALC_METHOD_FORMULA':
+	    			$selectData = ['id'=>'CodeMmrCalcMethod','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = \App\Models\CodeMmrCalcMethod::all();
 	    			$rs[] = $selectData;
 	    			break;
     			case 'WO_ACTION' :

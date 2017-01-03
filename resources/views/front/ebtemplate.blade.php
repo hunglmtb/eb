@@ -465,7 +465,7 @@ menu["production"]=[
 		{menutext:"Tank & Storage",desc:"",url:"/dc/storage"},
 		{menutext:"Ticket",desc:"",url:"/dc/ticket"},
 		{menutext:"Well Test",desc:"",url:"/dc/eutest"},
-		{menutext:"Deferment",desc:"",url:"/dc/deferment"},
+		{menutext:"Deferment & MMR",desc:"",url:"/dc/deferment"},
 		{menutext:"Quality",desc:"",url:"/dc/quality"}
 	];
 menu["operation"]=[
