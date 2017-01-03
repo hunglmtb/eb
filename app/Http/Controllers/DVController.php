@@ -976,11 +976,11 @@ class DVController extends Controller {
 				
 		);
 		$current_username 	= auth()->user()->username;
-		$cquery0 			= Dashboard::where("IS_DEFAULT",1);
 		$cquery1 			= Dashboard::where("IS_DEFAULT",1)->where("USER_NAME",$current_username);
 		$cquery2 			= Dashboard::where("USER_NAME",$current_username)->take(0,1);
 		$cquery3 			= Dashboard::where("IS_DEFAULT",1)->where("TYPE",1)->take(0,1);
 		$cquery4 			= Dashboard::where("TYPE",1)->take(0,1);
+		$cquery0 			= Dashboard::where("IS_DEFAULT",1)->take(0,1);
 		$query 				= $cquery0->union($cquery1)->union($cquery2)->union($cquery3)->union($cquery4);
 		$dashboard_row 		= $query->first();
 
@@ -990,6 +990,17 @@ class DVController extends Controller {
 				'dashboard_id'		=> $dashboard_row?$dashboard_row->ID:null,
 				'dashboard_row'		=> $dashboard_row
 		]);
+	}
+	
+	public function dashboardConfig(Request $request) {
+		$data 				= $request->all ();
+		$dashboard_id		= array_key_exists("id", $data)?$data["id"]:0;
+		$dashboard_row		= null;
+		if ($dashboard_id>0) $dashboard_row = Dashboard::find($dashboard_id);
+		return view (
+					'config.dashboardconfig',	['dashboard_id'		=> $dashboard_row?$dashboard_row->ID:null,
+												'dashboard_row'		=> $dashboard_row]
+				);
 	}
 	
 	public function editor() {

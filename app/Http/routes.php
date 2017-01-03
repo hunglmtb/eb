@@ -388,8 +388,10 @@ Route::post('saveChart', 'graphController@saveChart');
 Route::post('getProperty', 'graphController@getProperty');
 Route::post('graph/filter', ['uses' =>'graphController@filter','middleware' => 'checkRight:VIS_ADVGRAPH']);
 
-Route::get('dashboard',		['uses' =>'DVController@dashboard',		'middleware' => ['checkRight:VIS_DASHBOARD','saveWorkspace']]);
-Route::post('dashboard/all',['uses' =>'DataVisualization\DashboardController@all',	'middleware' => 'checkRight:VIS_DASHBOARD']);
+Route::get('dashboard',			['uses' =>'DVController@dashboard',			'middleware' => ['checkRight:VIS_DASHBOARD','saveWorkspace']]);
+Route::get('config/dashboard',	['uses' =>'DVController@dashboardConfig',	'middleware' => 'checkRight:VIS_DASHBOARD']);
+Route::post('dashboard/all',	['uses' =>'DataVisualization\DashboardController@all',	'middleware' => 'checkRight:VIS_DASHBOARD']);
+Route::post('dashboard/save',	['uses' =>'DataVisualization\DashboardController@save',	'middleware' => 'checkRight:VIS_DASHBOARD']);
 
 Route::get('viewconfig',['uses' =>'ViewConfigController@_indexViewConfig','middleware' => 'checkRight:CF_VIEW_CONFIG']);
 Route::post('loadPlotObjects', 'ViewConfigController@loadPlotObjects');

@@ -41,7 +41,7 @@ class Helper {
 	public static function buildFilter($option=null) {
 		if ($option == null) return;
 		$collection 	= $option['collection'];
-		$currentUnit 	= $option['current'];
+		$currentUnit 	= array_key_exists('current', $option)?$option['current']:null;
 		
 		$default		= (!array_key_exists('defaultEnable', $option)||(array_key_exists('defaultEnable', $option)&&$option['defaultEnable']))
 							&&array_key_exists('default', $option)?
@@ -51,9 +51,15 @@ class Helper {
 		$filterName 	= array_key_exists('filterName', $option)?$option['filterName']:$name;
 		$lang			= session()->get('locale', "en");
 		$filterName		= Lang::has("front/site.$filterName", $lang)?trans("front/site.$filterName"):$filterName;
-		$htmlFilter 	= "<div  class=\"filter $name\" id='container_$id'><div><b id=\"title_$id\">$filterName</b>".
-							'</div>
-							<select id="'.$id.'" name="'.$name.'">';
+		$enableTitle	= array_key_exists('enableTitle', $option)?$option['enableTitle']:true;
+		if ($enableTitle) {
+			$htmlFilter 	= "<div  class=\"filter $name\" id='container_$id'><div><b id=\"title_$id\">$filterName</b>".
+								'</div>
+								<select id="'.$id.'" name="'.$name.'">';
+		}
+		else {
+			$htmlFilter 	= "<select id='$id' name='$name'>";
+		}
 		if ($default) {
 			$htmlFilter .= '<option value="'.$default['ID'].'">'.$default['NAME'].'</option>';
 		}

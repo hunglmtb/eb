@@ -4,7 +4,7 @@ use App\Models\DynamicModel;
 
  class TmWorkflow extends DynamicModel 
 { 
-	protected $table = 'tm_workflow'; 
+	protected $table = 'TM_WORKFLOW'; 
 	public $timestamps = false;
 	public $primaryKey  = 'ID';
 	

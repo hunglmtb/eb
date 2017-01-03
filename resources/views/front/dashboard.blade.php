@@ -1,5 +1,5 @@
 <?php
-	$currentSubmenu ='/dashboard';
+	$currentSubmenu = isset($currentSubmenu)?$currentSubmenu:'/dashboard';
 	$useFeatures 	= [
 							['name'	=>	"filter_modify",
 							"data"	=>	["isFilterModify"	=> false,
@@ -18,12 +18,58 @@ Dashboard
 	<script src="/common/js/utils.js"></script>
 	<script src="/common/js//base64.js"></script>	
 	<script src="/common/js/jquery-ui-timepicker-addon.js"></script>
+	<script>
+		var dashboardList = false;
+		var notCachedList	= false;
+		function loaddashboards(){
+			$("#boxDashboardList").dialog({
+							height: 350,
+							width: 500,
+							modal: true,
+							title: "Select dashboard",
+						});
+			if(dashboardList==false||notCachedList){
+				$("#boxDashboardList").html("Loading...");
+				postRequest( "/dashboard/all",
+							 {},
+							 function(data){
+								dashboardList=data;
+								$("#boxDashboardList").html("");
+								var elist = $("<ul class='ListStyleNone'>");
+								$.each(data, function( dindex, dvalue ) {
+									var li = $("<li class='x_item'  style='cursor:pointer'></li>");
+									li.attr("d_bg",dvalue.BACKGROUND);
+									li.attr("dashboard_id",dvalue.ID);
+									li.attr("config",dvalue.CONFIG);
+									li.text(dvalue.NAME);
+									li.click(function() {
+										load_dash_board(li);
+									});
+									li.appendTo(elist);
+								});
+								elist.appendTo($("#boxDashboardList"));
+							 }
+						  );		
+			}
+		}
+	</script>
 
 @stop
 
 @section('action_extra')
+	<div class="action_filter floatLeft">
+			<input type="button" value="Config" id="buttonLoadData" name="B33"
+				onClick="config()" style="width: 85px; height: 26px;float:left;margin-top:7px;    margin-left: 7px;">
+	</div>
+		
 <div style="right:5px;top:5px;z-index:10;text-align:right;margin-right: 10px;">
-	<b><span id="dashboard_name"><?php echo $dashboard_row->NAME; ?></span></b><br>
+	<b><span id="dashboard_name">
+	@if($dashboard_row)
+		{{$dashboard_row->NAME}}
+	@else
+		<?php echo "Dashboard name"; ?>
+	@endif
+	</span></b><br>
 	<a style="font-size:8pt" href="javascript:loaddashboards()">Change Dashboard</a>
 </div>
 @stop
@@ -165,38 +211,7 @@ function create_container(config, d_id){
 	$box.css("height",config.size[1]);
 	$("#mainContent").append($box);
 }
-var dashboardList = false;
-function loaddashboards(){
-	$("#boxDashboardList").dialog({
-					height: 350,
-					width: 500,
-					modal: true,
-					title: "Select dashboard",
-				});
-	if(dashboardList==false){
-		$("#boxDashboardList").html("Loading...");
-		postRequest( "/dashboard/all",
-					 {},
-					 function(data){
-						dashboardList=data;
-						$("#boxDashboardList").html("");
-						var elist = $("<ul class='ListStyleNone'>");
-						$.each(data, function( dindex, dvalue ) {
-							var li = $("<li class='x_item'  style='cursor:pointer'></li>");
-							li.attr("d_bg",dvalue.BACKGROUND);
-							li.attr("dashboard_id",dvalue.ID);
-							li.attr("config",dvalue.CONFIG);
-							li.text(dvalue.NAME);
-							li.click(function() {
-								load_dash_board(li);
-							});
-							li.appendTo(elist);
-						});
-						elist.appendTo($("#boxDashboardList"));
-					 }
-				  );		
-	}
-}
+
 function load_dash_board(obj){
 	dashboard_id=Number($(obj).attr('dashboard_id'));
 	d_bg=$(obj).attr('d_bg');
@@ -215,7 +230,7 @@ function load_dash_board(obj){
 function config(){
   //var win = window.open('config.php?dashboard_id='+dashboard_id, '_blank');
   //win.focus();
-  location.href='config.php?dashboard_id='+dashboard_id;
+  location.href='/config/dashboard?id='+dashboard_id;
 }
 function selectChart(){
 	$("#boxSelectChart").dialog({
@@ -419,6 +434,17 @@ function loadStorageDisplay(o){
 							"&date_end="+date_end+
 							"&input="+input;	
 	$("#frameChart").attr("src",iurl);
+
+// 	var d1=$("#date_begin").val();
+// 	var d2=$("#date_end").val();
+// 	$(o).attr("src","/choke/diagram?bgcolor="+bgcolor+"&constraintId="+$(o).parent().attr("d_obj")+"&date_begin="+d1+"&date_end="+d2);
+
+	var storageDisplayPostData 	= {	
+				date_begin		: $("#date_begin").val(),
+				date_end		: $("#date_end").val(),
+				constraintId	: $(o).parent().attr("d_obj"),
+			};
+	editBox.requestGenDiagram(storageDisplayPostData,o);
 	
 }
 function loadCons(o){
@@ -453,7 +479,7 @@ function reload(){
  			loadDataView($(this),25,1);
 		}
 		if(dtype=="7"){
-//  			loadStorageDisplay(iframe);
+//   			loadStorageDisplay($(this));
 		}
 		if(dtype=="8"){
  			loadCons($(this));

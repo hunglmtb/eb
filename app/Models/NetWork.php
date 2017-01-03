@@ -5,7 +5,7 @@ use App\Models\DynamicModel;
 
 class NetWork extends DynamicModel
 {
-	protected $table = 'network';
+	protected $table = 'NETWORK';
 	
 	public $timestamps = false;
 	public $primaryKey  = 'ID';

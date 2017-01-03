@@ -237,7 +237,7 @@ var xmenu=
 							{"name":"Source Config","title":"Source Config","link":"/sourceconfig"},
 							{"name":"Import Data","title":"Import Data","link":"/importdata"},
 							{"name":"Data Loader","title":"Data Loader","link":"/dataloader"},
-							{"name":"Dashboard Config","title":"","link":"#"},
+							{"name":"Dashboard Config","title":"Dashboard Config","link":"/config/dashboard"},
 						]
 					},
 					{"code":"","name":"Allocation","title":"","link":"/home/allocation","menus":
