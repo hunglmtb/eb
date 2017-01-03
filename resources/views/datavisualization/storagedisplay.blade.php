@@ -253,8 +253,8 @@
 	actions.renderFirsColumn = actions.deleteActionColumn;
 	editBox.updateDiagramRowValue = function( index, row) {
 // 		currentDiagram.MID_DATE		= $("#date_middle").val();
-		row.FROM_DATE		= actions.getTimeValueBy(row.FROM_DATE);
-		row.TO_DATE			= actions.getTimeValueBy(row.TO_DATE);
+		row.FROM_DATE		= moment.utc(row.FROM_DATE).format(configuration.time.DATE_FORMAT_UTC);
+		row.TO_DATE			= moment.utc(row.TO_DATE).format(configuration.time.DATE_FORMAT_UTC);
 	};
 	editBox.updateCurrentDiagramData = function( rows,convertJson) {
 // 		currentDiagram.YCAPTION	= $(".dataTables_scrollHeadInner table thead th.YCAPTION:first").text();

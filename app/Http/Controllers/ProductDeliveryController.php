@@ -24,6 +24,8 @@ class ProductDeliveryController extends CodeController {
 	
 	public function cargostatus() {
 		$filterGroups = array(	'productionFilterGroup'	=>[/*'Facility'	=>'Storage' */],
+								'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
+																['id'=>'date_end','name'=>'To date']),
 								'enableSaveButton'		=> 	false,
 		);
 		return view ( 'front.cargomanagement.cargostatus',['filters'=>$filterGroups]);
