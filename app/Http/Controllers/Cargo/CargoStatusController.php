@@ -35,13 +35,6 @@ class CargoStatusController extends CargoEntryController {
 		$columnModel			= $tab=="PdCargoLoad"||$tab=="PdCargoUnload"?"App\Models\TerminalTimesheetData":$detailModel;
 		$detailTable	 		= $detailModel::getTableName();
 		$columnTable	 		= $columnModel::getTableName();
-		/* $properties 			= $this->getOriginProperties($columnTable);
-		$locked 				= true;
-		$uoms 					= $this->getUoms($properties,null,$columnTable,$locked);
-		$results 				= ['properties'		=>$properties,
-									'uoms'			=>$uoms,
-									'locked'		=>$locked
-									]; */
 		$results 				= $this->getProperties($columnTable,null,null,$postData);
 		$dataSet				= [];
 		switch ($tab) {
