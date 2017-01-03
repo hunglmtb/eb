@@ -1506,7 +1506,8 @@ class run extends Job implements ShouldQueue, SelfHandling
     															$sSQL = "insert into ENERGY_UNIT_COMP_DATA_ALLOC(EU_ID,OCCUR_DATE,FLOW_PHASE,ALLOC_TYPE,COMPOSITION,EU_DATA_$alloc_attr_eu) VALUES (";
     															foreach ( $comp_total_rate as $x => $x_value ) {
     																if ($x_value > 0 && $row->ALLOC_VALUE > 0 && $quality_from [$x] > 0) {
-    																	$_v = $x_value * $row->ALLOC_VALUE * $quality_from [$x];
+    										
+							$_v = $x_value * $row->ALLOC_VALUE * $quality_from [$x];
     																} else {
     																	$_v = 0;
     																}
