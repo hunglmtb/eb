@@ -28,29 +28,29 @@ Dashboard
 							modal: true,
 							title: "Select dashboard",
 						});
-			if(dashboardList==false||notCachedList){
-				$("#boxDashboardList").html("Loading...");
-				postRequest( "/dashboard/all",
-							 {},
-							 function(data){
-								dashboardList=data;
-								$("#boxDashboardList").html("");
-								var elist = $("<ul class='ListStyleNone'>");
-								$.each(data, function( dindex, dvalue ) {
-									var li = $("<li class='x_item'  style='cursor:pointer'></li>");
-									li.attr("d_bg",dvalue.BACKGROUND);
-									li.attr("dashboard_id",dvalue.ID);
-									li.attr("config",dvalue.CONFIG);
-									li.text(dvalue.NAME);
-									li.click(function() {
-										load_dash_board(li);
-									});
-									li.appendTo(elist);
+// 			if(dashboardList==false||notCachedList){
+			$("#boxDashboardList").html("Loading...");
+			postRequest( "/dashboard/all",
+						 {},
+						 function(data){
+							dashboardList=data;
+							$("#boxDashboardList").html("");
+							var elist = $("<ul class='ListStyleNone'>");
+							$.each(data, function( dindex, dvalue ) {
+								var li = $("<li class='x_item'  style='cursor:pointer'></li>");
+								li.attr("d_bg",dvalue.BACKGROUND);
+								li.attr("dashboard_id",dvalue.ID);
+								li.attr("config",dvalue.CONFIG);
+								li.text(dvalue.NAME);
+								li.click(function() {
+									load_dash_board(li);
 								});
-								elist.appendTo($("#boxDashboardList"));
-							 }
-						  );		
-			}
+								li.appendTo(elist);
+							});
+							elist.appendTo($("#boxDashboardList"));
+						 }
+					  );		
+// 			}
 		}
 	</script>
 
@@ -185,7 +185,7 @@ function create_container(config, d_id){
 	else if(config.type=="7"){
 		html='<div class="container">'+
 	//'<span class="title" onclick="selectReport()">Storage Display</span>'+
-	'<iframe class="dashboardContainer" id="if'+d_id+'" src="" style="display:none">'+
+	'<iframe class="dashboardContainer" id="if'+d_id+'">'+
 	'</div>';
 	}
 	else if(config.type=="8"){
@@ -411,40 +411,16 @@ function loadDataView(o,rows_in_page,page){
 		   });
 }
 function loadStorageDisplay(o){
-	var d1=$("#date_begin").val();
-	var d2=$("#date_end").val();
-	$(o).attr("src","../pd/storagedisplay_loadchart.php?bgcolor="+bgcolor+"&sdid="+$(o).parent().attr("d_obj")+"&date_begin="+d1+"&date_end="+d2);
+ 	var d1=$("#date_begin").val();
+ 	var d2=$("#date_end").val();
+ 	$(o).attr("src","/storagedisplay/diagram?id="+$(o).parent().attr("d_obj"));
 
-	var title = encodeURIComponent($("#chartTitle").val());
-	if(title == "") title = null;
-	
-	var minvalue = $("#txt_min").val();
-	if(minvalue == "") minvalue = null;
-	
-	var maxvalue = $("#txt_max").val();
-	if(maxvalue == "") maxvalue = null;
-	
-	var date_begin = $("#date_begin").val();
-	var date_end = $("#date_end").val();
-	var input = encodeURIComponent(_graph.getChartConfig());
-	var iurl = "/loadchart?title="+title+
-							"&minvalue="+minvalue+
-							"&maxvalue="+maxvalue+
-							"&date_begin="+date_begin+
-							"&date_end="+date_end+
-							"&input="+input;	
-	$("#frameChart").attr("src",iurl);
-
-// 	var d1=$("#date_begin").val();
-// 	var d2=$("#date_end").val();
-// 	$(o).attr("src","/choke/diagram?bgcolor="+bgcolor+"&constraintId="+$(o).parent().attr("d_obj")+"&date_begin="+d1+"&date_end="+d2);
-
-	var storageDisplayPostData 	= {	
+	/* var storageDisplayPostData 	= {	
 				date_begin		: $("#date_begin").val(),
 				date_end		: $("#date_end").val(),
 				constraintId	: $(o).parent().attr("d_obj"),
 			};
-	editBox.requestGenDiagram(storageDisplayPostData,o);
+	editBox.requestGenDiagram(storageDisplayPostData,o); */
 	
 }
 function loadCons(o){
@@ -479,7 +455,7 @@ function reload(){
  			loadDataView($(this),25,1);
 		}
 		if(dtype=="7"){
-//   			loadStorageDisplay($(this));
+   			loadStorageDisplay($(this));
 		}
 		if(dtype=="8"){
  			loadCons($(this));

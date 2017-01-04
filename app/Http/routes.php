@@ -201,6 +201,8 @@ Route::post('storagedisplay/filter', 	['uses' =>'Cargo\StorageDisplayController@
 Route::post('storagedisplay/loadchart', ['uses' =>'Cargo\StorageDisplayController@summary'	,'middleware' => 'checkRight:PD_CARGO_ADMIN_DISPLAY']);
 Route::post('storagedisplay/load',		['uses' =>'Cargo\StorageDisplayController@load'		,'middleware' => 'checkRight:PD_CARGO_ADMIN_DISPLAY']);
 Route::post('storagedisplay/save',		['uses' =>'Cargo\StorageDisplayController@save'		,'middleware' => 'checkRight:PD_CARGO_ADMIN_DISPLAY']);
+Route::get('storagedisplay/diagram', 	['uses' =>'Cargo\StorageDisplayController@diagram'	,'middleware' => 'checkRight:PD_CARGO_ADMIN_DISPLAY']);
+
 
 Route::get('pd/cargovoyage',			['uses' =>'ProductDeliveryController@cargovoyage',	'middleware' => 'checkRight:PD_CARGO_ACTION_VOYAGE']);
 Route::post('cargovoyage/load',			['uses' =>'Cargo\CargoVoyageController@load',		'middleware' => 'saveWorkspace']);

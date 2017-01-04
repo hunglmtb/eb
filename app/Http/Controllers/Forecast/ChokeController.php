@@ -22,7 +22,7 @@ class ChokeController extends CodeController {
 						    	]);
     }
     
-    public function summaryData($constraints,$beginDate,$endDate,$postData){
+    public function summaryData($constraints,$beginDate=null,$endDate=null,$postData=null){
     	$summaryData	= [];
     	$sumField		= "V";
     	if (count($constraints['CONFIG'])>0){
