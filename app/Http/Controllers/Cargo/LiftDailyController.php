@@ -8,6 +8,7 @@ use App\Models\PdCargo;
 use App\Models\PdCargoNomination;
 use App\Models\PdLiftingAccount;
 use App\Models\ShipCargoBlmr;
+use App\Models\StorageDataValue;
 use App\Models\PdLiftingAccountMthData;
 use Carbon\Carbon;
 
@@ -18,9 +19,10 @@ class LiftDailyController extends CodeController {
 	} */
 	public function getProperties($dcTable,$facility_id=false,$occur_date=null,$postData=null){
 		$properties = collect([
- 				(object)['data' =>	'UOM',			'title' => 'UOM',			'width'	=>	70,'INPUT_TYPE'=>2,		'DATA_METHOD'=>5,'FIELD_ORDER'=>1],
+ 				(object)['data' =>	'UOM',			'title' => 'Month',			'width'	=>	70,'INPUT_TYPE'=>2,		'DATA_METHOD'=>5,'FIELD_ORDER'=>1],
 				(object)['data' =>	"cargo_name",	'title' => 'Cargo',			'width'	=>	130,'INPUT_TYPE'=>1,	'DATA_METHOD'=>5,'FIELD_ORDER'=>2],
-				(object)['data' =>	"xdate",		'title' => 'Date',			'width'	=>	110,'INPUT_TYPE'=>3,	'DATA_METHOD'=>5,'FIELD_ORDER'=>3],
+				(object)['data' =>	"xdate",		'title' => 'Date',			'width'	=>	60,'INPUT_TYPE'=>3,	'DATA_METHOD'=>5,'FIELD_ORDER'=>3],
+				(object)['data' =>	"opening_balance",'title' => 'Opening Balance','width'=>110,'INPUT_TYPE'=>2,	'DATA_METHOD'=>5,'FIELD_ORDER'=>3],
 				(object)['data' =>	"n_qty",		'title' => 'Nominated Qty',	'width'	=>	110,'INPUT_TYPE'=>2,	'DATA_METHOD'=>5,'FIELD_ORDER'=>4],
 				(object)['data' =>	"b_qty",		'title' => 'Lifted Qty',	'width'	=>	110,'INPUT_TYPE'=>2,	'DATA_METHOD'=>5,'FIELD_ORDER'=>5],
 				(object)['data' =>	"flow_qty",		'title' => 'Flow Qty',		'width'	=>	110,'INPUT_TYPE'=>2,	'DATA_METHOD'=>5,'FIELD_ORDER'=>6],
@@ -55,6 +57,7 @@ class LiftDailyController extends CodeController {
   		$flowDataValue 		= FlowDataValue::getTableName();
   		$flow			 	= Flow::getTableName();
   		$pdLiftingAccount 	= PdLiftingAccount::getTableName();
+		$storageDataValue	= StorageDataValue::getTableName();
   		
   		$query = ShipCargoBlmr::join($pdCargo,function ($query) use ($shipCargoBlmr,$accountId,$pdCargo) {
 							  			$query->on("$pdCargo.ID",'=',"$shipCargoBlmr.CARGO_ID")
@@ -131,7 +134,8 @@ class LiftDailyController extends CodeController {
   		$xxquery->union($flowquery);
   		$xxxquery = \DB::table(\DB::raw("({$xxquery->toSql()}) as x") )
 				  		->select(
-				  				'x.*',
+				  				"x.*",
+			  					\DB::raw("(select AVAIL_SHIPPING_VOL from $storageDataValue y where y.storage_id=".$postData["Storage"]." and y.OCCUR_DATE=x.xdate) as opening_balance"),
 			  					\DB::raw('case when x.b_qty is null then x.n_qty else null end as n_qty'),
 				  				\DB::raw('sum(x.flow_qty) as flow_qty'),
 				  				\DB::raw('ifnull(sum(x.cal_qty),0) cal_qty'),
@@ -149,11 +153,13 @@ class LiftDailyController extends CodeController {
 	    	$date 			= Carbon::parse($item->xdate);
   			$monthOfItem 	= $date->month;//$item->xdate;
   			if($month!=$monthOfItem){
+				/*
    				$monthData = PdLiftingAccountMthData::where("LIFTING_ACCOUNT_ID",$accountId)
 						   				->whereMonth('BALANCE_MONTH','=', $monthOfItem)
 						   				->select("BAL_VOL")
 						   				->first();
   				$balance	= $monthData!=null?$monthData->BAL_VOL:0;
+				*/
   				$month		= $monthOfItem;
   			}
   			$balance+=$item->cal_qty;

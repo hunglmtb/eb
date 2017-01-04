@@ -142,7 +142,7 @@ class ViewConfigController extends Controller {
 		$title = addslashes($data["title"]);
 		$config = addslashes($data["config"]);
 		$timeline = $data["timeline"];
-		$charttype = $data["charttype"];
+		$charttype = "line";//$data["charttype"];
 		
 		$condition = array (
 				'ID' => $id

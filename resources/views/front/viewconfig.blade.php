@@ -364,7 +364,9 @@ var _viewconfig = {
 					'config' : config,
 					'overwrite_id' : overwrite_id
 			};
+				console.log(param);
 			sendAjaxNotMessage('/genView', param, function(data){
+				console.log(data);
 				if(data==""){
 					alert("SQL '"+viewName+"' generated successfully");
 				}
