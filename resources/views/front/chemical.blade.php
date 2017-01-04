@@ -1,8 +1,8 @@
 <?php
 $currentSubmenu ='/fo/chemical';
-$tables = ['KeystoreTankDataValue'	=>['name'=>'CHEMICAL TANK VALUE'],
-		'KeystoreStorageDataValue'	=>['name'=>'CHEMICAL STORAGE VALUE'],
-		'KeystoreInjectionPointDay'	=>['name'=>'CHEMICAL INJECTION POINT']
+$tables = ['KeystoreTankDataValue'			=>['name'=>'CHEMICAL TANK VALUE'],
+		'KeystoreStorageDataValue'			=>['name'=>'CHEMICAL STORAGE VALUE'],
+		'KeystoreInjectionPointChemical'	=>['name'=>'CHEMICAL INJECTION POINT']
 ];
 
 ?>
@@ -18,12 +18,12 @@ CHEMICAL DATA
 	actions.loadUrl = "/chemical/load";
 	actions.saveUrl = "/chemical/save";
 	actions.type = {
-					idName:['EQUIPMENT_ID','EQP_FUEL_CONS_TYPE','EQP_GHG_REL_TYPE'],
-					keyField:'EQUIPMENT_ID',
-					saveKeyField : function (model){
-						return 'EQUIPMENT_ID';
-					},
-				};
+			idName:['ID','KEYSTORE_TANK_ID','OCCUR_DATE'],
+			keyField:'ID',
+			saveKeyField : function (model){
+				return 'ID';
+				},
+			};
 	
 	/* actions.getGrepValue = function (data,uom,rowData) {
 		if(uom.COLUMN_NAME == 'EQP_FUEL_CONS_TYPE' && rowData.FUEL_TYPE!=null) return rowData.FUEL_TYPE;

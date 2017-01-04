@@ -43,6 +43,6 @@ use App\Models\PdVoyage;
 									)
 							->get();
 		return $dataSet;
-	} 
+	}
 	
 } 
