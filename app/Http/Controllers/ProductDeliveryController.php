@@ -102,22 +102,39 @@ class ProductDeliveryController extends CodeController {
 	}
 	
 	public function liftaccdailybalance() {
-		$filterGroups = array(	'productionFilterGroup'	=>	[	'Storage',
-																'PdLiftingAccount'
+		$filterGroups = array(	'productionFilterGroup'	=>	[	 "Storage",
 															],
+								'frequenceFilterGroup'	=> [
+															["name"			=> "PdLiftingAccount",
+															"source"		=>  ['productionFilterGroup'=>["Storage"]]]
+								],
+										
 								'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
 																['id'=>'date_end','name'=>'To date']),
 								'enableSaveButton'		=> 	false,
+								'FacilityDependentMore'	=> [["name"			=> "Storage",
+															"source"		=> "Facility"],
+															["name"			=> "PdLiftingAccount",
+															"source"		=> "Storage"]
+								],
 		);
 		return view ( 'front.cargomonitoring.liftaccdailybalance',['filters'=>$filterGroups]);
 	}
 	
 	public function liftaccmonthlyadjust() {
-		$filterGroups = array(	'productionFilterGroup'	=>	[	'Storage',
-																'PdLiftingAccount'
+		$filterGroups = array(	'productionFilterGroup'	=>	[	 "Storage",
 															],
+								'frequenceFilterGroup'	=> [
+															["name"			=> "PdLiftingAccount",
+															"source"		=>  ['productionFilterGroup'=>["Storage"]]]
+								],
 								'dateFilterGroup'		=> array(['id'	=>'date_begin',	'name'=>'From date'],
 																['id'	=>'date_end',	'name'=>'To date']),
+				'FacilityDependentMore'	=> [["name"			=> "Storage",
+						"source"		=> "Facility"],
+						["name"			=> "PdLiftingAccount",
+								"source"		=> "Storage"]
+				],
 																// 								'enableSaveButton'		=> 	false,
 		);
 		return view ( 'front.cargomonitoring.liftaccmonthlyadjust',['filters'=>$filterGroups]);

@@ -31,7 +31,11 @@ class FOController extends EBController {
 	public function chemical(){
 		$filterGroups = array('productionFilterGroup'=> [],
 				'dateFilterGroup'=> array(['id'=>'date_begin','name'=>'Date']),
-				'frequenceFilterGroup'		=> ['CodeInjectPoint']
+				'frequenceFilterGroup'		=> [ array("name"		=>"CodeInjectPoint",
+														"id"		=> "CodeInjectPoint",
+														'getMethod'=> "all",
+														'filterData'=> ["CODE as ID", "NAME"],
+														"modelName"	=> "CodeInjectPoint")]
 		);
 		return view ( 'front.chemical',['filters'=>$filterGroups]);
 	}

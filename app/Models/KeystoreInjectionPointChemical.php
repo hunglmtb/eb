@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class KeystoreInjectionPointChemical extends DynamicModel 
 { 
-	protected $table = 'keystore_injection_point_chemical'; 
+	protected $table = 'KEYSTORE_INJECTION_POINT_CHEMICAL'; 
 } 
