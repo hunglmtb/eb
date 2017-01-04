@@ -808,7 +808,8 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 			$total_to = $sum [0]->total_to;
 			// _log("command: $sSQL");
 			$this->_log ( "total_to (theor): $total_to", 2 );
-			$this->_log ( "Allocation factor: ".round($total_from/$total_to,4), 2 );
+			if($total_to)
+				$this->_log ( "Allocation factor: ".round($total_from/$total_to,4), 2 );
 		} else {
 			$ret = $this->_log ( "TO object not found", 1 );
 			if ($ret === false)
@@ -1019,8 +1020,8 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 				if ($_REQUEST ["act"] == "run") {
 					FlowCoEntDataAlloc::where ( [
 							'FLOW_ID' => $row->OBJECT_ID
-					] )->delete ();
-					$sSQL = "delete from FLOW_CO_ENT_DATA_ALLOC where FLOW_ID=" . $row->OBJECT_ID;
+					] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->delete ();
+					$sSQL = "delete from FLOW_CO_ENT_DATA_ALLOC where FLOW_ID=" . $row->OBJECT_ID . " and OCCUR_DATE='".$row->OCCUR_DATE."'";
 					$this->_log ( $sSQL, 2 );
 				}
 					
@@ -1082,9 +1083,12 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 					
 				if ($_REQUEST ["act"] == "run") {
 					EnergyUnitCoEntDataAlloc::where ( [
-							'EU_ID' => $row->OBJECT_ID
-					] )->delete ();
-					$sSQL = "delete from ENERGY_UNIT_CO_ENT_DATA_ALLOC where EU_ID=" . $row->OBJECT_ID;
+							'EU_ID' => $row->OBJECT_ID,
+							'FLOW_PHASE' => $alloc_phase,
+							'EVENT_TYPE' => $event_type,
+							'ALLOC_TYPE' => $alloc_type
+					] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->delete ();
+					$sSQL = "delete from ENERGY_UNIT_CO_ENT_DATA_ALLOC where EU_ID=" . $row->OBJECT_ID." and OCCUR_DATE='".$row->OCCUR_DATE."' and FLOW_PHASE=$alloc_phase and EVENT_TYPE=$event_type and ALLOC_TYPE=$alloc_type";
 					$this->_log ( $sSQL, 2 );
 				}
 					
@@ -1108,7 +1112,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 								'ALLOC_TYPE' => $alloc_type,
 								'COST_INT_CTR_ID' => $ro_co->COST_INT_CTR_ID,
 								'BA_ID' => $ro_co->BA_ID,
-								'EU_DATA_' . $alloc_attr_eu => $v_to
+								'EU_DATA_' . $alloc_attr_eu => $v_co
 						] );
 					}
 					$sSQL = "insert into ENERGY_UNIT_CO_ENT_DATA_ALLOC(`EU_ID`,`OCCUR_DATE`,FLOW_PHASE,EVENT_TYPE,ALLOC_TYPE,COST_INT_CTR_ID,BA_ID,EU_DATA_" . $alloc_attr_eu . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "'," . $alloc_phase . "," . $event_type . ",'" . $alloc_type . "','" . $ro_co->COST_INT_CTR_ID . "','" . $ro_co->BA_ID . "'," . $v_co . ")";
@@ -1330,7 +1334,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 									'EU_ID' => $object_id,
 									'FLOW_PHASE' => 2
 							] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->delete ();
-							$sSQL = "delete from FLOW_COMP_DATA_ALLOC where FLOW_ID=$object_id and OCCUR_DATE='$row[OCCUR_DATE]'";
+							$sSQL = "delete from ENERGY_UNIT_COMP_DATA_ALLOC where EU_ID=$object_id and FLOW_PHASE=2 and OCCUR_DATE='".$row->OCCUR_DATE."'";
 							$this->_log ( $sSQL, 2 );
 
 							$param = [ ];
@@ -1516,7 +1520,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 									'EU_ID' => $object_id,
 									'FLOW_PHASE' => 2
 							] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->delete ();
-							$sSQL = "delete from FLOW_COMP_DATA_ALLOC where FLOW_ID=$object_id and OCCUR_DATE='$row[OCCUR_DATE]'";
+							$sSQL = "delete from ENERGY_UNIT_COMP_DATA_ALLOC where EU_ID=$object_id and FLOW_PHASE=2 and OCCUR_DATE='$row[OCCUR_DATE]'";
 							$this->_log ( $sSQL, 2 );
 
 							$sSQL = "insert into ENERGY_UNIT_COMP_DATA_ALLOC(EU_ID,OCCUR_DATE,FLOW_PHASE,ALLOC_TYPE,COMPOSITION,EU_DATA_$alloc_attr_eu) VALUES (";

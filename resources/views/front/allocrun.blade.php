@@ -151,13 +151,13 @@ var _runallocation = {
 			var count=$("#bodyJobsList tr").length;
 			if(count>0)
 			{
-				var d1 = $("#date_alloc").datepicker('getDate');
-				var d2 = $("#date_alloc_to").datepicker('getDate');
+				var d1 = $("#begin_date").datepicker('getDate');
+				var d2 = $("#end_date").datepicker('getDate');
 				if(!_runallocation.checkAllocDate(d1,d2)){
 					return;
 				}
-				$("#bodyJobsList .datepicker[id^='from']").val($("#date_alloc").val());
-				$("#bodyJobsList .datepicker[id^='to']").val($("#date_alloc_to").val());
+				$("#bodyJobsList input[id^='from']").val($("#begin_date").val());
+				$("#bodyJobsList input[id^='to']").val($("#end_date").val());
 				if(!confirm("Do you want to run all "+count+" allocation job"+(count>1?"s":"")+" in the list?")) return;
 				$("#allocLog").html("");
 				$("#bodyJobsList tr").each(function(){
