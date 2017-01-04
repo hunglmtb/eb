@@ -87,21 +87,22 @@ var _userLog = {
 			}
 
 			$('#bodyUsersList').html(str);	
+			$("#boxUsersList").css("display","block");
 			$("#usersTable").dataTable({
-				scrollX: false,
-				autoWidth	: false,
-				searching: true,
-				paging: false,
-				info: false,
-				destroy: true
+				scrollX		: false,
+				autoWidth	: true,
+				searching	: true,
+				paging		: false,
+				info		: false,
+				destroy		: true,
+				scrollY		: "340px",
+				dom			: 'rtp<"bottom"i><"bottom"f><"clear">',
 			});		
 		}
 }
 </script>
 
 <div id="boxUsersList">
-	<strong>&nbsp;Users list</strong> ( <a href="#" onclick="_users.onclickLinkAddNew()">Add
-		User</a> )<br>
 	<table id="usersTable" class="display " >
 		<thead>
 			<tr>
