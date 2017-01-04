@@ -1112,7 +1112,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 								'ALLOC_TYPE' => $alloc_type,
 								'COST_INT_CTR_ID' => $ro_co->COST_INT_CTR_ID,
 								'BA_ID' => $ro_co->BA_ID,
-								'EU_DATA_' . $alloc_attr_eu => $v_to
+								'EU_DATA_' . $alloc_attr_eu => $v_co
 						] );
 					}
 					$sSQL = "insert into ENERGY_UNIT_CO_ENT_DATA_ALLOC(`EU_ID`,`OCCUR_DATE`,FLOW_PHASE,EVENT_TYPE,ALLOC_TYPE,COST_INT_CTR_ID,BA_ID,EU_DATA_" . $alloc_attr_eu . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "'," . $alloc_phase . "," . $event_type . ",'" . $alloc_type . "','" . $ro_co->COST_INT_CTR_ID . "','" . $ro_co->BA_ID . "'," . $v_co . ")";
