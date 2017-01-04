@@ -524,8 +524,8 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 			$F = "MASS";
 		}
 		$alloc_attr_eu = $alloc_attr;
-		if ($alloc_attr == "NET_VOL")
-			$alloc_attr_eu = "GRS_VOL";
+		//if ($alloc_attr == "NET_VOL")
+		//	$alloc_attr_eu = "GRS_VOL";
 		if (! $theor_attr)
 			$theor_attr = $alloc_attr;
 		else if ($theor_attr != $alloc_attr)
@@ -742,7 +742,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 						'a.FLOW_PHASE' => $theor_phase,
 						'a.EVENT_TYPE' => $event_type
 				] )->select ( DB::raw ( 'sum(EU_DATA_' . $theor_attr_eu . ') AS total_to' ) )->get ();
-\DB::enableQueryLog ();
+//\DB::enableQueryLog ();
 				$sSQL_alloc = DB::table ( 'ENERGY_UNIT_DATA_THEOR AS a' )->join ( 'ENERGY_UNIT AS b', 'a.EU_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.EU_ID', $arrto )->where ( [
 						'a.FLOW_PHASE' => $theor_phase,
 						'a.EVENT_TYPE' => $event_type
@@ -755,7 +755,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 						'a.FLOW_PHASE',
 						'EU_DATA_' . $theor_attr_eu . ' AS ALLOC_THEOR'
 				] );
-\Log::info ( \DB::getQueryLog () );
+//\Log::info ( \DB::getQueryLog () );
 				$sSQL_alloc_to = DB::table ( 'ENERGY_UNIT_DATA_ALLOC AS a' )->join ( 'ENERGY_UNIT AS b', 'a.EU_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.EU_ID', $arrto )->where ( [
 						'a.FLOW_PHASE' => $theor_phase,
 						'a.EVENT_TYPE' => $event_type
@@ -986,7 +986,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 				$row->ALLOC_THEOR = 0;
 			}
 			$v_to = $total_from * $row->ALLOC_THEOR / $total_to;
-			$this->_log ("v_to = $total_from * {$row->ALLOC_THEOR} / $total_to = ".$v_to, 2 );
+			//$this->_log ("v_to = $total_from * {$row->ALLOC_THEOR} / $total_to = ".$v_to, 2 );
 
 			if ($obj_type_to == $OBJ_TYPE_FLOW) {
 				$ro = FlowDataAlloc::where ( [

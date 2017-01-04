@@ -17,6 +17,7 @@ class EnergyUnitCompDataAlloc extends FeatureEuModel
 			'COMPOSITION',
 			'ACTIVE_HRS',
 			'EU_DATA_GRS_VOL',
+			'EU_DATA_NET_VOL',
 			'EU_DATA_GRS_MASS',
 			'EU_DATA_GRS_ENGY',
 			'EU_DATA_GRS_PWR'
