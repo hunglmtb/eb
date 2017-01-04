@@ -1,5 +1,5 @@
 <p>
-<b>You dont have right to perform this function</b>
+<b>You dont have rights to perform this function</b>
 </p>
 <a href="/">Home page</a>
 <br><br>
