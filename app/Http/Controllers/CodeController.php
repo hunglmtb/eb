@@ -32,14 +32,16 @@ use App\Models\CodeTestingMethod;
 use App\Models\CodeTestingUsage;
 use App\Models\CodeTicketType;
 use App\Models\CodeVolUom;
+use App\Models\CustomizeDateCollection;
+use App\Models\EbFunctions;
 use App\Models\Facility;
 use App\Models\IntSystem;
 use App\Models\PdTransitCarrier;
 use App\Models\Personnel;
 use App\Models\StandardUom;
 use App\Models\Tank;
-use App\Models\CustomizeDateCollection;
-use App\Models\EbFunctions;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Database\Eloquent\Model;
 
 class CodeController extends EBController {
 	 
@@ -246,10 +248,19 @@ class CodeController extends EBController {
     public function getProperties($dcTable,$facility_id=false,$occur_date=null,$postData=null){
     	
     	$properties = $this->getOriginProperties($dcTable);
+    	if($properties)	{
+    		$lang			= session()->get('locale', "en");
+    		$properties->each(function ($item, $key) use ($lang) {
+    			if ($item&&$item instanceof Model && $item->title&&Lang::has("front/site.{$item->title}", $lang)) {
+    				$item->title	= trans("front/site.$item->title");
+    			}
+    		});
+    	}
     	$firstProperty = $this->getFirstProperty($dcTable);
     	if ($firstProperty) {
 	    	$properties->prepend($firstProperty);
     	}
+    	
     	$locked = $this->isLocked($dcTable,$occur_date,$facility_id);
     	$uoms = $this->getUoms($properties,$facility_id,$dcTable,$locked);
     	

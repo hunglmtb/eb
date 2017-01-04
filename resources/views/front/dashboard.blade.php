@@ -21,7 +21,7 @@ Dashboard
 	<script>
 		var dashboardList = false;
 		var notCachedList	= false;
-		function loaddashboards(){
+		function loaddashboards(enableDelete = false){
 			$("#boxDashboardList").dialog({
 							height: 350,
 							width: 500,
@@ -45,6 +45,34 @@ Dashboard
 								li.click(function() {
 									load_dash_board(li);
 								});
+								if(enableDelete){
+									var del				= $('<img valign="middle" class="xclose" src="/img/x.png">');
+									del.appendTo(li);
+									del.click(function(e) {
+										e.stopPropagation();
+										if(!confirm("Are you sure you want to delete this item?")) return;
+										showWaiting();
+										$.ajax({
+											url			: "/dashboard/save",
+											type		: "post",
+											data		: {
+																deleteData	: {
+																				Dashboard	: [dvalue.ID]
+																				}
+														},
+											success		: function(data){
+												hideWaiting();
+												li.remove();
+												console.log ( "delConstrain success ");
+											},
+											error		: function(data) {
+												hideWaiting();
+												console.log ( "dashboard error "/*+JSON.stringify(data)*/);
+												alert("delete dashboard error ");
+											}
+										});
+									});
+								}
 								li.appendTo(elist);
 							});
 							elist.appendTo($("#boxDashboardList"));

@@ -3,6 +3,8 @@ if (!isset($currentSubmenu)) $currentSubmenu ='';
 $enableFilter	= false;
 $enableHeader	= false;
 $enableFooter	= false;
+$useBootrapCss	= false;
+
 ?>
 @extends('core.bstemplate',['subMenus' => array('pairs' => $subMenus, 'currentSubMenu' => $currentSubmenu)])
 

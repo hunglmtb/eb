@@ -1,6 +1,7 @@
 <?php
 if (!isset($currentSubmenu)) $currentSubmenu ='';
 $enableFilter	= isset($enableFilter)?$enableFilter:true;
+$useBootrapCss	= isset($useBootrapCss)?$useBootrapCss:true;
 
 $currentClass = $currentSubmenu;
 if($currentClass!=''){
@@ -34,10 +35,12 @@ $useFeatures	= isset($useFeatures)	? $useFeatures	:[];
 @stop
 
 @section('script')
+	@if($useBootrapCss)
 	<link href="/common/css/bootstrap.css" rel="stylesheet"/>
 	<link href="/common/css/bootstrap-responsive.css" rel="stylesheet"/>
 	<link href="/common/css/bootstrap-datetimepicker.css" rel="stylesheet"/>
 	<link href="/common/css/bootstrap-editable.css" rel="stylesheet"/>
+	@endif
 	
 	<link href="/jqueryui-editable/css/jqueryui-editable.css" rel="stylesheet"/>
 	<link href="/common/css/fixedHeader.dataTables.min.css" rel="stylesheet"/>
