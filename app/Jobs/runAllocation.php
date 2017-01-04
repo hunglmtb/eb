@@ -808,7 +808,8 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 			$total_to = $sum [0]->total_to;
 			// _log("command: $sSQL");
 			$this->_log ( "total_to (theor): $total_to", 2 );
-			$this->_log ( "Allocation factor: ".round($total_from/$total_to,4), 2 );
+			if($total_to != 0)
+				$this->_log ( "Allocation factor: ".round($total_from/$total_to,4), 2 );
 		} else {
 			$ret = $this->_log ( "TO object not found", 1 );
 			if ($ret === false)
