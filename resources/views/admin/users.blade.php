@@ -71,7 +71,7 @@ var _users = {
 			});
 
 			$("#iframeWorkflow234").attr("src","data:text/html;charset=utf-8," + escape(''));
-			$("#iframeWorkflow234").attr("src", "/am/editUser/"+id);			
+			$("#iframeWorkflow234").attr("src", "/am/editUser/"+id);
 		},
 
 		onclickLinkAddNew : function(){

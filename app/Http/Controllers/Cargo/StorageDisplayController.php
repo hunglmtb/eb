@@ -32,8 +32,8 @@ class StorageDisplayController extends ChokeController {
 		return $constraints;
 	}
 	
-	public function summaryData($constraints,$beginDate,$endDate,$postData){
-// 		$midleDate		= $postData["date_mid"];
+    public function summaryData($constraints,$beginDate=null,$endDate=null,$postData=null){
+	// 		$midleDate		= $postData["date_mid"];
 //     	$midleDate 		= \Helper::parseDate($midleDate);
 		$summaryData	= [];
 		$sumField		= "V";
@@ -56,8 +56,8 @@ class StorageDisplayController extends ChokeController {
 				$objects			= $plotViewConfig->parseViewConfig();
 				if (!$objects||count($objects)<=0) continue;
 						
-				$beginDate			= $constraint['FROM_DATE'];
-				$endDate			= $constraint['TO_DATE'];
+				$beginDate			= array_key_exists("FROM_DATE", $constraint)?$constraint['FROM_DATE']	:$beginDate;
+				$endDate			= array_key_exists("TO_DATE", $constraint)	?$constraint['TO_DATE']		:$endDate;
 				/* $timeline			= $plotViewConfig->TIMELINE;
 				$date_from			= $beginDate;
 				$date_to			= $endDate;
@@ -136,14 +136,15 @@ class StorageDisplayController extends ChokeController {
 				
 			}
 			$summarySeriesData = array_values($summaryLine);
-			ksort($summarySeriesData);
+// 			ksort($summarySeriesData);
 			$series[] 	= [
 					"type"	=> "line",
 					"name"	=> 'Storage Display',
 					"color"	=> "#de3ee6",
 					"data"	=> $summarySeriesData,
 			];
-			 
+			ksort($series);
+				
 			$title 					= $constraints["TITLE"];
 			$bgcolor				= "";
 			$ycaption				= "";
@@ -158,4 +159,16 @@ class StorageDisplayController extends ChokeController {
 		$summaryData["constraints"] 	= $constraints;
 		return $summaryData;
 	}
+	
+	public function diagram(Request $request){
+		$postData 			= $request->all();
+		$id					= array_key_exists("id", $postData)?$postData["id"]:0;
+		if ($id>0) {
+			$constraints	= $this->loadDiagramConfig($id,$postData);
+			$summaryData	= $this->summaryData($constraints);
+			return view ( 'datavisualization.storage_diagram_alone',['summaryData'=>$summaryData]);
+		}
+		return response()->json("not available!");
+	}
+	
 }
