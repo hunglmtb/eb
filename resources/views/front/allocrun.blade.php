@@ -6,13 +6,13 @@ $currentSubmenu = '/allocrun';
 <link rel="stylesheet" href="/common/css/admin.css">
 <script src="/common/js/jquery-2.1.3.js"></script>
 @section('title')
-<div class="title">RUN ALLOCATION</div>
+<!-- <div class="title">RUN ALLOCATION</div> -->
 @stop 
 
 @section('group') 
 <div id="controlSearch">
 	<div class="filter">
-		<div><b>Network</b></div>
+		<div style="height: 20px;"><b>Network</b></div>
 		<select id="cboNetworks" onchange="_runallocation.getListAllocJob();">
 			@foreach($result as $re)
 				<option value="{!!$re['ID']!!}">{!!$re['NAME']!!}</option> 
@@ -44,27 +44,18 @@ $(function(){
 		}
 	})
 	
-	var d = new Date();
-	var today = zeroFill(1+d.getMonth(),2)+"/"+zeroFill(d.getDate(),2)+"/"+d.getFullYear();
-	$('#begin_date, #end_date').val(today);
 	$( "#begin_date, #end_date" ).datepicker({
 	     changeMonth:true,
 	     changeYear:true,
-	     dateFormat:"mm/dd/yy"
-	});
-
-	_runallocation.today = today;
+	     dateFormat:"mm/dd/yy",
+	}).datepicker("setDate", -1 );
 
 	$('#cboNetworks').change();
 
 });
 
 var _runallocation = {
-
-		today : "",
-
 		runningAllocID : 0,
-
 		getListAllocJob : function(){
 			param = {
 				'NETWORK_ID' : $('#cboNetworks').val(),
@@ -94,12 +85,11 @@ var _runallocation = {
 			}
 			$('#bodyJobsList').html(str);
 			$("#allocLog").html("");
-			$("input[type='text']").val(_runallocation.today);
-			$( "input[type='text']" ).datepicker({
+			$( "#bodyJobsList input[type='text']" ).datepicker({
 				changeMonth:true,
 				changeYear:true,
 				dateFormat:"mm/dd/yy"
-			}); 
+			}).datepicker("setDate", -1 );
 		},
 		checkAllocDate : function(d1,d2)
 		{
@@ -175,7 +165,7 @@ var _runallocation = {
 
 @section('content')
 <body style="margin: 0px">
-	<div id="container" style="width:1322px;">
+	<div id="container" style="width:100%">
 		<div id="boxJobsList"
 			style="background: #f8f8f8; padding: 0px; border-bottom: 0px solid #ccc">
 			<table border="0" cellpadding="4" cellspacing="0" id="table5"

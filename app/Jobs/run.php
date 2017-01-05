@@ -33,7 +33,11 @@ class run extends Job implements ShouldQueue, SelfHandling
      * @return void
      */
     public function handle()
-    {    	
+    {
+	    if ($this->attempts() > 1) {
+			//$this->release(0);
+			//return;
+		}
     	$task_id = $this->param['taskid'];
     	$alloc_act = $this->param['alloc_act'];
     	$job_id = $this->param['job_id'];
@@ -43,6 +47,8 @@ class run extends Job implements ShouldQueue, SelfHandling
     	$email = $this->param['email'];
     	$_REQUEST ["act"] = $alloc_act;
     	
+		\Log::info ($this->param);
+
     	if($date_type == "day"){
     		$date = date('Y-m-d');
     		$from_date = date('Y-m-d', strtotime($date .' -1 day'))."";
