@@ -14,7 +14,7 @@ class TableDataController extends CodeController {
     	$lm 		= new lazy_mofo($dbh);
     	$lm->setModelName($tablename);
     	
-    	return view ( 'tableData.edittable',['tablename'=>$tablename,
+    	return view ( 'tableData.ebedittable',['tablename'=>$tablename,
 							    			'action'	=>$action,
 							    			'lm'		=>$lm
     	]);

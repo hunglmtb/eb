@@ -1962,7 +1962,7 @@ return true;
         $class = $this->get_class_name($column_name); 
 
         if($cmd == 'text')
-            return "<input style='min-width: 100px;width:96%' type='text' name='$column_name' class='$class' value='" . $this->clean_out($value) . "' size='30' /><b style='display: none'>$this->clean_out($value)</b>";
+            return "<input style='min-width: 100px;width:100%' type='text' name='$column_name' class='$class' value='" . $this->clean_out($value) . "' size='30' /><b style='display: none'>$this->clean_out($value)</b>";
         elseif($cmd == 'hidden')
             return "<input type='hidden' name='$column_name' class='$class' value='" . $this->clean_out($value) . "' size='$size' />";
         elseif($cmd == 'password')

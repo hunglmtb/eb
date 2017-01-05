@@ -23,6 +23,9 @@ class EuController extends CodeController {
 		
 		$this->keyColumns = [$this->idColumn,$this->phaseColumn];
 		$this->keyColumns[] = config("constants.eventType");
+		
+		$this->enableBatchRun 				= true;
+		
 	}
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){

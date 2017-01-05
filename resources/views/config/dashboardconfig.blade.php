@@ -99,7 +99,7 @@ div.container span.title{
 	</div>
 </div>
 <div id="filter_box" style="height:40px;background:#e0e0e0;padding-top:6px;box-sizing:border-box">
-	<button style="width:100px;height:28px;" onclick="loaddashboards()">Load</button>
+	<button style="width:100px;height:28px;" onclick="loaddashboards(true)">Load</button>
 	<button style="width:100px;height:28px;" onclick="newdashboard()">New</button>
 	<button style="width:100px;height:28px;" onclick="save(0)">Save</button>
 	<button style="width:100px;height:28px;" onclick="$('#morefuncs').toggle()" id="button_morefuncs">More...</button>

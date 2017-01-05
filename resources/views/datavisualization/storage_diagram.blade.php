@@ -15,6 +15,13 @@
 				value.data[index]	= [day,pvalue];
 	         });
          });
+
+		$.each(diagram.plotLines, function( index, value ) {
+			pvalue = parseFloat(value.value);
+			pvalue	= isNaN(pvalue)?null:pvalue;
+			value.value	= pvalue;
+			value.width		= 2;
+         });
 		
 		/* if(diagram.minY>0){
 			var lineData = Array.apply(null, Array(diagram.groups.length)).map(function (_, i) {return diagram.minY;});
@@ -93,6 +100,7 @@
                     labels: {
                         format: '{value}',
                     },
+                    plotLines	: diagram.plotLines,
                     title: {
                         text: diagram.ycaption,
                         style: {

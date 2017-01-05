@@ -19,6 +19,8 @@ RUN TICKET CAPTURE
 	actions.loadUrl 		= "/ticket/load";
 	actions.saveUrl 		= "/ticket/save";
 	actions.historyUrl 		= "/ticket/history";
+	actions.reloadAfterSave	= true;
+	
 	actions.type = {
 					idName:['TANK_ID','ID','FLOW_PHASE','OCCUR_DATE','TICKET_NO'],
 					keyField:'ID',

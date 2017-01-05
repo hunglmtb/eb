@@ -42,8 +42,10 @@ class StorageDisplayController extends ChokeController {
 			$minY 		= 1000000000;
 			$summaryLine= [];
 			$series		= [];
+			$plotLines	= [];
 			foreach($constraints['CONFIG'] as $key => $constraint ){
 				$rquery				= null;
+				$rLineQuery			= null;
 				$chartType			= $constraint['CHART_TYPE'];
 				$color				= $constraint['COLOR'];
 				$negative			= $constraint['NEGATIVE'];
@@ -73,11 +75,13 @@ class StorageDisplayController extends ChokeController {
 				$category			= $plotViewConfig->NAME;
 				$categories[] 		= $category;
 				$serie				= [];
+				$lineSeries			= [];
 				foreach($objects as $index => $object ){
 					$tableView		= $object["TableView"];
 					$tableName		= strpos($tableView, "V_")===0?substr($tableView, 2):$tableView;
 					$modelName		= \Helper::getModelName($tableName);
-					$datefield		= $modelName::$dateField;
+					
+					$datefield		= property_exists($modelName, "dateField")?$modelName::$dateField:null;
 					$objectIdField	= $modelName::$idField;
 					
 					$objectType		= $object["ObjectType"];
@@ -99,18 +103,26 @@ class StorageDisplayController extends ChokeController {
 					$where			= [$objectIdField	=> $objectId];
 					if ($objectType=="ENERGY_UNIT" && !$is_eutest && !$is_defer)  $where['FLOW_PHASE']	= $flowPhase;
 					
-					$query			= $modelName::where($objectIdField,$objectId)
-												->whereDate("$datefield", '>=', $beginDate)
-												->whereDate("$datefield", '<=', $endDate)
-												->select(\DB::raw("$minus($queryField$calculation) as $sumField"),
-														"$datefield as D"
-														)
-												->take(300);
-					if ($index==0) 
-						$rquery = $query;
-					else 	
-						$rquery->union($query);
-					
+					$lineQuery		= null;
+					$query			= null;
+					if ($datefield) {
+						$query			= $modelName::where($objectIdField,$objectId)
+													->whereDate("$datefield", '>=', $beginDate)
+													->whereDate("$datefield", '<=', $endDate)
+													->select(\DB::raw("$minus($queryField$calculation) as $sumField"),
+															"$datefield as D"
+															)
+													->take(300);
+						if ($rquery&&$query) $rquery->union($query);
+						else if($query)	$rquery = $query;
+					}
+					else{
+						$lineQuery		= $modelName::where($objectIdField,$objectId)
+													->select(\DB::raw("$minus($queryField$calculation) as $sumField"))
+													->take(1);
+						if ($rLineQuery&&$lineQuery) $rLineQuery->union($lineQuery);
+						else if ($lineQuery) $rLineQuery = $lineQuery;
+					}
 				}
 				$value						= 0;
 				if ($rquery) {
@@ -120,20 +132,33 @@ class StorageDisplayController extends ChokeController {
 										->orderBy("D")
 										->selectRaw("sum($sumField) as $sumField, D")
 										->get();
+					$series[]       = [
+							"type"  => $chartType,
+							"name"  => $category,
+							"color" => "#$color",
+							"data"  => $dataSet,
+					];
+					foreach($dataSet as $index => $data ){
+						if (array_key_exists($data->D, $summaryLine))
+							$summaryLine[$data->D]->V	+= $data->V;
+							else
+								$summaryLine[$data->D]	= (object) array('D' => $data->D,'V' => $data->V);
+					}
 				}
-				$series[] 	= [
-								"type"	=> $chartType,
-								"name"	=> $category,
-								"color"	=> "#$color",
-								"data"	=> $dataSet,
-							];
-				foreach($dataSet as $index => $data ){
-					if (array_key_exists($data->D, $summaryLine))
-						$summaryLine[$data->D]->V	+= $data->V;
-					else 
-						$summaryLine[$data->D]	= (object) array('D' => $data->D,'V' => $data->V);
+				if ($rLineQuery) {
+					$rDataSet	= \DB::table( \DB::raw("({$rLineQuery->toSql()}) as sub") )
+										->mergeBindings($rLineQuery->getQuery()) // you need to get underlying Query Builder
+										->selectRaw("sum($sumField) as $sumField")
+										->first();
+					if($rDataSet){
+						$plotLines[] 	= [
+										"label"		=> ["text"	=> $category],
+										"color"		=> "#$color",
+// 										"dashStyle"	=> 'shortdash',
+										"value"		=> $rDataSet->$sumField,
+									];
+					}
 				}
-				
 			}
 			$summarySeriesData = array_values($summaryLine);
 // 			ksort($summarySeriesData);
@@ -152,6 +177,7 @@ class StorageDisplayController extends ChokeController {
 										"title"			=> $title,
 										"categories"	=> $categories,
 										"series"		=> $series,
+										"plotLines"		=> $plotLines,
 										"ycaption"		=> $ycaption,
 										"minY"			=> $minY==1000000000?0:$minY,
 			];

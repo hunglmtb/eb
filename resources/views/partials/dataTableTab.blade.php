@@ -104,6 +104,8 @@
 		return shouldLoad;
 	};
 
+	actions.reloadAfterSave	= false;
+	
 	actions.saveSuccess =  function(data,noDelete){
 		var postData = data.postData;
 		if(!jQuery.isEmptyObject(data.updatedData)){
@@ -158,6 +160,7 @@
 		}
 
 		alert(msg);
+		if(actions.reloadAfterSave) actions.doLoad(true);
  	};
 </script>
 @stop

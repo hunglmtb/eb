@@ -17,6 +17,8 @@ CHEMICAL DATA
 <script>
 	actions.loadUrl = "/chemical/load";
 	actions.saveUrl = "/chemical/save";
+	actions.reloadAfterSave	= true;
+	
 	actions.type = {
 			idName:['ID','KEYSTORE_TANK_ID','OCCUR_DATE'],
 			keyField:'ID',
@@ -24,11 +26,10 @@ CHEMICAL DATA
 				return 'ID';
 				},
 			};
-
-	var osaveSuccess = actions.saveSuccess;
+	/* var osaveSuccess = actions.saveSuccess;
 	actions.saveSuccess = function (data,noDelete){
 		osaveSuccess(data,noDelete);
 		actions.doLoad(true);
-	};
+	}; */
 </script>
 @stop

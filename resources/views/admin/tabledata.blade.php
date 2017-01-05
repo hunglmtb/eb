@@ -5,7 +5,7 @@ $enableFilter 						= false;
 if (!isset($active)) $active 		= 1;
 if (!isset($isAction)) $isAction 	= false;
 $tables 							= ['FlowDataFdcValue'	=>['name'=>'FDC VALUE']];
-
+$useBootrapCss						= false;
 ?>
 
 @extends('core.bsmain',['subMenus' => $subMenus])

@@ -6,7 +6,8 @@ use App\Models\FeatureTankModel;
 class Tank extends FeatureTankModel
 {
 	protected $table = 'TANK';
-	
+	public  static  $idField = 'ID';
+	public  static  $dateField = null;
 	/**
 	 * One to Many relation
 	 *
