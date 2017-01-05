@@ -8,7 +8,7 @@ use Mail;
 
 use App\Models\TmWorkflow;
 use App\Models\TmWorkflowTask;
-use App\Jobs\run;
+use App\Jobs\runAllocation;
 use App\Jobs\export;
 
 class WorkflowProcessController extends Controller {
@@ -155,15 +155,17 @@ class WorkflowProcessController extends Controller {
 			$job_id=$taskconfig->jobid;
 			$type=$taskconfig->type;
 			if(isset($taskconfig->from)){
-				$from=explode('-',$taskconfig->from);
-				$from_date=$from[1].'-'.$from[2].'-'.$from[0];
+				//$from=explode('-',$taskconfig->from);
+				//$from_date=$from[1].'-'.$from[2].'-'.$from[0];
+				$from_date = $taskconfig->from;
 			}
 			else{
 				$from_date="null";
 			}
 			if(isset($taskconfig->to)){
-				$to=explode('-',$taskconfig->to);
-				$to_date=$to[1].'-'.$to[2].'-'.$to[0];
+				//$to=explode('-',$taskconfig->to);
+				//$to_date=$to[1].'-'.$to[2].'-'.$to[0];
+				$to_date = $taskconfig->to;
 			}
 			else{
 				$to_date="null";
@@ -173,7 +175,7 @@ class WorkflowProcessController extends Controller {
 			 
 			$param = [
 					'taskid'=> $taskid,
-					'alloc_act'=> $alloc_act,
+					'act'=> $alloc_act,
 					'job_id'=> $job_id,
 					'type'=> $type,
 					'from_date'=> $from_date,
@@ -184,22 +186,35 @@ class WorkflowProcessController extends Controller {
 			/* $obj = new run($param);
 			 $obj->handle(); */
 	
-			$job =(new run($param));
+			$job =(new runAllocation($param));
 			$this->dispatch($job);
 		}
 		else if($taskname=='ALLOC_CHECK'){
 			$job_id=$taskconfig->jobid;
 			$type=$taskconfig->type;
-			$from=explode('-',$taskconfig->from);
-			$from_date=$from[1].'-'.$from[2].'-'.$from[0];
-			$to=explode('-',$taskconfig->to);
-			$to_date=$to[1].'-'.$to[2].'-'.$to[0];
+			if(isset($taskconfig->from)){
+				//$from=explode('-',$taskconfig->from);
+				//$from_date=$from[1].'-'.$from[2].'-'.$from[0];
+				$from_date = $taskconfig->from;
+			}
+			else{
+				$from_date="null";
+			}
+			if(isset($taskconfig->to)){
+				//$to=explode('-',$taskconfig->to);
+				//$to_date=$to[1].'-'.$to[2].'-'.$to[0];
+				$to_date = $taskconfig->to;
+			}
+			else{
+				$to_date="null";
+			}
+
 			$email=$taskconfig->email;
 			$alloc_act = 'check';
 			 
 			$param = [
 					'taskid'=> $taskid,
-					'alloc_act'=> $alloc_act,
+					'act'=> $alloc_act,
 					'job_id'=> $job_id,
 					'type'=> $type,
 					'from_date'=> $from_date,
@@ -207,10 +222,7 @@ class WorkflowProcessController extends Controller {
 					'email'=> $email
 			];
 	
-			/* $obj = new run($param);
-			 $obj->handle(); */
-	
-			$job = (new run($param));
+			$job = (new runAllocation($param));
 			$this->dispatch($job);
 		}
 		else if($taskname=='VIS_REPORT'){
