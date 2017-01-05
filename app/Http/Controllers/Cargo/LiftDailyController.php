@@ -58,6 +58,7 @@ class LiftDailyController extends CodeController {
   		$flow			 	= Flow::getTableName();
   		$pdLiftingAccount 	= PdLiftingAccount::getTableName();
 		$storageDataValue	= StorageDataValue::getTableName();
+		$storageID			= $postData["Storage"];
   		
   		$query = ShipCargoBlmr::join($pdCargo,function ($query) use ($shipCargoBlmr,$accountId,$pdCargo) {
 							  			$query->on("$pdCargo.ID",'=',"$shipCargoBlmr.CARGO_ID")
@@ -88,7 +89,6 @@ class LiftDailyController extends CodeController {
 							  				\DB::raw("null as b_qty")
 							  		);
   		$query->union($cquery);
-  		
   		$xquery = \DB::table(\DB::raw("({$query->toSql()}) as x") )
 			  		->select('x.CARGO_ID',
 			  				'x.cargo_name',
@@ -99,7 +99,6 @@ class LiftDailyController extends CodeController {
 	  				->addBinding($query->getBindings())
 	  				->groupBy('x.xdate')
 	  				->groupBy('x.CARGO_ID');
-  		
   		$xxquery = \DB::table(\DB::raw("({$xquery->toSql()}) as x") )
   					->select(
 			  				'x.cargo_name',
@@ -133,8 +132,15 @@ class LiftDailyController extends CodeController {
 							  		->groupBy("$flow.ID");
   		$xxquery->union($flowquery);
   		$xxxquery = \DB::table(\DB::raw("({$xxquery->toSql()}) as x") )
+/*
+						->leftjoin ( $storageDataValue." as y",function ($query) use($storageID){
+								  			$query->on("y.OCCUR_DATE",'=',"x.xdate")
+								  			->where("y.STORAGE_ID",'=',$storageID) ;
+							  		})
+*/
 				  		->select(
 				  				"x.*",
+//								"y.AVAIL_SHIPPING_VOL as opening_balance",
 			  					\DB::raw("(select AVAIL_SHIPPING_VOL from $storageDataValue y where y.storage_id=".$postData["Storage"]." and y.OCCUR_DATE=x.xdate) as opening_balance"),
 			  					\DB::raw('case when x.b_qty is null then x.n_qty else null end as n_qty'),
 				  				\DB::raw('sum(x.flow_qty) as flow_qty'),
@@ -145,6 +151,7 @@ class LiftDailyController extends CodeController {
   						->groupBy("x.xdate")
   						->groupBy("x.cargo_name")
   						->groupBy("x.flow_name");
+			
   		$dataSet = $xxxquery->get();
   		
   		$month="";
