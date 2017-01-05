@@ -9,6 +9,7 @@ class EnergyUnit extends DynamicModel
 
 	protected $table = 'ENERGY_UNIT';
 	protected $primaryKey = 'ID';
+	public  static  $idField = 'ID';
 	
 	
 	public function EuPhaseConfig()
