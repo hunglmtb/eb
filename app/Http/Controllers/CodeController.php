@@ -143,9 +143,7 @@ class CodeController extends EBController {
 	        			$item->DT_RowId	= substr( md5(rand()), 0, 10);
 	        		}
 	        	});
-	        	
-		        $dswk 	= $dataSet->keyBy('DT_RowId');
-		        $objectIds = $dswk->keys();
+	        	$objectIds	=  $this->getObjectIds($dataSet,$postData);
 		        $mdlName = array_key_exists(config("constants.tabTable"), $postData)?$postData[config("constants.tabTable")]:null;
 		        if ($mdlName) {
 			        $results["objectIds"]	= [$mdlName	=> $objectIds];
@@ -154,6 +152,12 @@ class CodeController extends EBController {
 	        }
         }
     	return response()->json($results);
+    }
+    
+    public function getObjectIds($dataSet,$postData){
+    	$dswk 	= $dataSet->keyBy('DT_RowId');
+    	$objectIds = $dswk->keys();
+    	return $objectIds;
     }
     
     public function loadDetail(Request $request){

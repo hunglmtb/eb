@@ -33,6 +33,10 @@ ENERGY UNIT DATA CAPTURE
 					},
 // 					xIdName:'X_EU_ID'
 					};
+	actions.validating = function (reLoadParams){
+		return true;
+	}
+	
 	var aLoadNeighbor = actions.loadNeighbor;
 	actions.loadNeighbor = function() {
 		var activeTabID = getActiveTabID();

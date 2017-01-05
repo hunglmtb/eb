@@ -33,5 +33,9 @@ FLOW DATA CAPTURE
 					},
 // 				,xIdName:'X_FL_ID'
 					};
+
+	actions.validating = function (reLoadParams){
+		return true;
+	}
 </script>
 @stop

@@ -28,9 +28,9 @@ RUN TICKET CAPTURE
 										return 'ID';
 									},
 					};
-	/* actions.afterDataTable  = function (table,tab){
-		$("#toolbar_"+tab).html('');
-	} */
+	actions.validating = function (reLoadParams){
+		return true;
+	}
 	addingOptions.keepColumns = ['OCCUR_DATE','TICKET_NO','TICKET_TYPE'];
 
 	actions['parseChartDate'] = function(datetime){

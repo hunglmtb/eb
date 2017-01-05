@@ -18,6 +18,10 @@ QUALITY DATA CAPTURE
 	actions.historyUrl 		= "/quality/history";
 	actions.reloadAfterSave	= true;
 
+	actions.validating = function (reLoadParams){
+		return true;
+	}
+	
 	actions.type = {
 					idName:['ID'/* ,'PRODUCT_TYPE' */],
 					keyField:'DT_RowId',
