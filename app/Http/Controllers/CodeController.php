@@ -143,9 +143,7 @@ class CodeController extends EBController {
 	        			$item->DT_RowId	= substr( md5(rand()), 0, 10);
 	        		}
 	        	});
-	        	
-		        $dswk 	= $dataSet->keyBy('DT_RowId');
-		        $objectIds = $dswk->keys();
+	        	$objectIds	=  $this->getObjectIds($dataSet,$postData);
 		        $mdlName = array_key_exists(config("constants.tabTable"), $postData)?$postData[config("constants.tabTable")]:null;
 		        if ($mdlName) {
 			        $results["objectIds"]	= [$mdlName	=> $objectIds];
@@ -154,6 +152,12 @@ class CodeController extends EBController {
 	        }
         }
     	return response()->json($results);
+    }
+    
+    public function getObjectIds($dataSet,$postData){
+    	$dswk 	= $dataSet->keyBy('DT_RowId');
+    	$objectIds = $dswk->keys();
+    	return $objectIds;
     }
     
     public function loadDetail(Request $request){
@@ -360,7 +364,8 @@ class CodeController extends EBController {
 //     	return response()->json('[]');
 // 		throw new Exception("not Save");
     	$postData = $request->all();
-    	if (!array_key_exists('editedData', $postData)&&!array_key_exists('deleteData', $postData)) {
+    	 
+    	if (!$this->enableBatchRun&&!array_key_exists('editedData', $postData)&&!array_key_exists('deleteData', $postData)) {
     		return response()->json('no data 2 update!');
     	}
     	if (!array_key_exists('editedData', $postData)) {
@@ -397,96 +402,98 @@ class CodeController extends EBController {
      			$resultRecords = [];
      			
      			//      			\DB::enableQueryLog();
-     			foreach($editedData as $mdlName => $mdlData ){
-     				if (!is_array($mdlData)) continue;
-     				$modelName = $this->getModelName($mdlName,$postData);
- 		     		$mdl = "App\Models\\".$modelName;
-		     		if ($mdl::$ignorePostData) {
-		     			unset($editedData[$mdlName]);
-		     			continue;
-		     		}
-		     		$ids[$mdlName] = [];
-		     		$resultRecords[$mdlName] = [];
-		     		$tableName = $mdl::getTableName();
-		     		$locked = \Helper::checkLockedTable($tableName,$occur_date,$facility_id);
-		     		if ($locked) {
-		     			$lockeds[$mdlName] = "Data of $modelName with facility $facility_id was locked on $occur_date ";
-		     			unset($editedData[$mdlName]);
-		     			continue;
-		     		}
-		     		foreach($mdlData as $key => $newData ){
-		     			$columns 			= $mdl::getKeyColumns($newData,$occur_date,$postData);
-		     			$originNewData		= $mdlData[$key];
- 		     			$mdlData[$key] 		= $newData;
-		     			$returnRecord 		= $mdl::updateOrCreateWithCalculating($columns, $newData);
-		     			if ($returnRecord) {
-		     				$affectRecord 	= $returnRecord->updateDependRecords($occur_date,$originNewData,$postData);
-		     				$returnRecord->updateAudit($columns,$newData,$postData);
-			     			$ids[$mdlName][] = $returnRecord['ID'];
-			     			$resultRecords[$mdlName][] = $returnRecord;
-			     			if ($affectRecord) {
-			     				$ids[$mdlName][] = $affectRecord['ID'];
-			     				$resultRecords[$mdlName][] = $affectRecord;
-			     			}
-			     				 
-		     			}
-		     		}
-		     		$editedData[$mdlName] = $mdlData;
-     			}
-// 		     	\Log::info(\DB::getQueryLog());
-// 		     	$objectIds = array_unique($objectIds);
-		     	//doFormula in config table
-		     	$affectColumns = [];
-		     	foreach($editedData as $mdlName => $mdlData ){
-     				if (!is_array($mdlData)) continue;
-		     		$modelName = $this->getModelName($mdlName,$postData);
-		     		$cls  = \FormulaHelpers::doFormula($modelName,'ID',$ids[$mdlName]);
-		     		if (is_array($cls)&&count($cls)>0) {
-			     		$affectColumns[$mdlName] = $cls;
-		     		}
-		     	}
-		     	
-		     	foreach($resultRecords as $mdlName => $records ){
-		     		foreach($records as $key => $returnRecord ){
-		     			$returnRecord->afterSaving($postData);
-		     		}
-		     	}
-		     	
-		     	if ($this->isApplyFormulaAfterSaving) {
-			     	//get affected object with id
-		     		$objectWithformulas = [];
-			     	foreach($editedData as $mdlName => $mdlData ){
-			     		$mdl = "App\Models\\".$mdlName;
+     			if ($editedData) {
+	     			foreach($editedData as $mdlName => $mdlData ){
+	     				if (!is_array($mdlData)) continue;
+	     				$modelName = $this->getModelName($mdlName,$postData);
+	 		     		$mdl = "App\Models\\".$modelName;
+			     		if ($mdl::$ignorePostData) {
+			     			unset($editedData[$mdlName]);
+			     			continue;
+			     		}
+			     		$ids[$mdlName] = [];
+			     		$resultRecords[$mdlName] = [];
+			     		$tableName = $mdl::getTableName();
+			     		$locked = \Helper::checkLockedTable($tableName,$occur_date,$facility_id);
+			     		if ($locked) {
+			     			$lockeds[$mdlName] = "Data of $modelName with facility $facility_id was locked on $occur_date ";
+			     			unset($editedData[$mdlName]);
+			     			continue;
+			     		}
 			     		foreach($mdlData as $key => $newData ){
-			     			$columns = array_keys($newData);
-			     			if (array_key_exists($mdlName, $affectColumns)) {
-				     			$columns = array_merge($columns,$affectColumns[$mdlName]);
+			     			$columns 			= $mdl::getKeyColumns($newData,$occur_date,$postData);
+			     			$originNewData		= $mdlData[$key];
+	 		     			$mdlData[$key] 		= $newData;
+			     			$returnRecord 		= $mdl::updateOrCreateWithCalculating($columns, $newData);
+			     			if ($returnRecord) {
+			     				$affectRecord 	= $returnRecord->updateDependRecords($occur_date,$originNewData,$postData);
+			     				$returnRecord->updateAudit($columns,$newData,$postData);
+				     			$ids[$mdlName][] = $returnRecord['ID'];
+				     			$resultRecords[$mdlName][] = $returnRecord;
+				     			if ($affectRecord) {
+				     				$ids[$mdlName][] = $affectRecord['ID'];
+				     				$resultRecords[$mdlName][] = $affectRecord;
+				     			}
+				     				 
 			     			}
-		     				$uColumns = $mdl::getKeyColumns($newData,$occur_date,$postData);
-			     			$columns = array_diff($columns, $uColumns);
-			     			$aFormulas = $this->getAffectedObjects($mdlName,$columns,$newData);
-			     			$objectWithformulas = array_merge($objectWithformulas,$aFormulas);
-			     		}	     
+			     		}
+			     		$editedData[$mdlName] = $mdlData;
+	     			}
+	// 		     	\Log::info(\DB::getQueryLog());
+	// 		     	$objectIds = array_unique($objectIds);
+			     	//doFormula in config table
+			     	$affectColumns = [];
+			     	foreach($editedData as $mdlName => $mdlData ){
+	     				if (!is_array($mdlData)) continue;
+			     		$modelName = $this->getModelName($mdlName,$postData);
+			     		$cls  = \FormulaHelpers::doFormula($modelName,'ID',$ids[$mdlName]);
+			     		if (is_array($cls)&&count($cls)>0) {
+				     		$affectColumns[$mdlName] = $cls;
+			     		}
 			     	}
-			     	$objectWithformulas = array_unique($objectWithformulas);
 			     	
-			     	//apply Formula in formula table
-		     		$applieds = \FormulaHelpers::applyAffectedFormula($objectWithformulas,$occur_date);
-		     		if ($applieds&&count($applieds)) {
-				     	foreach($applieds as $apply ){
-				     		$mdlName = $apply->modelName;
-				     		if (!array_key_exists($mdlName, $ids)) {
-				     			$ids[$mdlName] = [];
-				     		}
-				     		$ids[$mdlName][] = $apply->ID;
-				     		$ids[$mdlName]  = array_unique($ids[$mdlName]);
-		     				$resultRecords[$mdlName][] = $apply;
-				     		$resultRecords[$mdlName]  = array_unique($resultRecords[$mdlName]);
+			     	foreach($resultRecords as $mdlName => $records ){
+			     		foreach($records as $key => $returnRecord ){
+			     			$returnRecord->afterSaving($postData);
+			     		}
+			     	}
+			     	
+			     	if ($this->isApplyFormulaAfterSaving) {
+				     	//get affected object with id
+			     		$objectWithformulas = [];
+				     	foreach($editedData as $mdlName => $mdlData ){
+				     		$mdl = "App\Models\\".$mdlName;
+				     		foreach($mdlData as $key => $newData ){
+				     			$columns = array_keys($newData);
+				     			if (array_key_exists($mdlName, $affectColumns)) {
+					     			$columns = array_merge($columns,$affectColumns[$mdlName]);
+				     			}
+			     				$uColumns = $mdl::getKeyColumns($newData,$occur_date,$postData);
+				     			$columns = array_diff($columns, $uColumns);
+				     			$aFormulas = $this->getAffectedObjects($mdlName,$columns,$newData);
+				     			$objectWithformulas = array_merge($objectWithformulas,$aFormulas);
+				     		}	     
 				     	}
-		     		}
-		     	}
-		     	
-		     	$this->afterSave($resultRecords,$occur_date);
+				     	$objectWithformulas = array_unique($objectWithformulas);
+				     	
+				     	//apply Formula in formula table
+			     		$applieds = \FormulaHelpers::applyAffectedFormula($objectWithformulas,$occur_date);
+			     		if ($applieds&&count($applieds)) {
+					     	foreach($applieds as $apply ){
+					     		$mdlName = $apply->modelName;
+					     		if (!array_key_exists($mdlName, $ids)) {
+					     			$ids[$mdlName] = [];
+					     		}
+					     		$ids[$mdlName][] = $apply->ID;
+					     		$ids[$mdlName]  = array_unique($ids[$mdlName]);
+			     				$resultRecords[$mdlName][] = $apply;
+					     		$resultRecords[$mdlName]  = array_unique($resultRecords[$mdlName]);
+					     	}
+			     		}
+			     	}
+			     	
+			     	$this->afterSave($resultRecords,$occur_date);
+     			}
 		     	
 		     	$resultTransaction = [];
 		     	if (count($lockeds)>0) {

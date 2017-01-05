@@ -21,7 +21,9 @@ TANK & STORAGE DATA CAPTURE
 <script>
 	var tankIdColumn = '{{config("constants.tankIdColumn")}}';
 	var storageIdColumn = '{{config("constants.storageIdColumn")}}';
-	
+	actions.validating = function (reLoadParams){
+		return true;
+	}
 	var saveKeyFields =  {TankDataFdcValue	 : tankIdColumn,
 							TankDataValue : tankIdColumn,
 							TankDataPlan : tankIdColumn,

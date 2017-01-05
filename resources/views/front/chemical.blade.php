@@ -18,6 +18,10 @@ CHEMICAL DATA
 	actions.loadUrl = "/chemical/load";
 	actions.saveUrl = "/chemical/save";
 	actions.reloadAfterSave	= true;
+
+	actions.validating = function (reLoadParams){
+		return true;
+	}
 	
 	actions.type = {
 			idName:['ID','KEYSTORE_TANK_ID','OCCUR_DATE'],

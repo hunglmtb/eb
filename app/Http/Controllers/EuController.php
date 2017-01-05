@@ -113,6 +113,17 @@ class EuController extends CodeController {
     	return $newData [config ( "constants.euFlowPhase" )];
     }
     
+    public function getObjectIds($dataSet,$postData){
+    	$objectIds = $dataSet->map(function ($item, $key) {
+    		return ["DT_RowId"			=> $item->DT_RowId,
+    				"EU_FLOW_PHASE"		=> $item->EU_FLOW_PHASE,
+    				"EU_ID"				=>$item->EU_ID
+    		];
+    	});
+    	
+    	return $objectIds;
+    }
+    
     public function getHistoryConditions($dcTable,$rowData,$row_id){
     	$obj_id			= $rowData[config("constants.euId")];
     	$where			= ["EU_ID"	=> $obj_id];
