@@ -17,7 +17,7 @@ QUALITY DATA CAPTURE
 	actions.saveUrl			= "/quality/save";
 	actions.historyUrl 		= "/quality/history";
 	actions.type = {
-					idName:['ID'],
+					idName:['ID'/* ,'PRODUCT_TYPE' */],
 					keyField:'DT_RowId',
 					saveKeyField : function (model){
 						return 'ID';

@@ -1,39 +1,25 @@
-<?php
-if (!isset($currentSubmenu)) $currentSubmenu ='';
-$enableFilter	= false;
-$enableHeader	= false;
-$enableFooter	= false;
-$useBootrapCss	= false;
-
-?>
-@extends('core.bstemplate',['subMenus' => array('pairs' => $subMenus, 'currentSubMenu' => $currentSubmenu)])
-
-@section('script')
-	<link rel="stylesheet" href="/common/css/jquery-ui.css" />
+<html>
+<head>
+	<meta charset='UTF-8' />
+	<link rel='stylesheet' type='text/css' href='/common/css/style.css'  />
+    <link rel="stylesheet" href="/common/css/jquery-ui.css" />
 	<link rel='stylesheet' href='/common/css/tableDataStyle.css'  />
+	<script src="/common/js/jquery-2.1.3.js"></script>
+	<script src="/common/js/jquery-ui.js"></script>
+<!--     <script  src="/common/lm/colResizable-1.3.min.js"></script> -->
  	<script src="/common/js/colResizable-1.6.js"></script> 
+    <script  src="/common/utils.js"></script>
+
 	<script type="text/javascript" src="/common/js/jquery.dataTables.lazy_mofo.js"></script>
 	<script type="text/javascript" src="/common/js/jquery-ui-timepicker-addon.js"></script>
 	<script type="text/javascript" src="/common/js/jquery-ui-sliderAccess.js"></script>
+	<script type="text/javascript" src="/common/js/jquery.dataTables.js"></script> 
+	
 	<script>var disableSearchingTargets = [];</script>
 	<script src="/common/js/eb.js"></script>
-@stop
-
-@section('extensionCss')
-<style>
-.documentBody{
- 	overflow-x:scroll;
- }
- .lm_form_button_bar input{
-     color: #333333;
- }
- .dataTables_filter ,#lm_grid_filter {
- 	float:left;
- }
-</style>
-@stop
-
-@section('main')
+ 
+</head>
+<body>
 <div id='box_sql' style='display:none;'>
 Insert:
 <textarea id='sql_insert' style='width:700px;height:100px;margin-bottom:10px'>
@@ -225,12 +211,6 @@ $lm->run();
 //if($action=='edit' || $action=='insert')
 {
 ?>
-<!-- <link rel="stylesheet" href="../common/css/jquery-ui.css" /> -->
-<!-- 	<script src="../common/js/jquery-ui.js"></script> -->
-
-<!-- 		<script type="text/javascript" src="js/jquery-ui-timepicker-addon.js"></script> -->
-<!-- 		<script type="text/javascript" src="js/jquery-ui-sliderAccess.js"></script> -->
-<!--  <script src="../common/utils.js"></script> -->
 <script>
 
 function genSQL(type)
@@ -389,7 +369,7 @@ function applyTableData()
 		
  		$("#lm_grid").wrap("<div id='par' style='width:"+($("#lm_grid").width()+10)+"px'></div>");
 
- 		//applyTableData();
+ 		applyTableData();
   });
 <?php
 foreach($rel_columns as $rel_col)
@@ -423,4 +403,5 @@ EOT;
 <?php
 }
 ?>
-@stop
+</body>
+</html>
