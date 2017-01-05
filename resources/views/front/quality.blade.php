@@ -16,6 +16,8 @@ QUALITY DATA CAPTURE
 	actions.loadUrl 		= "/quality/load";
 	actions.saveUrl			= "/quality/save";
 	actions.historyUrl 		= "/quality/history";
+	actions.reloadAfterSave	= true;
+
 	actions.type = {
 					idName:['ID'/* ,'PRODUCT_TYPE' */],
 					keyField:'DT_RowId',

@@ -42,6 +42,7 @@ use App\Models\StandardUom;
 use App\Models\Tank;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class CodeController extends EBController {
 	 
@@ -54,10 +55,12 @@ class CodeController extends EBController {
 	protected $isApplyFormulaAfterSaving;
 	protected $extraDataSetColumns;
 	protected $detailModel;
+	protected $enableBatchRun;
 	
 	public function __construct() {
 		parent::__construct();
-		$this->isApplyFormulaAfterSaving = false;
+		$this->isApplyFormulaAfterSaving 	= false;
+		$this->enableBatchRun 				= false;
 	}
 	
 	public function getCodes(Request $request){
@@ -133,6 +136,22 @@ class CodeController extends EBController {
         $results['postData'] = $postData;
         if ($data&&is_array($data)) {
 	        $results 	= array_merge($results, $data);
+	        $dataSet	= array_key_exists('dataSet',  $results)?$results['dataSet']:null;
+	        if ($this->enableBatchRun&&$dataSet&&$dataSet instanceof Collection && $dataSet->count()>0) {
+	        	$dataSet->each(function ($item, $key) {
+	        		if ($item&&$item instanceof Model && (!($item->DT_RowId)||$item->DT_RowId=="")) {
+	        			$item->DT_RowId	= substr( md5(rand()), 0, 10);
+	        		}
+	        	});
+	        	
+		        $dswk 	= $dataSet->keyBy('DT_RowId');
+		        $objectIds = $dswk->keys();
+		        $mdlName = array_key_exists(config("constants.tabTable"), $postData)?$postData[config("constants.tabTable")]:null;
+		        if ($mdlName) {
+			        $results["objectIds"]	= [$mdlName	=> $objectIds];
+		        }
+		        else $results["objectIds"]	= $objectIds;
+	        }
         }
     	return response()->json($results);
     }
@@ -367,10 +386,11 @@ class CodeController extends EBController {
      	try
      	{
      		$resultTransaction = \DB::transaction(function () use ($postData,$editedData,$affectedIds,
-													     		 $occur_date,$facility_id/* ,$objectIds */){
+													     		 $occur_date,$facility_id){
      			$this->deleteData($postData);
-     			
-     			if(!$editedData) return [];
+     			$objectIds	= array_key_exists('objectIds',  $postData)?$postData['objectIds']:[];
+     			$objectIds	= $objectIds?$objectIds:[];
+     			if(!$editedData&&count($objectIds)<=0) return [];
      			
      			$lockeds= [];
      			$ids = [];
@@ -472,7 +492,12 @@ class CodeController extends EBController {
 		     	if (count($lockeds)>0) {
 			     	$resultTransaction['lockeds'] = $lockeds;
 		     	}
-		     	$resultTransaction['ids']=$ids;
+		     	
+		     	$updateObjectIds			= $this->updateObjectWithCalculation($objectIds,$occur_date,$postData);
+		     	if ($this->enableBatchRun) {
+// 		     		$resultTransaction['ids']	= [];
+		     	}
+		     	else $resultTransaction['ids']	= $ids;
  		     	return $resultTransaction;
 	     		
 	      	});
@@ -505,6 +530,34 @@ class CodeController extends EBController {
     	return response()->json($results);
     }
     
+    protected function updateObjectWithCalculation($objectIds,$occur_date,$postData) {
+    	if ($this->enableBatchRun&&$objectIds) {
+    		foreach($objectIds as $mdlName => $mdlData ){
+    			if (!is_array($mdlData)) continue;
+	     		$modelName = $this->getModelName($mdlName,$postData);
+	     		\FormulaHelpers::doFormula($modelName,'ID',$mdlData);
+    		}
+    		
+    		if ($this->isApplyFormulaAfterSaving) {
+    			//get affected object with id
+    			$objectWithformulas = [];
+    			foreach($objectIds as $mdlName => $mdlData ){
+    				$mdl = "App\Models\\".$mdlName;
+    				$columns = \Schema::getColumnListing($mdl::getTableName());
+    				foreach($mdlData as $key => $newData ){
+    					$aFormulas 			= $this->getAffectedObjects($mdlName,$columns,$newData);
+    					$objectWithformulas = array_merge($objectWithformulas,$aFormulas);
+    				}
+    			}
+    			$objectWithformulas = array_unique($objectWithformulas);
+    			$applieds = \FormulaHelpers::applyAffectedFormula($objectWithformulas,$occur_date);
+    		}
+	    	return $objectIds;
+    	}
+    	return null;
+    }
+    
+    
     protected function deleteData($postData) {
     	if (array_key_exists ('deleteData', $postData )) {
     		$deleteData = $postData['deleteData'];
@@ -529,7 +582,7 @@ class CodeController extends EBController {
 	protected function getAffectedObjects($mdlName,$columns,$newData){
 		$mdl = "App\Models\\".$mdlName;
 		$idField = $mdl::$idField;
-		$objectId = $newData [$idField];
+		$objectId = is_array($newData)? $newData [$idField]:$newData;
 // 		$flowPhase = $newData [config ( "constants.euFlowPhase" )];
 		$flowPhase = $this->getFlowPhase($newData);
 		$aFormulas = \FormulaHelpers::getAffects ( $mdlName, $columns, $objectId,$flowPhase);

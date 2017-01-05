@@ -27,6 +27,8 @@ class DefermentController extends CodeController {
 									];
 		
 		$this->keyColumns = [$this->idColumn,$this->phaseColumn];
+		
+		$this->enableBatchRun 				= true;
 	}
 	
 	public function getFirstProperty($dcTable){

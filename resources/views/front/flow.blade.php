@@ -23,6 +23,7 @@ FLOW DATA CAPTURE
 	actions.loadUrl 		= "/code/load";
 	actions.saveUrl 		= "/code/save";
 	actions.historyUrl 		= "/code/history";
+	actions.reloadAfterSave	= true;
 	
 	actions.type = {
 					idName:['{{config("constants.flowId")}}','{{config("constants.flFlowPhase")}}'],

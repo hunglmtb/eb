@@ -24,6 +24,7 @@ class QualityController extends CodeController {
 // 		$this->isApplyFormulaAfterSaving = true;
 
 		$this->keyColumns = [$this->idColumn,$this->phaseColumn];
+		$this->enableBatchRun 				= true;
 	}
 	
 	public function getFirstProperty($dcTable){

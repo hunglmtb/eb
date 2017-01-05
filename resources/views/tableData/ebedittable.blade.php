@@ -347,6 +347,8 @@ function applyTableData()
 										ordering	: false,
 										destroy		: true,
 										paging		: false,
+										scrollX		: false,
+										autoWidth	: false,
 										info		: false,
 								        columnDefs	: uoms,
 //									        dom			: '<"top"f>rt<"bottom"ilp><"clear">'

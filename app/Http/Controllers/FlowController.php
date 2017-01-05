@@ -18,6 +18,8 @@ class FlowController extends CodeController {
 		$this->theorModel = "FlowDataTheor";
 		$this->isApplyFormulaAfterSaving = true;
 		$this->keyColumns = [$this->idColumn,$this->phaseColumn];
+		$this->enableBatchRun 				= true;
+		
 	}
 	
 	/* public function getFirstProperty($dcTable){
@@ -50,7 +52,7 @@ class FlowController extends CodeController {
 				    		$join->where('OCCUR_DATE','=',$occur_date);
 				    	})
 				    	->select("$flow.name as $dcTable",
-				    			"$flow.ID as DT_RowId",
+				    			"$dcTable.ID as DT_RowId",
 				    			"$flow.ID as ".config("constants.flowId"),
 				    			"$flow.phase_id as FL_FLOW_PHASE",
 				    			"$codeFlowPhase.name as PHASE_NAME",
@@ -62,21 +64,9 @@ class FlowController extends CodeController {
 		    			->orderBy('FL_FLOW_PHASE')
 		    			->get();
     	//  		\Log::info(\DB::getQueryLog());
-    	$dswk = $dataSet->keyBy('DT_RowId');
-    	$objectIds = $dswk->keys();
-    	
-    	return ['dataSet'=>$dataSet,'objectIds'=>$objectIds];
+    	return ['dataSet'=>$dataSet];
     }
     
-	protected function getAffectedObjects($mdlName, $columns, $newData) {
-		$mdl = "App\Models\\".$mdlName;
-		$idField = $mdl::$idField;
-		$objectId = $newData [$idField];
-// 		$flowPhase = $newData [config ( "constants.flFlowPhase" )];
-		$aFormulas = \FormulaHelpers::getAffects ( $mdlName, $columns, $objectId);
-		return $aFormulas;
-	}
-	
 	public function getHistoryConditions($dcTable,$rowData,$row_id){
 		$obj_id			= $rowData[config("constants.flowId")];
 		return ['FLOW_ID'	=>	$obj_id];

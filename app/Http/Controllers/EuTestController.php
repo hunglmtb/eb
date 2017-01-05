@@ -16,6 +16,9 @@ class EuTestController extends CodeController {
 		$this->valueModel = "EuTestDataStdValue";
 		$this->theorModel = "EuTestDataValue";
 		$this->keyColumns = [$this->idColumn,'EU_ID','EFFECTIVE_DATE'];
+		
+		$this->enableBatchRun 				= true;
+		
 	}
 	
     public function getFirstProperty($dcTable){

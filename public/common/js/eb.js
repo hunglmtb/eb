@@ -230,7 +230,7 @@ var actions = {
 	initSaveData 		: false,
 	editedData 			: {},
 	deleteData 			: {},
-	objectIds 			: [],
+	objectIds 			: {},
 	extraDataSetColumns : {},
 	extraDataSet 		: {},
 	loadSuccess 		: function(data){/*alert("success");*/},
@@ -310,7 +310,7 @@ var actions = {
 										success:function(data){
 											hideWaiting();
 											if(data!=null&&data.hasOwnProperty('objectIds')){
-												actions.objectIds = data.objectIds;
+												jQuery.extend(actions.objectIds, data.objectIds);
 											}
 											actions.editedData = {};
 											if (typeof(actions.loadSuccess) == "function") {
@@ -919,6 +919,10 @@ var actions = {
 			return cell;
 		}
 		cell["createdCell"] 	= function (td, cellData, rowData, row, col) {
+			/*rowData.DT_RowId	= (typeof rowData.DT_RowId) == "undefined" || rowData.DT_RowId ==null || rowData.DT_RowId ==""?
+									Math.random().toString(36).substring(10):
+									rowData.DT_RowId;*/
+									
 			var property 		= data.properties[col];
 			var isEdittable		= actions.createCommonCell(td,data,type,property,rowData);
 			if (type=='checkbox') {

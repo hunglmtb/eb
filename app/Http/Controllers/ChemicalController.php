@@ -15,6 +15,11 @@ use App\Models\KeystoreTankDataValue;
 
 class ChemicalController extends CodeController {
     
+	public function __construct() {
+		parent::__construct();
+		$this->enableBatchRun 				= false;
+	}
+	
 	public function getFirstProperty($dcTable){
 		return  ['data'=>$dcTable,'title'=>'Keystore Tank','width'=>230];
 	}
