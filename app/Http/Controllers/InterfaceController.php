@@ -181,6 +181,9 @@ class InterfaceController extends Controller {
 		if(isset($data ['tab']))
 			$obj ['TAB'] = $data ['tab'];
 		
+		if(isset($data ['table']))
+			$obj ['TABLE'] = $data ['table'];
+		
 		if(isset($data ['col_tag']) && !is_null($data ['col_tag']))
 			$obj ['COL_TAG'] = $data ['col_tag'];
 		
