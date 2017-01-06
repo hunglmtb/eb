@@ -504,7 +504,18 @@ class FormulaHelpers {
 	    							$sql.=" and $pp";
 //     								$swhere.=" and $pp";
 	    							if($whereItem[0]=="OCCUR_DATE"||$whereItem[0]=="EFFECTIVE_DATE"){
-	    								$whereItem[2] 	= $occur_date;
+										//process INTERVAL x DAY
+										$ds = explode("'",$whereItem[2]);
+										$ds = explode(' ',$ds[count($ds)-1]);
+										if(count($ds) >= 4 && ($ds[1]=='+' || $ds[1]=='-') && $ds[2] === 'INTERVAL' && is_numeric($ds[3])){
+											$sign = $ds[1];
+											$qty = (int)$ds[3];
+											$unit = $ds[4];
+											$whereItem[2] = date ( "Y-m-d", strtotime ( "{$sign}{$qty} {$unit}", strtotime ( $occur_date ) ) );
+										}
+										else
+		    								$whereItem[2] 	= $occur_date;
+
 		    							$whereDate[]	= $whereItem;
 	    							}
 	    							else if (strpos($whereItem[0], 'month') !== false || strpos($whereItem[0], 'year') !== false) {
@@ -526,7 +537,7 @@ class FormulaHelpers {
     						}
     						$sql .= " limit 100";
     						if($show_echo) $sqlLog=  ["content" 	=> $sql,	"type" 		=> "sql"];
-    						//      						\DB::enableQueryLog();
+//      						\DB::enableQueryLog();
 //      						$getDataResult = DB::table($table)->where( \DB::raw($swhere))->select($field)->skip(0)->take(100)->get();
        						$queryField = DB::table($table)->where($where);
        						if ($swhere) {

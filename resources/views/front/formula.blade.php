@@ -11,10 +11,10 @@ $filterEndDate = ['name'	=> "End date",
 
 @extends('core.bsconfig')
 @section('title')
-<div class="title">FORMULA EDITOR</div>
+<!-- <div class="title">FORMULA EDITOR</div> -->
 @stop 
 @section('group')
-<div id="controlSearch">
+<div id="controlSearch" style="box-sizing: border-box;border-bottom:0">
 
 	<div>
 		<b>&nbsp;</b>
@@ -48,7 +48,7 @@ $filterEndDate = ['name'	=> "End date",
 <script src="/common/js/jquery-ui.min.js"></script>
 <script type="text/javascript">
 $().ready(function() {
-	$("#MySplitter").height($(window).height()-200);
+	$("#MySplitter").height($(window).height()-150);
 	$("#MySplitter").splitter({
 		type: "h", 
 	});
@@ -60,8 +60,6 @@ $(function(){
 			'X-XSRF-Token': ebtoken
 		}
 	});
-
-	$('#controlSearch').css('border-bottom', '0px'); 
 
 	$("#boxEditVar").hide();
 	
@@ -708,10 +706,10 @@ var _formula = {
 			style="font-family: Times New Roman; font-size: 12pt">Formula</span></i>
 		<br> <br>
 		<div id="test_log"
-			style="overflow: auto; width: 850px; height: 380px; border-radius: 5px; border: 1px solid #dddddd; background: white; padding: 10px; font-family: Courier">
+			style="overflow: auto; width: 100%; height: calc(100% - 46px); border-radius: 0px; border-top: 1px solid #dddddd; background: white; padding-top: 5px; font-family: Courier">
 		</div>
 	</div>
-	<div id="container" style="width:1322px">
+	<div id="container" style="width:100%">
 		<!-- Formula list box -->
 		<div id="MySplitter">
 			<div id="TopPane">
