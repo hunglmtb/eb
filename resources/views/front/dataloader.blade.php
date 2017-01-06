@@ -165,14 +165,11 @@ var _dataloader = {
 					'cols_mapping' : $("#txtMapping").val(),
 					'table' : $("#txtTable").val()
 				};
-				console.log(param);
 				sendAjax('/saveimportsetting', param, function(data){
-					console.log(param);
 						alert("Setting saved successfully");
 						if(isSaveAs){
 							var _data = data.int_import_setting;
 							_dataloader.loadSettings(_data, 'cboImportSettings', data.id);
-							//$('#cboImportSettings').val(data.id);
 						}
 				});	
 		},
@@ -226,7 +223,6 @@ var _dataloader = {
 			sendAjax('/renamesetting', param, function(data){
 				var _data = data.int_import_setting;
 				_dataloader.loadSettings(_data, 'cboImportSettings',data.id);
-				//$('#cboImportSettings').val(data.id);
 			});
 		},
 		loadSettings : function (data, id, value){

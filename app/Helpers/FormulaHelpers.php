@@ -513,8 +513,17 @@ class FormulaHelpers {
 											$unit = $ds[4];
 											$whereItem[2] = date ( "Y-m-d", strtotime ( "{$sign}{$qty} {$unit}", strtotime ( $occur_date ) ) );
 										}
-										else
-		    								$whereItem[2] 	= $occur_date;
+										else {
+											//check first/last day function
+											if(substr( $whereItem[2], 0, 9 ) === "FIRST_DAY"){
+												$whereItem[2]=date('Y-m-01', strtotime($occur_date));
+											}
+											else if(substr( $whereItem[2], 0, 8 ) === "LAST_DAY"){
+												$whereItem[2]=date('Y-m-t', strtotime($occur_date));
+											}
+											else
+												$whereItem[2] 	= str_replace("'","",$whereItem[2]);
+										}
 
 		    							$whereDate[]	= $whereItem;
 	    							}
@@ -537,7 +546,7 @@ class FormulaHelpers {
     						}
     						$sql .= " limit 100";
     						if($show_echo) $sqlLog=  ["content" 	=> $sql,	"type" 		=> "sql"];
-//      						\DB::enableQueryLog();
+      						\DB::enableQueryLog();
 //      						$getDataResult = DB::table($table)->where( \DB::raw($swhere))->select($field)->skip(0)->take(100)->get();
        						$queryField = DB::table($table)->where($where);
        						if ($swhere) {
@@ -557,7 +566,7 @@ class FormulaHelpers {
        						}
        						 
     						$getDataResult = $queryField->select($field)->skip(0)->take(100)->get();
-//      						\Log::info(\DB::getQueryLog());
+      						\Log::info(\DB::getQueryLog());
     						unset($table);
     						unset($where);
     						unset($params);
@@ -687,10 +696,13 @@ class FormulaHelpers {
     		if(!isset($vars[$v])||!$vars[$v]) $f=str_replace($v,"0",$f);
     		
     		else if(is_array($vars[$v])) {
-    			$varsKey[$v] = $vars[$v];
-    			$f=str_replace($v,"\$varsKey['$v']",$f);
+    			//$varsKey[$v] = $vars[$v];
+    			//$f=str_replace($v,"\$varsKey['$v']",$f);
+				$tmp = reset($vars[$v]);
+				while(is_array($tmp))
+					$tmp = reset($tmp);
+				$f=str_replace($v,$tmp,$f);
     		}
-    		
     		else $f=str_replace($v,$vars[$v],$f);
     				//if() echo "$f<br>";
     	}
@@ -705,6 +717,7 @@ class FormulaHelpers {
     	{
       		set_error_handler("evalErrorHandler");
 	    	try {
+				\Log::info($varsKey);
     			eval($s);
     			if($show_echo) $logs["variables"][] =  ["content" => "Final result: $vf",	"type" => "value"];
 	    	} catch( Exception $e ){
