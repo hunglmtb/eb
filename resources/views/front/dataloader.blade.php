@@ -115,7 +115,7 @@ var _dataloader = {
 				        formData.append('cal_method', $('#cal_method').val()); 
 				        formData.append('date_begin', $('#date_begin').val()); 
 				        formData.append('date_end', $('#date_end').val());
-				        formData.append('update_db', $('#update_db').val()); 
+				        formData.append('update_db', update_db); 
 				        formData.append('cboOveride', $('#cboOveride').val());  
 				        formData.append('txtTable', $('#txtTable').val());  
 				        formData.append('txtMapping', $('#txtMapping').val());  

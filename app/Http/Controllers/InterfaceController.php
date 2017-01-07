@@ -804,7 +804,7 @@ class InterfaceController extends Controller {
 
 	public function doImportDataLoader(Request $request) {
 		$data = $request->all ();
-		
+		\Log::info($data);
 		$tab = $data ['tabIndex'];
 		$tagColumn = $data ['tagColumn'];
 		$timeColumn = $data ['timeColumn'];
