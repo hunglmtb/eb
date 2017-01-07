@@ -285,7 +285,7 @@ class FormulaHelpers {
     			'TABLE_NAME'		=>	$mdl::getTableName()];
     	
     	if ($flow_phase) $where['FLOW_PHASE']=$flow_phase;
-/* TUNG commented
+/*    	 
 //    	     	\DB::enableQueryLog();
     	$foVars = FoVar::with('Formula')
     						->where($where)
@@ -303,12 +303,13 @@ class FormulaHelpers {
 	    }
 */
 //    	     	\DB::enableQueryLog();
-    	$fos = Formula::where($where)
+    	$foFos = Formula::where($where)
+     						->select('ID')
     						->get();
 //    	     	\Log::info(\DB::getQueryLog());
     	$affectedFormulas = [];
-	    foreach($fos as $fo ){
-	    	$fml = $fo;
+	    foreach($foFos as $foFo ){
+	    	$fml = $foFo->ID;
 	    	if ($fml) {
 		    	$affectedFormulas[] = $fml;
 //  		    	$affectedFormulas[] = $fml->OBJECT_ID;
@@ -319,31 +320,21 @@ class FormulaHelpers {
     	return $affectedFormulas;
     }
     
-    public static function applyAffectedFormula($objectWithformulas,$occur_date){		
+    public static function applyAffectedFormula($objectWithformulas,$occur_date){
+    	\Log::info($objectWithformulas);
+    	\Log::info("applyAffectedFormula: $occur_date");
     	if (!$objectWithformulas) return false;
     	$result = [];
-/*		
     	foreach($objectWithformulas as $objectWithformula){
-			if(is_numeric($objectWithformula)){
-				$formula = Formula::where("ID","=",$objectWithformula)->first();
-				$tableName = strtolower ( $formula->TABLE_NAME);
-				$mdlName = \Helper::camelize($tableName,'_');
-				if (!$mdlName)  continue;
-				$mdl = "App\Models\\$mdlName";
-				$object_id = $formula->OBJECT_ID;
-				$flow_phase= $formula->FLOW_PHASE;
-				$formulas = [$formula];
-			}
-			else{
-				$tableName = strtolower ( $objectWithformula->TABLE_NAME);
-				$mdlName = \Helper::camelize($tableName,'_');
-				if (!$mdlName)  continue;
-				$mdl = "App\Models\\$mdlName";
-				$object_type = $mdl::$typeName;
-				$object_id = $objectWithformula->OBJECT_ID;
-				$flow_phase= $objectWithformula->FLOW_PHASE;
-				$formulas = self::getFormulatedFields($tableName,$object_id,$object_type,$occur_date,$flow_phase);
-			}
+			if(!$objectWithformula) continue;
+	    	$tableName = strtolower ( $objectWithformula->TABLE_NAME);
+	    	$mdlName = \Helper::camelize($tableName,'_');
+	    	if (!$mdlName)  continue;
+	    	$mdl = "App\Models\\$mdlName";
+	    	$object_type = $mdl::$typeName;
+	    	$object_id = $objectWithformula->OBJECT_ID;
+	    	$flow_phase= $objectWithformula->FLOW_PHASE;
+	    	$formulas = self::getFormulatedFields($tableName,$object_id,$object_type,$occur_date,$flow_phase);
 	    	$values = [];
 	    	foreach($formulas as $formula){
 // 	    		$temp_value="'".doFormulaObject($tablename, $field, $object_type, $object_id, $occur_date)."'";
@@ -359,38 +350,18 @@ class FormulaHelpers {
 	    		};
 	    	}
     	}
-*/
-    	foreach($objectWithformulas as $formula){
-			$tableName = strtolower ( $formula->TABLE_NAME);
-			$mdlName = \Helper::camelize($tableName,'_');
-			if (!$mdlName)  continue;
-			$mdl = "App\Models\\$mdlName";
-			$object_id = $formula->OBJECT_ID;
-			$flow_phase= $formula->FLOW_PHASE;
-	    	$values = [];
-			$v=self::evalFormula($formula,$occur_date);
-			if ($v!==null) $values[$formula->VALUE_COLUMN]=$v;
-	    	
-	    	if (count($values)>0) {
-	    		$updateRecord = $mdl::updateWithFormularedValues($values,$object_id,$occur_date,$flow_phase);
-	    		if ($updateRecord) {
-	    			$updateRecord->{"modelName"} = $mdlName;
-	    			$result[] = $updateRecord;
-	    		};
-	    	}
-    	}
     	return $result;
     }
     
     public static function doEvalFormula($formulaId){
-		//\Log::info("doEvalFormula($formulaId)");
+		\Log::info("doEvalFormula($formulaId)");
     	$formula 	= Formula::find($formulaId);
     	return 		self::evalFormula($formula);
     }
     
     public static function evalFormula($formulaRow,$occur_date = null,  $show_echo = false){
-		//\Log::info($formulaRow);
-		//\Log::info("$occur_date, $show_echo");
+		\Log::info($formulaRow);
+		\Log::info("$occur_date, $show_echo");
     	$logs = false;
     	if(!$formulaRow){
     		$logs = $show_echo?["error"		=> true,"reason"	=> "Formula is out of date range"]:false;
@@ -594,7 +565,7 @@ class FormulaHelpers {
     						}
     						$sql .= " limit 100";
     						if($show_echo) $sqlLog=  ["content" 	=> $sql,	"type" 		=> "sql"];
-//      						\DB::enableQueryLog();
+      						\DB::enableQueryLog();
 //      						$getDataResult = DB::table($table)->where( \DB::raw($swhere))->select($field)->skip(0)->take(100)->get();
        						$queryField = DB::table($table)->where($where);
        						if ($swhere) {
@@ -614,7 +585,7 @@ class FormulaHelpers {
        						}
        						 
     						$getDataResult = $queryField->select($field)->skip(0)->take(100)->get();
-//      						\Log::info(\DB::getQueryLog());
+      						\Log::info(\DB::getQueryLog());
     						unset($table);
     						unset($where);
     						unset($params);
