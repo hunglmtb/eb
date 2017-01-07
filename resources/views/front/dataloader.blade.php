@@ -318,7 +318,7 @@ var _dataloader = {
 				style="margin-top: 10px">
 				<tr id="_rh" style="background: #E6E6E6;">
 					<td><b>Overide?</b></td>
-					<td></td>
+					<td align="right"><a href="javascript:$('#boxImpLog').show()">Show last log</a></td>
 				</tr>
 				<tr style="background: #E6E6E6; height: 40px">
 					<td><select id="cboOveride" name="cboOveride" style="width: 100%"><option

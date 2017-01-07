@@ -837,9 +837,25 @@ class InterfaceController extends Controller {
 		$file = $file->move ( public_path () . $tmpFilePath, $tmpFileName );
 		if ($file) {
 			$path = public_path () . $tmpFilePath . $tmpFileName;
+			\Log::info($path);
 			$xxx = Excel::load ( $path, function ($reader) use ($data, $tagColumn, $timeColumn, $valueColumn, $tab, $rowStart, $rowFinish, $date_begin, $date_end, $fileName, $update_db, $cal_method, $path, $mapping, $table_name, $override_data) {
-				$objExcel = $reader->getExcel ();
-				$sheet = $objExcel->getSheet ( 0 );
+				//$objExcel = $reader->getExcel ();
+				//$sheet = $objExcel->getSheet ( 0 );
+				$sheet = $reader->getSheetByName($tab);
+				/*
+				foreach($reader as $_sheet)
+				{
+					// get sheet title
+					\Log::info($_sheet);
+					$sheetTitle = $_sheet->getTitle();
+					if($sheetTitle == $tab){
+						$sheet = $_sheet;
+						break;
+					}
+				}
+				*/
+				if(!$sheet)
+					return;
 				$highestRow = $sheet->getHighestRow ();
 				$highestColumn = $sheet->getHighestColumn ();
 				
@@ -915,6 +931,10 @@ class InterfaceController extends Controller {
 							$X .= ($X ? "," : "") . "`$field`=$value";
 						}
 					}
+					\Log::info($vars);
+					\Log::info($F);
+					\Log::info($V);
+					\Log::info($X);
 				}
 				
 				if ($F) {
@@ -931,6 +951,7 @@ class InterfaceController extends Controller {
 							$X_x = $X;
 							foreach ( $vars as $var => $vvv ) {
 								$value = $sheet->rangeToArray ( $vvv . $row ) [0] [0];
+								\Log::info("rangeToArray ( $vvv . $row )=".$value);
 								// $value=mysql_real_escape_string($sheet->getCell($vvv.$row)->getFormattedValue());//$data->sheets[$i][cells][$j][$var];
 								if ($keys_check_x)
 									$keys_check_x = str_replace ( "@VALUE_$var", $value, $keys_check_x );
@@ -958,7 +979,7 @@ class InterfaceController extends Controller {
 							
 							$sSQL = str_replace ( "''", "null", $sSQL );
 							$status = "Display only";
-							if ($update_db) {
+							if ($update_db == 1) {
 								$status = "Executed";
 								DB::statement ( $sSQL ) or $status = "Error: " . mysql_error ();
 							}
@@ -1003,7 +1024,7 @@ class InterfaceController extends Controller {
 			} );
 		}
 		
-		if (file_exists($path)) { unlink ($path); }
+		//if (file_exists($path)) { unlink ($path); }
 		return response ()->json ($xxx);
 	}
 }
