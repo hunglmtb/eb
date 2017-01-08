@@ -217,7 +217,7 @@ class FormulaHelpers {
     	
 //     	global $object_id,$flow_phase,$occur_date,$facility_id;
     	$mdl = "App\Models\\$mdlName";
-    	$objectType = $mdl::$typeName;
+    	$object_type = $mdl::$typeName;
     	 
     	$result = [];
     	foreach($objectIds as $object_id){
@@ -234,7 +234,7 @@ class FormulaHelpers {
 	    		->where(config("constants.idColumn.$object_type"),$object_id)
 	    		->update($values); */
 	    		
-	    		$updateRecords = $mdl::updateWithFormularedValues($values,$occur_date,$formulas);
+	    		$updateRecords = $mdl::updateWithFormularedValues($values,$object_id,$occur_date,null);
 	    		/* if ($updateRecords>0&&$returnAffectedIds) {
 	    			$result[] = $mdl::where('OCCUR_DATE',$occur_date)
 								    		->where(config("constants.idColumn.$object_type"),$object_id)
@@ -242,7 +242,7 @@ class FormulaHelpers {
 								    		->first()->ID;
 	    		}; */
 	    		
-	    		if ($updateRecords>0&&$returnAffectedIds) {
+	    		if ($updateRecords && $returnAffectedIds) {
 	    			$result[] = $updateRecords;
 	    		};
 	    	}

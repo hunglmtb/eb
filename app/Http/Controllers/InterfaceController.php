@@ -202,6 +202,15 @@ class InterfaceController extends Controller {
 		if(isset($data ['cols_mapping']))
 			$obj ['COLS_MAPPING'] = $data ['cols_mapping'];		
 		
+		if(isset($data ['cols_mapping']))
+			$obj ['COL_OBJECT_ID'] = $data ['col_object'];		
+		
+		if(isset($data ['cols_mapping']))
+			$obj ['COL_DATE'] = $data ['col_date'];		
+		
+		if(isset($data ['cols_mapping']))
+			$obj ['AUTO_FORMULA'] = $data ['auto_formula'];		
+		
 		$result = IntImportSetting::updateOrCreate ( $condition, $obj );
 		$id = $result->ID;
 		
@@ -804,7 +813,7 @@ class InterfaceController extends Controller {
 
 	public function doImportDataLoader(Request $request) {
 		$data = $request->all ();
-		\Log::info($data);
+		//\Log::info($data);
 		$tab = $data ['tabIndex'];
 		$tagColumn = $data ['tagColumn'];
 		$timeColumn = $data ['timeColumn'];
@@ -818,6 +827,10 @@ class InterfaceController extends Controller {
 		$override_data = $data ['cboOveride'];
 		$table_name = addslashes ( $data ['txtTable'] );
 		$mapping = addslashes ( $data ['txtMapping'] );
+		
+		$applyFormula = false;
+		if(isset($data ['apply_formula']))
+			$applyFormula = $data ['apply_formula'];
 		
 		$date_begin = date ( 'Y-m-d', strtotime ( $date_begin ) );
 		$date_end = date ( 'Y-m-d', strtotime ( $date_end ) );
@@ -833,12 +846,10 @@ class InterfaceController extends Controller {
 		$fileName = $tmpFileName;
 		$v = explode ( '.', $tmpFileName );
 		$tmpFileName = $v [0] . '_' . time () . '.' . $v [1];
-		$data = [ ];
 		$file = $file->move ( public_path () . $tmpFilePath, $tmpFileName );
 		if ($file) {
 			$path = public_path () . $tmpFilePath . $tmpFileName;
-			\Log::info($path);
-			$xxx = Excel::load ( $path, function ($reader) use ($data, $tagColumn, $timeColumn, $valueColumn, $tab, $rowStart, $rowFinish, $date_begin, $date_end, $fileName, $update_db, $cal_method, $path, $mapping, $table_name, $override_data) {
+			$xxx = Excel::load ( $path, function ($reader) use ($data, $tagColumn, $timeColumn, $valueColumn, $tab, $rowStart, $rowFinish, $date_begin, $date_end, $fileName, $update_db, $cal_method, $path, $mapping, $table_name, $override_data, $applyFormula) {
 				//$objExcel = $reader->getExcel ();
 				//$sheet = $objExcel->getSheet ( 0 );
 				$sheet = $reader->getSheetByName($tab);
@@ -856,6 +867,13 @@ class InterfaceController extends Controller {
 				*/
 				if(!$sheet)
 					return;
+				if($applyFormula){
+					$objectIds = [];
+					$dates = [];
+					$col_obj_id = $data ['fo_obj_id_col'];
+					$col_date = $data ['fo_date_col'];
+					$fo_mdlName = \Helper::camelize(strtolower ($table_name),'_');
+				}
 				$highestRow = $sheet->getHighestRow ();
 				$highestColumn = $sheet->getHighestColumn ();
 				
@@ -884,6 +902,7 @@ class InterfaceController extends Controller {
 				$str = "";
 				$html = "";
 				$datatype = "";
+				$dateformat = "";
 				if (! $datatype)
 					$datatype = "NUMBER";
 				
@@ -902,7 +921,6 @@ class InterfaceController extends Controller {
 						if (count ( $exps ) == 2) {
 							$field = trim ( $exps [0] );
 							$exp = trim ( $exps [1] );
-							$dateformat = "";
 							$iskey = false;
 							if (strpos ( $exp, '*' ) !== false) {
 								$iskey = true;
@@ -931,10 +949,6 @@ class InterfaceController extends Controller {
 							$X .= ($X ? "," : "") . "`$field`=$value";
 						}
 					}
-					\Log::info($vars);
-					\Log::info($F);
-					\Log::info($V);
-					\Log::info($X);
 				}
 				
 				if ($F) {
@@ -951,13 +965,24 @@ class InterfaceController extends Controller {
 							$X_x = $X;
 							foreach ( $vars as $var => $vvv ) {
 								$value = $sheet->rangeToArray ( $vvv . $row ) [0] [0];
-								\Log::info("rangeToArray ( $vvv . $row )=".$value);
+								//\Log::info("rangeToArray ( $vvv . $row )=".$value);
 								// $value=mysql_real_escape_string($sheet->getCell($vvv.$row)->getFormattedValue());//$data->sheets[$i][cells][$j][$var];
 								if ($keys_check_x)
 									$keys_check_x = str_replace ( "@VALUE_$var", $value, $keys_check_x );
 								$V_x = str_replace ( "@VALUE_$var", $value, $V_x );
 								$X_x = str_replace ( "@VALUE_$var", $value, $X_x );
 							}
+							if($applyFormula){
+								if($col_obj_id){
+									$value = $sheet->rangeToArray ( $col_obj_id . $row ) [0] [0];
+									$objectIds[] = $value;
+								}
+								if($col_date){
+									$value = $sheet->rangeToArray ( $col_date . $row ) [0] [0];
+									$dates[] = $value;
+								}
+							}
+							
 							$sSQL = "";
 							$isInsert = true;
 							if ($keys_check_x) {
@@ -989,6 +1014,20 @@ class InterfaceController extends Controller {
 					}
 				}
 				
+// Process revelant formula
+				$objectIds = array_unique($objectIds);
+				$dates = array_unique($dates);
+				if($applyFormula && $fo_mdlName && count($objectIds) > 0 && count($dates) > 0 && $dateformat){
+					$tmp_date_format = str_replace("%","",$dateformat);
+					foreach($dates as $date){
+						$occur_date = Carbon::createFromFormat($tmp_date_format, $date)."";
+						$occur_date = explode(" ", $occur_date);
+						$occur_date = $occur_date[0];
+						$applieds = \FormulaHelpers::applyFormula($fo_mdlName,$objectIds,$occur_date);
+					}
+				}
+///////////////////////////							
+
 				$end_time=date('Y-m-d H:i:s');
 				$sSQL="update `int_import_log` set `END_TIME`='$end_time',TAGS_READ='$tags_read',TAGS_LOADED='$tags_loaded',TAGS_REJECTED='$tags_rejected',TAGS_OVERRIDE='$tags_override' where ID=$log_id";
 				$sSQL=str_replace("''","null",$sSQL);
@@ -1023,6 +1062,7 @@ class InterfaceController extends Controller {
 				$reader->select(['str'=>$str])->first();
 			} );
 		}
+		$data = [ ];
 		
 		//if (file_exists($path)) { unlink ($path); }
 		return response ()->json ($xxx);
