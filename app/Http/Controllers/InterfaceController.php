@@ -926,6 +926,7 @@ class InterfaceController extends Controller {
 								$iskey = true;
 								$exp = str_replace ( '*', '', $exp );
 							}
+							$dateformat = "";
 							$k = strpos ( $exp, '{' );
 							if ($k > 0) {
 								$l = strpos ( $exp, '}', $k );
