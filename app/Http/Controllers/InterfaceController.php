@@ -1015,9 +1015,9 @@ class InterfaceController extends Controller {
 				}
 				
 // Process revelant formula
-				$objectIds = array_unique($objectIds);
-				$dates = array_unique($dates);
 				if($applyFormula && $fo_mdlName && count($objectIds) > 0 && count($dates) > 0 && $dateformat){
+					$objectIds = array_unique($objectIds);
+					$dates = array_unique($dates);
 					$tmp_date_format = str_replace("%","",$dateformat);
 					foreach($dates as $date){
 						$occur_date = Carbon::createFromFormat($tmp_date_format, $date)."";
