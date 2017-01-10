@@ -20,6 +20,17 @@ class StorageController extends CodeController {
 // 		$this->theorModel = "TankDataTheor";
 	}
 	
+	public function getObjectIds($dataSet,$postData){
+		$objectIds = $dataSet->map(function ($item, $key) {
+			return ["DT_RowId"			=> $item->DT_RowId,
+					"OBJ_FLOW_PHASE"	=> $item->OBJ_FLOW_PHASE,
+					"X_TANK_ID"			=> $item->X_TANK_ID
+// 					"TANK_ID"			=> $item->TANK_ID,
+			];
+		});
+			return $objectIds;
+	}
+	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	$product_type = $postData['CodeProductType'];
     	switch ($dcTable) {

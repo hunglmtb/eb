@@ -73,8 +73,7 @@ class FlowController extends CodeController {
     				"X_FLOW_ID"			=> $item->X_FLOW_ID
     		];
     	});
-    		 
-    		return $objectIds;
+    	return $objectIds;
     }
     
 	public function getHistoryConditions($dcTable,$rowData,$row_id){

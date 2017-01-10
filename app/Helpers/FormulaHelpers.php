@@ -285,7 +285,7 @@ class FormulaHelpers {
     			'TABLE_NAME'		=>	$mdl::getTableName()];
     	
     	if ($flow_phase) $where['FLOW_PHASE']=$flow_phase;
-/* TUNG commented
+//TUNG commented
 //    	     	\DB::enableQueryLog();
     	$foVars = FoVar::with('Formula')
     						->where($where)
@@ -301,7 +301,7 @@ class FormulaHelpers {
 //  		    	$affectedFormulas[] = $fml->OBJECT_ID;
 	    	}
 	    }
-*/
+/*
 //    	     	\DB::enableQueryLog();
     	$fos = Formula::where($where)
     						->get();
@@ -314,15 +314,15 @@ class FormulaHelpers {
 //  		    	$affectedFormulas[] = $fml->OBJECT_ID;
 	    	}
 	    }
+	     */
  	    $affectedFormulas = array_unique($affectedFormulas);
-	     
     	return $affectedFormulas;
     }
     
     public static function applyAffectedFormula($objectWithformulas,$occur_date){		
     	if (!$objectWithformulas) return false;
     	$result = [];
-/*		
+
     	foreach($objectWithformulas as $objectWithformula){
 			if(is_numeric($objectWithformula)){
 				$formula = Formula::where("ID","=",$objectWithformula)->first();
@@ -359,7 +359,8 @@ class FormulaHelpers {
 	    		};
 	    	}
     	}
-*/
+
+    	/*
     	foreach($objectWithformulas as $formula){
 			$tableName = strtolower ( $formula->TABLE_NAME);
 			$mdlName = \Helper::camelize($tableName,'_');
@@ -379,6 +380,7 @@ class FormulaHelpers {
 	    		};
 	    	}
     	}
+    	*/
     	return $result;
     }
     
