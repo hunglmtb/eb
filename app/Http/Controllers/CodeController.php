@@ -617,7 +617,18 @@ class CodeController extends EBController {
 	protected function getAffectedObjects($mdlName,$columns,$newData){
 		$mdl = "App\Models\\".$mdlName;
 		$idField = $mdl::$idField;
-		$objectId = is_array($newData)? $newData [$idField]:$newData;
+		$objectId = 0;
+		if(is_array($newData)){
+			$objectId = $newData [$idField];
+		}
+		else{
+			$res = $mdl::where("ID","=",$newData)->select($idField)->first();
+			if($res) $objectId = $res->$idField;
+		}
+		if(!$objectId)
+			return [];
+		//$objectId = is_array($newData)? $newData [$idField]:$newData;
+//		\Log::info("objectId: $objectId");
 // 		$flowPhase = $newData [config ( "constants.euFlowPhase" )];
 		$flowPhase = $this->getFlowPhase($newData);
 		$aFormulas = \FormulaHelpers::getAffects ( $mdlName, $columns, $objectId,$flowPhase);

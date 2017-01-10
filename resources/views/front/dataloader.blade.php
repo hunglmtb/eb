@@ -3,9 +3,7 @@ $currentSubmenu = '/dataloader';
 ?>
 
 @extends('core.bsinterface')
-@section('title')
-<div style="margin: 0px 10px;" class="function_title">DATA LOADER</div>
-@stop @section('group')
+@section('group')
 @stop @section('content')
 <script src="/common/js/jquery.js"></script>
 <script src="/common/js/jquery-ui.js"></script>
@@ -17,7 +15,7 @@ $currentSubmenu = '/dataloader';
 
 <style>
 table td {
-	font-size: 10pt
+	font-size: 9pt
 }
 
 .readonlytext {
@@ -85,6 +83,9 @@ var _dataloader = {
 				$("#rowFinish").val(data.ROW_FINISH);
 				$("#txtTable").val(data.TABLE);
 				$("#txtMapping").val(data.COLS_MAPPING);
+				$("#txt_fo_obj_col").val(data.COL_OBJECT_ID);
+				$("#txt_fo_date_col").val(data.COL_DATE);
+				$("#chk_auto_apply_formula").attr('checked', data.AUTO_FORMULA=="1");
 			});
 		},
 		doImport : function(update_db)
@@ -115,10 +116,14 @@ var _dataloader = {
 				        formData.append('cal_method', $('#cal_method').val()); 
 				        formData.append('date_begin', $('#date_begin').val()); 
 				        formData.append('date_end', $('#date_end').val());
-				        formData.append('update_db', $('#update_db').val()); 
+				        formData.append('update_db', update_db); 
 				        formData.append('cboOveride', $('#cboOveride').val());  
 				        formData.append('txtTable', $('#txtTable').val());  
-				        formData.append('txtMapping', $('#txtMapping').val());  
+				        formData.append('txtMapping', $('#txtMapping').val());
+						
+				        formData.append('apply_formula', $('#chk_auto_apply_formula').is(":checked")?"1":"");
+				        formData.append('fo_obj_id_col', $('#txt_fo_obj_col').val().trim());
+				        formData.append('fo_date_col', $('#txt_fo_date_col').val().trim());
 				    }
 
 					$.ajax({
@@ -163,14 +168,17 @@ var _dataloader = {
 					'row_start' : $("#rowStart").val(),
 					'row_finish' : $("#rowFinish").val(),
 					'cols_mapping' : $("#txtMapping").val(),
-					'table' : $("#txtTable").val()
+					'table' : $("#txtTable").val(),
+					'col_object' : $("#txt_fo_obj_col").val(),
+					'col_date' : $("#txt_fo_date_col").val(),
+					'auto_formula' : $('#chk_auto_apply_formula').is(":checked")?1:0,
 				};
-				
 				sendAjax('/saveimportsetting', param, function(data){
 						alert("Setting saved successfully");
-						var _data = data.int_import_setting;
-						_dataloader.loadSettings(_data, 'cboImportSettings');
-						$('#cboImportSettings').val(data.id);
+						if(isSaveAs){
+							var _data = data.int_import_setting;
+							_dataloader.loadSettings(_data, 'cboImportSettings', data.id);
+						}
 				});	
 		},
 		loadFields : function(){
@@ -222,8 +230,7 @@ var _dataloader = {
 			
 			sendAjax('/renamesetting', param, function(data){
 				var _data = data.int_import_setting;
-				_dataloader.loadSettings(_data, 'cboImportSettings');
-				$('#cboImportSettings').val(data.id);
+				_dataloader.loadSettings(_data, 'cboImportSettings',data.id);
 			});
 		},
 		loadSettings : function (data, id, value){
@@ -288,7 +295,7 @@ var _dataloader = {
 						onclick="_dataloader.deleteSetting()">
 
 					<div id="boxSetting"
-						style="box-sizing: border-box; width: 900px; background: #e6e6e6; padding: 10px; margin: 10px 0px;">
+						style="box-sizing: border-box; width: 600px; background: #e6e6e6; padding: 10px; margin: 10px 0px;">
 						<span
 							style="display: block; float: left; width: 80px; margin: 3px">Table</span>
 						<input id="txtTable" name="txtTable"
@@ -310,16 +317,22 @@ var _dataloader = {
 							mapping</span>
 						<textarea id="txtMapping" name="txtMapping"
 							style="width: 480px; height: 150px; margin: 3px;"></textarea>
-						<br>
-
 					</div>
 				</div>
 			</div>
+			<fieldset style="width:200px;height:140px;position:absolute;top:170px;left:620px;">
+				<legend>Apply formula</legend>
+				<table>
+				<tr><td colspan="2"><input type="checkbox" checked id="chk_auto_apply_formula"> <label for="chk_auto_apply_formula">Auto apply formula</label></td></tr>
+				<tr><td>Object ID column</td><td><input type="text" id="txt_fo_obj_col" style="width:50px"></td></tr>
+				<tr><td>Occur Date column</td><td><input type="text" id="txt_fo_date_col" style="width:50px"></td></tr>
+				</table>
+			</fieldset>
 			<table cellpadding="2" cellspacing="0" id="table1"
 				style="margin-top: 10px">
 				<tr id="_rh" style="background: #E6E6E6;">
 					<td><b>Overide?</b></td>
-					<td></td>
+					<td align="right"><a href="javascript:$('#boxImpLog').show()">Show last log</a></td>
 				</tr>
 				<tr style="background: #E6E6E6; height: 40px">
 					<td><select id="cboOveride" name="cboOveride" style="width: 100%"><option

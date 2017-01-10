@@ -18,7 +18,10 @@ use App\Models\DynamicModel;
 		'COL_TIME',
 		'COL_VALUE',
 		'ROW_START',
-		'ROW_FINISH'
+		'ROW_FINISH',
+		'COL_OBJECT_ID',
+		'COL_DATE',
+		'AUTO_FORMULA'
 	];
 	
 } 

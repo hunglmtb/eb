@@ -868,7 +868,7 @@ if($identity_id<=0)
             	}
                 $control 		= $this->get_input_control($column_name, $value,$command, 'form');
                 $mdl 			= $this->modelTable;
-                $control 		.= $this->addRegisterDependences($mdl,$column_name);
+                //$control 		.= $this->addRegisterDependences($mdl,$column_name);
                 
             }
             else

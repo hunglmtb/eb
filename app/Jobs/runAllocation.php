@@ -1022,6 +1022,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 				$this->_log ( $sSQL, 2 );
 
 				// ////// Flow COST_INT_CTR allocation
+/*
 				if ($this->alloc_act == "run") {
 					FlowCoEntDataAlloc::where ( [
 							'FLOW_ID' => $row->OBJECT_ID
@@ -1029,7 +1030,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 					$sSQL = "delete from FLOW_CO_ENT_DATA_ALLOC where FLOW_ID=" . $row->OBJECT_ID . " and OCCUR_DATE='".$row->OCCUR_DATE."'";
 					$this->_log ( $sSQL, 2 );
 				}
-
+*/
 				$re_co = DB::table ( 'FLOW AS a' )->join ( 'COST_INT_CTR_DETAIL AS b', 'a.COST_INT_CTR_ID', '=', 'b.COST_INT_CTR_ID' )->where ( [
 						'a.ID' => $row->OBJECT_ID,
 						'b.FLOW_PHASE' => $alloc_phase
@@ -1041,16 +1042,30 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 
 				foreach ( $re_co as $ro_co ) {
 					$v_co = $v_to * $ro_co->ALLOC_PERCENT / 100;
-					if ($this->alloc_act == "run") {
-						FlowCoEntDataAlloc::insert ( [
-								'FLOW_ID' => $row->OBJECT_ID,
-								'OCCUR_DATE' => $row->OCCUR_DATE,
-								'COST_INT_CTR_ID' => $ro_co->COST_INT_CTR_ID,
-								'BA_ID' => $ro_co->BA_ID,
+					$ro = FlowCoEntDataAlloc::where ( [
+							'FLOW_ID' => $row->OBJECT_ID,
+							'COST_INT_CTR_ID' => $ro_co->COST_INT_CTR_ID,
+							'BA_ID' => $ro_co->BA_ID
+					] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->select ( 'ID' )->first ();
+					if (count ( $ro ) > 0) {
+						FlowCoEntDataAlloc::where ( [
+								'ID' => $ro->ID
+						] )->update ( [
 								'FL_DATA_' . $alloc_attr => $v_co
 						] );
+						$sSQL = "update FLOW_CO_ENT_DATA_ALLOC set FL_DATA_" . $alloc_attr . "=" . $v_co . " where ID=".$ro->ID;
+					} else {
+						if ($this->alloc_act == "run") {
+							FlowCoEntDataAlloc::insert ( [
+									'FLOW_ID' => $row->OBJECT_ID,
+									'OCCUR_DATE' => $row->OCCUR_DATE,
+									'COST_INT_CTR_ID' => $ro_co->COST_INT_CTR_ID,
+									'BA_ID' => $ro_co->BA_ID,
+									'FL_DATA_' . $alloc_attr => $v_co
+							] );
+						}
+						$sSQL = "insert into FLOW_CO_ENT_DATA_ALLOC(`FLOW_ID`,`OCCUR_DATE`,COST_INT_CTR_ID,BA_ID,FL_DATA_" . $alloc_attr . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "','" . $ro_co->COST_INT_CTR_ID . "','" . $ro_co->BA_ID . "'," . $v_co . ")";
 					}
-					$sSQL = "insert into FLOW_CO_ENT_DATA_ALLOC(`FLOW_ID`,`OCCUR_DATE`,COST_INT_CTR_ID,BA_ID,FL_DATA_" . $alloc_attr . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "','" . $ro_co->COST_INT_CTR_ID . "','" . $ro_co->BA_ID . "'," . $v_co . ")";
 					$this->_log ( $sSQL, 2 );
 				}
 				// /////// END of Flow COST_INT_CTR allocation
@@ -1085,7 +1100,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 				}
 
 				$this->_log ( $sSQL, 2 );
-
+/*
 				if ($this->alloc_act == "run") {
 					EnergyUnitCoEntDataAlloc::where ( [
 							'EU_ID' => $row->OBJECT_ID,
@@ -1096,7 +1111,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 					$sSQL = "delete from ENERGY_UNIT_CO_ENT_DATA_ALLOC where EU_ID=" . $row->OBJECT_ID." and OCCUR_DATE='".$row->OCCUR_DATE."' and FLOW_PHASE=$alloc_phase and EVENT_TYPE=$event_type and ALLOC_TYPE=$alloc_type";
 					$this->_log ( $sSQL, 2 );
 				}
-
+*/
 				// ////// Well COST_INT_CTR allocation
 				$re_co = DB::table ( 'ENERGY_UNIT AS a' )->join ( 'COST_INT_CTR_DETAIL AS b', 'a.COST_INT_CTR_ID', '=', 'b.COST_INT_CTR_ID' )->where ( [
 						'a.ID' => $row->OBJECT_ID,
@@ -1108,19 +1123,38 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 				] );
 				foreach ( $re_co as $ro_co ) {
 					$v_co = $v_to * $ro_co->ALLOC_PERCENT / 100;
-					if ($this->alloc_act == "run") {
-						EnergyUnitCoEntDataAlloc::insert ( [
-								'EU_ID' => $row->OBJECT_ID,
-								'OCCUR_DATE' => $row->OCCUR_DATE,
-								'FLOW_PHASE' => $alloc_phase,
-								'EVENT_TYPE' => $event_type,
-								'ALLOC_TYPE' => $alloc_type,
-								'COST_INT_CTR_ID' => $ro_co->COST_INT_CTR_ID,
-								'BA_ID' => $ro_co->BA_ID,
-								'EU_DATA_' . $alloc_attr_eu => $v_co
-						] );
+					$ro = EnergyUnitCoEntDataAlloc::where ( [
+									'EU_ID' => $row->OBJECT_ID,
+									'FLOW_PHASE' => $alloc_phase,
+									'EVENT_TYPE' => $event_type,
+									'ALLOC_TYPE' => $alloc_type,
+									'COST_INT_CTR_ID' => $ro_co->COST_INT_CTR_ID,
+									'BA_ID' => $ro_co->BA_ID
+					] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->select ( 'ID' )->first ();
+					if (count ( $ro ) > 0) {
+						if ($this->alloc_act == "run") {
+							EnergyUnitCoEntDataAlloc::where ( [
+									'ID' => $ro->ID
+							] )->update ( [
+									'EU_DATA_' . $alloc_attr_eu => $v_co
+							] );
+						}
+						$sSQL = "update ENERGY_UNIT_CO_ENT_DATA_ALLOC set EU_DATA_" . $alloc_attr_eu . "='" . $v_co . "' where ID=" . $ro->ID;
+					} else {
+						if ($this->alloc_act == "run") {
+							EnergyUnitCoEntDataAlloc::insert ( [
+									'EU_ID' => $row->OBJECT_ID,
+									'OCCUR_DATE' => $row->OCCUR_DATE,
+									'FLOW_PHASE' => $alloc_phase,
+									'EVENT_TYPE' => $event_type,
+									'ALLOC_TYPE' => $alloc_type,
+									'COST_INT_CTR_ID' => $ro_co->COST_INT_CTR_ID,
+									'BA_ID' => $ro_co->BA_ID,
+									'EU_DATA_' . $alloc_attr_eu => $v_co
+							] );
+						}
+						$sSQL = "insert into ENERGY_UNIT_CO_ENT_DATA_ALLOC(`EU_ID`,`OCCUR_DATE`,FLOW_PHASE,EVENT_TYPE,ALLOC_TYPE,COST_INT_CTR_ID,BA_ID,EU_DATA_" . $alloc_attr_eu . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "'," . $alloc_phase . "," . $event_type . ",'" . $alloc_type . "','" . $ro_co->COST_INT_CTR_ID . "','" . $ro_co->BA_ID . "'," . $v_co . ")";
 					}
-					$sSQL = "insert into ENERGY_UNIT_CO_ENT_DATA_ALLOC(`EU_ID`,`OCCUR_DATE`,FLOW_PHASE,EVENT_TYPE,ALLOC_TYPE,COST_INT_CTR_ID,BA_ID,EU_DATA_" . $alloc_attr_eu . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "'," . $alloc_phase . "," . $event_type . ",'" . $alloc_type . "','" . $ro_co->COST_INT_CTR_ID . "','" . $ro_co->BA_ID . "'," . $v_co . ")";
 					$this->_log ( $sSQL, 2 );
 				}
 				// /////// END of Well COST_INT_CTR allocation
