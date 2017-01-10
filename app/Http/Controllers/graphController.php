@@ -375,7 +375,14 @@ class graphController extends Controller {
 						$strData .= ",\r\n";
 					}
 					$dateTime 		= $row->$datefield;
-					if ($dateTime) {
+					if (is_string($dateTime)) {
+						try {
+							$dateTime	= Carbon::parse($dateTime);
+						} catch (Exception $e) {
+							\Log::info ( $e->getMessage() );
+						}
+					}
+					if ($dateTime instanceof  Carbon) {
 						$dateTimeText 	= sprintf("%d,%d,%d", $dateTime->year,$dateTime->month-1,$dateTime->day);
 						$strData .= "[Date.UTC(".$dateTimeText."), ".$row->V."]";
 						$i++;
