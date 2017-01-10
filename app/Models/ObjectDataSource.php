@@ -7,6 +7,8 @@ use App\Trail\ObjectNameLoad;
  class ObjectDataSource extends DynamicModel {
  	use ObjectNameLoad;
  	
+ 	protected $table = 'GRAPH_DATA_SOURCE';
+ 	
  	protected $primaryKey = 'ID2';
  	
 	public static function loadBy($sourceData){
@@ -14,8 +16,9 @@ use App\Trail\ObjectNameLoad;
 		if ($sourceData!=null&&is_array($sourceData)) {
 			$objectType 	= $sourceData['IntObjectType'];
 			$code 			= $objectType->CODE;
-			$datasource 	= config("constants.tab");
-			$collection		= $datasource[$code];
+			$collection		= ObjectDataSource::where("SOURCE_TYPE",$code)->select("SOURCE_NAME as ID","SOURCE_NAME as NAME")->get();
+// 			$datasource 	= config("constants.tab");
+// 			$collection		= $datasource[$code];
 			$result 		= collect();
 			$collection 	= $collection->each(function ($item, $key) use(&$result){
 				$instance 	= new ObjectDataSource();

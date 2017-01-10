@@ -10,7 +10,7 @@ use App\Repositories\UserRepository as UserRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
-
+use Illuminate\Database\Eloquent\Relations\Relation;
 class ProductionGroupComposer
 {
     /**
@@ -257,8 +257,8 @@ class ProductionGroupComposer
     		if (method_exists($currentUnit,$model)) {
 				$entry = $currentUnit->$model($option);
 				if ($entry) {
-					if ($entry instanceof Collection) $eCollection = $entry;
-					else  $eCollection = $entry->getResults();
+					if ($entry instanceof Collection || is_array($entry)) $eCollection = $entry;
+					else if ($entry instanceof Relation)   $eCollection = $entry->getResults();
 				}
 				$currentId = isset($option[$model]['id'])?$option[$model]['id']:null;
     		}
@@ -272,8 +272,8 @@ class ProductionGroupComposer
 			else if(!is_array($currentUnit)&&method_exists($currentUnit,$modelName)){
 				$entry = $currentUnit->$modelName($option);
 				if ($entry) {
-					if ($entry instanceof Collection) $eCollection = $entry;
-					else  $eCollection = $entry->getResults();
+					if ($entry instanceof Collection || is_array($entry)) $eCollection = $entry;
+					else if ($entry instanceof Relation)   $eCollection = $entry->getResults();
 				}
 			}
 			
