@@ -38,8 +38,7 @@ class EuController extends CodeController {
 					"X_EU_ID"			=> $item->X_EU_ID
 			];
 		});
-			 
-			return $objectIds;
+		return $objectIds;
 	}
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){

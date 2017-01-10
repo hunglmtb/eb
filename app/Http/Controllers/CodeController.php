@@ -553,52 +553,6 @@ class CodeController extends EBController {
      	}
     }
     
-    protected function updateObjectWithCalculation($objectIds,$occur_date,$postData) {
-    	if ($objectIds) {
-    		
-    		foreach($objectIds as $key => $newData ){
-    			$columns 			= $mdl::getKeyColumns($newData,$occur_date,$postData);
-    			$originNewData		= $mdlData[$key];
-    			$mdlData[$key] 		= $newData;
-    			$returnRecord 		= $mdl::updateOrCreateWithCalculating($columns, $newData);
-    			if ($returnRecord) {
-    				$affectRecord 	= $returnRecord->updateDependRecords($occur_date,$originNewData,$postData);
-    				$returnRecord->updateAudit($columns,$newData,$postData);
-    				$ids[$mdlName][] = $returnRecord['ID'];
-    				$resultRecords[$mdlName][] = $returnRecord;
-    				if ($affectRecord) {
-    					$ids[$mdlName][] = $affectRecord['ID'];
-    					$resultRecords[$mdlName][] = $affectRecord;
-    				}
-    		
-    			}
-    		}
-    		foreach($objectIds as $mdlName => $mdlData ){
-    			if (!is_array($mdlData)) continue;
-	     		$modelName = $this->getModelName($mdlName,$postData);
-	     		\FormulaHelpers::doFormula($modelName,'ID',$mdlData);
-    		}
-    		
-    		if ($this->isApplyFormulaAfterSaving) {
-    			//get affected object with id
-    			$objectWithformulas = [];
-    			foreach($objectIds as $mdlName => $mdlData ){
-    				$mdl = "App\Models\\".$mdlName;
-    				$columns = \Schema::getColumnListing($mdl::getTableName());
-    				foreach($mdlData as $key => $newData ){
-    					$aFormulas 			= $this->getAffectedObjects($mdlName,$columns,$newData);
-    					$objectWithformulas = array_merge($objectWithformulas,$aFormulas);
-    				}
-    			}
-    			$objectWithformulas = array_unique($objectWithformulas);
-    			$applieds = \FormulaHelpers::applyAffectedFormula($objectWithformulas,$occur_date);
-    		}
-	    	return $objectIds;
-    	}
-    	return null;
-    }
-    
-    
     protected function deleteData($postData) {
     	if (array_key_exists ('deleteData', $postData )) {
     		$deleteData = $postData['deleteData'];

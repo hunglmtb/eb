@@ -3,8 +3,8 @@ namespace App\Models;
 
  class FeatureKeystore extends EbBussinessModel { 
 	protected static $objectModelName 	= null;
-	public static $foreignKeystore 	= null;
-	protected $dates 				= ['OCCUR_DATE'];
+	public static $foreignKeystore 		= null;
+	protected $dates 					= ['OCCUR_DATE'];
 	
 	public static function getEntries($facility_id=null,$product_type = 0){
 		$oModel = static::$objectModelName;

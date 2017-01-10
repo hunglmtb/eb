@@ -248,6 +248,8 @@ var actions = {
 								var activeTabID = getActiveTabID();
 								var postData = actions.loadedData[activeTabID];
 								actions.updateView(postData);
+								var table =$("#table"+activeTabID).DataTable();
+								table.draw();
 							}
 						},
 	loadParams 			: function (reLoadParams){
@@ -1273,7 +1275,7 @@ var actions = {
 		          "columnDefs": uoms,
 		          "scrollX": true,
 //		         "autoWidth": false,
-		         "autoWidth": true,
+		         "autoWidth": false,
 //		       	"scrollY":        "37vh",
 //		         "scrollY":        "250px",
 		       	scrollY:        tHeight,
