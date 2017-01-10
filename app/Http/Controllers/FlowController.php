@@ -18,13 +18,11 @@ class FlowController extends CodeController {
 		$this->theorModel = "FlowDataTheor";
 		$this->isApplyFormulaAfterSaving = true;
 		$this->keyColumns = [$this->idColumn,$this->phaseColumn];
-		$this->enableBatchRun 				= true;
-		
 	}
 	
-	/* public function getFirstProperty($dcTable){
-		return  ['data'=>$dcTable,'title'=>'Object name','width'=>230];
-	} */
+	public function enableBatchRun($dataSet,$mdlName,$postData){
+		return true;
+	}
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	$record_freq = $postData['CodeReadingFrequency'];
@@ -65,6 +63,18 @@ class FlowController extends CodeController {
 		    			->get();
     	//  		\Log::info(\DB::getQueryLog());
     	return ['dataSet'=>$dataSet];
+    }
+    
+    public function getObjectIds($dataSet,$postData){
+    	$objectIds = $dataSet->map(function ($item, $key) {
+    		return ["DT_RowId"			=> $item->DT_RowId,
+    				"FL_FLOW_PHASE"		=> $item->FL_FLOW_PHASE,
+    				"FLOW_ID"			=> $item->FLOW_ID,
+    				"X_FLOW_ID"			=> $item->X_FLOW_ID
+    		];
+    	});
+    		 
+    		return $objectIds;
     }
     
 	public function getHistoryConditions($dcTable,$rowData,$row_id){

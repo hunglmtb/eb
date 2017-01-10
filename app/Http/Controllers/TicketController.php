@@ -13,7 +13,10 @@ class TicketController extends CodeController {
 		
  		$this->valueModel = "RunTicketValue";
 		$this->keyColumns = [$this->idColumn,$this->phaseColumn,'TANK_ID','OCCUR_DATE','TICKET_NO'];
-		$this->enableBatchRun 				= true;
+	}
+	
+	public function enableBatchRun($dataSet,$mdlName,$postData){
+		return true;
 	}
 	
     public function getFirstProperty($dcTable){

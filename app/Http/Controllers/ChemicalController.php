@@ -17,7 +17,10 @@ class ChemicalController extends CodeController {
     
 	public function __construct() {
 		parent::__construct();
-		$this->enableBatchRun 				= false;
+	}
+	
+	public function enableBatchRun($dataSet,$mdlName,$postData){
+		return true;
 	}
 	
 	public function getFirstProperty($dcTable){

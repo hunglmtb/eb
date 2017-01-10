@@ -14,18 +14,20 @@ class EuController extends CodeController {
 	public function __construct() {
 		parent::__construct();
 		$this->isApplyFormulaAfterSaving = true;
-		$this->fdcModel = "EnergyUnitDataFdcValue";
-		$this->idColumn = config("constants.euId");
-		$this->phaseColumn = config("constants.euFlowPhase");
+		$this->fdcModel 	= "EnergyUnitDataFdcValue";
+		$this->idColumn 	= config("constants.euId");
+		$this->phaseColumn 	= config("constants.euFlowPhase");
 		
-		$this->valueModel = "EnergyUnitDataValue";
-		$this->theorModel = "EnergyUnitDataTheor";
+		$this->valueModel 	= "EnergyUnitDataValue";
+		$this->theorModel 	= "EnergyUnitDataTheor";
 		
-		$this->keyColumns = [$this->idColumn,$this->phaseColumn];
+		$this->keyColumns 	= [$this->idColumn,$this->phaseColumn];
 		$this->keyColumns[] = config("constants.eventType");
-		
-		$this->enableBatchRun 				= true;
-		
+	}
+	
+
+	public function enableBatchRun($dataSet,$mdlName,$postData){
+		return true;
 	}
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
@@ -98,6 +100,17 @@ class EuController extends CodeController {
     }
     
     
+    public function checkExistPostEntry($editedData,$model,$element,$idColumn){
+    	$found	= current(array_filter($editedData[$model], function($item) use($model,$element) { 
+    		return $item[config("constants.euId")] 	== $element[config("constants.euId")]&&
+    				$item["EU_FLOW_PHASE"] 			== $element["EU_FLOW_PHASE"]&&
+    				count($item)>4;
+    		;
+    	}));
+    	
+    	return $found===FALSE;
+    }
+    
     protected function afterSave($resultRecords,$occur_date) {
 //     	\DB::enableQueryLog();
     	foreach($resultRecords as $mdlName => $records ){
@@ -117,7 +130,8 @@ class EuController extends CodeController {
     	$objectIds = $dataSet->map(function ($item, $key) {
     		return ["DT_RowId"			=> $item->DT_RowId,
     				"EU_FLOW_PHASE"		=> $item->EU_FLOW_PHASE,
-    				"EU_ID"				=>$item->EU_ID
+    				"EU_ID"				=> $item->EU_ID,
+    				"X_EU_ID"			=> $item->EU_ID
     		];
     	});
     	

@@ -302,17 +302,18 @@ var actions = {
 									console.log ( "doLoad url: "+this.loadUrl );
 									actions.readyToLoad = true;
 									showWaiting();
-									actions.editedData = {};
+//									actions.editedData = {};
 									$.ajax({
 										url: this.loadUrl,
 										type: "post",
 										data: actions.loadParams(reLoadParams),
 										success:function(data){
 											hideWaiting();
+//											if(reLoadParams) actions.editedData = {};
 											if(data!=null&&data.hasOwnProperty('objectIds')){
 												jQuery.extend(actions.objectIds, data.objectIds);
+												jQuery.extend(actions.editedData, data.objectIds);
 											}
-											actions.editedData = {};
 											if (typeof(actions.loadSuccess) == "function") {
 												actions.loadSuccess(data);
 											}
@@ -1265,8 +1266,8 @@ var actions = {
 		          destroy: true,
 		          "columnDefs": uoms,
 		          "scrollX": true,
-//		         "autoWidth": false,
-		         "autoWidth": "800px",
+		         "autoWidth": false,
+//		         "autoWidth": "800px",
 //		       	"scrollY":        "37vh",
 //		         "scrollY":        "250px",
 		       	scrollY:        tHeight,
