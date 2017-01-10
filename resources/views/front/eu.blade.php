@@ -9,7 +9,7 @@
 			'EnergyUnitDataPlan'		=> ['name'=>Lang::has("front/site.Plan", $lang)?trans("front/site.Plan"):"Plan"],                            
 			'EnergyUnitDataForecast'	=> ['name'=>Lang::has("front/site.Forecast", $lang)?trans("front/site.Forecast"):"Forecast"],                
 	];
- 	$active = 1;
+ 	$active = 3;
 ?>
 
 @extends('core.pm')

@@ -30,6 +30,18 @@ class EuController extends CodeController {
 		return true;
 	}
 	
+	public function getObjectIds($dataSet,$postData){
+		$objectIds = $dataSet->map(function ($item, $key) {
+			return ["DT_RowId"			=> $item->DT_RowId,
+					"EU_FLOW_PHASE"		=> $item->EU_FLOW_PHASE,
+					"EU_ID"				=> $item->X_EU_ID,
+					"X_EU_ID"			=> $item->X_EU_ID
+			];
+		});
+			 
+			return $objectIds;
+	}
+	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	$eu_group_id = $postData['EnergyUnitGroup'];
     	$record_freq = $postData['CodeReadingFrequency'];
@@ -124,18 +136,6 @@ class EuController extends CodeController {
     
     protected function getFlowPhase($newData) {
     	return $newData [config ( "constants.euFlowPhase" )];
-    }
-    
-    public function getObjectIds($dataSet,$postData){
-    	$objectIds = $dataSet->map(function ($item, $key) {
-    		return ["DT_RowId"			=> $item->DT_RowId,
-    				"EU_FLOW_PHASE"		=> $item->EU_FLOW_PHASE,
-    				"EU_ID"				=> $item->EU_ID,
-    				"X_EU_ID"			=> $item->EU_ID
-    		];
-    	});
-    	
-    	return $objectIds;
     }
     
     public function getHistoryConditions($dcTable,$rowData,$row_id){

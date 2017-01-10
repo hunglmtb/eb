@@ -156,8 +156,14 @@ class CodeController extends EBController {
     }
     
     public function getObjectIds($dataSet,$postData){
-    	$dswk 	= $dataSet->keyBy('DT_RowId');
+    	/* $dswk 	= $dataSet->keyBy('DT_RowId');
     	$objectIds = $dswk->keys();
+    	 */
+    	$objectIds = $dataSet->map(function ($item, $key) {
+    		return ["DT_RowId"			=> $item->DT_RowId,
+    				"ID"				=> $item->ID,
+    		];
+    	});
     	return $objectIds;
     }
     

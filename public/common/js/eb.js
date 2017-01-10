@@ -322,6 +322,7 @@ var actions = {
 											}
 										},
 										error: function(data) {
+											console.log ( "doLoad error");
 											hideWaiting();
 											if (typeof(actions.loadError) == "function") {
 												actions.loadError(data);
@@ -381,6 +382,7 @@ var actions = {
 											}
 										},
 										error: function(data) {
+											console.log ( "doSave error");
 											if (typeof(actions.loadError) == "function") {
 												actions.loadError(data);
 											}
@@ -1257,7 +1259,11 @@ var actions = {
 		}
 		
 		var tblWdth = actions.getTableWidth(data,autoWidth,tab);
-		if(!autoWidth) $('#table_'+tab).css('width',(tblWdth+20)+'px');
+		if(!autoWidth) {
+			$('#table_'+tab).css('width',(tblWdth+20)+'px');
+			$('#table_'+tab).css('min-width',(tblWdth+20)+'px');
+			$('#container_'+tab).css('min-width',(tblWdth+20)+'px');
+		}
 //		if(!autoWidth && tblWdth>0) $('#table_'+tab).css('width',(tblWdth)+'px');
 
 		tHeight = actions.getTableHeight(tab);
@@ -1267,7 +1273,7 @@ var actions = {
 		          "columnDefs": uoms,
 		          "scrollX": true,
 //		         "autoWidth": false,
-		         "autoWidth": "800px",
+		         "autoWidth": true,
 //		       	"scrollY":        "37vh",
 //		         "scrollY":        "250px",
 		       	scrollY:        tHeight,
