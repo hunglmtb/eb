@@ -69,7 +69,7 @@ class FlowController extends CodeController {
     	$objectIds = $dataSet->map(function ($item, $key) {
     		return ["DT_RowId"			=> $item->DT_RowId,
     				"FL_FLOW_PHASE"		=> $item->FL_FLOW_PHASE,
-    				"FLOW_ID"			=> $item->FLOW_ID,
+    				"FLOW_ID"			=> $item->X_FLOW_ID,
     				"X_FLOW_ID"			=> $item->X_FLOW_ID
     		];
     	});
