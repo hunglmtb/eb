@@ -146,6 +146,8 @@
 			var doMoreFunction = function(addingRow){
 				if(typeof doMore == 'function') doMore(addingRow);
 				addingRow.PlotViewConfig = $("#PlotViewConfig option:selected").val();
+				addingRow.PlotViewConfig = addingRow.PlotViewConfig!=null&&addingRow.PlotViewConfig!=""?
+											addingRow.PlotViewConfig:" ";
 				addingRow.CHART_TYPE	 = "column";
 				return addingRow;
 			}

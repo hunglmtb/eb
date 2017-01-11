@@ -86,6 +86,7 @@ Route::get('dc/flow',['uses' =>'ProductManagementController@flow','middleware' =
 Route::post('code/load',['uses' =>'FlowController@load','middleware' => 'saveWorkspace']);
 Route::post('code/save', 'FlowController@save');
 Route::post('code/history', 'FlowController@history');
+Route::post('flow/filter', 	['uses' =>'FlowController@filter'		,'middleware' => 'checkRight:VIS_WORKFLOW']);
 
 // Route::get('dc/eu', 'ProductManagementController@eu');
 Route::get('dc/eu',['uses' =>'ProductManagementController@eu','middleware' => 'checkRight:FDC_EU']);

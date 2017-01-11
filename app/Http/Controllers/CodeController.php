@@ -147,9 +147,12 @@ class CodeController extends EBController {
     							$item->DT_RowId	= substr( md5(rand()), 0, 10);
     						}
     					});
-    					$objectIds	=  $this->getObjectIds($dataSet,$postData);
-    					if ($mdlName) $results["objectIds"]	= [$mdlName	=> $objectIds];
-    					else $results["objectIds"]	= $objectIds;
+    					if ($mdlName) {
+//     					if ($mdlName&&$mdlName!=$this->fdcModel) {
+    						$objectIds	=  $this->getObjectIds($dataSet,$postData);
+    						$results["objectIds"]	= [$mdlName	=> $objectIds];
+    					}
+//     					else $results["objectIds"]	= $objectIds;
     				}
     	}
     	return $results;
@@ -1127,5 +1130,24 @@ class CodeController extends EBController {
     	$help = EbFunctions::where("CODE",$name)->select("HELP")->first();
     	$help = $help?$help:"";
     	return response()->json($help);
+    }
+    
+    public function getGroupFilter($postData){
+    	$filterGroups = array('productionFilterGroup'	=> [],
+    			'dateFilterGroup'			=> [],
+    			'frequenceFilterGroup'		=> []
+    	);
+    	
+    	return $filterGroups;
+    }
+    
+    public function filter(Request $request){
+    	$postData 		= $request->all();
+    	$filterGroups	= $this->getGroupFilter($postData);
+    	return view ( 'partials.editfilter',
+    			['filters'			=> $filterGroups,
+//     			'prefix'			=> "secondary_",
+    			"currentData"		=> $postData
+    	]);
     }
 }

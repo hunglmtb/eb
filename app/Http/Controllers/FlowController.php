@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 use App\Models\CodeFlowPhase;
 use App\Models\Flow;
-use Carbon\Carbon;
 
 
 class FlowController extends CodeController {
@@ -18,6 +17,14 @@ class FlowController extends CodeController {
 		$this->theorModel = "FlowDataTheor";
 		$this->isApplyFormulaAfterSaving = true;
 		$this->keyColumns = [$this->idColumn,$this->phaseColumn];
+	}
+	
+	public function getGroupFilter($postData){
+		$filterGroups = array('productionFilterGroup'	=> [],
+							 'frequenceFilterGroup'		=> ['CodeReadingFrequency','CodeFlowPhase']
+						);
+		 
+		return $filterGroups;
 	}
 	
 	public function enableBatchRun($dataSet,$mdlName,$postData){

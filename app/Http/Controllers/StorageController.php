@@ -20,6 +20,10 @@ class StorageController extends CodeController {
 // 		$this->theorModel = "TankDataTheor";
 	}
 	
+	public function enableBatchRun($dataSet,$mdlName,$postData){
+		return true;
+	}
+	
 	public function getObjectIds($dataSet,$postData){
 		$objectIds = $dataSet->map(function ($item, $key) {
 			return ["DT_RowId"			=> $item->DT_RowId,

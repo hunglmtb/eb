@@ -43,9 +43,18 @@ class ChokeController extends CodeController {
     			$serie				= [];
     			if (!array_key_exists('OBJECTS', $constraint)) continue;
     			foreach($constraint['OBJECTS'] as $index => $object ){
-    				$modelName		= 'App\Models\\' .$object["ObjectDataSource"];
-    				$datefield		= $modelName::$dateField;
-    				$objectIdField	= $modelName::$idField;
+    				$tableName		= $object["ObjectDataSource"];
+					if (strpos($tableName, 'V_') === 0){
+	    				$datefield		= null;
+	    				$objectIdField	= "ID";
+	    				$modelName		= null;
+					}
+    				else {
+    					$modelName		= \Helper::getModelName($object["ObjectDataSource"]);
+// 	    				$modelName		= 'App\Models\\' .$object["ObjectDataSource"];
+	    				$datefield		= property_exists($modelName,"dateField")?$modelName::$dateField:null;
+	    				$objectIdField	= $modelName::$idField;
+    				}
     				$objectId		= $object["ObjectName"];
     				$operation		= $object["cboOperation"];
     				$operationValue	= $object["txtConstant"];
@@ -53,10 +62,18 @@ class ChokeController extends CodeController {
     				$queryField		= $operation&&$operation!=''&&$operationValue&&$operationValue!=""&&$operationValue!=0?
     				"$queryField$operation$operationValue":
     				$queryField;
-    				$query			= $modelName::where($objectIdField,$objectId)
-    				->whereDate("$datefield", '>=', $beginDate)
-    				->whereDate("$datefield", '<=', $endDate)
-    				->select(\DB::raw("$queryField as $sumField"));
+    				
+    				if ($modelName) {
+	     				$query			= $modelName::where($objectIdField,$objectId);
+    				}
+    				else{
+    					$query			= \DB::table($tableName)->where($objectIdField,$objectId);
+    				}
+     				if($datefield){
+     					$query->whereDate("$datefield", '>=', $beginDate)
+    						->whereDate("$datefield", '<=', $endDate);
+     				}
+    				$query->select(\DB::raw("$queryField as $sumField"));
     				if ($index==0) $rquery = $query;
     				else 	$rquery->union($query);
     			}
