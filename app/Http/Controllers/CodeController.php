@@ -1009,6 +1009,12 @@ class CodeController extends EBController {
 	    			$selectData['data'] = \App\Models\CodeMmrWOAction::all();
 	    			$rs[] = $selectData;
 	    			break;
+    			case 'COMPOSITION' :
+    				$selectData = ['id'=>'QltyProductElementType','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = \App\Models\QltyProductElementType::where(["PRODUCT_TYPE"	=> 2,"ACTIVE"	=> 1])->orderBy("ORDER")->get();
+    				$rs[] = $selectData;
+    				break;
+	    			
     		}
     		$i++;
     	}

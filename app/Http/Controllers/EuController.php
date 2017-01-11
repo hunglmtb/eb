@@ -7,6 +7,8 @@ use App\Models\CodeStatus;
 use App\Models\EnergyUnit;
 use App\Models\EnergyUnitCompDataAlloc;
 use App\Models\EnergyUnitDataAlloc;
+use App\Models\EnergyUnitDataForecast;
+use App\Models\EnergyUnitDataPlan;
 use App\Models\EuPhaseConfig;
 
 class EuController extends CodeController {
@@ -42,11 +44,13 @@ class EuController extends CodeController {
 	}
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
-    	$eu_group_id = $postData['EnergyUnitGroup'];
-    	$record_freq = $postData['CodeReadingFrequency'];
-    	$phase_type = $postData['CodeFlowPhase'];
-    	$event_type = $postData['CodeEventType'];
-    	$alloc_type = array_key_exists('CodeAllocType', $postData)?$postData['CodeAllocType']:0;
+    	$eu_group_id 	= $postData['EnergyUnitGroup'];
+    	$record_freq 	= $postData['CodeReadingFrequency'];
+    	$phase_type 	= $postData['CodeFlowPhase'];
+    	$event_type 	= $postData['CodeEventType'];
+    	$alloc_type 	= array_key_exists('CodeAllocType', $postData)?$postData['CodeAllocType']:0;
+    	$planType 		= array_key_exists('CodePlanType', $postData)?$postData['CodePlanType']:0;
+    	$forecastType 	= array_key_exists('CodeForecastType', $postData)?$postData['CodeForecastType']:0;
     	 
     	$eu = EnergyUnit::getTableName();
     	$codeFlowPhase = CodeFlowPhase::getTableName();
@@ -73,19 +77,21 @@ class EuController extends CodeController {
 						->join($codeEventType,"$euPhaseConfig.EVENT_TYPE", '=', "$codeEventType.ID")
 						->where($euWheres)
 				    	->whereDate('EFFECTIVE_DATE', '<=', $occur_date)
-				    	->leftJoin($dcTable, function($join) use ($eu,$dcTable,$occur_date,$alloc_type,$euPhaseConfig){
+				    	->leftJoin($dcTable, function($join) use ($eu,$dcTable,$euPhaseConfig,$occur_date,$alloc_type,$planType,$forecastType){
 											    	//TODO add table name 
 										    		$join->on("$eu.ID", '=', "$dcTable.EU_ID")
 	 					 				    			->on("$dcTable.FLOW_PHASE",'=',"$euPhaseConfig.FLOW_PHASE")
 	 					 				    			->on("$dcTable.EVENT_TYPE",'=',"$euPhaseConfig.EVENT_TYPE")
 	 					 				    			->where("$dcTable.OCCUR_DATE",'=',$occur_date);
 									    		
- 									    			$energyUnitDataAlloc = EnergyUnitDataAlloc::getTableName();
- 									    			$energyUnitCompDataAlloc = EnergyUnitCompDataAlloc::getTableName();
-											    	if (($alloc_type > 0 && 
-											    			($dcTable == $energyUnitDataAlloc ||
-											    					$dcTable == $energyUnitCompDataAlloc))) 
+ 									    			$energyUnitDataAlloc 		= EnergyUnitDataAlloc::getTableName();
+ 									    			$energyUnitCompDataAlloc 	= EnergyUnitCompDataAlloc::getTableName();
+											    	if (($alloc_type > 0 &&  ($dcTable == $energyUnitDataAlloc || $dcTable == $energyUnitCompDataAlloc))) 
 									    				$join->where("$dcTable.ALLOC_TYPE",'=',$alloc_type);
+											    	else if (($planType > 0 &&  ($dcTable == EnergyUnitDataPlan::getTableName() ))) 
+									    				$join->where("$dcTable.PLAN_TYPE",'=',$planType);
+								    				else if (($forecastType > 0 &&  ($dcTable == EnergyUnitDataForecast::getTableName() )))
+								    					$join->where("$dcTable.FORECAST_TYPE",'=',$forecastType);
 				    	})
 // 				    	->with($withs)
 				    	->select(

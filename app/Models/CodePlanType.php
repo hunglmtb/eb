@@ -4,5 +4,5 @@ use App\Models\DynamicModel;
 
  class CodePlanType extends DynamicModel 
 { 
-	protected $table = 'code_plan_type'; 
+	protected $table = 'CODE_PLAN_TYPE'; 
 } 

@@ -9,7 +9,7 @@
 			'EnergyUnitDataPlan'		=> ['name'=>Lang::has("front/site.Plan", $lang)?trans("front/site.Plan"):"Plan"],                            
 			'EnergyUnitDataForecast'	=> ['name'=>Lang::has("front/site.Forecast", $lang)?trans("front/site.Forecast"):"Forecast"],                
 	];
- 	$active = 3;
+ 	$active = 1;
 ?>
 
 @extends('core.pm')
@@ -40,11 +40,15 @@ ENERGY UNIT DATA CAPTURE
 	var aLoadNeighbor = actions.loadNeighbor;
 	actions.loadNeighbor = function() {
 		var activeTabID = getActiveTabID();
+		$('.CodePlanType , .CodeAllocType , .CodeForecastType').css('display','none');
 		if(activeTabID=='EnergyUnitDataAlloc'||activeTabID=='EnergyUnitCompDataAlloc'){
 			$('.CodeAllocType').css('display','block');
 		}
-		else{
-			$('.CodeAllocType').css('display','none');
+		else if(activeTabID=='EnergyUnitDataPlan'){
+			$('.CodePlanType').css('display','block');
+		}
+		else if(activeTabID=='EnergyUnitDataForecast'){
+			$('.CodeForecastType').css('display','block');
 		}
 		aLoadNeighbor();
 	}
@@ -53,13 +57,16 @@ ENERGY UNIT DATA CAPTURE
 	var aLoadParams = actions.loadParams;
 	actions.loadParams = function(reLoadParams) {
 		var pr = aLoadParams(reLoadParams);
-		var activeTabID = getActiveTabID();
+		/* var activeTabID = getActiveTabID();
 		if(activeTabID=='EnergyUnitDataAlloc'){
 			pr['CodeAllocType']= $('#CodeAllocType').val();
 		}
 		else{
 			pr['CodeAllocType']= 0;
-		}
+		} */
+		pr['CodeAllocType']= $('#CodeAllocType').val();
+		pr['CodePlanType']		= $('#CodePlanType').val();
+		pr['CodeForecastType']	= $('#CodeForecastType').val();
 		return pr;
 	}
 	

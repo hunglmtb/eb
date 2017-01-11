@@ -625,8 +625,8 @@ var actions = {
 	    };
 		$(td).editable(editable);
     	$(td).on("shown", function(e, editable) {
-    		  var val = editable.input.$input.val();
-    		  if(val.trim()=="")editable.input.$input.val('');
+//    		  var val = editable.input.$input.val();
+//    		  if(val.trim()=="")editable.input.$input.val('');
     		  if(type=="timepicker") $(".table-condensed thead").css("visibility","hidden");
 //    		  $(".extension-buttons").css("display","none");
     		  $("#more_actions").html("");
@@ -651,8 +651,7 @@ var actions = {
 					val = rowData[columnName];
 		    		val = Math.floor(val) == val && $.isNumeric(val)?Math.floor(val):val;
 		    		val = val!=null?""+val:"";
-		    		if(configuration.number.DECIMAL_MARK=='comma')
-		    			val = val.replace('.',',')
+		    		if(configuration.number.DECIMAL_MARK=='comma') val = val.replace('.',',')
 					editable.input.$input.val(val);
     		  }
     		  editable.input.$input.get(0).select();
@@ -676,10 +675,11 @@ var actions = {
 					params.newValue = value;
 					params.submitValue = numberValue;
 				}
-    	    	/*else {
-    	    		params.newValue = value;
-					params.submitValue = value;
-    	    	}*/
+    	    	else {
+//    	    		rowData[columnName]	= " ";
+//    	    		params.newValue = " ";
+//					params.submitValue = " ";
+    	    	}
     	    }
     	});
 	},
