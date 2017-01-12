@@ -55,8 +55,9 @@ class AllocatePlanController extends CodeController {
 	
 	protected function deleteData($postData) {
 		if (array_key_exists ('deleteData', $postData )) {
-			$deleteData = $postData['deleteData'];
-			
+			$deleteData 	= $postData['deleteData'];
+			$planType 		= array_key_exists('CodePlanType', $postData)?$postData['CodePlanType']:0;
+				
 			$flow_phase 	= 	$postData['ExtensionPhaseType'];
 			$object_id 		= 	$postData['ObjectName'];
 			$source_type 	= 	$postData['IntObjectTypeName'];
@@ -89,7 +90,8 @@ class AllocatePlanController extends CodeController {
 						$field_prefix=$obj_id_prefix."_DATA";
 					}
 					$where["$idField"."_ID" ] 	= $object_id;
-					
+					if ($planType>0) $where["PLAN_TYPE" ] 	= $planType;
+						
 					$mdl::where($where)
 						->whereBetween('OCCUR_DATE', [$date_from,$date_to])
 						->delete();
