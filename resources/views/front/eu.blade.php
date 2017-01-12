@@ -64,7 +64,7 @@ ENERGY UNIT DATA CAPTURE
 		else{
 			pr['CodeAllocType']= 0;
 		} */
-		pr['CodeAllocType']= $('#CodeAllocType').val();
+		pr['CodeAllocType']		= $('#CodeAllocType').val();
 		pr['CodePlanType']		= $('#CodePlanType').val();
 		pr['CodeForecastType']	= $('#CodeForecastType').val();
 		return pr;

@@ -1264,7 +1264,7 @@ var actions = {
 		if(!autoWidth) {
 			$('#table_'+tab).css('width',(tblWdth+20)+'px');
 			$('#table_'+tab).css('min-width',(tblWdth+20)+'px');
-			$('#container_'+tab).css('min-width',(tblWdth+20)+'px');
+//			$('#container_'+tab).css('min-width',(tblWdth+20)+'px');
 		}
 //		if(!autoWidth && tblWdth>0) $('#table_'+tab).css('width',(tblWdth)+'px');
 

@@ -2,9 +2,12 @@
 
 namespace App\Models;
 use App\Models\EbBussinessModel;
+use App\Models\IntObjectType;
+use App\Trail\RelationDynamicModel;
 
 class IntTagMapping extends EbBussinessModel
 {
+	use RelationDynamicModel;
 	protected $table = 'INT_TAG_MAPPING';
 	protected $primaryKey = 'ID';
 	protected $fillable  = ['TAG_ID', 
@@ -21,4 +24,9 @@ class IntTagMapping extends EbBussinessModel
 							'COLUMN_NAME'];
 	
 	public  static  $idField = 'ID';
+	
+	public static function getSourceModel(){
+		return "IntObjectType";
+	}
+	
 }
