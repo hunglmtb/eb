@@ -50,7 +50,12 @@
 						}
 						break;
 					case "ObjectDataSource":
-						var objectDataSource = $(currentObject+'ObjectDataSource').val();
+						var objectDataSource 	= $(currentObject+'ObjectDataSource').val();
+						objectDataSource 		= objectDataSource.replace(/_/g," ");
+						objectDataSource 		= objectDataSource.toLowerCase().replace(/\b[a-z]/g, function(letter) {
+						    return letter.toUpperCase();
+						});
+						objectDataSource 		= objectDataSource.replace(" ","");
 						if(objectDataSource!=null){
 							objectDataSource=='EnergyUnitDataAlloc'?$(selectedObject+'CodeAllocType').show():$(selectedObject+'CodeAllocType').hide();
 							objectDataSource.endsWith("Plan")?$(selectedObject+'CodePlanType').show():$(selectedObject+'CodePlanType').hide();
