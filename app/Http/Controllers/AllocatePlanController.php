@@ -106,7 +106,8 @@ class AllocatePlanController extends CodeController {
     	$date_from		=	$occur_date;
     	$date_to 		= 	$postData['date_end'];
 	    $date_to 		= 	\Helper::parseDate($date_to);
-    	
+	    $planType 		= array_key_exists('CodePlanType', $postData)?$postData['CodePlanType']:0;
+	     
     	if($object_id<=0)return response("Object Name $object_id not okay", 401);
     	
     	$obj_id_prefix	=	$source_type;
@@ -139,6 +140,9 @@ class AllocatePlanController extends CodeController {
 		$selects[] 					= "$field_prefix"."_GRS_ENGY";
 		$selects[] 					= "$field_prefix"."_GRS_PWR";
 		$where["$idField"."_ID" ] 	= $object_id;
+		
+		if ($planType>0) $where["PLAN_TYPE" ] 	= $planType;
+		
 		//     	\DB::enableQueryLog();
 		$dataSet = $mdl::where($where)
 						->whereBetween('OCCUR_DATE', [$date_from,$date_to])

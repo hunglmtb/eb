@@ -92,7 +92,9 @@ MANUAL ALLOCATE PLAN
           });
 
     	 postData = data.postData;
-    	 if(postData!=null&&postData.deleteData.hasOwnProperty(tab)
+    	 if(postData!=null
+    			 &&typeof(postData.deleteData) !== "undefined"
+    	    	 &&postData.deleteData.hasOwnProperty(tab)
     	    	 &&postData.deleteData[tab]!=null
     			 &&postData.deleteData[tab].hasOwnProperty('clearTable')
     			 &&typeof(data.postData.deleteData[tab].clearTable) !== "undefined"

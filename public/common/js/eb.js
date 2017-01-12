@@ -250,8 +250,8 @@ var actions = {
 								actions.updateView(postData);
 								var table =$("#table"+activeTabID).DataTable();
 //								table.columns.adjust().draw();
-								$("#table"+activeTabID).resize();
-//								table.draw(false);
+//								$("#table"+activeTabID).resize();
+								table.draw();
 							}
 						},
 	loadParams 			: function (reLoadParams){
