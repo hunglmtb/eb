@@ -1,9 +1,12 @@
 <?php 
 namespace App\Models; 
 use App\Models\EbBussinessModel; 
+use App\Trail\RelationDynamicModel;
 
- class MisMeasurement extends EbBussinessModel 
-{ 
+class MisMeasurement extends EbBussinessModel { 
+	
+	use RelationDynamicModel;
+	
 	protected $table = 'MIS_MEASUREMENT';
 	protected $primaryKey = 'ID';
 	protected $dates = ['END_TIME','BEGIN_TIME'];
@@ -36,68 +39,19 @@ use App\Models\EbBussinessModel;
 	
 	public  static  $idField = 'ID';
 // 	public  static  $unguarded = true;
-
+	public static function getSourceModel(){
+		return "IntObjectType";
+	}
+	
 	public function afterSaving($postData) {
 		//Tinh toan lai cac gia tri THEOR, GAS
 		$shouldSave = false;
 		$hours =  $this->DURATION;
 		$rat=$hours/24;
-	/*
-		if($this->DEFER_GROUP_TYPE==2){ //Well
-			$eu_id=$this->OBJECT_ID;
-			$rowTest = static ::getEUTest($eu_id,$this->BEGIN_TIME);
-			//-----------THEOR------------
-			if($rowTest){
-				$this->THEOR_OIL_PERDAY			=$rowTest->EU_TEST_LIQ_HC_VOL;
-				$this->THEOR_GAS_PERDAY			=$rowTest->EU_TEST_GAS_HC_VOL;
-				$this->THEOR_WATER_PERDAY		=$rowTest->EU_WTR_VOL;
-				//-----------CALC------------
-				$this->CALC_DEFER_OIL_VOL		=$rat*$rowTest->EU_TEST_LIQ_HC_VOL;
-				$this->CALC_DEFER_GAS_VOL		=$rat*$rowTest->EU_TEST_GAS_HC_VOL;
-				$this->CALC_DEFER_WATER_VOL		=$rat*$rowTest->EU_WTR_VOL;
-				$shouldSave = true;
-			}
-		}
-		else{
-			//TODO update later
-		}
-	*/
 		if ($this->wasRecentlyCreated) {
 			$this->FACILITY_ID = $postData['Facility'];
 			$shouldSave = true;
 		}
 		if ($shouldSave) $this->save();
-	}
-	public static function getForeignColumn($row,$originCommand,$columnName){
-		$command = $originCommand;
-		if ($columnName=="OBJECT_ID") {
-			/* $s_where	= array_key_exists('where', $oColumns)?$oColumns['where']:"";
-			$s_order	= array_key_exists('order', $oColumns)?$oColumns['order']:""; */
-			$s_where	= "";
-			$s_order	= "";
-			$namefield	= "NAME";
-			$id			= $row&&array_key_exists('OBJECT_TYPE', $row)?$row["OBJECT_TYPE"]:1;
-			$objType	= IntObjectType::find($id);
-			if($objType&&$objType->CODE) {
-				$ref_table	= $objType->CODE;
-				$command 	= "select ID, $namefield from `$ref_table` $s_where $s_order ; --select";
-			}
-		}
-		return $command;
-	}
-	
-	public static function getDependences($columnName,$idValue){
-		$option = null;
-		if ($columnName=="OBJECT_TYPE") {
-			$option = ["dependences"	=> [["name"		=>"ObjectName",
-											"elementId"	=> "OBJECT_ID",
-											]],
-						"sourceModel"	=> "IntObjectType",
-						"targets"		=> ["OBJECT_ID"],
-						'extra'			=> ["OBJECT_TYPE"],
-					];
-					
-		}
-		return $option;
 	}
 } 
