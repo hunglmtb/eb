@@ -57,13 +57,6 @@ ENERGY UNIT DATA CAPTURE
 	var aLoadParams = actions.loadParams;
 	actions.loadParams = function(reLoadParams) {
 		var pr = aLoadParams(reLoadParams);
-		/* var activeTabID = getActiveTabID();
-		if(activeTabID=='EnergyUnitDataAlloc'){
-			pr['CodeAllocType']= $('#CodeAllocType').val();
-		}
-		else{
-			pr['CodeAllocType']= 0;
-		} */
 		pr['CodeAllocType']		= $('#CodeAllocType').val();
 		pr['CodePlanType']		= $('#CodePlanType').val();
 		pr['CodeForecastType']	= $('#CodeForecastType').val();

@@ -24,12 +24,12 @@ TANK & STORAGE DATA CAPTURE
 	actions.validating = function (reLoadParams){
 		return true;
 	}
-	var saveKeyFields =  {TankDataFdcValue	 : tankIdColumn,
-							TankDataValue : tankIdColumn,
-							TankDataPlan : tankIdColumn,
-							TankDataForecast : tankIdColumn,
-							StorageDataValue : storageIdColumn,
-							StorageDataPlan : storageIdColumn,
+	var saveKeyFields =  {TankDataFdcValue	 	: tankIdColumn,
+							TankDataValue 		: tankIdColumn,
+							TankDataPlan 		: tankIdColumn,
+							TankDataForecast 	: tankIdColumn,
+							StorageDataValue 	: storageIdColumn,
+							StorageDataPlan 	: storageIdColumn,
 							StorageDataForecast : storageIdColumn,
 						};
 	actions.loadUrl 		= "/storage/load";
@@ -43,5 +43,26 @@ TANK & STORAGE DATA CAPTURE
 					},
 // 				,xIdName:'X_FL_ID'
 					};
+
+	var aLoadNeighbor = actions.loadNeighbor;
+	actions.loadNeighbor = function() {
+		var activeTabID = getActiveTabID();
+		$('.CodePlanType  , .CodeForecastType').css('display','none');
+		if(activeTabID=='TankDataPlan'||activeTabID=='StorageDataPlan'){
+			$('.CodePlanType').css('display','block');
+		}
+		else if(activeTabID=='TankDataForecast'||activeTabID=='StorageDataForecast'){
+			$('.CodeForecastType').css('display','block');
+		}
+		aLoadNeighbor();
+	}
+
+	var aLoadParams = actions.loadParams;
+	actions.loadParams = function(reLoadParams) {
+		var pr = aLoadParams(reLoadParams);
+		pr['CodePlanType']		= $('#CodePlanType').val();
+		pr['CodeForecastType']	= $('#CodeForecastType').val();
+		return pr;
+	}
 </script>
 @stop

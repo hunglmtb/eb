@@ -1,11 +1,9 @@
 <?php 
 namespace App\Models; 
-use App\Models\DynamicModel; 
 
- class FlowCompDataAlloc extends DynamicModel 
+ class FlowCompDataAlloc extends FeatureFlowModel 
 { 
 	protected $table = 'FLOW_COMP_DATA_ALLOC'; 
-	protected $primaryKey = 'ID';
 	protected $fillable  = [
 		'ID',
 		'FLOW_ID',
