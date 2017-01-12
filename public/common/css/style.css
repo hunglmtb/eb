@@ -319,17 +319,20 @@ table.dataTable {
     margin-left: 5px;
 }
 
-#table_allocateplan {
+#table_allocateplan,#table_allocateforecast {
    width: 600px;
    margin-left: 0px;
    /* overflow: auto; */
 }
-#table_allocateplan thead th, #table_allocateplan_action thead th{
+#table_allocateplan thead th, #table_allocateplan_action thead th, 
+#table_allocateforecast thead th, #table_allocateforecast_action thead th{
 	padding: 10px 18px;
 	white-space: nowrap;
 	border-bottom: 1px solid #111111;
 }
-#table_allocateplan_action, #container_allocateplan, .extension-buttons{
+#table_allocateplan_action, #container_allocateplan,
+#table_allocateforecast_action, #container_allocateforecast,
+.extension-buttons{
 	float:left;
 }
 #cboLimit {
@@ -503,7 +506,9 @@ table.dataTable thead .BAL_POWER,table.dataTable thead .ADJUST_POWER {
     list-style-type: none;
 }
 
-.allocateplan .dataTables_scrollHeadInner {
+.allocateplan .dataTables_scrollHeadInner,
+.allocateforecast .dataTables_scrollHeadInner,
+ {
 	background-color: #E6E6E6;
 }
 .ui-dialog-titlebar{

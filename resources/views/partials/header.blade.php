@@ -258,6 +258,7 @@ var xmenu=
 							{"name":"Well Forecast","title":"WELL FORECAST","link":"/fp/forecast"},
 							{"name":"PREoS","title":"PENG-ROBINSON EQUATION OF STATE","link":"/fp/preos"},
 							{"name":"Manual Allocate Plan","title":"MANUAL ALLOCATE PLAN","link":"/fp/allocateplan"},
+							{"name":"Allocate Forecast","title":"ALLOCATE FORECAST","link":"/fp/allocateforecast"},
 							{"name":"Load Plan/Forecast","title":"LOAD PLAN/FORECAST DATA","link":"/fp/loadplanforecast"},
 						]
 					},

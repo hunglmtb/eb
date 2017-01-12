@@ -493,6 +493,7 @@ menu["forecast"]=[
 		{menutext:"WELL FORECAST",desc:"",url:"/fp/forecast"},
 		{menutext:"PREoS",desc:"",url:"../fp/preos"},
 		{menutext:"MANUAL ALLOCATE<br>PLAN",desc:"",url:"/fp/allocateplan"},
+		{menutext:"MANUAL ALLOCATE<br>FORECAST",desc:"",url:"/fp/allocateforecast"},
 		{menutext:"LOAD<br>PLAN/FORECAST",desc:"",url:"/fp/loadplanforecast"},
 	];
 <?php

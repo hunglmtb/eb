@@ -5,6 +5,25 @@ use App\Models\IntImportSetting;
 
 class ForecastPlanningController extends EBController {
 	
+	public static $filterGroups = array(	'productionFilterGroup'	=>[
+			['name'			=>'IntObjectType',
+					'independent'	=>true,
+					'extra' 		=> 	["Facility",'ExtensionPhaseType'],
+					'getMethod'=>'getPreosObjectType'],
+			['name'			=>'ExtensionPhaseType',
+					'independent'=>true,
+					'getMethod'=>'getPreosPhaseType'],
+	],
+			'frequenceFilterGroup'	=> [["name"			=> "ObjectName",
+					"getMethod"		=> "loadBy",
+					"source"		=> ['productionFilterGroup'=>["Facility","IntObjectType","ExtensionPhaseType"]]],
+			],
+			'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
+					['id'=>'date_end','name'=>'To date']),
+			'extra' 				=> 	["Facility",'IntObjectType','ExtensionPhaseType'],
+			'FacilityDependentMore'	=> ["ObjectName"],
+	);
+	
 	public function forecast(){
 		$filterGroups = array(	'productionFilterGroup'	=>['EnergyUnit'],
 								'frequenceFilterGroup'=> [['name'=>'ExtensionPhaseType','single'=> true],
@@ -38,29 +57,25 @@ class ForecastPlanningController extends EBController {
 	}
 	
 	public function allocateplan(){
-		$filterGroups = array(	'productionFilterGroup'	=>[
-															['name'			=>'IntObjectType',
-															'independent'	=>true,
-															'extra' 		=> 	["Facility",'ExtensionPhaseType'],
-															'getMethod'=>'getPreosObjectType'],
-															['name'			=>'ExtensionPhaseType',	
-															'independent'=>true,
-															'getMethod'=>'getPreosPhaseType'],
-														],
-				'frequenceFilterGroup'	=> [["name"			=> "ObjectName",
-											"getMethod"		=> "loadBy",
-											"source"		=> ['productionFilterGroup'=>["Facility","IntObjectType","ExtensionPhaseType"]]],
-											["name"			=>	"CodePlanType",
-											"filterName"	=>	"Plan Type",
-											],
-				],
-				'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
-						['id'=>'date_end','name'=>'To date']),
-				'extra' 				=> 	["Facility",'IntObjectType','ExtensionPhaseType'],
- 				'FacilityDependentMore'	=> ["ObjectName"],
-		);
-		return view ( 'fp.allocateplan',['filters'=>$filterGroups]);
+		$filterGroups	= static ::$filterGroups;
+		$filterGroups['frequenceFilterGroup'][]	= ["name"			=>	"CodePlanType",
+													"filterName"	=>	"Plan Type",
+													];
+		return view ( 'fp.allocateplan',
+				['filters'		=> $filterGroups,
+		]);
 	}
+	
+	public function allocateforecast(){
+		$filterGroups	= static ::$filterGroups;
+		$filterGroups['frequenceFilterGroup'][]	= ["name"			=>	"CodeForecastType",
+													"filterName"	=>	"Forecast Type",
+		];
+		return view ( 'fp.allocateforecast',
+				['filters'		=> $filterGroups,
+				]);
+	}
+	
 	
 	public function loadplan(){
 		$filterGroups = array(	'productionFilterGroup'	=>[

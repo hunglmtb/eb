@@ -171,6 +171,10 @@ Route::get('fp/allocateplan',		['uses' =>'ForecastPlanningController@allocatepla
 Route::post('allocateplan/load',	['uses' =>'AllocatePlanController@load','middleware' => 'saveWorkspace']);
 Route::post('allocateplan/save', 	'AllocatePlanController@save');
 
+Route::get('fp/allocateforecast',	['uses' =>'ForecastPlanningController@allocateforecast','middleware' => 'checkRight:FP_ALLOCATE_PLAN']);
+Route::post('allocateforecast/load',['uses' =>'AllocateForecastController@load','middleware' =>  ['checkRight:FP_ALLOCATE_PLAN','saveWorkspace']]);
+Route::post('allocateforecast/save',['uses' =>'AllocateForecastController@save','middleware' =>  ['checkRight:FP_ALLOCATE_PLAN']]);
+
 Route::get('me/setting',			['uses' =>'UserSettingController@index'/* ,'middleware' => 'checkRight:FP_ALLOCATE_PLAN' */]);
 Route::post('me/setting/save', 		'UserSettingController@saveSetting');
 
