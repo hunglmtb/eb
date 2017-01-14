@@ -1,8 +1,8 @@
 <?php 
 namespace App\Models; 
- 
+use App\Models\KeystoreTank;
 
- class KeystoreTankDataValue extends FeatureKeystore 
+class KeystoreTankDataValue extends FeatureKeystore 
 { 
 	protected $table 					= 'keystore_tank_data_value'; 
 	public static $objectModelName 		= "KeystoreTank";
@@ -43,4 +43,24 @@ namespace App\Models;
 										->get();
 		return $dataSet;
 	}
+	public function updateBeginValues(){
+		$prev_date = date ( "Y-m-d", strtotime ( "-1 DAY", strtotime ( $this->OCCUR_DATE ) ) );
+		$values = KeystoreTankDataValue::where("KEYSTORE_TANK_ID",'=',$this->KEYSTORE_TANK_ID)
+						->whereDate('OCCUR_DATE', '=', $prev_date)
+						->get(["END_VOL as BEGIN_VOL", "END_LEVEL as BEGIN_LEVEL"]) 
+						->first();
+		if($values){
+			$values = $values->toArray();
+			$values['KEYSTORE_STORAGE_ID'] = $this->KEYSTORE_TANK_ID;
+			$values['OCCUR_DATE'] = $this->OCCUR_DATE;
+			$this->update($values);
+		}
+	}
+	public function getKeystoreStorageId(){
+		//$keyStoreTank = $this->belongsTo('App\Models\KeystoreTank', 'KEYSTORE_TANK_ID', 'ID')->first();
+		$keyStoreTank = KeystoreTank::where('ID', '=', $this->KEYSTORE_TANK_ID)
+					    	->select("STORAGE_ID") 
+	  		    			->first();
+		return $keyStoreTank!=null?$keyStoreTank->STORAGE_ID:null;
+	}	
  } 
