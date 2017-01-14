@@ -298,23 +298,16 @@ class FormulaHelpers {
 	    	$fml = $foVar->Formula;
 	    	if ($fml) {
 		    	$affectedFormulas[] = $fml;
-//  		    	$affectedFormulas[] = $fml->OBJECT_ID;
 	    	}
 	    }
-/*
 //    	     	\DB::enableQueryLog();
-    	$fos = Formula::where($where)
-    						->get();
-//    	     	\Log::info(\DB::getQueryLog());
-    	$affectedFormulas = [];
-	    foreach($fos as $fo ){
-	    	$fml = $fo;
-	    	if ($fml) {
-		    	$affectedFormulas[] = $fml;
-//  		    	$affectedFormulas[] = $fml->OBJECT_ID;
-	    	}
-	    }
-	     */
+    	$fos = Formula::where($where)->get();
+    	if ($fos) {
+		    foreach($fos as $fml ){
+		    	if ($fml) $affectedFormulas[] = $fml;
+		    }
+    	}
+	    
  	    $affectedFormulas = array_unique($affectedFormulas);
     	return $affectedFormulas;
     }

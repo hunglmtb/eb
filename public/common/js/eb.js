@@ -685,7 +685,10 @@ var actions = {
     	    }
     	});
 	},
-	addCellNumberRules  : function(td, property,newValue,originColor,phase="manual") {
+	addCellNumberRules  : function(td, property,newValue,rowData,originColor,phase="manual") {
+		if(typeof newValue == "string") newValue = newValue.replace(",",".");
+		newValue	= parseFloat(newValue);
+		if(isNaN(newValue)) return;
 		if(newValue==null||newValue==""||newValue==" ") return;
 		if(phase=="loading"){
 			var minValue = typeof(property.VALUE_MIN) !== "undefined"&&
@@ -712,20 +715,28 @@ var actions = {
 		parseFloat(property.VALUE_WARNING_MAX):Number.MAX_VALUE;
 		if(newValue <= minWarningValue || newValue >= maxWarningValue) $(td).css('background-color', 'yellow');
 		else {
+			$(td).css('background-color', originColor);
 			var rangePercent = typeof(property.RANGE_PERCENT) !== "undefined"&&
-			property.RANGE_PERCENT != null &&
-			property.RANGE_PERCENT != ""?
-					parseFloat(property.RANGE_PERCENT):false;
-			if(rangePercent!=false&&newValue!=rangePercent) $(td).css('background-color', 'blue');
-			else $(td).css('background-color', originColor);
+								property.RANGE_PERCENT != null &&
+								property.RANGE_PERCENT != ""&&
+								typeof property.LAST_VALUES == "object"&&
+								typeof property.LAST_VALUES[rowData.DT_RowId] == "object"
+								?parseFloat(property.RANGE_PERCENT):false;
+			if(rangePercent!=false && rangePercent>0){
+				var lastValue		= property.LAST_VALUES[rowData.DT_RowId][property.data];
+				lastValue		= parseFloat(lastValue);
+				lastValue		= !isNaN(lastValue)?lastValue:0;
+				compareValue	= rangePercent*lastValue/100;
+				if(compareValue>0&&newValue!=compareValue) $(td).css('background-color', 'blue');
+			}
 		}
 	},
 
 	getBasicRules  : function(property,objectRules) {
-		var rules	= (typeof(objectRules) == "object"
-						&&(objectRules.OVERWRITE==true|| objectRules.OVERWRITE=='true') 
+		var rules	= (typeof(objectRules) == "object" &&(objectRules.OVERWRITE==true || objectRules.OVERWRITE=='true') 
 						&& typeof(objectRules.basic) =="object")?
-						objectRules.basic:property;
+						jQuery.extend(property, objectRules.basic):property;
+
 		return rules;
 	},
 	
@@ -739,7 +750,7 @@ var actions = {
         	if(type=='number'){
         		var objectRules		= actions.getObjectRules(property,rowData);
         		var basicRules		= actions.getBasicRules(property,objectRules);
-        		actions.addCellNumberRules(td,basicRules,newValue,originColor,"manual");
+        		actions.addCellNumberRules(td,basicRules,newValue,rowData,originColor,"manual");
         	}
 			table.row( '#'+rowData['DT_RowId'] ).data(rowData);
 			table.columns().footer().draw(); 
@@ -996,7 +1007,7 @@ var actions = {
  			if(type=='number'){
         		var basicRules		= actions.getBasicRules(property,objectRules);
         		var originColor		= $(td).css('background-color');
-        		actions.addCellNumberRules(td,basicRules,cellData,originColor,"loading");
+        		actions.addCellNumberRules(td,basicRules,cellData,rowData,originColor,"loading");
         	}
 		};
 

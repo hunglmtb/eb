@@ -1,14 +1,12 @@
 <?php
 
 namespace App\Models;
-use App\Models\DynamicModel;
 use App\Models\EuPhaseConfig;
 
-class EnergyUnit extends DynamicModel
+class EnergyUnit extends EbBussinessModel
 {
 
 	protected $table = 'ENERGY_UNIT';
-	protected $primaryKey = 'ID';
 	public  static  $idField = 'ID';
 	
 	
@@ -25,6 +23,17 @@ class EnergyUnit extends DynamicModel
 	public function Facility()
 	{
 		return $this->belongsTo('App\Models\Facility', 'FACILITY_ID', 'ID');
+	}
+	
+	public function getKeyAttributes($mdlName,$column){
+		$alloc_type 	= array_key_exists('CodeAllocType', $postData)?$postData['CodeAllocType']:0;
+		$planType 		= array_key_exists('CodePlanType', $postData)?$postData['CodePlanType']:0;
+		$forecastType 	= array_key_exists('CodeForecastType', $postData)?$postData['CodeForecastType']:0;
+		
+		$attributes		= ["EU_ID"				=>	$this->ID,
+		// 				"RECORD_FREQUENCY"		=>	$this->RECORD_FREQUENCY,
+		];
+		return $attributes;
 	}
 	
 	public static function getEntries($facility_id=null,$product_type = 0){

@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-class Flow extends DynamicModel
+class Flow extends EbBussinessModel
 {
 	protected $table = 'FLOW';
-	protected $primaryKey = 'ID';
 	
 	public  static  $idField = 'ID';
 	
@@ -23,5 +22,11 @@ class Flow extends DynamicModel
 		}
 		$entries = static ::where($wheres)->select('ID','NAME')->orderBy('NAME')->get();
 		return $entries;
+	}
+	
+	public function getKeyAttributes($mdlName,$column){
+		return ["FLOW_ID"				=>	$this->ID,
+// 				"RECORD_FREQUENCY"		=>	$this->RECORD_FREQUENCY,
+				];
 	}
 }
