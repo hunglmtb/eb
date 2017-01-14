@@ -30,6 +30,15 @@ CHEMICAL DATA
 				return 'DT_RowId';
 				},
 			};
+	var aLoadNeighbor = actions.loadNeighbor;
+	actions.loadNeighbor = function() {
+		var activeTabID = getActiveTabID();
+		$('#filterFrequence').css('display','none');
+		if(activeTabID=='KeystoreInjectionPointDay'){
+			$('#filterFrequence').css('display','block');
+		}
+	}
+
 	/* var osaveSuccess = actions.saveSuccess;
 	actions.saveSuccess = function (data,noDelete){
 		osaveSuccess(data,noDelete);

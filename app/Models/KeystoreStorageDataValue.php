@@ -17,4 +17,23 @@ namespace App\Models;
 				"OCCUR_DATE" 			=> $newData["OCCUR_DATE"],
 		];
 	}
+	public function updateBeginValues(){
+		//Do nothing
+		/*
+		$prev_date = date ( "Y-m-d", strtotime ( "-1 DAY", strtotime ( $this->OCCUR_DATE ) ) );
+		$values = KeystoreStorageDataValue::where("KEYSTORE_STORAGE_ID",'=',$this->KEYSTORE_STORAGE_ID)
+						->whereDate('OCCUR_DATE', '=', $prev_date)
+						->get(["END_VOL as BEGIN_VOL", "END_LEVEL as BEGIN_LEVEL"]) 
+						->first();
+		if($values){
+			$values = $values->toArray();
+			$values['KEYSTORE_STORAGE_ID'] = $this->KEYSTORE_STORAGE_ID;
+			$values['OCCUR_DATE'] = $this->OCCUR_DATE;
+			$this->update($values);
+		}
+		*/
+	}
+	public function getKeystoreStorageId(){
+		return null;
+	}
 } 

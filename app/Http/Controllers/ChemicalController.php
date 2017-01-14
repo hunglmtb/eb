@@ -163,4 +163,49 @@ class ChemicalController extends CodeController {
     	
     	return ['dataSet'=>$dataSet];
     }
+    protected function afterSave($resultRecords,$occur_date) {
+		//Update keystorage value
+//     	\DB::enableQueryLog();
+    	$tankDataValue = KeystoreTankDataValue::getTableName();
+    	$keyStoreTank = KeystoreTank::getTableName();
+    	$columns = [ \DB::raw("sum(BEGIN_VOL) 	as	BEGIN_VOL"),
+	    			\DB::raw("sum(END_VOL) 			as	END_VOL"),
+	    			\DB::raw("sum(FILLED_VOL) 		as	FILLED_VOL"),
+	    			\DB::raw("sum(INJECTED_VOL) 		as	INJECTED_VOL"),
+	    			\DB::raw("sum(CONSUMED_VOL) 		as	CONSUMED_VOL"),
+					];
+    	$attributes = ['OCCUR_DATE'=>$occur_date];
+    	$storage_ids = [];
+    	foreach($resultRecords as $mdlName => $records ){
+//     		$mdl = "App\Models\\".$mdlName;
+//     		$mdlRecords = $mdl::with('Tank')->whereIn();
+    		foreach($records as $mdlRecord ){
+				$mdlRecord->updateBeginValues();
+	    		$storageID = $mdlRecord->getKeystoreStorageId();
+	    		if ($storageID) {
+		    		$storage_ids[] = $storageID;
+	    		}
+    		}
+    	}
+    	$storage_ids = array_unique($storage_ids);
+    	 
+    	foreach($storage_ids as $storage_id){
+	    	$values = KeystoreTankDataValue::join($keyStoreTank,function ($query) use ($tankDataValue,$keyStoreTank,$storage_id) {
+						    					$query->on("$keyStoreTank.ID",'=',"$tankDataValue.KEYSTORE_TANK_ID")
+								    					->where("$keyStoreTank.STORAGE_ID",'=',$storage_id);
+							})
+					    	->whereDate('OCCUR_DATE', '=', $occur_date)
+					    	->select($columns) 
+	  		    			->first();
+			
+	  		$attributes['KEYSTORE_STORAGE_ID'] = $storage_id;
+	  		$values = $values->toArray();
+	  		$values['KEYSTORE_STORAGE_ID'] = $storage_id;
+	  		$values['OCCUR_DATE'] = $occur_date;
+		//\Log::info($attributes);
+		//\Log::info($values);
+	  		KeystoreStorageDataValue::updateOrCreate($attributes,$values);
+    	}
+//     	\Log::info(\DB::getQueryLog());
+    }
 }
