@@ -122,6 +122,7 @@ class CodeController extends EBController {
     	$results		= $this->loadTableData($postData);
     	return response()->json($results);
     }
+    
     public function loadTableData($postData){
     	$dcTable 		= $this->getWorkingTable($postData);
     	$facility_id 	= array_key_exists('Facility',  $postData)?$postData['Facility']:null;
@@ -140,20 +141,60 @@ class CodeController extends EBController {
     		$results 	= array_merge($results, $data);
     		$dataSet	= array_key_exists('dataSet',  $results)?$results['dataSet']:null;
     		$mdlName 	= array_key_exists(config("constants.tabTable"), $postData)?$postData[config("constants.tabTable")]:null;
-    		if ($dataSet&&$dataSet instanceof Collection && $dataSet->count()>0
-    				&&$this->enableBatchRun($dataSet,$mdlName,$postData)) {
-    					$dataSet->each(function ($item, $key) {
-    						if ($item&&$item instanceof Model && ($item->DT_RowId===null||$item->DT_RowId==="")) {
-    							$item->DT_RowId	= substr( md5(rand()), 0, 10);
-    						}
-    					});
-    					if ($mdlName) {
-//     					if ($mdlName&&$mdlName!=$this->fdcModel) {
-    						$objectIds	=  $this->getObjectIds($dataSet,$postData);
-    						$results["objectIds"]	= [$mdlName	=> $objectIds];
-    					}
-//     					else $results["objectIds"]	= $objectIds;
+    		
+    		if ($dataSet&&$dataSet instanceof Collection && $dataSet->count()>0) {
+    			$rQueryList			= [];
+    			$properties			= $results['properties'];
+    			$enableBatchRun		= $this->enableBatchRun($dataSet,$mdlName,$postData);
+    			$dataSet->each(function ($item, $key) use ($enableBatchRun,$properties,&$rQueryList,$mdlName,$occur_date,$postData){
+    				if ($item&&$item instanceof Model) {
+	    				if ($enableBatchRun&& ($item->DT_RowId===null||$item->DT_RowId==="")) {
+	    					$item->DT_RowId	= substr( md5(rand()), 0, 10);
+	    				}
+	    				if ($properties) {
+	    					$properties->each(function ($property, $key) use ($item,&$rQueryList,$mdlName,$occur_date,$postData) {
+	    						if ($property&&$property instanceof Model&&$property->RANGE_PERCENT&&$property->RANGE_PERCENT>0) {
+		    						$column		= $property->data;
+				    				$query		= $item->getLastValueOfColumn($mdlName,$column,$occur_date,$postData);
+		    						if ($query) {
+		    							if (!array_key_exists($column, $rQueryList)) $rQueryList[$column] = [];
+		    							$rQueryList[$column][]	= $query;
+		    						}
+	    						}
+	    					});
+	    				}
     				}
+    			});
+    			if ($enableBatchRun&&$mdlName) {
+    				$objectIds				= $this->getObjectIds($dataSet,$postData);
+    				$results["objectIds"]	= [$mdlName	=> $objectIds];
+    			}
+    			
+    			$lastValues	= [];
+    			foreach($rQueryList as $column => $rQuerys){
+    				$rQuery	= null;
+    				foreach($rQuerys as $query){
+    					$rQuery	= $rQuery&&$query?$rQuery->union($query):$query;
+    				};
+    				if ($rQuery) {
+    					$values	= $rQuery->get();
+	    				if ($values) {
+	    					$values	= $values->keyBy('DT_RowId');
+	    					$lastValues[$column]	= $values;
+	    				}
+    				}
+    			};
+    			
+    			foreach($lastValues as $column => $values){
+    				$key = $properties->search(function ($item, $key) use ($column) {
+    					return $item&&$item instanceof Model && $item->data == $column;
+    				});
+    				if ($key>=0) {
+    					$property	= $properties->get($key);
+	    				if ($property) $property->LAST_VALUES = $values;
+    				}
+    			};
+    		}
     	}
     	return $results;
     }
@@ -288,8 +329,10 @@ class CodeController extends EBController {
     	if($properties)	{
     		$lang			= session()->get('locale', "en");
     		$properties->each(function ($item, $key) use ($lang) {
-    			if ($item&&$item instanceof Model && $item->title&&Lang::has("front/site.{$item->title}", $lang)) {
-    				$item->title	= trans("front/site.$item->title");
+    			if ($item&&$item instanceof Model) {
+    				if ($item->title&&Lang::has("front/site.{$item->title}", $lang)) {
+	    				$item->title	= trans("front/site.$item->title");
+    				}
     			}
     		});
     	}

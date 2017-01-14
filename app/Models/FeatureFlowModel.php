@@ -30,4 +30,5 @@ class FeatureFlowModel extends EbBussinessModel
 	public static function getObjects() {
 		return Flow::where("ID",">",0)->orderBy("NAME")->get();
 	}
+	
 }

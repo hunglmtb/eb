@@ -172,6 +172,33 @@ class EbBussinessModel extends DynamicModel {
 		return null;
 	}
 	
+	public function getKeyAttributes($mdlName,$column){
+		return null;
+	}
+	
+	public function getLastValueOfColumn($mdlName,$column,$occur_date,$postData,$returnQuery=true) {
+		if (!$occur_date) return null;
+		$newData	= $this->getKeyAttributes($mdlName,$column);
+		if (!$newData) return null;
+		
+		$mdlName	= 'App\Models\\'.$mdlName;
+		$where		= $mdlName::getKeyColumns($newData,$occur_date,$postData);
+		unset($where[$mdlName::$dateField]);
+		$query		= $mdlName :: where($where)
+								->whereNotNull($column)
+								->where($column,">",0)
+								->whereDate($mdlName::$dateField,"<",$occur_date)
+								->select($mdlName::$dateField." as DATE",
+										$column,
+// 										"$column as VALUE",
+										\DB::raw("'$this->DT_RowId' as DT_RowId"))
+								->orderBy('DATE',"desc")
+								->take(1);
+		if ($returnQuery) return $query;
+		else return $query->get();
+	}
+	
+	
 	public function updateAudit($attributes,$values,$postData) {
 		if ($this->disableUpdateAudit)  return;
 		$current 			= Carbon::now();

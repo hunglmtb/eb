@@ -93,8 +93,8 @@ class EuController extends CodeController {
 								    				else if (($forecastType > 0 &&  ($dcTable == EnergyUnitDataForecast::getTableName() )))
 								    					$join->where("$dcTable.FORECAST_TYPE",'=',$forecastType);
 				    	})
-// 				    	->with($withs)
 				    	->select(
+				    			"$dcTable.*",
 				    			"$eu.name as $dcTable",
 				    			"$euPhaseConfig.ID as DT_RowId",
  				    			"$codeFlowPhase.name as PHASE_NAME",
@@ -104,8 +104,8 @@ class EuController extends CodeController {
    				    			"$euPhaseConfig.FLOW_PHASE as EU_FLOW_PHASE",
   				    			"$codeStatus.NAME as STATUS_NAME",
 				    			"$codeFlowPhase.CODE as PHASE_CODE",
-				    			"$codeEventType.CODE as TYPE_CODE",
-				    			"$dcTable.*") 
+				    			"$codeEventType.CODE as TYPE_CODE"
+				    			) 
  		    			->orderBy($dcTable)
   		    			->orderBy('EU_FLOW_PHASE')
   		    			->get();
