@@ -140,6 +140,7 @@ var xmenu=
 						[
 							{"name":"LIFTING ACCT DAILY BALANCE","title":"LIFTING ACCT DAILY BALANCE","link":"/pd/liftaccdailybalance"},
 							{"name":"LIFTING ACCT MONTHLY DATA","title":"LIFTING ACCT MONTHLY DATA","link":"/pd/liftaccmonthlyadjust"},
+							{"name":"CARGO PLANNING","title":"CARGO PLANNING","link":"/pd/cargoplanning"},
 						]
 					},
 				]
