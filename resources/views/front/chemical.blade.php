@@ -37,6 +37,7 @@ CHEMICAL DATA
 		if(activeTabID=='KeystoreInjectionPointDay'){
 			$('#filterFrequence').css('display','block');
 		}
+		aLoadNeighbor();
 	}
 
 	/* var osaveSuccess = actions.saveSuccess;
