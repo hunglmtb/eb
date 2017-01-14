@@ -722,8 +722,10 @@ var actions = {
 				var lastValue		= property.LAST_VALUES[rowData.DT_RowId][property.data];
 				lastValue		= parseFloat(lastValue);
 				lastValue		= !isNaN(lastValue)?lastValue:0;
-				compareValue	= rangePercent*lastValue/100;
-				if(compareValue>0&&newValue!=compareValue) $(td).css('background-color', 'blue');
+				maxcompareValue	= (rangePercent+100)*lastValue/100;
+				mincompareValue	= (-rangePercent+100)*lastValue/100;
+				if(lastValue>0&&(newValue>maxcompareValue||newValue<mincompareValue)) $(td).css('color', 'blue');
+				else $(td).css('color', '');
 			}
 		}
 	},
@@ -731,7 +733,7 @@ var actions = {
 	getBasicRules  : function(property,objectRules) {
 		var rules	= (typeof(objectRules) == "object" &&(objectRules.OVERWRITE==true || objectRules.OVERWRITE=='true') 
 						&& typeof(objectRules.basic) =="object")?
-						jQuery.extend(property, objectRules.basic):property;
+						jQuery.extend(jQuery.extend({},property), objectRules.basic):property;
 
 		return rules;
 	},
