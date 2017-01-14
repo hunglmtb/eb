@@ -50,12 +50,12 @@ class FlowController extends CodeController {
     		$where['PHASE_ID']= $phase_type;
     	}
     	
-    	if ($record_freq!=6) {
+    	if ($record_freq==6) {
 	    	$startOfMonth	= $occur_date->startOfMonth();
     		if ($occur_date->eq($startOfMonth)) {
-    		$where[]= ["$flow.RECORD_FREQUENCY",'<>',6];
+		    		$where[]= ["$flow.RECORD_FREQUENCY",'<>',6];
+		    	}
     	}
-    	
     	//      	\DB::enableQueryLog();
     	$dataSet = Flow::join($codeFlowPhase,'PHASE_ID', '=', "$codeFlowPhase.ID")
 				    	->where($where)
