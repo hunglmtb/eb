@@ -153,13 +153,15 @@ class CodeController extends EBController {
 	    				}
 	    				if ($properties) {
 	    					$properties->each(function ($property, $key) use ($item,&$rQueryList,$mdlName,$occur_date,$postData) {
-	    						if ($property&&$property instanceof Model&&$property->RANGE_PERCENT&&$property->RANGE_PERCENT>0) {
-		    						$column		= $property->data;
-				    				$query		= $item->getLastValueOfColumn($mdlName,$column,$occur_date,$postData);
-		    						if ($query) {
-		    							if (!array_key_exists($column, $rQueryList)) $rQueryList[$column] = [];
-		    							$rQueryList[$column][]	= $query;
-		    						}
+	    						if ($property&&$property instanceof CfgFieldProps) {
+	    							if ($property->shouldLoadLastValueOf($item)) {
+		    							$column		= $property->data;
+					    				$query		= $item->getLastValueOfColumn($mdlName,$column,$occur_date,$postData);
+			    						if ($query) {
+			    							if (!array_key_exists($column, $rQueryList)) $rQueryList[$column] = [];
+			    							$rQueryList[$column][]	= $query;
+			    						}
+	    							}
 	    						}
 	    					});
 	    				}
