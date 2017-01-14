@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 use App\Models\CodeProductType;
-use App\Models\Tank;
+use App\Models\StorageDataForecast;
+use App\Models\StorageDataPlan;
 use App\Models\StorageDataValue;
+use App\Models\Tank;
+use App\Models\TankDataForecast;
+use App\Models\TankDataPlan;
 use App\Models\TankDataValue;
 
 class StorageController extends CodeController {
@@ -20,8 +24,26 @@ class StorageController extends CodeController {
 // 		$this->theorModel = "TankDataTheor";
 	}
 	
+	public function enableBatchRun($dataSet,$mdlName,$postData){
+		return true;
+	}
+	
+	public function getObjectIds($dataSet,$postData){
+		$objectIds = $dataSet->map(function ($item, $key) {
+			return ["DT_RowId"			=> $item->DT_RowId,
+					"OBJ_FLOW_PHASE"	=> $item->OBJ_FLOW_PHASE,
+					"X_TANK_ID"			=> $item->X_TANK_ID
+// 					"TANK_ID"			=> $item->TANK_ID,
+			];
+		});
+			return $objectIds;
+	}
+	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
-    	$product_type = $postData['CodeProductType'];
+    	$product_type 	= $postData['CodeProductType'];
+    	$planType 		= array_key_exists('CodePlanType', $postData)?$postData['CodePlanType']:0;
+    	$forecastType 	= array_key_exists('CodeForecastType', $postData)?$postData['CodeForecastType']:0;
+    	 
     	switch ($dcTable) {
     		case 'storage_data_value'     :
     		case 'storage_data_plan'      :
@@ -63,9 +85,13 @@ class StorageController extends CodeController {
 						}) 
     					->where($euWheres)
 				    	->whereDate('START_DATE', '<=', $occur_date)
-				    	->leftJoin($dcTable, function($join) use ($mainTableName,$dcTable,$occur_date,$joindField){
+				    	->leftJoin($dcTable, function($join) use ($mainTableName,$dcTable,$occur_date,$joindField,$planType,$forecastType){
 										    		$join->on("$mainTableName.ID", '=', "$dcTable.$joindField")
-	 									    				->where("$dcTable.OCCUR_DATE",'=',$occur_date);
+	 									    			->where("$dcTable.OCCUR_DATE",'=',$occur_date);
+ 									    			if (($planType > 0 && ($dcTable == StorageDataPlan::getTableName()||$dcTable == TankDataPlan::getTableName())))
+ 									    				$join->where("$dcTable.PLAN_TYPE",'=',$planType);
+ 									    			else if (($forecastType > 0 && ($dcTable == StorageDataForecast::getTableName()||$dcTable == TankDataForecast::getTableName())))
+ 									    				$join->where("$dcTable.FORECAST_TYPE",'=',$forecastType);
 				    	})
 				    	->select($columns) 
  		    			->orderBy($dcTable)

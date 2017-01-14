@@ -7,6 +7,8 @@ use App\Models\CodeStatus;
 use App\Models\EnergyUnit;
 use App\Models\EnergyUnitCompDataAlloc;
 use App\Models\EnergyUnitDataAlloc;
+use App\Models\EnergyUnitDataForecast;
+use App\Models\EnergyUnitDataPlan;
 use App\Models\EuPhaseConfig;
 
 class EuController extends CodeController {
@@ -14,26 +16,41 @@ class EuController extends CodeController {
 	public function __construct() {
 		parent::__construct();
 		$this->isApplyFormulaAfterSaving = true;
-		$this->fdcModel = "EnergyUnitDataFdcValue";
-		$this->idColumn = config("constants.euId");
-		$this->phaseColumn = config("constants.euFlowPhase");
+		$this->fdcModel 	= "EnergyUnitDataFdcValue";
+		$this->idColumn 	= config("constants.euId");
+		$this->phaseColumn 	= config("constants.euFlowPhase");
 		
-		$this->valueModel = "EnergyUnitDataValue";
-		$this->theorModel = "EnergyUnitDataTheor";
+		$this->valueModel 	= "EnergyUnitDataValue";
+		$this->theorModel 	= "EnergyUnitDataTheor";
 		
-		$this->keyColumns = [$this->idColumn,$this->phaseColumn];
+		$this->keyColumns 	= [$this->idColumn,$this->phaseColumn];
 		$this->keyColumns[] = config("constants.eventType");
-		
-		$this->enableBatchRun 				= true;
-		
+	}
+	
+
+	public function enableBatchRun($dataSet,$mdlName,$postData){
+		return true;
+	}
+	
+	public function getObjectIds($dataSet,$postData){
+		$objectIds = $dataSet->map(function ($item, $key) {
+			return ["DT_RowId"			=> $item->DT_RowId,
+					"EU_FLOW_PHASE"		=> $item->EU_FLOW_PHASE,
+					"EU_ID"				=> $item->X_EU_ID,
+					"X_EU_ID"			=> $item->X_EU_ID
+			];
+		});
+		return $objectIds;
 	}
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
-    	$eu_group_id = $postData['EnergyUnitGroup'];
-    	$record_freq = $postData['CodeReadingFrequency'];
-    	$phase_type = $postData['CodeFlowPhase'];
-    	$event_type = $postData['CodeEventType'];
-    	$alloc_type = array_key_exists('CodeAllocType', $postData)?$postData['CodeAllocType']:0;
+    	$eu_group_id 	= $postData['EnergyUnitGroup'];
+    	$record_freq 	= $postData['CodeReadingFrequency'];
+    	$phase_type 	= $postData['CodeFlowPhase'];
+    	$event_type 	= $postData['CodeEventType'];
+    	$alloc_type 	= array_key_exists('CodeAllocType', $postData)?$postData['CodeAllocType']:0;
+    	$planType 		= array_key_exists('CodePlanType', $postData)?$postData['CodePlanType']:0;
+    	$forecastType 	= array_key_exists('CodeForecastType', $postData)?$postData['CodeForecastType']:0;
     	 
     	$eu = EnergyUnit::getTableName();
     	$codeFlowPhase = CodeFlowPhase::getTableName();
@@ -60,19 +77,21 @@ class EuController extends CodeController {
 						->join($codeEventType,"$euPhaseConfig.EVENT_TYPE", '=', "$codeEventType.ID")
 						->where($euWheres)
 				    	->whereDate('EFFECTIVE_DATE', '<=', $occur_date)
-				    	->leftJoin($dcTable, function($join) use ($eu,$dcTable,$occur_date,$alloc_type,$euPhaseConfig){
+				    	->leftJoin($dcTable, function($join) use ($eu,$dcTable,$euPhaseConfig,$occur_date,$alloc_type,$planType,$forecastType){
 											    	//TODO add table name 
 										    		$join->on("$eu.ID", '=', "$dcTable.EU_ID")
 	 					 				    			->on("$dcTable.FLOW_PHASE",'=',"$euPhaseConfig.FLOW_PHASE")
 	 					 				    			->on("$dcTable.EVENT_TYPE",'=',"$euPhaseConfig.EVENT_TYPE")
 	 					 				    			->where("$dcTable.OCCUR_DATE",'=',$occur_date);
 									    		
- 									    			$energyUnitDataAlloc = EnergyUnitDataAlloc::getTableName();
- 									    			$energyUnitCompDataAlloc = EnergyUnitCompDataAlloc::getTableName();
-											    	if (($alloc_type > 0 && 
-											    			($dcTable == $energyUnitDataAlloc ||
-											    					$dcTable == $energyUnitCompDataAlloc))) 
+ 									    			$energyUnitDataAlloc 		= EnergyUnitDataAlloc::getTableName();
+ 									    			$energyUnitCompDataAlloc 	= EnergyUnitCompDataAlloc::getTableName();
+											    	if (($alloc_type > 0 &&  ($dcTable == $energyUnitDataAlloc || $dcTable == $energyUnitCompDataAlloc))) 
 									    				$join->where("$dcTable.ALLOC_TYPE",'=',$alloc_type);
+											    	else if (($planType > 0 &&  ($dcTable == EnergyUnitDataPlan::getTableName() ))) 
+									    				$join->where("$dcTable.PLAN_TYPE",'=',$planType);
+								    				else if (($forecastType > 0 &&  ($dcTable == EnergyUnitDataForecast::getTableName() )))
+								    					$join->where("$dcTable.FORECAST_TYPE",'=',$forecastType);
 				    	})
 // 				    	->with($withs)
 				    	->select(
@@ -98,6 +117,17 @@ class EuController extends CodeController {
     }
     
     
+    public function checkExistPostEntry($editedData,$model,$element,$idColumn){
+    	$found	= current(array_filter($editedData[$model], function($item) use($model,$element) { 
+    		return $item[config("constants.euId")] 	== $element[config("constants.euId")]&&
+    				$item["EU_FLOW_PHASE"] 			== $element["EU_FLOW_PHASE"]&&
+    				count($item)>4;
+    		;
+    	}));
+    	
+    	return $found===FALSE;
+    }
+    
     protected function afterSave($resultRecords,$occur_date) {
 //     	\DB::enableQueryLog();
     	foreach($resultRecords as $mdlName => $records ){
@@ -111,17 +141,6 @@ class EuController extends CodeController {
     
     protected function getFlowPhase($newData) {
     	return $newData [config ( "constants.euFlowPhase" )];
-    }
-    
-    public function getObjectIds($dataSet,$postData){
-    	$objectIds = $dataSet->map(function ($item, $key) {
-    		return ["DT_RowId"			=> $item->DT_RowId,
-    				"EU_FLOW_PHASE"		=> $item->EU_FLOW_PHASE,
-    				"EU_ID"				=>$item->EU_ID
-    		];
-    	});
-    	
-    	return $objectIds;
     }
     
     public function getHistoryConditions($dcTable,$rowData,$row_id){

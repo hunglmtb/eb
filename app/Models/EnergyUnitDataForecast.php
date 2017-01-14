@@ -2,12 +2,12 @@
 
 namespace App\Models;
 use App\Models\FeatureEuModel;
+use App\Trail\ForecastModel;
 
-class EnergyUnitDataForecast extends FeatureEuModel
-{
-	protected $table = 'ENERGY_UNIT_DATA_FORECAST';
+class EnergyUnitDataForecast extends FeatureEuModel{
 	
-	protected $primaryKey = 'ID';
+	use ForecastModel;
+	protected $table = 'ENERGY_UNIT_DATA_FORECAST';
 	protected $fillable  = ['OCCUR_DATE', 
 							'EU_ID', 
 							'EVENT_TYPE', 
@@ -21,6 +21,7 @@ class EnergyUnitDataForecast extends FeatureEuModel
 							'STATUS_BY', 
 							'STATUS_DATE', 
 							'RECORD_STATUS',
-							'EU_DATA_NET_MASS'
+							'EU_DATA_NET_MASS',
+							'FORECAST_TYPE', 
 	];
 }

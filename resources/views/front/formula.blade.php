@@ -34,7 +34,7 @@ $filterEndDate = ['name'	=> "End date",
 		<button onclick="_formula.showAddFormula()">Add Formula</button>
 		<button onclick="_formula.saveFormulaOrder()">Save sort order</button>
 		<button onclick="_formula.editFormula()">Edit</button>
-		<button onclick="_formula.testFormula()">Test</button>
+		<button onclick="_formula.testFormula()">Simulate</button>
 		<button onclick="_formula.deleteFormula()">Delete</button>
 	</span>
 </div>

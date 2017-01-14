@@ -17,10 +17,51 @@ class ChemicalController extends CodeController {
     
 	public function __construct() {
 		parent::__construct();
-		$this->enableBatchRun 				= false;
+	}
+	
+	public function enableBatchRun($dataSet,$mdlName,$postData){
+		return true;
+	}
+	
+	public function getObjectIds($dataSet,$postData){
+		$dcTable 		= $this->getWorkingTable($postData);
+		switch ($dcTable) {
+			case KeystoreInjectionPointDay::getTableName():
+				$objectIds = $dataSet->map(function ($item, $key) {
+					return ["DT_RowId"			=> $item->DT_RowId,
+							"INJECTION_POINT_ID"=> $item->INJECTION_POINT_ID,
+							"KEYSTORE_ID"		=> $item->KEYSTORE_ID,
+							"OCCUR_DATE"		=> $item->OCCUR_DATE,
+					];
+				});
+				break;
+			case KeystoreTankDataValue::getTableName():
+				$objectIds = $dataSet->map(function ($item, $key) {
+					return ["DT_RowId"			=> $item->DT_RowId,
+							"KEYSTORE_TANK_ID"	=> $item->KEYSTORE_TANK_ID,
+							"OCCUR_DATE"		=> $item->OCCUR_DATE,
+					];
+				});
+				break;
+			case KeystoreStorageDataValue::getTableName():
+				$objectIds = $dataSet->map(function ($item, $key) {
+					return ["DT_RowId"				=> $item->DT_RowId,
+							"KEYSTORE_STORAGE_ID"	=> $item->KEYSTORE_STORAGE_ID,
+							"OCCUR_DATE"			=> $item->OCCUR_DATE,
+					];
+				});
+				break;
+			default:
+				$objectIds	= [];
+				break;
+		}
+		
+		return $objectIds;
 	}
 	
 	public function getFirstProperty($dcTable){
+		if ($dcTable==KeystoreInjectionPointDay::getTableName())
+			return null;
 		return  ['data'=>$dcTable,'title'=>'Keystore Tank','width'=>230];
 	}
 	
@@ -30,46 +71,50 @@ class ChemicalController extends CodeController {
     	$product_type 					= 0;
     	$keystoreStorage 				= KeystoreStorage::getTableName();
     	$codeProductType 				= CodeProductType::getTableName();
+    	$keystoreInjectionPointDay		= KeystoreInjectionPointDay::getTableName();
     	
-    	if ($dcTable==KeystoreInjectionPointChemical::getTableName()) {
+    	if ($dcTable==$keystoreInjectionPointDay) {
+    		$keystoreInjectionPointChemical	= KeystoreInjectionPointChemical::getTableName();
     		$objectTypeName				= CodeInjectPoint::find($object_type)->CODE;
     		$objectTypeModel			= \Helper::getModelName ( $objectTypeName, '_' );
     		$objectTypeTable			= $objectTypeModel::getTableName();
     		$keystoreInjectionPoint 	= KeystoreInjectionPoint::getTableName();
     		$codeVolUom					= CodeVolUom::getTableName();
     		$keystore					= Keystore::getTableName();
-    		$keystoreInjectionPointDay	= KeystoreInjectionPointDay::getTableName();
     		
     		$wheres						= [];
     		if ($objectTypeModel=="Facility") $wheres["Facility"]	= $facility_id;
     		
-    		$dataSet	= KeystoreInjectionPointChemical::join($keystoreInjectionPoint, function($join) use ($keystoreInjectionPoint,$dcTable,$object_type){
-									    		$join->on("$keystoreInjectionPoint.ID", '=', "$dcTable.INJECTION_POINT_ID");
+    		$dataSet	= KeystoreInjectionPointChemical::join($keystoreInjectionPoint, function($join) use ($keystoreInjectionPoint,$object_type,$keystoreInjectionPointChemical){
+									    		$join->on("$keystoreInjectionPoint.ID", '=', "$keystoreInjectionPointChemical.INJECTION_POINT_ID");
 									    		$join->where("$keystoreInjectionPoint.OBJECT_TYPE",'=',$object_type);
     										})
 						    				->join($objectTypeTable,"$keystoreInjectionPoint.OBJECT_ID","=","$objectTypeTable.ID")
-						    				->join($keystore,"$dcTable.KEYSTORE_ID","=","$keystore.ID")
+						    				->join($keystore,"$keystoreInjectionPointChemical.KEYSTORE_ID","=","$keystore.ID")
 						    				->join($codeVolUom,"$keystoreInjectionPoint.QTY_UOM","=","$codeVolUom.ID")
 						    				->where($wheres)
-						    				->leftJoin($keystoreInjectionPointDay, function($join) use ($keystoreInjectionPointDay,$dcTable,$occur_date){
-						    					$join->on("$dcTable.INJECTION_POINT_ID", '=', "$keystoreInjectionPointDay.INJECTION_POINT_ID");
-						    					$join->on("$dcTable.KEYSTORE_ID", '=', "$keystoreInjectionPointDay.KEYSTORE_ID");
+						    				->leftJoin($keystoreInjectionPointDay, function($join) use ($keystoreInjectionPointDay,$keystoreInjectionPointChemical,$occur_date){
+						    					$join->on("$keystoreInjectionPointChemical.INJECTION_POINT_ID", '=', "$keystoreInjectionPointDay.INJECTION_POINT_ID");
+						    					$join->on("$keystoreInjectionPointChemical.KEYSTORE_ID", '=', "$keystoreInjectionPointDay.KEYSTORE_ID");
 						    					$join->where("$keystoreInjectionPointDay.OCCUR_DATE",'=',$occur_date);
 						    				})
 						    				->select(
 								    			"$keystoreInjectionPointDay.ID as DT_RowId",
-								    			"$dcTable.ID as $dcTable",
-								    			"$dcTable.INJECTION_POINT_ID",
-								    			"$dcTable.KEYSTORE_ID",
+								    			"$keystoreInjectionPointDay.OCCUR_DATE",
+								    			// 								    			"$keystoreInjectionPointDay.ID",
+					    						"$keystoreInjectionPointChemical.ID as $dcTable",
+								    			"$keystoreInjectionPointChemical.INJECTION_POINT_ID",
+								    			"$keystoreInjectionPointChemical.KEYSTORE_ID",
 						    					"$objectTypeTable.NAME as OBJECT_NAME",
 								    			"$keystoreInjectionPoint.OBJECT_ID",
 								    			"$keystoreInjectionPoint.MIN_QTY_DAY",
 								    			"$keystoreInjectionPoint.MAX_QTY_DAY",
 								    			"$keystoreInjectionPoint.RECOMMEND_QTY_DAY",
 								    			"$keystore.NAME as KEYSTORE_NAME",
-								    			"$codeVolUom.NAME as UOM_CODE",
+								    			"$codeVolUom.ID as VOL_UOM",
 								    			"$keystoreInjectionPointDay.INJECTED_VOL"
 								    			)
+								    		->orderBy("OBJECT_NAME")
 								    		->get();
     	}
     	else{

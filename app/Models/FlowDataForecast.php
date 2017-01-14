@@ -2,12 +2,13 @@
 
 namespace App\Models;
 use App\Models\FeatureFlowModel;
+use App\Trail\ForecastModel;
 
 class FlowDataForecast extends FeatureFlowModel
 {
+	use ForecastModel;
 	protected $table 		= 'FLOW_DATA_FORECAST';
-	protected $primaryKey 	= 'ID';
-	protected $fillable  	= ['FLOW_ID',
+	protected $fillable  	= 	['FLOW_ID',
 								'OCCUR_DATE',
 								'ACTIVE_HRS',
 								'RECORD_FREQUENCY',
@@ -24,8 +25,7 @@ class FlowDataForecast extends FeatureFlowModel
 								'FL_DATA_DENS',
 								'STATUS_BY',
 								'STATUS_DATE',
-								'RECORD_STATUS'];
-	
-	
+								'RECORD_STATUS',
+								'FORECAST_TYPE'];
 	
 }

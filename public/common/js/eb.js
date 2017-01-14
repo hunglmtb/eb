@@ -248,6 +248,10 @@ var actions = {
 								var activeTabID = getActiveTabID();
 								var postData = actions.loadedData[activeTabID];
 								actions.updateView(postData);
+								var table =$("#table"+activeTabID).DataTable();
+//								table.columns.adjust().draw();
+//								$("#table"+activeTabID).resize();
+								table.draw();
 							}
 						},
 	loadParams 			: function (reLoadParams){
@@ -302,17 +306,18 @@ var actions = {
 									console.log ( "doLoad url: "+this.loadUrl );
 									actions.readyToLoad = true;
 									showWaiting();
-									actions.editedData = {};
+//									actions.editedData = {};
 									$.ajax({
 										url: this.loadUrl,
 										type: "post",
 										data: actions.loadParams(reLoadParams),
 										success:function(data){
 											hideWaiting();
+//											if(reLoadParams) actions.editedData = {};
 											if(data!=null&&data.hasOwnProperty('objectIds')){
 												jQuery.extend(actions.objectIds, data.objectIds);
+												jQuery.extend(actions.editedData, data.objectIds);
 											}
-											actions.editedData = {};
 											if (typeof(actions.loadSuccess) == "function") {
 												actions.loadSuccess(data);
 											}
@@ -321,6 +326,7 @@ var actions = {
 											}
 										},
 										error: function(data) {
+											console.log ( "doLoad error");
 											hideWaiting();
 											if (typeof(actions.loadError) == "function") {
 												actions.loadError(data);
@@ -380,6 +386,7 @@ var actions = {
 											}
 										},
 										error: function(data) {
+											console.log ( "doSave error");
 											if (typeof(actions.loadError) == "function") {
 												actions.loadError(data);
 											}
@@ -620,8 +627,8 @@ var actions = {
 	    };
 		$(td).editable(editable);
     	$(td).on("shown", function(e, editable) {
-    		  var val = editable.input.$input.val();
-    		  if(val.trim()=="")editable.input.$input.val('');
+//    		  var val = editable.input.$input.val();
+//    		  if(val.trim()=="")editable.input.$input.val('');
     		  if(type=="timepicker") $(".table-condensed thead").css("visibility","hidden");
 //    		  $(".extension-buttons").css("display","none");
     		  $("#more_actions").html("");
@@ -646,8 +653,7 @@ var actions = {
 					val = rowData[columnName];
 		    		val = Math.floor(val) == val && $.isNumeric(val)?Math.floor(val):val;
 		    		val = val!=null?""+val:"";
-		    		if(configuration.number.DECIMAL_MARK=='comma')
-		    			val = val.replace('.',',')
+		    		if(configuration.number.DECIMAL_MARK=='comma') val = val.replace('.',',')
 					editable.input.$input.val(val);
     		  }
     		  editable.input.$input.get(0).select();
@@ -671,10 +677,11 @@ var actions = {
 					params.newValue = value;
 					params.submitValue = numberValue;
 				}
-    	    	/*else {
-    	    		params.newValue = value;
-					params.submitValue = value;
-    	    	}*/
+    	    	else {
+//    	    		rowData[columnName]	= " ";
+//    	    		params.newValue = " ";
+//					params.submitValue = " ";
+    	    	}
     	    }
     	});
 	},
@@ -1256,7 +1263,12 @@ var actions = {
 		}
 		
 		var tblWdth = actions.getTableWidth(data,autoWidth,tab);
-		if(!autoWidth) $('#table_'+tab).css('width',(tblWdth+20)+'px');
+		if(!autoWidth) {
+//			$('#table_'+tab).css('width',(tblWdth+20)+'px');
+			$('#table_'+tab).css('min-width',(tblWdth+20)+'px');
+//			$('#container_'+tab).css('min-width',(tblWdth+20)+'px');
+			autoWidth = tblWdth < $(window).width()-30;
+		}
 //		if(!autoWidth && tblWdth>0) $('#table_'+tab).css('width',(tblWdth)+'px');
 
 		tHeight = actions.getTableHeight(tab);
@@ -1266,7 +1278,7 @@ var actions = {
 		          "columnDefs": uoms,
 		          "scrollX": true,
 //		         "autoWidth": false,
-		         "autoWidth": "800px",
+		         "autoWidth": autoWidth,
 //		       	"scrollY":        "37vh",
 //		         "scrollY":        "250px",
 		       	scrollY:        tHeight,

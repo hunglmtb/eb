@@ -32,7 +32,7 @@ TAG MAPPING CONFIG
  									url						: 	'/tagsMapping/loadsrc'
 								};
 
-	addingOptions.keepColumns = ['TABLE_NAME','COLUMN_NAME'];
+	addingOptions.keepColumns = ['TABLE_NAME','COLUMN_NAME','OBJECT_TYPE'];
 
 	source.initRequest = function(tab,columnName,newValue,collection){
 		postData = actions.loadedData[tab];
@@ -45,5 +45,14 @@ TAG MAPPING CONFIG
 		return srcData;
 	}
 
+	actions['doMoreAddingRow'] = function(addingRow){
+		if(typeof addingRow['OBJECT_TYPE'] == "undefined") addingRow['OBJECT_TYPE'] 	= $('#IntObjectType').val();
+		addingRow['OBJECT_ID'] 		= $('#ObjectName').val();
+		addingRow['SYSTEM_ID'] 		= 1;
+		addingRow['FREQUENCY'] 		= 1;
+		addingRow['FLOW_PHASE'] 	= 1;
+		addingRow['EVENT_TYPE'] 	= 1;
+		return addingRow;
+	}
 </script>
 @stop

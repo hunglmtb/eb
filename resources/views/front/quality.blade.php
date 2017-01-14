@@ -16,7 +16,6 @@ QUALITY DATA CAPTURE
 	actions.loadUrl 		= "/quality/load";
 	actions.saveUrl			= "/quality/save";
 	actions.historyUrl 		= "/quality/history";
-	actions.reloadAfterSave	= true;
 
 	actions.validating = function (reLoadParams){
 		return true;

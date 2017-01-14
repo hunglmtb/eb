@@ -2,7 +2,7 @@
 $currentSubmenu ='/fo/chemical';
 $tables = ['KeystoreTankDataValue'			=>['name'=>'CHEMICAL TANK VALUE'],
 		'KeystoreStorageDataValue'			=>['name'=>'CHEMICAL STORAGE VALUE'],
-		'KeystoreInjectionPointChemical'	=>['name'=>'CHEMICAL INJECTION POINT']
+		'KeystoreInjectionPointDay'			=>['name'=>'CHEMICAL INJECTION POINT']
 ];
 
 ?>
@@ -17,17 +17,17 @@ CHEMICAL DATA
 <script>
 	actions.loadUrl = "/chemical/load";
 	actions.saveUrl = "/chemical/save";
-	actions.reloadAfterSave	= true;
 
 	actions.validating = function (reLoadParams){
 		return true;
 	}
 	
 	actions.type = {
-			idName:['ID','KEYSTORE_TANK_ID','OCCUR_DATE'],
-			keyField:'ID',
+			idName:['ID'/* ,'KEYSTORE_TANK_ID' */,'OCCUR_DATE'],
+			keyField:'DT_RowId',
 			saveKeyField : function (model){
-				return 'ID';
+// 				if(model=="KeystoreInjectionPointDay") return "DT_RowId";
+				return 'DT_RowId';
 				},
 			};
 	/* var osaveSuccess = actions.saveSuccess;

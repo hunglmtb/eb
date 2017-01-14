@@ -13,7 +13,15 @@ class ProductManagementController extends EBController {
 	public function flow() {
 		$filterGroups = array('productionFilterGroup'	=> [],
 							  'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'Date']),
-							 'frequenceFilterGroup'		=> ['CodeReadingFrequency','CodeFlowPhase']
+							 'frequenceFilterGroup'		=> ['CodeReadingFrequency','CodeFlowPhase',
+							 								["name"			=>	"CodePlanType",
+															"filterName"	=>	"Plan Type",
+// 															'default'		=>['ID'=>0,'NAME'=>'All']
+															],
+															["name"			=>	"CodeForecastType",
+															"filterName"	=>	"Forecast Type",
+// 															'default'		=>['ID'=>0,'NAME'=>'All']
+															]]
 						);
 		
 		return view ( 'front.flow',['filters'=>$filterGroups]);
@@ -22,7 +30,16 @@ class ProductManagementController extends EBController {
 	public function eu() {
 		$filterGroups = array('productionFilterGroup'	=>['EnergyUnitGroup'],
 							  'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'Date']),
-							'frequenceFilterGroup'		=> ['CodeReadingFrequency','CodeFlowPhase','CodeEventType','CodeAllocType']
+							'frequenceFilterGroup'		=> ['CodeReadingFrequency','CodeFlowPhase',
+															'CodeEventType','CodeAllocType',
+															["name"			=>	"CodePlanType",
+															"filterName"	=>	"Plan Type",
+// 															'default'		=>['ID'=>0,'NAME'=>'All']
+															],
+															["name"			=>	"CodeForecastType",
+															"filterName"	=>	"Forecast Type",
+// 															'default'		=>['ID'=>0,'NAME'=>'All']
+															]]
 						);
 		return view ( 'front.eu',['filters'=>$filterGroups]);
 	}
@@ -30,7 +47,15 @@ class ProductManagementController extends EBController {
 	public function storage() {
 		$filterGroups = array('productionFilterGroup'	=> [],
 								'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'Date']),
-								'frequenceFilterGroup'	=> ['CodeProductType']
+								'frequenceFilterGroup'	=> ['CodeProductType',
+							 								["name"			=>	"CodePlanType",
+															"filterName"	=>	"Plan Type",
+// 															'default'		=>['ID'=>0,'NAME'=>'All']
+															],
+															["name"			=>	"CodeForecastType",
+															"filterName"	=>	"Forecast Type",
+// 															'default'		=>['ID'=>0,'NAME'=>'All']
+															]]
 						);
 		return view ( 'front.storage',['filters'=>$filterGroups]);
 	}

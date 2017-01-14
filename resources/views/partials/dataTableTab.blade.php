@@ -9,9 +9,9 @@
 		<div id="tabs_contents">
 			@foreach($tables as $key => $table )
 			<div id="tabs-{{$key}}">
-				<div id="container_{{$key}}" style="overflow-x: hidden">
+				<div id="container_{{$key}}" style="overflow-x: hidden;min-width: 600px;">
 					<table border="0" cellpadding="3" id="table_{{$key}}"
-						class="fixedtable nowrap display">
+						class="fixedtable nowrap display" style="width: inherit;position:relative;min-width: 600px;">
 					</table>
 				</div>
 			</div>
@@ -149,6 +149,11 @@
 					delete actions.deleteData[key];
 				}
 			}
+		}
+		else if(typeof data.dataSets != "undefined") {
+			$.each(data.dataSets, function( index, value) {
+				actions.loadSuccess(value);
+			});
 		}
 		/* actions.editedData = {};
 		actions.deleteData = {}; */

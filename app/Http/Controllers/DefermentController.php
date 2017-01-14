@@ -27,8 +27,10 @@ class DefermentController extends CodeController {
 									];
 		
 		$this->keyColumns = [$this->idColumn,$this->phaseColumn];
-		
-		$this->enableBatchRun 				= true;
+	}
+	
+	public function enableBatchRun($dataSet,$mdlName,$postData){
+		return $mdlName=="Deferment";
 	}
 	
 	public function getFirstProperty($dcTable){
@@ -39,7 +41,6 @@ class DefermentController extends CodeController {
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
 
-    	
     	$mdlName = $postData[config("constants.tabTable")];
     	$mdl = "App\Models\\$mdlName";
     	$dataSet		= [];

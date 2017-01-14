@@ -1015,7 +1015,12 @@ class AdminController extends Controller {
 		$table_names = explode(',',$data['TABLE_NAMES']);
 	
 		$obj['LOCK_DATE'] 	= \Helper::parseDate($data['DATE_FROM']);
-		$obj['USER_ID'] = $data['USER_ID'];
+		$userId				= null;
+		if((auth()->user() != null)){
+			$current_username = auth()->user()->username;
+			$userId			= auth()->user()->ID;
+		}
+		$obj['USER_ID'] 	= $userId;
 		$obj['FACILITY_ID'] = $data['FACILITY_ID'];
 		foreach ($table_names as $table){
 			$condition = array(

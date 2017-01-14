@@ -341,7 +341,7 @@ var _importdata = {
 				</table>
 				<input type="button" value="Import" onClick="_importdata.doImport(1)"
 					style="width: 120; height: 30; margin: 5px"> <input type="button"
-					value="Extract data" onClick="_importdata.doImport(0)"
+					value="Simulate" onClick="_importdata.doImport(0)"
 					style="width: 120; height: 30; margin: 5px"> <input type="button"
 					value="Show last log" onclick="$('#boxImpLog').fadeIn()"
 					style="width: 120; height: 30; margin: 5px">

@@ -9,6 +9,12 @@ class AllocatePlanController extends CodeController {
 		return null;
 	}
 	
+	public function getQueryCondition($where,$postData){
+		$planType 		= array_key_exists('CodePlanType', $postData)?$postData['CodePlanType']:0;
+		if ($planType>0) $where["PLAN_TYPE" ] 	= $planType;
+		return $where;
+	}
+	
 	public function getPreFix($source_type){
 		$obj_id_prefix	=	$source_type;
 		$field_prefix	=	$source_type;
@@ -55,8 +61,7 @@ class AllocatePlanController extends CodeController {
 	
 	protected function deleteData($postData) {
 		if (array_key_exists ('deleteData', $postData )) {
-			$deleteData = $postData['deleteData'];
-			
+			$deleteData 	= $postData['deleteData'];
 			$flow_phase 	= 	$postData['ExtensionPhaseType'];
 			$object_id 		= 	$postData['ObjectName'];
 			$source_type 	= 	$postData['IntObjectTypeName'];
@@ -89,7 +94,8 @@ class AllocatePlanController extends CodeController {
 						$field_prefix=$obj_id_prefix."_DATA";
 					}
 					$where["$idField"."_ID" ] 	= $object_id;
-					
+					$where						= $this->getQueryCondition($where,$postData);
+						
 					$mdl::where($where)
 						->whereBetween('OCCUR_DATE', [$date_from,$date_to])
 						->delete();
@@ -106,7 +112,7 @@ class AllocatePlanController extends CodeController {
     	$date_from		=	$occur_date;
     	$date_to 		= 	$postData['date_end'];
 	    $date_to 		= 	\Helper::parseDate($date_to);
-    	
+	     
     	if($object_id<=0)return response("Object Name $object_id not okay", 401);
     	
     	$obj_id_prefix	=	$source_type;
@@ -139,6 +145,8 @@ class AllocatePlanController extends CodeController {
 		$selects[] 					= "$field_prefix"."_GRS_ENGY";
 		$selects[] 					= "$field_prefix"."_GRS_PWR";
 		$where["$idField"."_ID" ] 	= $object_id;
+		$where						= $this->getQueryCondition($where,$postData);
+
 		//     	\DB::enableQueryLog();
 		$dataSet = $mdl::where($where)
 						->whereBetween('OCCUR_DATE', [$date_from,$date_to])
@@ -148,4 +156,5 @@ class AllocatePlanController extends CodeController {
 				//  		\Log::info(\DB::getQueryLog());
     	return ['dataSet'=>$dataSet];
     }
+    
 }

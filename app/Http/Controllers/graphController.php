@@ -342,17 +342,30 @@ class graphController extends Controller {
 				else continue;
 			}
 					
-			$tmp = $model::where([$obj_type_id_field=>$pa1])
+			$tquery = $model::where([$obj_type_id_field=>$pa1])
 			->where ( function ($q) use ($va, $is_eutest, $is_deferment, $phase_type) {
 				if ($va == "ENERGY_UNIT" && !$is_eutest && !$is_deferment) {
 					$q->where (['FLOW_PHASE' => $phase_type]);
 				}
-			})
-		 	->whereDate ( $datefield, '>=',  $date_begin ) 
+			});
+			$wheres	= [];
+			if(substr($entity, -4) === 'Plan' && count($types)>2 &&$types[2]>0){
+				$wheres["PLAN_TYPE"]	= $types[2];
+			}
+			else if(substr($entity, -8) === 'Forecast' && count($types)>3&&$types[3]>0){
+				$wheres["FORECAST_TYPE"]	= $types[3];
+			}
+			else if(substr($entity, -4) === 'Alloc' && count($types)>1 &&$types[1]>0){
+				$wheres["ALLOC_TYPE"]	= $types[1];
+			}
+			
+			if(count($wheres)>0) $tquery->where($wheres);
+		 	$tquery->whereDate ( $datefield, '>=',  $date_begin ) 
 			->whereDate ( $datefield, '<=',  $date_end )
 			->orderBy ( $datefield )
-			->take(300)
-			->get([$vfield.' AS V', "$datefield"]);
+			->take(300);
+			
+			$tmp =  $tquery->get([$vfield.' AS V', "$datefield"]);
 			
 			//\Log::info ( \DB::getQueryLog () );
 			if($chart_type!="pie"){
@@ -375,7 +388,14 @@ class graphController extends Controller {
 						$strData .= ",\r\n";
 					}
 					$dateTime 		= $row->$datefield;
-					if ($dateTime) {
+					if (is_string($dateTime)) {
+						try {
+							$dateTime	= Carbon::parse($dateTime);
+						} catch (Exception $e) {
+							\Log::info ( $e->getMessage() );
+						}
+					}
+					if ($dateTime instanceof  Carbon) {
 						$dateTimeText 	= sprintf("%d,%d,%d", $dateTime->year,$dateTime->month-1,$dateTime->day);
 						$strData .= "[Date.UTC(".$dateTimeText."), ".$row->V."]";
 						$i++;

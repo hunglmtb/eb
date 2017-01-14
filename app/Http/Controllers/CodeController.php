@@ -55,12 +55,10 @@ class CodeController extends EBController {
 	protected $isApplyFormulaAfterSaving;
 	protected $extraDataSetColumns;
 	protected $detailModel;
-	protected $enableBatchRun;
 	
 	public function __construct() {
 		parent::__construct();
 		$this->isApplyFormulaAfterSaving 	= false;
-		$this->enableBatchRun 				= false;
 	}
 	
 	public function getCodes(Request $request){
@@ -121,43 +119,59 @@ class CodeController extends EBController {
     
     public function load(Request $request){
     	$postData 		= $request->all();
-     	$dcTable 		= $this->getWorkingTable($postData); 
-     	$facility_id 	= array_key_exists('Facility',  $postData)?$postData['Facility']:null;
-     	$occur_date 	= null;
-     	if (array_key_exists('date_begin',  $postData)){
-	     	$occur_date = $postData['date_begin'];
-	     	$occur_date = \Helper::parseDate($occur_date);
-     	}
-     	
- 		$results 		= $this->getProperties($dcTable,$facility_id,$occur_date,$postData);
-      	$data 			= $this->getDataSet($postData,$dcTable,$facility_id,$occur_date,$results);
-      	$secondaryData 	= $this->getSecondaryData($postData,$dcTable,$facility_id,$occur_date,$results);
-        $results['secondaryData'] = $secondaryData;
-        $results['postData'] = $postData;
-        if ($data&&is_array($data)) {
-	        $results 	= array_merge($results, $data);
-	        $dataSet	= array_key_exists('dataSet',  $results)?$results['dataSet']:null;
-	        if ($this->enableBatchRun&&$dataSet&&$dataSet instanceof Collection && $dataSet->count()>0) {
-	        	$dataSet->each(function ($item, $key) {
-	        		if ($item&&$item instanceof Model && (!($item->DT_RowId)||$item->DT_RowId=="")) {
-	        			$item->DT_RowId	= substr( md5(rand()), 0, 10);
-	        		}
-	        	});
-	        	$objectIds	=  $this->getObjectIds($dataSet,$postData);
-		        $mdlName = array_key_exists(config("constants.tabTable"), $postData)?$postData[config("constants.tabTable")]:null;
-		        if ($mdlName) {
-			        $results["objectIds"]	= [$mdlName	=> $objectIds];
-		        }
-		        else $results["objectIds"]	= $objectIds;
-	        }
-        }
+    	$results		= $this->loadTableData($postData);
     	return response()->json($results);
+    }
+    public function loadTableData($postData){
+    	$dcTable 		= $this->getWorkingTable($postData);
+    	$facility_id 	= array_key_exists('Facility',  $postData)?$postData['Facility']:null;
+    	$occur_date 	= null;
+    	if (array_key_exists('date_begin',  $postData)){
+    		$occur_date = $postData['date_begin'];
+    		$occur_date = \Helper::parseDate($occur_date);
+    	}
+    	
+    	$results 		= $this->getProperties($dcTable,$facility_id,$occur_date,$postData);
+    	$data 			= $this->getDataSet($postData,$dcTable,$facility_id,$occur_date,$results);
+    	$secondaryData 	= $this->getSecondaryData($postData,$dcTable,$facility_id,$occur_date,$results);
+    	$results['secondaryData'] = $secondaryData;
+    	$results['postData'] = $postData;
+    	if ($data&&is_array($data)) {
+    		$results 	= array_merge($results, $data);
+    		$dataSet	= array_key_exists('dataSet',  $results)?$results['dataSet']:null;
+    		$mdlName 	= array_key_exists(config("constants.tabTable"), $postData)?$postData[config("constants.tabTable")]:null;
+    		if ($dataSet&&$dataSet instanceof Collection && $dataSet->count()>0
+    				&&$this->enableBatchRun($dataSet,$mdlName,$postData)) {
+    					$dataSet->each(function ($item, $key) {
+    						if ($item&&$item instanceof Model && ($item->DT_RowId===null||$item->DT_RowId==="")) {
+    							$item->DT_RowId	= substr( md5(rand()), 0, 10);
+    						}
+    					});
+    					if ($mdlName) {
+//     					if ($mdlName&&$mdlName!=$this->fdcModel) {
+    						$objectIds	=  $this->getObjectIds($dataSet,$postData);
+    						$results["objectIds"]	= [$mdlName	=> $objectIds];
+    					}
+//     					else $results["objectIds"]	= $objectIds;
+    				}
+    	}
+    	return $results;
     }
     
     public function getObjectIds($dataSet,$postData){
-    	$dswk 	= $dataSet->keyBy('DT_RowId');
+    	/* $dswk 	= $dataSet->keyBy('DT_RowId');
     	$objectIds = $dswk->keys();
+    	 */
+    	$objectIds = $dataSet->map(function ($item, $key) {
+    		return ["DT_RowId"			=> $item->DT_RowId,
+    				"ID"				=> $item->ID,
+    		];
+    	});
     	return $objectIds;
+    }
+    
+    public function enableBatchRun($dataSet,$mdlName,$postData){
+        return false;
     }
     
     public function loadDetail(Request $request){
@@ -365,7 +379,7 @@ class CodeController extends EBController {
 // 		throw new Exception("not Save");
     	$postData = $request->all();
     	 
-    	if (!$this->enableBatchRun&&!array_key_exists('editedData', $postData)&&!array_key_exists('deleteData', $postData)) {
+    	if (!array_key_exists('editedData', $postData)&&!array_key_exists('deleteData', $postData)) {
     		return response()->json('no data 2 update!');
     	}
     	if (!array_key_exists('editedData', $postData)) {
@@ -499,12 +513,7 @@ class CodeController extends EBController {
 		     	if (count($lockeds)>0) {
 			     	$resultTransaction['lockeds'] = $lockeds;
 		     	}
-		     	
-		     	$updateObjectIds			= $this->updateObjectWithCalculation($objectIds,$occur_date,$postData);
-		     	if ($this->enableBatchRun) {
-// 		     		$resultTransaction['ids']	= [];
-		     	}
-		     	else $resultTransaction['ids']	= $ids;
+	     		$resultTransaction['ids']	= $ids;
  		     	return $resultTransaction;
 	     		
 	      	});
@@ -517,53 +526,35 @@ class CodeController extends EBController {
 			throw $e;
      	}
      	
-     	//get updated data after apply formulas
-     	$updatedData = [];
-     	if (array_key_exists('ids', $resultTransaction)) {
-	     	foreach($resultTransaction['ids'] as $mdlName => $updatedIds ){
-	//      		$updatedData[$mdlName] = $mdl::findMany($objectIds);
-		     	$modelName = $this->getModelName($mdlName,$postData);
-	     		$mdl = "App\Models\\".$modelName;
-	     		$updatedData[$mdlName] = $mdl::findManyWithConfig($updatedIds);
+     	if ($this->enableBatchRun(null,null,$postData)&&$editedData) {
+     		$dataSets		= [];
+     		foreach($editedData as $mdlName => $mdlData ){
+     			$postData[config("constants.tabTable")]	= $mdlName;
+	    		$dataSets[]	= $this->loadTableData($postData);
+     		}
+    		return response()->json(["dataSets"	=> $dataSets]);
+     	}
+     	else {
+	     	//get updated data after apply formulas
+	     	$updatedData = [];
+	     	if (array_key_exists('ids', $resultTransaction)) {
+		     	foreach($resultTransaction['ids'] as $mdlName => $updatedIds ){
+		//      		$updatedData[$mdlName] = $mdl::findMany($objectIds);
+			     	$modelName = $this->getModelName($mdlName,$postData);
+		     		$mdl = "App\Models\\".$modelName;
+		     		$updatedData[$mdlName] = $mdl::findManyWithConfig($updatedIds);
+		     	}
 	     	}
+	//      	\Log::info(\DB::getQueryLog());
+	    
+	     	$results = ['updatedData'=>$updatedData,
+	     				'postData'=>$postData];
+	     	if (array_key_exists('lockeds', $resultTransaction)) {
+		     	$results['lockeds'] = $resultTransaction['lockeds'];
+	     	}
+	    	return response()->json($results);
      	}
-//      	\Log::info(\DB::getQueryLog());
-    
-     	$results = ['updatedData'=>$updatedData,
-     				'postData'=>$postData];
-     	if (array_key_exists('lockeds', $resultTransaction)) {
-	     	$results['lockeds'] = $resultTransaction['lockeds'];
-     	}
-    	return response()->json($results);
     }
-    
-    protected function updateObjectWithCalculation($objectIds,$occur_date,$postData) {
-    	if ($this->enableBatchRun&&$objectIds) {
-    		foreach($objectIds as $mdlName => $mdlData ){
-    			if (!is_array($mdlData)) continue;
-	     		$modelName = $this->getModelName($mdlName,$postData);
-	     		\FormulaHelpers::doFormula($modelName,'ID',$mdlData);
-    		}
-    		
-    		if ($this->isApplyFormulaAfterSaving) {
-    			//get affected object with id
-    			$objectWithformulas = [];
-    			foreach($objectIds as $mdlName => $mdlData ){
-    				$mdl = "App\Models\\".$mdlName;
-    				$columns = \Schema::getColumnListing($mdl::getTableName());
-    				foreach($mdlData as $key => $newData ){
-    					$aFormulas 			= $this->getAffectedObjects($mdlName,$columns,$newData);
-    					$objectWithformulas = array_merge($objectWithformulas,$aFormulas);
-    				}
-    			}
-    			$objectWithformulas = array_unique($objectWithformulas);
-    			$applieds = \FormulaHelpers::applyAffectedFormula($objectWithformulas,$occur_date);
-    		}
-	    	return $objectIds;
-    	}
-    	return null;
-    }
-    
     
     protected function deleteData($postData) {
     	if (array_key_exists ('deleteData', $postData )) {
@@ -589,7 +580,9 @@ class CodeController extends EBController {
 	protected function getAffectedObjects($mdlName,$columns,$newData){
 		$mdl = "App\Models\\".$mdlName;
 		$idField = $mdl::$idField;
-		$objectId = 0;
+		$objectId = is_array($newData)? $newData [$idField]:$newData;
+		
+		/* $objectId = 0;
 		if(is_array($newData)){
 			$objectId = $newData [$idField];
 		}
@@ -597,8 +590,8 @@ class CodeController extends EBController {
 			$res = $mdl::where("ID","=",$newData)->select($idField)->first();
 			if($res) $objectId = $res->$idField;
 		}
-		if(!$objectId)
-			return [];
+		 */
+		if(!$objectId) return [];
 		//$objectId = is_array($newData)? $newData [$idField]:$newData;
 //		\Log::info("objectId: $objectId");
 // 		$flowPhase = $newData [config ( "constants.euFlowPhase" )];
@@ -1019,6 +1012,12 @@ class CodeController extends EBController {
 	    			$selectData['data'] = \App\Models\CodeMmrWOAction::all();
 	    			$rs[] = $selectData;
 	    			break;
+    			case 'COMPOSITION' :
+    				$selectData = ['id'=>'QltyProductElementType','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = \App\Models\QltyProductElementType::where(["PRODUCT_TYPE"	=> 2,"ACTIVE"	=> 1])->orderBy("ORDER")->get();
+    				$rs[] = $selectData;
+    				break;
+	    			
     		}
     		$i++;
     	}
@@ -1131,5 +1130,24 @@ class CodeController extends EBController {
     	$help = EbFunctions::where("CODE",$name)->select("HELP")->first();
     	$help = $help?$help:"";
     	return response()->json($help);
+    }
+    
+    public function getGroupFilter($postData){
+    	$filterGroups = array('productionFilterGroup'	=> [],
+    			'dateFilterGroup'			=> [],
+    			'frequenceFilterGroup'		=> []
+    	);
+    	
+    	return $filterGroups;
+    }
+    
+    public function filter(Request $request){
+    	$postData 		= $request->all();
+    	$filterGroups	= $this->getGroupFilter($postData);
+    	return view ( 'partials.editfilter',
+    			['filters'			=> $filterGroups,
+//     			'prefix'			=> "secondary_",
+    			"currentData"		=> $postData
+    	]);
     }
 }

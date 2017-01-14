@@ -17,14 +17,11 @@ class QualityController extends CodeController {
 		parent::__construct();
 		$this->fdcModel = "QualityData";
 		$this->idColumn = config("constants.qualityId");
-		/* $this->phaseColumn = config("constants.flFlowPhase");
-	
-		$this->valueModel = "FlowDataValue";
-		$this->theorModel = "FlowDataTheor"; */
-// 		$this->isApplyFormulaAfterSaving = true;
-
 		$this->keyColumns = [$this->idColumn,$this->phaseColumn];
-		$this->enableBatchRun 				= true;
+	}
+	
+	public function enableBatchRun($dataSet,$mdlName,$postData){
+		return true;
 	}
 	
 	public function getFirstProperty($dcTable){

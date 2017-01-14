@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 use App\Models\CodeFlowPhase;
 use App\Models\Flow;
-use Carbon\Carbon;
-
+use App\Models\FlowDataForecast;
+use App\Models\FlowDataPlan;
 
 class FlowController extends CodeController {
     
@@ -18,17 +18,25 @@ class FlowController extends CodeController {
 		$this->theorModel = "FlowDataTheor";
 		$this->isApplyFormulaAfterSaving = true;
 		$this->keyColumns = [$this->idColumn,$this->phaseColumn];
-		$this->enableBatchRun 				= true;
-		
 	}
 	
-	/* public function getFirstProperty($dcTable){
-		return  ['data'=>$dcTable,'title'=>'Object name','width'=>230];
-	} */
+	public function getGroupFilter($postData){
+		$filterGroups = array('productionFilterGroup'	=> [],
+							 'frequenceFilterGroup'		=> ['CodeReadingFrequency','CodeFlowPhase']
+						);
+		 
+		return $filterGroups;
+	}
+	
+	public function enableBatchRun($dataSet,$mdlName,$postData){
+		return true;
+	}
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
-    	$record_freq = $postData['CodeReadingFrequency'];
-    	$phase_type = $postData['CodeFlowPhase'];
+    	$record_freq 	= $postData['CodeReadingFrequency'];
+    	$phase_type 	= $postData['CodeFlowPhase'];
+    	$planType 		= array_key_exists('CodePlanType', $postData)?$postData['CodePlanType']:0;
+    	$forecastType 	= array_key_exists('CodeForecastType', $postData)?$postData['CodeForecastType']:0;
     	
     	$flow = Flow::getTableName();
     	$codeFlowPhase = CodeFlowPhase::getTableName();
@@ -47,9 +55,13 @@ class FlowController extends CodeController {
 				    	->where($where)
 				    	->whereDate('EFFECTIVE_DATE', '<=', $occur_date)
 				    	//      					->where('OCCUR_DATE', '=', $occur_date)
-				    	->leftJoin($dcTable, function($join) use ($flow,$dcTable,$occur_date){
+				    	->leftJoin($dcTable, function($join) use ($flow,$dcTable,$occur_date,$planType,$forecastType){
 				    		$join->on("$flow.ID", '=', "$dcTable.flow_id");
 				    		$join->where('OCCUR_DATE','=',$occur_date);
+				    		if (($planType > 0 &&  ($dcTable == FlowDataPlan::getTableName() )))
+			    				$join->where("$dcTable.PLAN_TYPE",'=',$planType);
+		    				else if (($forecastType > 0 &&  ($dcTable == FlowDataForecast::getTableName() )))
+		    					$join->where("$dcTable.FORECAST_TYPE",'=',$forecastType);
 				    	})
 				    	->select("$flow.name as $dcTable",
 				    			"$dcTable.ID as DT_RowId",
@@ -65,6 +77,17 @@ class FlowController extends CodeController {
 		    			->get();
     	//  		\Log::info(\DB::getQueryLog());
     	return ['dataSet'=>$dataSet];
+    }
+    
+    public function getObjectIds($dataSet,$postData){
+    	$objectIds = $dataSet->map(function ($item, $key) {
+    		return ["DT_RowId"			=> $item->DT_RowId,
+    				"FL_FLOW_PHASE"		=> $item->FL_FLOW_PHASE,
+    				"FLOW_ID"			=> $item->X_FLOW_ID,
+    				"X_FLOW_ID"			=> $item->X_FLOW_ID
+    		];
+    	});
+    	return $objectIds;
     }
     
 	public function getHistoryConditions($dcTable,$rowData,$row_id){

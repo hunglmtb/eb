@@ -93,9 +93,13 @@ function sendAjaxNotMessage(url,param, func)
     	url: url,
     	type: "post",
     	data: param,
-    	dataType: 'json',
+//    	dataType: 'json',
     	success: function(_data){
     		func(_data);
+		},
+		error: function(_data){
+    		console.log("error "+url);
+    		console.log(JSON.stringify(_data));
 		}
 	});    
 }

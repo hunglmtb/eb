@@ -13,13 +13,26 @@ class TicketController extends CodeController {
 		
  		$this->valueModel = "RunTicketValue";
 		$this->keyColumns = [$this->idColumn,$this->phaseColumn,'TANK_ID','OCCUR_DATE','TICKET_NO'];
-		$this->enableBatchRun 				= true;
+	}
+	
+	public function enableBatchRun($dataSet,$mdlName,$postData){
+		return true;
 	}
 	
     public function getFirstProperty($dcTable){
 		return  ['data'=>$dcTable,'title'=>'','width'=>50];
 	}
 	
+	public function getObjectIds($dataSet,$postData){
+		$objectIds = $dataSet->map(function ($item, $key) {
+			return ["DT_RowId"			=> $item->DT_RowId,
+					"FLOW_PHASE"		=> $item->FLOW_PHASE,
+					"TANK_ID"			=> $item->TANK_ID
+					// 					"TANK_ID"			=> $item->TANK_ID,
+			];
+		});
+		return $objectIds;
+	}
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	$mdlName = $postData[config("constants.tabTable")];
@@ -30,7 +43,7 @@ class TicketController extends CodeController {
     	$date_end		= $date_end&&$date_end!=""?\Helper::parseDate($date_end):Carbon::now();
     	 
     	$tank = Tank::getTableName();
-    	 
+    	
     	$wheres = ['TANK_ID' => $object_id];
 //     	\DB::enableQueryLog();
     	$dataSet = $mdl::join($tank,"$dcTable.TANK_ID", '=', "$tank.ID")

@@ -23,7 +23,6 @@ FLOW DATA CAPTURE
 	actions.loadUrl 		= "/code/load";
 	actions.saveUrl 		= "/code/save";
 	actions.historyUrl 		= "/code/history";
-	actions.reloadAfterSave	= true;
 	
 	actions.type = {
 					idName:['{{config("constants.flowId")}}','{{config("constants.flFlowPhase")}}'],
@@ -36,6 +35,28 @@ FLOW DATA CAPTURE
 
 	actions.validating = function (reLoadParams){
 		return true;
+	}
+
+	
+	var aLoadNeighbor = actions.loadNeighbor;
+	actions.loadNeighbor = function() {
+		var activeTabID = getActiveTabID();
+		$('.CodePlanType  , .CodeForecastType').css('display','none');
+		if(activeTabID=='FlowDataPlan'){
+			$('.CodePlanType').css('display','block');
+		}
+		else if(activeTabID=='FlowDataForecast'){
+			$('.CodeForecastType').css('display','block');
+		}
+		aLoadNeighbor();
+	}
+
+	var aLoadParams = actions.loadParams;
+	actions.loadParams = function(reLoadParams) {
+		var pr = aLoadParams(reLoadParams);
+		pr['CodePlanType']		= $('#CodePlanType').val();
+		pr['CodeForecastType']	= $('#CodeForecastType').val();
+		return pr;
 	}
 </script>
 @stop

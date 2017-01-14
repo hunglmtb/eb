@@ -35,6 +35,7 @@ class EbBussinessModel extends DynamicModel {
 	}
 	
 	public static function updateValues(array $attributes, array &$values = [], $type, $fields) {
+		if (!array_key_exists ( "auto", $values )||!$values[ "auto"]) return ;
 		$unnecessary = true;
 		foreach ( $fields as $field ) {
 			$unnecessary = $unnecessary && array_key_exists ( $field, $values ) && $values [$field] != null && $values [$field] != '';

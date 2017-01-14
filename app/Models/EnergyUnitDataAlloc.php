@@ -1,14 +1,12 @@
 <?php
 
 namespace App\Models;
-use App\Models\FeatureEuModel;
 
-class EnergyUnitDataAlloc extends FeatureEuModel
+
+class EnergyUnitDataAlloc extends FeatureEuAllocModel
 {
-	protected $table = 'ENERGY_UNIT_DATA_ALLOC';
-	
-	protected $primaryKey = 'ID';
-	protected $fillable  = ['OCCUR_DATE',
+	protected $table 	= 'ENERGY_UNIT_DATA_ALLOC';
+	protected $fillable = ['OCCUR_DATE',
 							'EU_ID',
 							'EVENT_TYPE',
 							'ALLOC_TYPE',

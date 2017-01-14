@@ -26,9 +26,9 @@ class FeatureEuModel extends EbBussinessModel
 		
 		$newData[config("constants.flowPhase")] = $newData[config("constants.euFlowPhase")];
 		
-		$keyFields = [static::$idField => $newData[static::$idField],
-				config("constants.flowPhase") => $newData[config("constants.euFlowPhase")],
-				static::$dateField=>$occur_date];
+		$keyFields = [static::$idField 					=> $newData[static::$idField],
+						config("constants.flowPhase") 	=> $newData[config("constants.euFlowPhase")],
+						static::$dateField				=> $occur_date];
 		
 		if (array_key_exists(config("constants.eventType"), $newData)) {
 			$newData['EVENT_TYPE'] 		= $newData[config("constants.eventType")];
