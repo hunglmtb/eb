@@ -301,7 +301,7 @@ class FormulaHelpers {
 	    	}
 	    }
 //    	     	\DB::enableQueryLog();
-    	$fos = Formula::where($where)->get();
+    	$fos = Formula::where($where)->whereNotIn('VALUE_COLUMN',$columns)->get();
     	if ($fos) {
 		    foreach($fos as $fml ){
 		    	if ($fml) $affectedFormulas[] = $fml;

@@ -314,10 +314,6 @@ var actions = {
 										success:function(data){
 											hideWaiting();
 //											if(reLoadParams) actions.editedData = {};
-											if(data!=null&&data.hasOwnProperty('objectIds')){
-												jQuery.extend(actions.objectIds, data.objectIds);
-												jQuery.extend(actions.editedData, data.objectIds);
-											}
 											if (typeof(actions.loadSuccess) == "function") {
 												actions.loadSuccess(data);
 											}

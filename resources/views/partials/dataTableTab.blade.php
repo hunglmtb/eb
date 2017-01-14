@@ -47,6 +47,10 @@
 	}
 
 	actions.loadSuccess =  function(data){
+		if(data!=null&&data.hasOwnProperty('objectIds')){
+			jQuery.extend(actions.objectIds, data.objectIds);
+			jQuery.extend(actions.editedData, data.objectIds);
+		}
 		$('#buttonLoadData').attr('value', 'Refresh');
 		postData = data.postData;
 		var tab = postData['{{config("constants.tabTable")}}'];
