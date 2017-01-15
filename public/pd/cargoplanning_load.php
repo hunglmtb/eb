@@ -1,4 +1,15 @@
 <?php
+function toDateString($d)
+{
+	if(!$d) return $d;
+	$v1=explode(" ",$d);
+	$v2=explode("/",$v1[0]);
+	if($v2[2].$v2[1]==="" && $v2[0]!=="")
+		return $v2[0]; //time only
+	else
+		return "$v2[2]-$v2[0]-$v2[1]".($v1[1]?" $v1[1]":"");
+}
+
 error_reporting(E_ERROR);
 
 $db_server_name="localhost";
@@ -31,8 +42,8 @@ if(!$storage_id){
 	exit;
 }
 //saveWorkSpaceInfo($DateFrom, $DateTo, $facility_id);
-$date_from='2016-12-01';//toDateString($DateFrom);
-$date_to='2016-12-31';//toDateString($DateTo);
+$date_from=toDateString($DateFrom);
+$date_to=toDateString($DateTo);
 
 $sSQL="select la.name LA_NAME,la.id LA_ID, ba.name BA_NAME, la.INTEREST_PCT 
 from pd_lifting_account la, ba_address ba where la.storage_id = $storage_id and la.company = ba.id";
@@ -135,10 +146,10 @@ if(!$balance) exit;
 echo '<tbody>';
 
 $sSQL="select a.ID, DATE_FORMAT(a.OCCUR_DATE,'%m/%d/%Y') OCCUR_DATE, a.AVAIL_SHIPPING_VOL OPENING_BALANCE from storage_data_value a
-where a.OCCUR_DATE between '$date_from' and '$date_to' and a.storage_id=$storage_id
+where a.OCCUR_DATE between '$date_from' and '$date_to' and a.storage_id=$storage_id order by a.OCCUR_DATE 
 ";
 
-//echo "<tr><td>$sSQL<td></tr>";
+echo "<tr><td>$sSQL<td></tr>";
 $result=mysql_query($sSQL) or die("fail: ".$sSQL."-> error:".mysql_error());
 $vals = [];
 while($row=mysql_fetch_assoc($result)){
