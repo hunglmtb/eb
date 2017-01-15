@@ -146,10 +146,10 @@ if(!$balance) exit;
 echo '<tbody>';
 
 $sSQL="select a.ID, DATE_FORMAT(a.OCCUR_DATE,'%m/%d/%Y') OCCUR_DATE, a.AVAIL_SHIPPING_VOL OPENING_BALANCE from storage_data_value a
-where a.OCCUR_DATE between '$date_from' and '$date_to' and a.storage_id=$storage_id order by a.OCCUR_DATE 
+where a.OCCUR_DATE between '$date_from' and '$date_to' and a.storage_id=$storage_id and a.AVAIL_SHIPPING_VOL order by a.OCCUR_DATE 
 ";
 
-echo "<tr><td>$sSQL<td></tr>";
+//echo "<tr><td>$sSQL<td></tr>";
 $result=mysql_query($sSQL) or die("fail: ".$sSQL."-> error:".mysql_error());
 $vals = [];
 while($row=mysql_fetch_assoc($result)){
