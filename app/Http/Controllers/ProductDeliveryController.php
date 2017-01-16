@@ -121,6 +121,19 @@ class ProductDeliveryController extends CodeController {
 		return view ( 'front.cargomonitoring.liftaccdailybalance',['filters'=>$filterGroups]);
 	}
 	
+	public function cargoplanning() {
+		$filterGroups = array(	'productionFilterGroup'	=>	[	 "Storage",
+															],									
+								'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
+																['id'=>'date_end','name'=>'To date']),
+								'enableSaveButton'		=> 	false,
+								'FacilityDependentMore'	=> [["name"			=> "Storage",
+															"source"		=> "Facility"],
+								],
+		);
+		return view ( 'front.cargomonitoring.cargoplanning',['filters'=>$filterGroups]);
+	}
+	
 	public function liftaccmonthlyadjust() {
 		$filterGroups = array(	'productionFilterGroup'	=>	[	 "Storage",
 															],

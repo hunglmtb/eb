@@ -105,6 +105,8 @@ function scopeChange(c)
 "<option value='PROC_TRAIN_BY_PRODUCT'>PROC_TRAIN_BY_PRODUCT</option>"+
 "<option>SHIP_CARGO_BLMR</option>"+
 "<option>SHIP_CARGO_BLMR_DATA</option>"+
+"<option>PD_SHIPPER</option>"+
+"<option>PD_CARGO_SHIPPER</option>"+
 		"";
 	}
 	else if($("#cboObjectScope").val()=="ACTIVITY")

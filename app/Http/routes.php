@@ -301,6 +301,9 @@ Route::post('cargostatus/detail', 		['uses' =>'Cargo\CargoStatusController@loadD
 Route::get('pd/liftaccdailybalance',			['uses' =>'ProductDeliveryController@liftaccdailybalance',	'middleware' => 'checkRight:PD_CARGO_MON_DAILY_BAL']);
 Route::post('liftaccdailybalance/load',			['uses' =>'Cargo\LiftDailyController@load',					'middleware' => 'saveWorkspace']);
 
+Route::get('pd/cargoplanning',			['uses' =>'ProductDeliveryController@cargoplanning',	'middleware' => 'checkRight:PD_CARGO_MON_DAILY_BAL']);
+Route::post('cargoplanning/load',			['uses' =>'Cargo\CargoPlanningController@load',					'middleware' => 'saveWorkspace']);
+
 Route::get('pd/liftaccmonthlyadjust',			['uses' =>'ProductDeliveryController@liftaccmonthlyadjust',		'middleware' => 'checkRight:PD_CARGO_MON_MONTHLY_DATA']);
 Route::post('liftaccmonthlyadjust/load',		['uses' =>'Cargo\LiftMonthlyController@load',				'middleware' => 'saveWorkspace']);
 Route::post('liftaccmonthlyadjust/save', 		['uses' =>'Cargo\LiftMonthlyController@save',				'middleware' => 'checkRight:PD_CARGO_MON_MONTHLY_DATA']);
