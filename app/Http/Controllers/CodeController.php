@@ -108,7 +108,8 @@ class CodeController extends EBController {
 			}
 			$unit = ProductionGroupComposer::getCurrentSelect ( $eCollection,$currentId );
 			$currentUnits[$modelName]	= $unit;
-			$aOption 		= ["modelName"	=> $modelName];
+			$mdlName 		= 'App\Models\\'.$modelName;
+			$aOption 		= $mdlName::getOptionDefault($modelName,$unit);
 			$elementId		= is_string($elementId)?$elementId:$modelName;
 			$filterArray 	= \Helper::getFilterArray ( $elementId, $eCollection, $unit,$aOption );
 			if ($isAdd) $results [] = $filterArray;
@@ -1062,7 +1063,28 @@ class CodeController extends EBController {
     				$selectData['data'] = \App\Models\QltyProductElementType::where(["PRODUCT_TYPE"	=> 2,"ACTIVE"	=> 1])->orderBy("ORDER")->get();
     				$rs[] = $selectData;
     				break;
-	    			
+    			case 'task_group' :
+		    		$selectData = ['id'=>'EbFunctions','targets'=>$i,'COLUMN_NAME'=>$columnName];
+		    		$selectData['data'] = \App\Models\EbFunctions::loadBy(null);
+		    		$rs[] = $selectData;
+		    		break;
+	    		case 'runby' :
+	    			$selectData = ['id'=>'runby','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = collect([
+											(object)['ID' =>	1	,'NAME' => 'System'  ],
+											(object)['ID' =>	2	,'NAME' => 'User'    ],
+										]);
+	    			$rs[] = $selectData;
+	    			break;
+    			case 'status' :
+    				$selectData = ['id'=>'status','targets'=>$i,'COLUMN_NAME'=>$columnName];
+    				$selectData['data'] = collect([
+    						(object)['ID' =>	1	,'NAME' => 'Ready'  ],
+    						(object)['ID' =>	2	,'NAME' => 'Stop'    ],
+    				]);
+    				$rs[] = $selectData;
+    				break;
+	    		
     		}
     		$i++;
     	}

@@ -113,6 +113,7 @@ input[type="button"]:focus, button:focus {
 	width: auto;
 	float: left;
 	padding: 1px;
+    max-width: 130px;
 }
 
 .date_input {

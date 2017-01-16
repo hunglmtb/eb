@@ -8,6 +8,7 @@ class DynamicModel extends Model {
 	protected $isOracleModel = false;
 	protected $isReservedName = false;
 	public $timestamps = false;
+	protected static $isAddAllAsDefault	= false;
 	
 	public function __construct() {
 		parent::__construct();
@@ -57,5 +58,11 @@ class DynamicModel extends Model {
 	public static function getAll(){
 		$entries = static ::all();
 		return $entries;
+	}
+	
+	public static function getOptionDefault($modelName,$unit){
+		$aOption 		= ["modelName"	=> $modelName];
+		if (static::$isAddAllAsDefault) $aOption['default']	= ['ID'=>0,'NAME'=>'All'];
+		return $aOption;
 	}
 }

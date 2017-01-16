@@ -75,7 +75,7 @@ var xmenu=
 							{"name":"Workflow","title":"Workflow","link":"/workflow"},
 							{"name":'{{ trans("front/site.Dashboard") }}',"title":'{{ trans("front/site.Dashboard") }}',"link":"/dashboard"},
 							{"name":"Choke Model","title":"Choke Model","link":"/fp/choke"},
-							{"name":"Task Manager","title":"Task Manager","link":"#"},
+							{"name":"Task Manager","title":"Task Manager","link":"/dv/taskman"},
 							{"name":"Storage Display","title":"Storage Display","link":"/pd/storagedisplay"},
 						]
 					},
