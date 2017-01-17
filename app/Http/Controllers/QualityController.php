@@ -172,7 +172,7 @@ class QualityController extends CodeController {
     				"$pdVoyageDetail.ID",
     				"$pdVoyageDetail.ID as CODE",
     				"$pdVoyage.NAME as NAME",
-    				"$pdVoyage.ID as value",
+    				"$pdVoyageDetail.ID as value",
     				"$pdVoyage.NAME as text",
     				"$pdVoyageDetail.PARCEL_NO as PARCEL_NO"
     				)

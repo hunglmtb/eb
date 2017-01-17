@@ -11,13 +11,17 @@ trait RelationDynamicModel
 	
 	public static function getForeignColumn($row,$originCommand,$columnName){
 		$command = $originCommand;
-		if ($columnName=="OBJECT_ID") {
+		$sourceIdColumn		= isset(static :: $relateColumns)&&array_key_exists("id", static :: $relateColumns)?
+							static :: $relateColumns["id"]:"OBJECT_ID";
+		$sourceTypeColumn	= isset(static :: $relateColumns)&&array_key_exists("type", static :: $relateColumns)?
+							static :: $relateColumns["type"]:"OBJECT_TYPE";
+		if ($columnName==$sourceIdColumn) {
 			/* $s_where	= array_key_exists('where', $oColumns)?$oColumns['where']:"";
 				$s_order	= array_key_exists('order', $oColumns)?$oColumns['order']:""; */
 			$s_where	= "";
 			$s_order	= "";
 			$namefield	= "NAME";
-			$id			= $row&&array_key_exists('OBJECT_TYPE', $row)?$row["OBJECT_TYPE"]:1;
+			$id			= $row&&array_key_exists($sourceTypeColumn, $row)?$row[$sourceTypeColumn]:1;
 			$sourceModel= static::getSourceModel();
 			$sourceModel= 'App\Models\\' .$sourceModel;
 			$inject		= $sourceModel::find($id);
@@ -30,14 +34,19 @@ trait RelationDynamicModel
 	}
 	
 	public static function getDependences($columnName,$idValue){
-		$option = null;
-		if ($columnName=="OBJECT_TYPE") {
+		$option 			= null;
+		$sourceIdColumn		= isset(static :: $relateColumns)&&array_key_exists("id", static :: $relateColumns)?
+							static :: $relateColumns["id"]:"OBJECT_ID";
+		$sourceTypeColumn	= isset(static :: $relateColumns)&&array_key_exists("type", static :: $relateColumns)?
+							static :: $relateColumns["type"]:"OBJECT_TYPE";
+		
+		if ($columnName==$sourceTypeColumn) {
 			$option = ["dependences"	=> [["name"		=>"ObjectName",
-					"elementId"	=> "OBJECT_ID",
+					"elementId"	=> $sourceIdColumn,
 			]],
 					"sourceModel"	=> static::getSourceModel(),
-					"targets"		=> ["OBJECT_ID"],
-					'extra'			=> ["OBJECT_TYPE"],
+					"targets"		=> [$sourceIdColumn],
+					'extra'			=> [$sourceTypeColumn],
 			];
 				
 		}
