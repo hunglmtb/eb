@@ -120,6 +120,8 @@ QUALITY DATA CAPTURE
 	    	        					}
 	    			};
 	    			subData = data['NONE_MOLE_FACTION'];
+	    			$("#table_"+tab+"_containerdiv").html("<table id='table_"+tab+"' class='fixedtable nowrap display'>"); 
+	    			
 	    			if(typeof subData == "object"){
 		    			actions.generateTableFoot(tab,subData.properties);
 		    			renderTable(tab,subData,options);
@@ -140,6 +142,7 @@ QUALITY DATA CAPTURE
     	 		 								}
     					};
 	    			subData = data['MOLE_FACTION'];
+	    			$("#table_"+tab+"_containerdiv").html("<table id='table_"+tab+"' class='fixedtable nowrap display'>"); 
     				if(typeof subData == "object"){
 		    			actions.generateTableFoot(tab,subData.properties);
 		    			renderTable(tab,subData,options);
