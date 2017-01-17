@@ -11,7 +11,7 @@
 @parent
 <script>
 	actions.loadUrl = "/shipblmr/load";
-// 	actions.saveUrl = "/shipblmr/save";
+ 	actions.saveUrl = "/shipblmr/save";
 	actions['idNameOfDetail'] = ['BLMR_ID', 'ID'];
 
 	actions.isDisableAddingButton	= function (tab,table) {
