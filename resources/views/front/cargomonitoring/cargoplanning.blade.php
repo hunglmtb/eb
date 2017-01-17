@@ -46,6 +46,14 @@ CARGO PLANNING
 				},
 			};
 	actions.doLoad = function(){
+            var day1 = $("#date_begin").datepicker('getDate').getDate();                 
+            var month1 = $("#date_begin").datepicker('getDate').getMonth() + 1;             
+            var year1 = $("#date_begin").datepicker('getDate').getFullYear();
+            var dateFrom = year1 + "-" + month1 + "-" + day1;
+            day1 = $("#date_end").datepicker('getDate').getDate();                 
+            month1 = $("#date_end").datepicker('getDate').getMonth() + 1;             
+            year1 = $("#date_end").datepicker('getDate').getFullYear();
+            var dateTo = year1 + "-" + month1 + "-" + day1;
 		if($("#txt_balance").val()===""){
 			$("#txt_balance").focus();
 			alert("Please enter balance");
@@ -57,7 +65,7 @@ CARGO PLANNING
 			var formData = $("#form_fdc").serialize();
 			if(!formData)
 				formData = "";
-			formData += (formData==""?"":"&")+"dateFrom="+$("#date_begin").val()+"&dateTo="+$("#date_end").val()+"&cboFacility="+$("#Facility").val()+"&cboStorage="+$("#Storage").val()+"&dateformat="+"--";
+			formData += (formData==""?"":"&")+"dateFrom="+dateFrom+"&dateTo="+dateTo+"&cboFacility="+$("#Facility").val()+"&cboStorage="+$("#Storage").val()+"&dateformat="+jsFormat;
 			/*
 			formData['dateFrom'] = $("#date_begin").val();
 			formData['dateTo'] = $("#date_end").val();
