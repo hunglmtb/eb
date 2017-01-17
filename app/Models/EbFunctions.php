@@ -6,12 +6,12 @@ use App\Models\DynamicModel;
 { 
 	protected $table = 'EB_FUNCTIONS'; 
 	protected static $isAddAllAsDefault	= true;
-	protected $primaryKey = 'CODE';
+// 	protected $primaryKey = 'CODE';
 	
 	public static function loadBy($sourceData){
 		$entries = static ::where('USE_FOR','like',"%TASK_GROUP%")
 							->whereIn('LEVEL',[1,2])
-							->select("CODE","CODE as ID",
+							->select("CODE","ID",
 									"PATH as FUNCTION_URL",
 									\DB::raw("concat(case when PARENT_CODE is null then '' else '--- ' end,NAME) as NAME"))
 							->orderBy("CODE")
@@ -32,8 +32,8 @@ use App\Models\DynamicModel;
 	
 	public function ExtensionEbFunctions($option=null){
 		$sourceData 	= ["EbFunctions"	=>	(object)[
-				'CODE'	=>	$this->attributes['CODE'],
-				'ID'	=>	$this->attributes['CODE']
+				'CODE'	=>	$this->CODE,
+				'ID'	=>	$this->ID
 		]];
 		return ExtensionEbFunctions::loadBy($sourceData);
 	}

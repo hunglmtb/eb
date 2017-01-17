@@ -14,7 +14,7 @@ namespace App\Models;
 				$entries 	= static ::where('USE_FOR','like',"%TASK_FUNC%")
 									->where($where)
 									->select("CODE",
-											"CODE as ID",
+											"ID",
 											"PATH as FUNCTION_URL",
 											"CODE as value",
 											"NAME as text",
