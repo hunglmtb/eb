@@ -1,8 +1,7 @@
 <?php 
 namespace App\Models; 
-use App\Models\DynamicModel; 
 
- class TmTask extends DynamicModel 
+ class TmTask extends EbBussinessModel 
 { 
-	protected $table = 'tm_task'; 
+	protected $table = 'TM_TASK'; 
 } 

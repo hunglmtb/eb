@@ -39,7 +39,7 @@ DEFERMENT DATA CAPTURE
 	 }
 	  */
 
- actions.extraDataSetColumns = {'DEFER_TARGET':'DEFER_GROUP_TYPE','CODE2':'CODE1','CODE3':'CODE2','OBJECT_ID':'OBJECT_TYPE'};
+ 	actions.extraDataSetColumns = {'DEFER_TARGET':'DEFER_GROUP_TYPE','CODE2':'CODE1','CODE3':'CODE2','OBJECT_ID':'OBJECT_TYPE'};
 	
 	source['DEFER_GROUP_TYPE']	={	dependenceColumnName	:	['DEFER_TARGET'],
 									url						: 	'/deferment/loadsrc'

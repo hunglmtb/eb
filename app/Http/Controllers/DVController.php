@@ -1006,4 +1006,26 @@ class DVController extends Controller {
 	public function editor() {
 		return response()->file("/config/diagrameditor.xml");
 	}
+	
+	public function taskman() {
+		$filterGroups = array(
+							  'dateFilterGroup'			=> array(['id'=>'date_begin','name'=>'From Date'],['id'=>'date_end','name'=>'To Date']),
+							'frequenceFilterGroup'		=> [
+															["name"			=> "EbFunctions",
+															"filterName"	=> "Run Task",
+															"getMethod"		=> "loadBy",
+															'dependences'	=> ["ExtensionEbFunctions"],
+															"source"		=> [],
+															'default'		=> ['ID'=>0,'NAME'=>'All']
+															],
+															["name"			=> "ExtensionEbFunctions",
+															"getMethod"		=> "loadBy",
+															"filterName"	=>	"Function Name",
+															'default'		=> ['ID'=>0,'NAME'=>'All'],
+															"source"		=> ['frequenceFilterGroup'=>["EbFunctions"]]],
+							]
+						);
+		return view ( 'datavisualization.taskman',['filters'=>$filterGroups]);
+	}
+	
 }

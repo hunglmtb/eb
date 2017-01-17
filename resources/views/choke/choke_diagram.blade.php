@@ -36,7 +36,7 @@
 			for (var category in serieGroup) {
 				serie		= serieGroup[category];
 				serie.type	= 'column';
-				serie.name	+= ' LIP';
+// 				serie.name	+= ' LIP';
 				for(var i = 0; i< groupIndex;i++){
 					serie.data.unshift(0);
 				}

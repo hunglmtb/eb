@@ -2,11 +2,14 @@
 
 namespace App\Models;
 use App\Models\EbBussinessModel;
+use App\Trail\RelationDynamicModel;
 
 class QltyData extends EbBussinessModel
 {
+// 	use RelationDynamicModel;
+	public  static  $relateColumns = ['id'	=> "SRC_ID",'type'	=> "SRC_TYPE"];
+	
 	protected $table = 'QLTY_DATA';
-	protected $primaryKey = 'ID';
 	protected $fillable  = ['CODE',
 							'LAB_NAME',
 							'NAME',
@@ -28,10 +31,15 @@ class QltyData extends EbBussinessModel
 	public  static  $idField = 'ID';
 	public  static  $typeName = 'QLTY';
 	
+	public static function getSourceModel(){
+		return "CodeQltySrcType";
+	}
+	
 	public function CodeQltySrcType()
 	{
 		return $this->belongsTo('App\Models\CodeQltySrcType', 'SRC_TYPE', 'ID');
 	}
+	
 	
 	public static function getQualityRow($object_id,$object_type_code,$occur_date){
 		return static :: whereHas('CodeQltySrcType',function ($query) use ($object_type_code) {

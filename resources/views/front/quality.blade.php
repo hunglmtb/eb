@@ -78,26 +78,27 @@ QUALITY DATA CAPTURE
 	
 	editBox.loadUrl = "/quality/edit";
 	editBox.saveUrl = '/quality/edit/saving';
+
+	actions.generateTableFoot  = function ( tab,properties ) {
+		$("#table_"+tab+"_containerdiv").html("<table id='table_"+tab+"' class='fixedtable nowrap display'>"); 
+		
+// 		document.getElementById("table_"+tab).deleteTFoot();
+		if(typeof properties == 'object'){
+			var tfoot = $('<tfoot></tfoot>'); 
+			var foot = $('<tr></tr>'); 
+			foot.appendTo(tfoot); 
+			for (var i = 0; i < properties.length; i++) {
+				if(i==0) footColumn	= $('<td style="text-align:left">Sum:</td>');
+				else footColumn	= $('<td style="text-align:left"></td>');
+			    foot.append(footColumn);
+			}
+			tfoot.appendTo("#table_"+tab); 
+		}
+	};
+	
 	editBox.editGroupSuccess = function(data,id){
 	//	    				$('#tableEditGroup').html(JSON.stringify(data));
 					scrollY = "200px";
-	    			tab = 'gas';
-	    				options = {
-	    		 					tableOption :	{
-	    	 		 									searching	: false,
-	    	 		 									autoWidth	: true,
-	    	 		 									bInfo 		: false,
-	    	 		 									scrollY		: scrollY,
-	    	 		 									footerCallback : function ( row, data3, start, end, display ) {
-					    									            var api = this.api();
-					    									            columns = [1,2,3];
-					    									            editBox.renderSumRow(api,columns);
-	    									        	}
-	    	 		 								}
-	    					};
-	    			subData = data['MOLE_FACTION'];
-	    			renderTable(tab,subData,options);
-
 	    			tab = 'oil';
 	    			options = {
 	    					tableOption :{	searching	: false,
@@ -119,7 +120,34 @@ QUALITY DATA CAPTURE
 	    	        					}
 	    			};
 	    			subData = data['NONE_MOLE_FACTION'];
-	    			renderTable(tab,subData,options);
+	    			$("#table_"+tab+"_containerdiv").html("<table id='table_"+tab+"' class='fixedtable nowrap display'>"); 
+	    			
+	    			if(typeof subData == "object"){
+		    			actions.generateTableFoot(tab,subData.properties);
+		    			renderTable(tab,subData,options);
+	    			}
+
+	    			tab = 'gas';
+    				options = {
+    		 					tableOption :	{
+    	 		 									searching	: false,
+    	 		 									autoWidth	: true,
+    	 		 									bInfo 		: false,
+    	 		 									scrollY		: scrollY,
+    	 		 									footerCallback : function ( row, data3, start, end, display ) {
+				    									            var api = this.api();
+				    									            columns = [1,2];
+				    									            editBox.renderSumRow(api,columns);
+    									        	}
+    	 		 								}
+    					};
+	    			subData = data['MOLE_FACTION'];
+	    			$("#table_"+tab+"_containerdiv").html("<table id='table_"+tab+"' class='fixedtable nowrap display'>"); 
+    				if(typeof subData == "object"){
+		    			actions.generateTableFoot(tab,subData.properties);
+		    			renderTable(tab,subData,options);
+	    			}
+    			
 	}
 	</script>
 	
@@ -131,15 +159,6 @@ QUALITY DATA CAPTURE
 			<tr>
 				<td valign='top'>
 					<div id="table_oil_containerdiv" class="secondaryTable" style='height:100%;overflow:auto'>
-						<table id="table_oil" class="fixedtable nowrap display">
-							<tfoot>
-								<tr>
-									<td style="text-align:left">Sum:</td>
-									<td style="text-align:left"></td>
-									<td style="text-align:left" colspan="1"></td>
-								</tr>
-							</tfoot>
-						</table>
 					</div>
 				</td>
 				<td valign='top' width="10">
@@ -148,16 +167,6 @@ QUALITY DATA CAPTURE
 				</td>
 				<td valign='top'>
 					<div id="table_gas_containerdiv" class="secondaryTable" style='height:100%;overflow:auto'>
-						<table id="table_gas" class="fixedtable nowrap display">
-						<tfoot>
-							<tr>
-								<td style="text-align:left">Sum:</td>
-								<td style="text-align:left"></td>
-								<td style="text-align:left"></td>
-								<td style="text-align:left" colspan="3"></td>
-							</tr>
-						</tfoot>
-					</table>
 					</div>
 				</td>
 			</tr>

@@ -160,6 +160,10 @@ var registerOnChange = function(sourceObject, dependentIds,more) {
 				});
 				for (var i = 0; i < results.length; i++) {
 					var elementId = dependeceNameFn(results[i].id);
+					if(typeof results[i]['default']=='object'){
+						var option = renderDependenceHtml(results[i]['default'].ID,results[i]['default']);
+						$('#'+elementId).append(option);
+					}
 					$(results[i].collection).each(function(){
 						var option = renderDependenceHtml(elementId,this);
 						$('#'+elementId).append(option);
