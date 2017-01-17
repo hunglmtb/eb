@@ -26,7 +26,11 @@ trait RelationDynamicModel
 			$sourceModel= 'App\Models\\' .$sourceModel;
 			$inject		= $sourceModel::find($id);
 			if($inject&&$inject->CODE) {
-				$ref_table	= $inject->CODE;
+				if (method_exists($inject, "getReferenceTable")) {
+					$ref_table	= $inject->getReferenceTable($inject->CODE);
+				}
+				else
+					$ref_table	= $inject->CODE;
 				$command 	= "select ID, $namefield from `$ref_table` $s_where $s_order ; --select";
 			}
 		}

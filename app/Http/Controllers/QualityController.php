@@ -240,14 +240,19 @@ class QualityController extends CodeController {
 								    				"$qltyDataDetail.NORMALIZATION", */
 								    				"$qltyDataDetail.*"
 								    				)
-// 						    				->orderBy("$qltyProductElementType.ORDER")
-// 						    				->orderBy("$qltyProductElementType.NAME")
+ 						    				->orderBy("$qltyProductElementType.ORDER")
+ 						    				->orderBy("$qltyProductElementType.NAME")
 						    				->get();
-									    	
     	$datasetGroups = $dataSet->groupBy(function ($item, $key) {
-									    return $item['DEFAULT_UOM']=='Mole fraction'?'MOLE_FACTION':'NONE_MOLE_FACTION';
+									    $group	= "none";
+									    if ($item->PRODUCT_TYPE!=2&&$item['DEFAULT_UOM']	!='Mole fraction') {
+									    	$group	= 'NONE_MOLE_FACTION';
+									    }
+									    elseif ($item['DEFAULT_UOM']	=='Mole fraction') $group	= 'MOLE_FACTION';
+// 									    return $item['DEFAULT_UOM']	!='Mole fraction'?'NONE_MOLE_FACTION':'MOLE_FACTION';
+									    return $group;
 									});
-    	
+    	//none left, mole right
 	    $results = [];
 	    if ($datasetGroups->has('NONE_MOLE_FACTION')) {
 	    	$gasElementColumns = ['ELEMENT_TYPE','VALUE','UOM'];
@@ -272,10 +277,10 @@ class QualityController extends CodeController {
     }
     
     public function editSaving(Request $request){
-    	$postData = $request->all();
-    	$id = $postData['id'];
+    	$postData 		= $request->all();
+    	$id 			= $postData['id'];
     	
-    	$qltyDataEntry = QltyData::find($id);
+    	$qltyDataEntry 	= QltyData::find($id);
     	if ($qltyDataEntry) {
     		$productType = $qltyDataEntry->PRODUCT_TYPE;
     		switch ($productType){

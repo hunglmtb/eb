@@ -6,7 +6,6 @@ use App\Models\DynamicModel;
 class QltyDataDetail extends DynamicModel
 {
 	protected $table = 'QLTY_DATA_DETAIL';
-	protected $primaryKey = 'ID';
 	protected $fillable  = ['QLTY_DATA_ID',
 							 'ELEMENT_TYPE',
 							 'VALUE',

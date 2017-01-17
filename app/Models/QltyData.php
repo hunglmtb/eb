@@ -2,7 +2,7 @@
 
 namespace App\Models;
 use App\Models\EbBussinessModel;
-// use App\Trail\RelationDynamicModel;
+use App\Trail\RelationDynamicModel;
 
 class QltyData extends EbBussinessModel
 {
@@ -39,6 +39,7 @@ class QltyData extends EbBussinessModel
 	{
 		return $this->belongsTo('App\Models\CodeQltySrcType', 'SRC_TYPE', 'ID');
 	}
+	
 	
 	public static function getQualityRow($object_id,$object_type_code,$occur_date){
 		return static :: whereHas('CodeQltySrcType',function ($query) use ($object_type_code) {
