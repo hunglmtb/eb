@@ -62,7 +62,7 @@ Constrain diagrams
 	actions.saveUrl = "/choke/save";
 	
 	actions.getChartTitle = function (tab){
-		return "Contraint Diagram Name";
+		return "Choke Model Name";
 	};
 	
 	editBox.fillCurrentDiagram = function (currentDiagram){
