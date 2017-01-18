@@ -67,8 +67,8 @@ class ChokeController extends CodeController {
     				$flowPhase		= array_key_exists('CodeFlowPhase', $object)?$object['CodeFlowPhase']:0;
     				if ($flowPhase>0) $where["FLOW_PHASE" ] 	= $flowPhase;
     				
-    				$allocType		= array_key_exists('CodeAllocType', $object)?$object['CodeAllocType']:0;
-    				if ($allocType>0) $where["ALLOC_TYPE" ] 	= $allocType;
+//     				$allocType		= array_key_exists('CodeAllocType', $object)?$object['CodeAllocType']:0;
+//     				if ($allocType>0) $where["ALLOC_TYPE" ] 	= $allocType;
     				
     				$planType		= array_key_exists('CodePlanType', $object)?$object['CodePlanType']:0;
     				if ($planType>0) $where["PLAN_TYPE" ] 	= $planType;

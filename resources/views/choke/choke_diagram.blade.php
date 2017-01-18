@@ -49,7 +49,7 @@
 			series.push({
 				type: 'line',
 				color: 'red',
-				name: 'MPP',
+				name: 'LMPP',
 				lineWidth: 2,
 				showInLegend:false,
 				marker: {enabled: false},
