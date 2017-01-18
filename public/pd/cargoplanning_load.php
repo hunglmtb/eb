@@ -144,15 +144,17 @@ foreach($interest_percents as $id => $name){
 echo '</tr></thead>';
 if(!$balance) exit;
 echo '<tbody>';
+//if(count($la_data)==0) {echo "<tr><td colspan='6' style='color:orange;text-align:center'>No entitlement data</td></tr></tbody>"; exit;}
 
-$sSQL="select a.ID, DATE_FORMAT(a.OCCUR_DATE,'%m/%d/%Y') OCCUR_DATE, a.AVAIL_SHIPPING_VOL OPENING_BALANCE from storage_data_value a
-where a.OCCUR_DATE between '$date_from' and '$date_to' and a.storage_id=$storage_id order by a.OCCUR_DATE 
+$sSQL="select DATE_FORMAT(a.OCCUR_DATE,'%m/%d/%Y') OCCUR_DATE, max(a.AVAIL_SHIPPING_VOL) OPENING_BALANCE from storage_data_value a
+where a.OCCUR_DATE between '$date_from' and '$date_to' and a.storage_id=$storage_id group by a.OCCUR_DATE order by a.OCCUR_DATE 
 ";
 
 //echo "<tr><td>$sSQL<td></tr>";
 $result=mysql_query($sSQL) or die("fail: ".$sSQL."-> error:".mysql_error());
 $vals = [];
 $last_value = null;
+$last_date = null;
 while($row=mysql_fetch_assoc($result)){
 	$v = $row["OPENING_BALANCE"];
 	$rowvals = [];
@@ -161,19 +163,22 @@ while($row=mysql_fetch_assoc($result)){
 	$rowvals["PLAN"] = "";
 	//echo "<tr><td>$row[OCCUR_DATE]</td><td>$v</td><td></td>";
 	foreach($interest_percents as $id => $val){
+		$add_val = 0;
 		if(count($la_data)==0){
 			if(!isset($vals["ENT_LA_$id"]))
 				$vals["ENT_LA_$id"] = $val;
 			$vals["ENT_LA_$id"] += 200;
 			$v = $vals["ENT_LA_$id"];
+			$add_val = 200;
 		}
 		else{
-			$vals["ENT_LA_$id"] += $la_data["$row[OCCUR_DATE]"]["$id"];;
+			$vals["ENT_LA_$id"] += $la_data["$row[OCCUR_DATE]"]["$id"];
 			$v = $vals["ENT_LA_$id"];
+			$add_val = $la_data["$last_date"]["$id"];
 		}
 		$rowvals["ENT_LA_$id"] = $v;
 		if(!$row["OPENING_BALANCE"])
-			$rowvals["BALANCE"] += $rowvals["ENT_LA_$id"];
+			$rowvals["BALANCE"] += $add_val;
 		//echo "<td id='ent_val_{$id}_{$row[ID]}' class='group1_td'>$v</td>";
 	}
 	foreach($shipper_r1 as $id => $val){
@@ -210,7 +215,9 @@ while($row=mysql_fetch_assoc($result)){
 					$rowvals["SCHE_LA_$la_id"] = $dx;
 					$highlight[] = "ENT_LA_$la_id";
 				}
-			}
+				if(!$row["OPENING_BALANCE"])
+					$rowvals["BALANCE"] -= $cargo_sizes["$shipper_max_id"];
+				}
 		}
 	}
 	echo "<tr>";
@@ -241,8 +248,8 @@ while($row=mysql_fetch_assoc($result)){
 			$vals["ENT_LA_$la_id"] -= $dx;
 		}
 	}
-	if($row["OPENING_BALANCE"])
-		$last_value = $row["OPENING_BALANCE"];
+	$last_value = $rowvals["BALANCE"];
+	$last_date = $row["OCCUR_DATE"];
 }
 echo "<tbody>";
 exit;
