@@ -8,6 +8,10 @@ use App\Models\IntObjectType;
 
 class AuditController extends CodeController {
     
+	
+	public function getFirstProperty($dcTable){
+		return  null;
+	}
 	/* public function getProperties($dcTable,$facility_id=false,$occur_date=null,$postData=null){
 		$properties = collect([
  				(object)['data' =>	'ACTION',		'title' => 'Action',	'width'	=>	0,'INPUT_TYPE'=>1,	'DATA_METHOD'=>5,'FIELD_ORDER'=>1],
@@ -61,6 +65,7 @@ class AuditController extends CodeController {
 						    			'OLD_VALUE',
 						    			'NEW_VALUE', 
 						    			'AUDIT_NOTE', 
+						    			'OCCUR_DATE', 
 						    			"$codeAuditReason.NAME AS REASON"])
 						    	->get();
     	// 		\Log::info(\DB::getQueryLog());
