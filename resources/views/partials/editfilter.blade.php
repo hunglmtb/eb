@@ -11,7 +11,8 @@
 	<script type='text/javascript'>
 		editBox.buildFilterData = function(){
 			var dataStore = {};
-			var selects = $("#ebFilters_ select");
+			var selects = $('#ebFilters_ ').find('.filter:visible select');
+// 			var selects = $("#ebFilters_ select");
 			selects.each(function(index, element) {
 				if(element.name!="") dataStore[element.name] = element.value;
 			});

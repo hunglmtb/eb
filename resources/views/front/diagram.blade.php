@@ -51,7 +51,11 @@ $(function(){
 		}
 	});
 
-	$("#Qoccurdate" ).datepicker();
+	$("#Qoccurdate" ).datepicker({
+		changeMonth	:true,
+		changeYear	:true,
+		dateFormat	:jsFormat
+	}); 
 
 	$("[name=RR]").change(function()
 		{
