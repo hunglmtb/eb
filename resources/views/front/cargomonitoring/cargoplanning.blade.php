@@ -26,6 +26,7 @@ CARGO PLANNING
 #table_quality tbody td {text-align:right}
 .td_highlight {color: #378de5;font-weight:bold;}
 #table_quality .td_plan {text-align:center;font-weight:bold}
+#table_quality .td_cal_balance {color:orange}
 </style>
 <script>
 	$( document ).ready(function() {
