@@ -7,10 +7,14 @@ use App\Models\FlowDataValue;
 use App\Models\PdCargo;
 use App\Models\PdCargoNomination;
 use App\Models\PdLiftingAccount;
+use App\Models\PdLiftingAccountMthData;
+use App\Models\PdVoyage;
+use App\Models\PdVoyageDetail;
 use App\Models\ShipCargoBlmr;
 use App\Models\StorageDataValue;
-use App\Models\PdLiftingAccountMthData;
 use Carbon\Carbon;
+
+
 
 class LiftDailyController extends CodeController {
     
@@ -47,9 +51,6 @@ class LiftDailyController extends CodeController {
     	$accountId 			= $postData['PdLiftingAccount'];
     	$date_end 			= array_key_exists('date_end',  $postData)?$postData['date_end']:null;
     	$date_end			= $date_end&&$date_end!=""?\Helper::parseDate($date_end):Carbon::now();
-    	
-//     	\DB::enableQueryLog();
-//  		\Log::info(\DB::getQueryLog());
   		
   		$pdCargo 			= PdCargo::getTableName();
   		$pdCargoNomination 	= PdCargoNomination::getTableName();
@@ -58,6 +59,8 @@ class LiftDailyController extends CodeController {
   		$flow			 	= Flow::getTableName();
   		$pdLiftingAccount 	= PdLiftingAccount::getTableName();
 		$storageDataValue	= StorageDataValue::getTableName();
+		$pdVoyageDetail		= PdVoyageDetail::getTableName();
+		$pdVoyage			= PdVoyage::getTableName();
 		$storageID			= $postData["Storage"];
   		
   		$query = ShipCargoBlmr::join($pdCargo,function ($query) use ($shipCargoBlmr,$accountId,$pdCargo) {
@@ -74,7 +77,21 @@ class LiftDailyController extends CodeController {
 							  				\DB::raw("null as nom_qty"),
 							  				"$shipCargoBlmr.ITEM_VALUE as b_qty"
 							  		);
-  		
+							  		
+  		$cdquery = PdVoyageDetail::join($pdCargo,function ($query) use ($pdVoyageDetail,$accountId,$pdCargo) {
+						  			$query->on("$pdCargo.ID",'=',"$pdVoyageDetail.CARGO_ID");
+						  		})
+						  		->whereDate("$pdVoyageDetail.LOAD_DATE", '>=', $occur_date)
+						  		->whereDate("$pdVoyageDetail.LOAD_DATE", '<=', $date_end)
+					  			->where("$pdVoyageDetail.LIFTING_ACCOUNT",'=',$accountId)
+						  		->select(
+						  				"$pdVoyageDetail.CARGO_ID",
+						  				"$pdCargo.NAME as cargo_name",
+						  				"$pdVoyageDetail.LOAD_DATE as xdate",
+						  				"$pdVoyageDetail.LOAD_QTY as nom_qty",
+						  				\DB::raw("null as b_qty")
+						  				);
+						  		
   		$cquery = PdCargoNomination::join($pdCargo,function ($query) use ($pdCargoNomination,$accountId,$pdCargo) {
 							  			$query->on("$pdCargo.ID",'=',"$pdCargoNomination.CARGO_ID")
 							  			->where("$pdCargo.LIFTING_ACCT",'=',$accountId) ;
@@ -88,7 +105,15 @@ class LiftDailyController extends CodeController {
 							  				"$pdCargoNomination.NOMINATION_QTY as nom_qty",
 							  				\DB::raw("null as b_qty")
 							  		);
-  		$query->union($cquery);
+   		$cdquery->union($cquery);
+  		
+  		$cxquery = \DB::table(\DB::raw("({$cdquery->toSql()}) as t") )
+			  		->select('t.*')
+	  				->addBinding($cdquery->getBindings())
+	  				->groupBy('t.xdate');
+  		
+  		$query->union($cxquery);
+  		
   		$xquery = \DB::table(\DB::raw("({$query->toSql()}) as x") )
 			  		->select('x.CARGO_ID',
 			  				'x.cargo_name',
@@ -152,7 +177,9 @@ class LiftDailyController extends CodeController {
   						->groupBy("x.cargo_name")
   						->groupBy("x.flow_name");
 			
+  		\DB::enableQueryLog();
   		$dataSet = $xxxquery->get();
+  		\Log::info(\DB::getQueryLog());
   		
   		$month="";
   		$balance = 0;
@@ -203,15 +230,15 @@ class LiftDailyController extends CodeController {
 		  		from(
 		  		
 			  		select a.cargo_id,
-			  		b.name cargo_name,
-			  		a.NOMINATION_DATE xdate,
-			  		a.NOMINATION_QTY nom_qty,
-			  		null b_qty 
-			  		from pd_cargo_nomination a,
-			  		pd_cargo b
-			  		where a.cargo_id=b.id 
-			  		and b.LIFTING_ACCT=$accountId
-			  		and a.NOMINATION_DATE between '$date_from' and '$date_to'
+				  		b.name cargo_name,
+				  		a.NOMINATION_DATE xdate,
+				  		a.NOMINATION_QTY nom_qty,
+				  		null b_qty 
+				  		from pd_cargo_nomination a,
+				  		pd_cargo b
+				  		where a.cargo_id=b.id 
+				  		and b.LIFTING_ACCT=$accountId
+				  		and a.NOMINATION_DATE between '$date_from' and '$date_to'
 			  		
 			  		union all
 				  		select a.cargo_id,
