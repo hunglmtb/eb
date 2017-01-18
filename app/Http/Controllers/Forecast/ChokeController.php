@@ -25,7 +25,7 @@ class ChokeController extends CodeController {
     public function summaryData($constraints,$beginDate=null,$endDate=null,$postData=null){
     	$summaryData	= [];
     	$sumField		= "V";
-    	if (count($constraints['CONFIG'])>0){
+    	if (array_key_exists('CONFIG', $constraints)&&count($constraints['CONFIG'])>0){
     		$categories	= [];
     		$groups 	= [];
     		$minY 		= 1000000000;
