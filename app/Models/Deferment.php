@@ -37,7 +37,8 @@ use App\Models\EbBussinessModel;
 	
 	public  static  $idField = 'ID';
 // 	public  static  $unguarded = true;
-
+	public  static  $dateField = 'BEGIN_TIME';
+	
 	public function afterSaving($postData) {
 		//Tinh toan lai cac gia tri THEOR, GAS
 		$shouldSave = false;
