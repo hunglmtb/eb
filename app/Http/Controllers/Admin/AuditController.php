@@ -8,7 +8,7 @@ use App\Models\IntObjectType;
 
 class AuditController extends CodeController {
     
-public function getProperties($dcTable,$facility_id=false,$occur_date=null,$postData=null){
+	/* public function getProperties($dcTable,$facility_id=false,$occur_date=null,$postData=null){
 		$properties = collect([
  				(object)['data' =>	'ACTION',		'title' => 'Action',	'width'	=>	0,'INPUT_TYPE'=>1,	'DATA_METHOD'=>5,'FIELD_ORDER'=>1],
 				(object)['data' =>	"WHO",			'title' => 'By',		'width'	=>	0,'INPUT_TYPE'=>1,	'DATA_METHOD'=>5,'FIELD_ORDER'=>2],
@@ -26,7 +26,7 @@ public function getProperties($dcTable,$facility_id=false,$occur_date=null,$post
 	    				'locked'		=> true,
 		];
 		return $results;
-	}
+	} */
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	$date_end 			= $postData['date_end'];
