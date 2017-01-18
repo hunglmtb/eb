@@ -78,15 +78,15 @@ class LiftDailyController extends CodeController {
 							  				"$shipCargoBlmr.ITEM_VALUE as b_qty"
 							  		);
 							  		
-  		$cdquery = PdVoyageDetail::join($pdVoyage,function ($query) use ($pdVoyageDetail,$accountId,$pdVoyage) {
-						  			$query->on("$pdVoyage.ID",'=',"$pdVoyageDetail.VOYAGE_ID")
-						  			->where("$pdVoyage.LIFTING_ACCOUNT",'=',$accountId) ;
+  		$cdquery = PdVoyageDetail::join($pdCargo,function ($query) use ($pdVoyageDetail,$accountId,$pdCargo) {
+						  			$query->on("$pdCargo.ID",'=',"$pdVoyageDetail.CARGO_ID");
 						  		})
 						  		->whereDate("$pdVoyageDetail.LOAD_DATE", '>=', $occur_date)
 						  		->whereDate("$pdVoyageDetail.LOAD_DATE", '<=', $date_end)
+					  			->where("$pdVoyageDetail.LIFTING_ACCOUNT",'=',$accountId)
 						  		->select(
 						  				"$pdVoyageDetail.CARGO_ID",
-						  				"$pdVoyage.NAME as cargo_name",
+						  				"$pdCargo.NAME as cargo_name",
 						  				"$pdVoyageDetail.LOAD_DATE as xdate",
 						  				"$pdVoyageDetail.LOAD_QTY as nom_qty",
 						  				\DB::raw("null as b_qty")
