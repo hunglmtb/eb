@@ -213,6 +213,7 @@ class EbBussinessModel extends DynamicModel {
 		$columns 			= $values;
 		$keyColumns			= array_keys($attributes);
 		$action 			= $this->wasRecentlyCreated?"New record":"Update value";
+		$occurDate 			= isset(static::$dateField)?$this->{static::$dateField}:(isset($this->OCCUR_DATE)?$this->OCCUR_DATE:null);
 		
 		foreach ( $columns as $column => $columnValue ) {
 			$newValue 		= $this->$column;
@@ -246,6 +247,7 @@ class EbBussinessModel extends DynamicModel {
 								'OLD_VALUE'		=>$oldValue,
 								'NEW_VALUE'		=>$newValue,
 								'AUDIT_NOTE'	=>$auditNote,
+								'OCCUR_DATE'	=>$occurDate,
 				);
 			}
 		}

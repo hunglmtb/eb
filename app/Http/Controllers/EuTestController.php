@@ -22,6 +22,16 @@ class EuTestController extends CodeController {
 		return true;
 	}
 	
+	public function getObjectIds($dataSet,$postData){
+		$objectIds = $dataSet->map(function ($item, $key) {
+			return ["DT_RowId"			=> $item->DT_RowId,
+ 					"ID"				=> $item->ID,
+					"EFFECTIVE_DATE"	=> $item->EFFECTIVE_DATE->toDateString(),
+			];
+		});
+			return $objectIds;
+	}
+	
     public function getFirstProperty($dcTable){
 		return  ['data'=>'ID','title'=>'','width'=>50];
 	}

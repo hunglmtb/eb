@@ -19,7 +19,6 @@ WELL TEST DATA CAPTURE
 	actions.loadUrl 		= "/eutest/load";
 	actions.saveUrl 		= "/eutest/save";
 	actions.historyUrl 		= "/eutest/history";
-	actions.reloadAfterSave	= true;
 	
 	actions.type = {
 					idName:['EU_ID','ID','BEGIN_TIME','END_TIME','EFFECTIVE_DATE'],
