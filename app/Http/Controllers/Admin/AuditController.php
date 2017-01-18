@@ -44,7 +44,7 @@ class AuditController extends CodeController {
     	}
     	
     	// 		\DB::enableQueryLog();
-    	$dataSet = AuditTrail::leftjoin($codeAuditReason, "$auditTrail.REASON", '=', "$codeAuditReason.ID")
+    	$dataSet = AuditTrail::join($codeAuditReason, "$auditTrail.REASON", '=', "$codeAuditReason.ID")
 						    	->where(["$auditTrail.FACILITY_ID" => $facility_id])
 						    	->whereDate("$auditTrail.WHEN", '>=', $occur_date)
 						    	->whereDate("$auditTrail.WHEN", '<=', $date_end)
