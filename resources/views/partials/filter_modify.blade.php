@@ -128,7 +128,7 @@
 			 editBox.buildFilterText = function(){
 					var resultText 	= "";
 					var texts = {};
-					var selects = $("#ebFilters_ select");
+					var selects = $('#ebFilters_ ').find('.filter:visible select');
 					selects.each(function(index, element) {
 						texts[element.name]		= $("#"+element.id+" option:selected").text();
 					});

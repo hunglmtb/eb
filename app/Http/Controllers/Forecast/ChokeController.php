@@ -63,12 +63,22 @@ class ChokeController extends CodeController {
     				"$queryField$operation$operationValue":
     				$queryField;
     				
-    				if ($modelName) {
-	     				$query			= $modelName::where($objectIdField,$objectId);
-    				}
-    				else{
-    					$query			= \DB::table($tableName)->where($objectIdField,$objectId);
-    				}
+    				$where			= [];
+    				$flowPhase		= array_key_exists('CodeFlowPhase', $object)?$object['CodeFlowPhase']:0;
+    				if ($flowPhase>0) $where["FLOW_PHASE" ] 	= $flowPhase;
+    				
+    				$allocType		= array_key_exists('CodeAllocType', $object)?$object['CodeAllocType']:0;
+    				if ($allocType>0) $where["ALLOC_TYPE" ] 	= $allocType;
+    				
+    				$planType		= array_key_exists('CodePlanType', $object)?$object['CodePlanType']:0;
+    				if ($planType>0) $where["PLAN_TYPE" ] 	= $planType;
+    				
+    				$forecastType	= array_key_exists('CodeForecastType', $object)?$object['CodeForecastType']:0;
+    				if ($forecastType>0) $where["FORECAST_TYPE" ] 	= $forecastType;
+    				
+     				$query			= $modelName?$modelName::where($objectIdField,$objectId):\DB::table($tableName)->where($objectIdField,$objectId);
+    				if (count($where)>0) $query->where($where);
+    				
      				if($datefield){
      					$query->whereDate("$datefield", '>=', $beginDate)
     						->whereDate("$datefield", '<=', $endDate);

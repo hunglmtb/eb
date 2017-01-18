@@ -284,6 +284,8 @@ class DVController extends Controller {
 			if ($object_type == 'ENERGY_UNIT') {
 				$phase_configs = explode ( "!!", $phase_config );
 				
+				if (!array_key_exists(1, $phase_configs)) continue;
+				
 				$phase0 = explode ( "@@", $phase_configs [0] );
 				$phase1 = explode ( "/", $phase_configs [1] );
 				
