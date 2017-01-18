@@ -42,8 +42,8 @@ if(!$storage_id){
 	exit;
 }
 //saveWorkSpaceInfo($DateFrom, $DateTo, $facility_id);
-$date_from=toDateString($DateFrom);
-$date_to=toDateString($DateTo);
+$date_from=$DateFrom;//toDateString($DateFrom);
+$date_to=$DateTo;//toDateString($DateTo);
 
 $sSQL="select la.name LA_NAME,la.id LA_ID, ba.name BA_NAME, la.INTEREST_PCT 
 from pd_lifting_account la, ba_address ba where la.storage_id = $storage_id and la.company = ba.id";

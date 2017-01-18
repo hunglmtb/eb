@@ -594,9 +594,9 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 					$join->on ( 'v.FLOW_ID', '=', 'a.FLOW_ID' );
 					$join->on ( 'v.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
 				} )->leftjoin ( 'FLOW_DATA_THEOR AS t', function ($join) {
-					$join->on ( 'v.FLOW_ID', '=', 'a.FLOW_ID' );
-					$join->on ( 'v.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
-				} )->join ( 'FLOW AS b', 'a.FLOW_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.FLOW_ID', $arrfrom )->SELECT ( DB::raw ( 'sum((case when a.FLOW_ID in (' . $ids_minus . ') then -1 else 1 end))*IF(IFNULL(a.FL_DATA_' . $alloc_attr . ',0)>0,a.FL_DATA_' . $alloc_attr . ',IF(IFNULL(v.FL_DATA_' . $alloc_attr . ',0)>0,v.FL_DATA_' . $alloc_attr . ',t.FL_DATA_' . $alloc_attr . ')) AS total_from' ) )->get ();
+					$join->on ( 't.FLOW_ID', '=', 'a.FLOW_ID' );
+					$join->on ( 't.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
+				} )->join ( 'FLOW AS b', 'a.FLOW_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.FLOW_ID', $arrfrom )->SELECT ( DB::raw ( 'sum((case when a.FLOW_ID in (' . $ids_minus . ') then -1 else 1 end)*IF(IFNULL(a.FL_DATA_' . $alloc_attr . ',0)>0,a.FL_DATA_' . $alloc_attr . ',IF(IFNULL(v.FL_DATA_' . $alloc_attr . ',0)>0,v.FL_DATA_' . $alloc_attr . ',t.FL_DATA_' . $alloc_attr . '))) AS total_from' ) )->get ();
 				// //\Log::info ( \DB::getQueryLog () );
 
 				//\DB::enableQueryLog ();
@@ -604,8 +604,8 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 					$join->on ( 'v.FLOW_ID', '=', 'a.FLOW_ID' );
 					$join->on ( 'v.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
 				} )->leftjoin ( 'FLOW_DATA_THEOR AS t', function ($join) {
-					$join->on ( 'v.FLOW_ID', '=', 'a.FLOW_ID' );
-					$join->on ( 'v.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
+					$join->on ( 't.FLOW_ID', '=', 'a.FLOW_ID' );
+					$join->on ( 't.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
 				} )->join ( 'FLOW AS b', 'a.FLOW_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.FLOW_ID', $arrfrom )->SELECT ( DB::raw ( 'IF(IFNULL(a.FL_DATA_' . $alloc_attr . ',0)>0,a.FL_DATA_' . $alloc_attr . ',IF(IFNULL(v.FL_DATA_' . $alloc_attr . ',0)>0,v.FL_DATA_' . $alloc_attr . ',t.FL_DATA_' . $alloc_attr . ')) AS ALLOC_VALUE', 'a.FLOW_ID AS OBJECT_ID', 'b.NAME AS OBJECT_NAME', 'a.ACTIVE_HRS', 'b.NAME AS ALLOC_VALUE', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR' ) )->get ();
 				//\Log::info ( \DB::getQueryLog () );
 			} else if ($obj_type_from == $OBJ_TYPE_EU) {
@@ -624,7 +624,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 						'a.FLOW_PHASE' => $alloc_phase
 				] )->where ( [
 						'a.EVENT_TYPE' => $event_type
-				] )->SELECT ( DB::raw ( 'sum((case when a.EU_ID in (' . $ids_minus . ') then -1 else 1 end))*IF(IFNULL(a.EU_DATA_' . $alloc_attr_eu . ',0)>0,a.EU_DATA_' . $alloc_attr_eu . ',IF(IFNULL(v.EU_DATA_' . $alloc_attr_eu . ',0)>0,v.EU_DATA_' . $alloc_attr_eu . ',t.EU_DATA_' . $alloc_attr_eu . ')) AS total_from' ) )->get ();
+				] )->SELECT ( DB::raw ( 'sum((case when a.EU_ID in (' . $ids_minus . ') then -1 else 1 end)*IF(IFNULL(a.EU_DATA_' . $alloc_attr_eu . ',0)>0,a.EU_DATA_' . $alloc_attr_eu . ',IF(IFNULL(v.EU_DATA_' . $alloc_attr_eu . ',0)>0,v.EU_DATA_' . $alloc_attr_eu . ',t.EU_DATA_' . $alloc_attr_eu . '))) AS total_from' ) )->get ();
 				// //\Log::info ( \DB::getQueryLog () );
 
 				//\DB::enableQueryLog ();
