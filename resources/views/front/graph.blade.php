@@ -55,6 +55,7 @@ $subMenus = [
 @section('graph_object_view')
 <div id="tdObjectContainer" valign="top"
 	style="min-width:420px;
+	 	max-width: 460px;
 		overflow:hidden;
 		box-sizing: border-box;
 		 overflow: auto;
@@ -205,14 +206,20 @@ var _graph = {
 				var x =  editBox.getObjectValue(dataStore);
 				if($("span[object_value='"+x+"']").length==0){
 					var color="transparent";
-					var texts			= {
+					var texts = {};
+					var selects = $('#ebFilters_graph ').find('.filter:visible select');
+					selects.each(function(index, element) {
+						texts[element.name]		= $("#"+element.id+" option:selected").text();
+					});
+					
+					/* var texts			= {
 											ObjectName			:	$("#ObjectName option:selected").text(),
 											IntObjectType		:	$("#IntObjectType option:selected").text(),
 											ObjectDataSource	:	$("#ObjectDataSource option:selected").text(),
 											ObjectName			:	$("#ObjectName option:selected").text(),
 											ObjectTypeProperty	:	$("#ObjectTypeProperty option:selected").text(),
 										};
-					if($("#CodeFlowPhase").is(":visible")) 			texts["CodeFlowPhase"] = $("#CodeFlowPhase option:selected").text();
+					if($("#CodeFlowPhase").is(":visible")) 			texts["CodeFlowPhase"] = $("#CodeFlowPhase option:selected").text(); */
 					
 					editBox.addObjectItem(color,dataStore,texts,x);
 				}

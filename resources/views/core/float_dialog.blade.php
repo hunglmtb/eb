@@ -159,7 +159,7 @@
 					(texts.hasOwnProperty('CodeFlowPhase')? 		(texts["CodeFlowPhase"]+".")	:"")+
 					(texts.hasOwnProperty('CodeAllocType')? 		(texts["CodeAllocType"]+".")	:"")+
 					(texts.hasOwnProperty('CodePlanType')? 			(texts["CodePlanType"]+".")		:"")+
-					(texts.hasOwnProperty('CodeProductType')? 		(texts["CodeProductType"]+".")	:"")+
+// 					(texts.hasOwnProperty('CodeProductType')? 		(texts["CodeProductType"]+".")	:"")+
 					(texts.hasOwnProperty('CodeForecastType')? 		(texts["CodeForecastType"]+".")	:"")+
 					(texts.hasOwnProperty('ObjectTypeProperty')? 	texts["ObjectTypeProperty"]		:"")+
 					")";
