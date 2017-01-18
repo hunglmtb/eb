@@ -1218,8 +1218,8 @@ var actions = {
 					};
 				}
 	            $.each(collection, function( i, vl ) {
-	            	vl['value']=vl['ID'];
-	            	vl['text']=vl['NAME'];
+	            	vl['value']	=vl['ID'];
+	            	vl['text']	=vl['NAME'];
 	            });
 	            uoms[index]["createdCell"] = function (td, cellData, rowData, row, col) {
 	            	var property = data.properties[col];
