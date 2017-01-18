@@ -268,8 +268,8 @@ class DVController extends Controller {
 // 		$occur_date = Carbon::createFromFormat('m/d/Y',$data ['occur_date'])->format('Y-m-d');
 		$ret 		= "";
 		
-		$date_begin = $occur_date->startOfDay();
-		$date_end 	= $occur_date->endOfDay();
+// 		$date_begin = $occur_date->startOfDay();
+// 		$date_end 	= $occur_date->endOfDay();
 		
 		if (!$vparam || !is_array($vparam) ||count($vparam)<=0)  return response ()->json ( "empty param" );
 		
