@@ -592,17 +592,27 @@ class AdminController extends Controller {
 	public function _indexAudittrail() {
 		$userRole = UserRole::where(['ACTIVE'=>1])->get(['ID','NAME']);
 		$filterGroups = array(
-								'productionFilterGroup'	=> [],
+								'productionFilterGroup'	=> [['name'			=>'IntObjectType',
+															'independent'	=>true,
+// 															'default'	=> ['ID'=>0,'NAME'=>'All'],
+															// 															"getMethod"		=> "getGraphObjectType",
+// 															'extra'			=> ["Facility","CodeProductType","IntObjectType","ObjectDataSource"],
+															'dependences'	=> [
+																					["name"		=>	"ObjectDataSource"],
+																				]
+															]],
 								'dateFilterGroup'		=> array(
 																['id'=>'date_begin','name'=>'From Date'],
 																['id'=>'date_end','name'=>'To Date'],
 															),
-								'frequenceFilterGroup'	=> [['name'		=> 'IntObjectType',
-															'default'	=> ['ID'=>0,'NAME'=>'All']
-															]],
+								'frequenceFilterGroup'	=> [
+															["name"			=> "ObjectDataSource",
+															"getMethod"		=> "loadBy",
+															"filterName"	=>	"Table Name",
+															"source"		=> ['productionFilterGroup'=>["IntObjectType"]]]
+								],
 								'enableSaveButton'		=> 	false,
 		);
-		
 		return view ( 'admin.audittrail',['filters'=>$filterGroups,
 										'userRole'=>$userRole
 		]);

@@ -34,7 +34,8 @@ class AuditController extends CodeController {
     	$auditTrail 		= AuditTrail::getTableName();
     	$codeAuditReason 	= CodeAuditReason::getTableName();
     	$beginDate 			= $occur_date;
-    	
+    	$tableName 			= $postData['ObjectDataSource'];
+    	 
     	if($postData['IntObjectType'] >0){
     		$objectName = IntObjectType::where("ID",$postData['IntObjectType'])->select("CODE")->first();
     		$objectName = $objectName?$objectName->CODE:"";
@@ -42,13 +43,14 @@ class AuditController extends CodeController {
     	}else{
     		$objectType = '%';
     	}
-    	
+    			
     	// 		\DB::enableQueryLog();
     	$dataSet = AuditTrail::join($codeAuditReason, "$auditTrail.REASON", '=', "$codeAuditReason.ID")
 						    	->where(["$auditTrail.FACILITY_ID" => $facility_id])
-						    	->whereDate("$auditTrail.WHEN", '>=', $occur_date)
+//  						    	->where('TABLE_NAME', 'like', $objectType)
+ 						    	->where('TABLE_NAME', '=', $tableName)
+ 						    	->whereDate("$auditTrail.WHEN", '>=', $occur_date)
 						    	->whereDate("$auditTrail.WHEN", '<=', $date_end)
- 						    	->where('TABLE_NAME', 'like', $objectType)
 						    	->select(['ACTION',
 						    			'WHO', 
 						    			'WHEN', 
