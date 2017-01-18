@@ -27,7 +27,7 @@ $DateTo = ($_REQUEST['dateTo']);
 $facility_id = $_REQUEST['cboFacility'];
 $storage_id = $_REQUEST['cboStorage'];
 $dateformat = $_REQUEST['dateformat'];
-$balance = isset($_REQUEST['txt_balance'])?$_REQUEST['txt_balance']:0;
+$balance = isset($_REQUEST['txt_balance'])?$_REQUEST['txt_balance']:"";
 $cargoSize = isset($_REQUEST['cargoSize'])?$_REQUEST['cargoSize']:0;
 
 //echo "aaa: ".$DateFrom; exit;
@@ -155,6 +155,7 @@ $result=mysql_query($sSQL) or die("fail: ".$sSQL."-> error:".mysql_error());
 $vals = [];
 $last_value = null;
 $last_date = null;
+$last_minus = 0;
 while($row=mysql_fetch_assoc($result)){
 	$v = $row["OPENING_BALANCE"];
 	$rowvals = [];
@@ -181,6 +182,8 @@ while($row=mysql_fetch_assoc($result)){
 			$rowvals["BALANCE"] += $add_val;
 		//echo "<td id='ent_val_{$id}_{$row[ID]}' class='group1_td'>$v</td>";
 	}
+	if(!$row["OPENING_BALANCE"])
+		$rowvals["BALANCE"] -= $last_minus;
 	foreach($shipper_r1 as $id => $val){
 		$v = 0;
 		foreach($shipper_la["$id"] as $key => $la_id){
@@ -195,6 +198,7 @@ while($row=mysql_fetch_assoc($result)){
 	}
 	$shipper_max_id = -1;
 	$highlight = [];
+	$last_minus = 0;
 	if($balance > 0){
 		if($rowvals["BALANCE"] > $balance){
 			$rowvals["PLAN"] = "Y";
@@ -215,9 +219,8 @@ while($row=mysql_fetch_assoc($result)){
 					$rowvals["SCHE_LA_$la_id"] = $dx;
 					$highlight[] = "ENT_LA_$la_id";
 				}
-				if(!$row["OPENING_BALANCE"])
-					$rowvals["BALANCE"] -= $cargo_sizes["$shipper_max_id"];
-				}
+				$last_minus = $cargo_sizes["$shipper_max_id"];
+			}
 		}
 	}
 	echo "<tr>";
@@ -252,6 +255,4 @@ while($row=mysql_fetch_assoc($result)){
 	$last_date = $row["OCCUR_DATE"];
 }
 echo "<tbody>";
-exit;
 ?>
-
