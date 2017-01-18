@@ -280,4 +280,9 @@ class EbBussinessModel extends DynamicModel {
 				(object)['value' =>	'TBD'				,'text' => 'To be defined'    ],
 		]);
 	}
+	
+	public static function buildLoadQuery($objectId,$object) {
+		return static::where(static::$idField,$objectId);
+	}
+	
 }

@@ -69,4 +69,8 @@ use App\Models\EbBussinessModel;
 		}
 		if ($shouldSave) $this->save();
 	}
+	
+	public static function buildLoadQuery($objectId,$object) {
+		return static::where(["DEFER_TARGET"	=> $objectId,"DEFER_GROUP_TYPE"	=> 3]);//3 is well
+	}
 } 
