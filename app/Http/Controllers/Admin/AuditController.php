@@ -55,7 +55,7 @@ class AuditController extends CodeController {
  						    	->where('TABLE_NAME', '=', $tableName)
  						    	->whereDate("$auditTrail.WHEN", '>=', $occur_date)
 						    	->whereDate("$auditTrail.WHEN", '<=', $date_end)
-						    	->select(['ACTION',
+						    	->select(['*','ACTION',
 						    			'WHO', 
 						    			'WHEN', 
 						    			'TABLE_NAME', 
