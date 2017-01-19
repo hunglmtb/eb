@@ -6,6 +6,7 @@ use App\Models\Flow;
 use App\Models\FlowDataValue;
 use App\Models\PdCargo;
 use App\Models\PdCargoNomination;
+use App\Models\PdCodeLiftAcctAdj;
 use App\Models\PdLiftingAccount;
 use App\Models\PdLiftingAccountMthData;
 use App\Models\PdVoyage;
@@ -177,111 +178,91 @@ class LiftDailyController extends CodeController {
   						->groupBy("x.cargo_name")
   						->groupBy("x.flow_name");
 			
-  		\DB::enableQueryLog();
+//   		\DB::enableQueryLog();
   		$dataSet = $xxxquery->get();
-  		\Log::info(\DB::getQueryLog());
+//   		\Log::info(\DB::getQueryLog());
+  		$beginMonth					= $occur_date->copy()->startOfMonth();
+  		$endMonth					= $date_end->copy()->endOfMonth();
+  		$pdCodeLiftAcctAdj			= PdCodeLiftAcctAdj::getTableName();
+  		$pdLiftingAccountMthData	= PdLiftingAccountMthData::getTableName();
   		
-  		$month="";
-  		$balance = 0;
-  		foreach($dataSet as $key => $item ){
-	    	$date 			= Carbon::parse($item->xdate);
-  			$monthOfItem 	= $date->month;//$item->xdate;
-  			if($month!=$monthOfItem){
-				/*
-   				$monthData = PdLiftingAccountMthData::where("LIFTING_ACCOUNT_ID",$accountId)
-						   				->whereMonth('BALANCE_MONTH','=', $monthOfItem)
-						   				->select("BAL_VOL")
-						   				->first();
-  				$balance	= $monthData!=null?$monthData->BAL_VOL:0;
-				*/
-  				$month		= $monthOfItem;
-  			}
-  			$balance+=$item->cal_qty;
-  			$item->cal_qty = $balance;
-  			$dataSet[$key] = $item;
+  		$monthlyData 				= PdLiftingAccountMthData::join($pdCodeLiftAcctAdj,
+  															"$pdLiftingAccountMthData.ADJUST_CODE", '=', "$pdCodeLiftAcctAdj.ID")
+  										->where("$pdLiftingAccountMthData.LIFTING_ACCOUNT_ID",$accountId)
+  		 								->whereDate("$pdLiftingAccountMthData.BALANCE_MONTH", '>=', $beginMonth)
+  		 								->whereDate("$pdLiftingAccountMthData.BALANCE_MONTH", '<=', $endMonth)
+  		 								->select(
+								  				"$pdCodeLiftAcctAdj.NAME as ADJUST_NAME",
+								  				"$pdCodeLiftAcctAdj.CODE as ADJUST_CODE_NAME",
+  		 										"$pdLiftingAccountMthData.LIFTING_ACCOUNT_ID",
+								  				"$pdLiftingAccountMthData.BALANCE_MONTH",
+								  				"$pdLiftingAccountMthData.ADJUST_CODE",
+  		 								 		"$pdLiftingAccountMthData.BAL_VOL")
+						  				->orderBy("$pdLiftingAccountMthData.BALANCE_MONTH")
+  										->get();
+  		
+  		$groupedMonthlyData	= null;
+  		if ($monthlyData) {
+    		$monthlyData->each(function ($item, $key){
+    			$item->MONTH_KEY	= $item->BALANCE_MONTH->format('Y-m');
+    		});
+    		
+    		$groupedMonthlyData	= $monthlyData->groupBy(function ($item, $key){
+    			return $item->MONTH_KEY;
+    		});
+    		
+    		foreach($groupedMonthlyData as $month => $accountBalances ){
+    			$total	= 0;
+    			if ($accountBalances) {
+    				$accountBalances->each(function ($accountData, $adjustment) use (&$total){
+	    				$total	+= $accountData->BAL_VOL;
+    				});
+    			}
+    			$accountBalances->total	= $total;
+    		}
   		}
   		
-  		/* $dataSet = $dataSet->each(function ($item, $key) use ($accountId,&$month,&$balance){
-  		}); */
-  		return ['dataSet'=>$dataSet];
-  		/* $sSQL="select x.xdate,
-  		DATE_FORMAT(x.xdate,'%m/%d/%Y') sdate,
-  		DATE_FORMAT(x.xdate,'%m/01/%Y') xmonth,
-  		x.cargo_name,
-  		case when x.b_qty is null then x.n_qty else null end 
-  		n_qty,
-  		x.b_qty b_qty,
-  		x.flow_name,
-  		sum(x.flow_qty) flow_qty,
-  		ifnull(sum(x.cal_qty),0) cal_qty
-  		from(
-	  		select x.cargo_name,
-	  		x.xdate,
-	  		x.n_qty,
-	  		x.b_qty,
-	  		null flow_name,
-	  		null flow_qty,
-	  		-ifnull(x.b_qty,x.n_qty) cal_qty
-	  		from(
-	  			SELECT x.cargo_name, 
-	  			x.xdate,
-	  			sum(x.nom_qty) n_qty,
-	  			sum(x.b_qty) b_qty
-		  		from(
-		  		
-			  		select a.cargo_id,
-				  		b.name cargo_name,
-				  		a.NOMINATION_DATE xdate,
-				  		a.NOMINATION_QTY nom_qty,
-				  		null b_qty 
-				  		from pd_cargo_nomination a,
-				  		pd_cargo b
-				  		where a.cargo_id=b.id 
-				  		and b.LIFTING_ACCT=$accountId
-				  		and a.NOMINATION_DATE between '$date_from' and '$date_to'
-			  		
-			  		union all
-				  		select a.cargo_id,
-				  		b.name cargo_name, 
-				  		date(a.DATE_TIME) xdate,
-				  		null nom_qty, 
-				  		a.ITEM_VALUE b_qty
-				  		from ship_cargo_blmr a,
-				  		pd_cargo b
-				  		where a.cargo_id=b.id 
-				  		and b.LIFTING_ACCT=$accountId 
-				  		and a.DATE_TIME is not null
-				  		and date(a.DATE_TIME) 
-				  		between '$date_from'
-				  		and '$date_to'
-		  		) x
-  				group by x.xdate,x.cargo_id
-  			) x
-  			union all
-	  		select x.cargo_name,
-	  		x.xdate,
-	  		null n_qty,
-	  		null b_qty,
-	  		x.flow_name,
-	  		x.flow_qty,
-	  		x.flow_qty cal_qty
-	  		from(
-		  		select null cargo_name,
-		  		a.occur_date xdate,
-		  		concat(b.name,' (',round(d.INTEREST_PCT),'%)') flow_name,
-		  		round(a.FL_DAY_GRS_VOL*d.INTEREST_PCT/100,3) flow_qty
-		  		from 	flow_day_value a, 
-				  		flow b, 
-				  		pd_lifting_account d
-		  		where d.id=$accountId 
-		  		and d.PROFIT_CENTER=b.COST_INT_CTR_ID 
-		  		and b.id=a.FLOW_ID
-		  		#and b.DISP in ('PROD_OIL','IMPORT_OIL')
-		  		and a.OCCUR_DATE between '$date_from' and '$date_to'
-		  		group by a.occur_date,b.id
-	  		) x
-  		) x
-  		group by x.xdate,x.cargo_name,x.flow_name"; */
+		$month		="";
+		if ($groupedMonthlyData&&isset($groupedMonthlyData[$beginMonth->format('Y-m')])) {
+			$balance 	= $groupedMonthlyData[$beginMonth->format('Y-m')]->total;
+		}
+		else  $balance 	= 0;
+		$preItem	= null;
+		foreach($dataSet as $key => $item ){
+			$date 			= Carbon::parse($item->xdate);
+			$item->carbonDate= $date;
+			$balance		= $this->geMonthlytBalance($balance,$groupedMonthlyData,$date,$preItem);
+			$balance		+=$item->cal_qty;
+			$item->cal_qty 	= $balance;
+			$preItem		= $item;
+		}
+  		
+  		return ['dataSet'		=> $dataSet,
+  				'monthlyData'	=> $monthlyData
+  		];
   		
     }
+    
+    public function geMonthlytBalance($balance,$groupedMonthlyData,$date,$preItem){
+    	if ($preItem) {
+	    	if ($groupedMonthlyData&&($preItem->carbonDate->month!= $date->month)) {
+				$monthKey		= $date->format('Y-m');
+				$total			= null;
+    		 	if(isset($groupedMonthlyData[$monthKey])){
+    		 		$monthRow	= $groupedMonthlyData[$monthKey];
+    		 		if ($monthRow) {
+	    		 		$total		= $groupedMonthlyData[$monthKey]->total;
+	    		 		if (count($monthRow) == 1 && $monthRow->get(0)->ADJUST_CODE_NAME== "MANADJ") {
+	    		 			$total	+= $preItem->cal_qty;
+	    		 		}
+    		 		}
+    		 				
+    		 	}
+    		 	$balance	= $total?$total:$balance;
+	    	}
+    	}
+    	
+    	return $balance;
+    }
+    
 }

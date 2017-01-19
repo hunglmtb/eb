@@ -47,7 +47,6 @@ class AuditController extends CodeController {
     	}else{
     		$objectType = '%';
     	}
-    			
     	// 		\DB::enableQueryLog();
     	$dataSet = AuditTrail::join($codeAuditReason, "$auditTrail.REASON", '=', "$codeAuditReason.ID")
 						    	->where(["$auditTrail.FACILITY_ID" => $facility_id])
