@@ -9,6 +9,10 @@ use Mail;
 use App\Models\TmWorkflow;
 use App\Models\TmWorkflowTask;
 use App\Jobs\runAllocation;
+use App\Jobs\autoSaveEnergyUnit;
+use App\Jobs\autoSaveEuTest;
+use App\Jobs\autoSaveFlow;
+use App\Jobs\autoSaveStorage;
 use App\Jobs\export;
 
 class WorkflowProcessController extends Controller {
@@ -262,6 +266,107 @@ class WorkflowProcessController extends Controller {
 			$email=$taskconfig->email;
 			execInBackground("..\\..\\interface\\pi.php $taskid $conn_id $tagset_id $type $from_date $to_date $email");
 			//header('location:'."../../report/export.php?report_id={$id}&type=PDF&date_from={$from_date}&date_to={$to_date}&facility_id={$facility}&email={$email}");
+		}
+		else if($taskname=='FDC_FLOW'){
+			$type=$taskconfig->type;
+			$facility=$taskconfig->facility;
+			$freq=$taskconfig->freq;
+			$phase_type=$taskconfig->phase_type;
+			$email=isset($taskconfig->email)?$taskconfig->email:null;
+			$from_date=isset($taskconfig->from)?$taskconfig->from:null;
+			$to_date=isset($taskconfig->to)?$taskconfig->to:null;
+			
+			//execInBackground("..\\..\\dc\\flow-save.php $taskid $type $facility $freq $phase_type $from_date $to_date $email");
+
+			$param = [
+					'taskid'=> $taskid,
+					'type'=> $type,
+					'facility'=> $facility,
+					'record_freq'=> $freq,
+					'phase_type'=> $phase_type,
+					'from_date'=> $from_date,
+					'to_date'=> $to_date,
+					'email'=> $email
+			];
+	
+			$job =(new autoSaveFlow($param));
+			$this->dispatch($job);
+		}
+		else if($taskname=='FDC_EU'){
+			$type=$taskconfig->type;
+			$facility=$taskconfig->facility;
+			$eugroup_id=$taskconfig->eugroup_id;
+			$freq=$taskconfig->freq;
+			$phase_type=$taskconfig->phase_type;
+			$event_type=$taskconfig->event_type;
+			$alloc_type=$taskconfig->alloc_type;
+			$plan_type=$taskconfig->plan_type;
+			$forecast_type=$taskconfig->forecast_type;
+			$email=isset($taskconfig->email)?$taskconfig->email:null;
+			$from_date=isset($taskconfig->from)?$taskconfig->from:null;
+			$to_date=isset($taskconfig->to)?$taskconfig->to:null;
+			//execInBackground("..\\..\\dc\\eu-save.php $taskid $type $facility $eugroup_id $freq $phase_type $event_type $alloc_type $plan_type $forecast_type $from_date $to_date $email");
+
+			$param = [
+					'taskid'=> $taskid,
+					'type'=> $type,
+					'facility'=> $facility,
+					'eugroup_id'=> $eugroup_id,
+					'record_freq'=> $freq,
+					'phase_type'=> $phase_type,
+					'event_type'=> $event_type,
+					'alloc_type'=> $alloc_type,
+					'plan_type'=> $plan_type,
+					'forecast_type'=> $forecast_type,
+					'from_date'=> $from_date,
+					'to_date'=> $to_date,
+					'email'=> $email
+			];
+	
+			$job =(new autoSaveEnergyUnit($param));
+			$this->dispatch($job);
+		}
+		else if($taskname=='FDC_STORAGE'){
+			$type=$taskconfig->type;
+			$facility=$taskconfig->facility;
+			$product_type=$taskconfig->product_type;
+			$email=isset($taskconfig->email)?$taskconfig->email:null;
+			$from_date=isset($taskconfig->from)?$taskconfig->from:null;
+			$to_date=isset($taskconfig->to)?$taskconfig->to:null;
+			//execInBackground("..\\..\\dc\\storage-save.php $taskid $type $from_date $to_date $email $facility $product_type");
+			$param = [
+					'taskid'=> $taskid,
+					'type'=> $type,
+					'facility'=> $facility,
+					'product_type'=> $product_type,
+					'from_date'=> $from_date,
+					'to_date'=> $to_date,
+					'email'=> $email
+			];
+	
+			$job =(new autoSaveStorage($param));
+			$this->dispatch($job);
+		}
+		else if($taskname=='FDC_EU_TEST'){
+			$type=$taskconfig->type;
+			$facility=$taskconfig->facility;
+			$eu_id=$taskconfig->eu_id;
+			$email=$taskconfig->email?$taskconfig->email:"null";
+			$from_date=$taskconfig->from?$taskconfig->from:"null";
+			$to_date=$taskconfig->to?$taskconfig->to:"null";
+			//execInBackground("..\\..\\dc\\eutest-save.php $taskid $type $from_date $to_date $email $facility $eu_id");
+			$param = [
+					'taskid'=> $taskid,
+					'type'=> $type,
+					'facility'=> $facility,
+					'eu_id'=> $eu_id,
+					'from_date'=> $from_date,
+					'to_date'=> $to_date,
+					'email'=> $email
+			];
+	
+			$job =(new autoSaveEuTest($param));
+			$this->dispatch($job);
 		}
 		else if($taskname == 'EMAIL'){
 			$from = $taskconfig->from;

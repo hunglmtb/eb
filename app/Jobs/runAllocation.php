@@ -68,6 +68,11 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 				$from_date = date('Y-m-d', strtotime($date .' -1 day'))."";
 				$to_date = $from_date;
 			}
+			else if($date_type == "month"){
+				$date = date('Y-m-d');
+				$from_date = date('Y-m-01', strtotime($date .' -1 month'))."";
+				$to_date = $from_date;
+			}
 		}
 		else{
 			$runner_id = isset($this->param['runner_id'])?$this->param['runner_id']:0;
@@ -133,7 +138,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 		    			$data = ['content' => strip_tags($this->log)];
 		    			$subjectName = ($this->error_count>0?"[ERROR] ":"")."Automatic allocation task's log";
 		    			$ret = Mail::send('front.sendmail',$data, function ($message) use ($email, $subjectName, $mailFrom) {
-		    				$message->from($mailFrom, 'Your Application');
+		    				$message->from($mailFrom, 'Energy Builder');
 		    				$message->to($email)->subject($subjectName);
 		    			});
 		    			if($ret == 1){
@@ -1658,7 +1663,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     public function finalizeTask($task_id,$status,$log,$email){
     	if($task_id>0){
 
-    		$now = Carbon::now('Europe/London');
+    		$now = Carbon::now();
     		$time = date('Y-m-d H:i:s', strtotime($now));
 
     		TmWorkflowTask::where(['ID'=>$task_id])->update(['ISRUN'=>$status, 'FINISH_TIME'=>$time, 'LOG'=>addslashes($log)]);
