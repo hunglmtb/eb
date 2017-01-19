@@ -224,12 +224,12 @@ var _workFlow = {
 				'task_id' : task_id
 			}
 			var rurl = '/loadFormSetting';
-			if(_value=='FDC_FLOW') rurl = '/flow/filter';
+			//if(_value=='FDC_FLOW') rurl = '/flow/filter';
 			sendAjaxNotMessage(rurl, param, function(data){
-				if(_value=='FDC_FLOW') {
-					$('#task_config').html(data);
-					return;
-				}
+				//if(_value=='FDC_FLOW') {
+				//	$('#task_config').html(data);
+				//	return;
+				//}
 				switch(data.result.value){
 					case 'ALLOC_CHECK':
 					case 'ALLOC_RUN':
