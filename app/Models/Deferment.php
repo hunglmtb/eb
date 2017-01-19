@@ -37,7 +37,8 @@ use App\Models\EbBussinessModel;
 	
 	public  static  $idField = 'ID';
 // 	public  static  $unguarded = true;
-
+	public  static  $dateField = 'BEGIN_TIME';
+	
 	public function afterSaving($postData) {
 		//Tinh toan lai cac gia tri THEOR, GAS
 		$shouldSave = false;
@@ -67,5 +68,9 @@ use App\Models\EbBussinessModel;
 			$shouldSave = true;
 		}
 		if ($shouldSave) $this->save();
+	}
+	
+	public static function buildLoadQuery($objectId,$object) {
+		return static::where(["DEFER_TARGET"	=> $objectId,"DEFER_GROUP_TYPE"	=> 3]);//3 is well
 	}
 } 

@@ -8,7 +8,11 @@ use App\Models\IntObjectType;
 
 class AuditController extends CodeController {
     
-public function getProperties($dcTable,$facility_id=false,$occur_date=null,$postData=null){
+	
+	public function getFirstProperty($dcTable){
+		return  null;
+	}
+	/* public function getProperties($dcTable,$facility_id=false,$occur_date=null,$postData=null){
 		$properties = collect([
  				(object)['data' =>	'ACTION',		'title' => 'Action',	'width'	=>	0,'INPUT_TYPE'=>1,	'DATA_METHOD'=>5,'FIELD_ORDER'=>1],
 				(object)['data' =>	"WHO",			'title' => 'By',		'width'	=>	0,'INPUT_TYPE'=>1,	'DATA_METHOD'=>5,'FIELD_ORDER'=>2],
@@ -26,7 +30,7 @@ public function getProperties($dcTable,$facility_id=false,$occur_date=null,$post
 	    				'locked'		=> true,
 		];
 		return $results;
-	}
+	} */
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
     	$date_end 			= $postData['date_end'];
@@ -34,7 +38,8 @@ public function getProperties($dcTable,$facility_id=false,$occur_date=null,$post
     	$auditTrail 		= AuditTrail::getTableName();
     	$codeAuditReason 	= CodeAuditReason::getTableName();
     	$beginDate 			= $occur_date;
-    	
+    	$tableName 			= $postData['ObjectDataSource'];
+    	 
     	if($postData['IntObjectType'] >0){
     		$objectName = IntObjectType::where("ID",$postData['IntObjectType'])->select("CODE")->first();
     		$objectName = $objectName?$objectName->CODE:"";
@@ -42,14 +47,15 @@ public function getProperties($dcTable,$facility_id=false,$occur_date=null,$post
     	}else{
     		$objectType = '%';
     	}
-    	
+    			
     	// 		\DB::enableQueryLog();
-    	$dataSet = AuditTrail::leftjoin($codeAuditReason, "$auditTrail.REASON", '=', "$codeAuditReason.ID")
+    	$dataSet = AuditTrail::join($codeAuditReason, "$auditTrail.REASON", '=', "$codeAuditReason.ID")
 						    	->where(["$auditTrail.FACILITY_ID" => $facility_id])
-						    	->whereDate("$auditTrail.WHEN", '>=', $occur_date)
+//  						    	->where('TABLE_NAME', 'like', $objectType)
+ 						    	->where('TABLE_NAME', '=', $tableName)
+ 						    	->whereDate("$auditTrail.WHEN", '>=', $occur_date)
 						    	->whereDate("$auditTrail.WHEN", '<=', $date_end)
- 						    	->where('TABLE_NAME', 'like', $objectType)
-						    	->select(['ACTION',
+						    	->select(['*','ACTION',
 						    			'WHO', 
 						    			'WHEN', 
 						    			'TABLE_NAME', 
@@ -59,6 +65,7 @@ public function getProperties($dcTable,$facility_id=false,$occur_date=null,$post
 						    			'OLD_VALUE',
 						    			'NEW_VALUE', 
 						    			'AUDIT_NOTE', 
+						    			'OCCUR_DATE', 
 						    			"$codeAuditReason.NAME AS REASON"])
 						    	->get();
     	// 		\Log::info(\DB::getQueryLog());

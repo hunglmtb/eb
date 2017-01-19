@@ -25,7 +25,7 @@ class ChokeController extends CodeController {
     public function summaryData($constraints,$beginDate=null,$endDate=null,$postData=null){
     	$summaryData	= [];
     	$sumField		= "V";
-    	if (count($constraints['CONFIG'])>0){
+    	if (array_key_exists('CONFIG', $constraints)&&count($constraints['CONFIG'])>0){
     		$categories	= [];
     		$groups 	= [];
     		$minY 		= 1000000000;
@@ -76,8 +76,10 @@ class ChokeController extends CodeController {
     				$forecastType	= array_key_exists('CodeForecastType', $object)?$object['CodeForecastType']:0;
     				if ($forecastType>0) $where["FORECAST_TYPE" ] 	= $forecastType;
     				
-     				$query			= $modelName?$modelName::where($objectIdField,$objectId):\DB::table($tableName)->where($objectIdField,$objectId);
-    				if (count($where)>0) $query->where($where);
+//      			$query			= $modelName?$modelName::where($objectIdField,$objectId):\DB::table($tableName)->where($objectIdField,$objectId);
+     				$query			= $modelName?$modelName::buildLoadQuery($objectId,$object):\DB::table($tableName)->where($objectIdField,$objectId);
+     				if (!$query) continue;
+     				if (count($where)>0) $query->where($where);
     				
      				if($datefield){
      					$query->whereDate("$datefield", '>=', $beginDate)

@@ -6,17 +6,19 @@ use Carbon\Carbon;
 
 class FeatureEuTestModel extends EbBussinessModel
 {
-	public  static  $idField = 'ID';
-	public  static  $typeName = 'EUTEST';
-	public  static  $dateField = 'EFFECTIVE_DATE';
-	protected $dates = ['EFFECTIVE_DATE','END_TIME','BEGIN_TIME'];
+	public  static  $idField 		= 'EU_ID';
+	public  static  $typeName 		= 'EUTEST';
+	public  static  $dateField 		= 'EFFECTIVE_DATE';
+	protected $dates				= ['EFFECTIVE_DATE','END_TIME','BEGIN_TIME'];
+	protected $disableUpdateAudit 	= false;
+	protected $objectModel 			= 'EnergyUnit';
 	
 	/* protected $objectModel = 'EuTest';
 	protected $excludeColumns = ['EU_ID','OCCUR_DATE']; */ 
 	
 	public static function getKeyColumns(&$newData,$occur_date,$postData){
 		$attributes = [];
-		$attributes['EFFECTIVE_DATE'] = $newData['EFFECTIVE_DATE'];
+		$attributes['EFFECTIVE_DATE'] = array_key_exists ( 'EFFECTIVE_DATE', $newData )?$newData['EFFECTIVE_DATE']:$occur_date;
 		if ((array_key_exists ( 'isAdding', $newData ) && array_key_exists ( 'EnergyUnit', $postData ))||
 				!array_key_exists ( 'EU_ID', $newData )) {
 			$newData['EU_ID'] = $postData['EnergyUnit'];

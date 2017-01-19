@@ -23,7 +23,6 @@ ENERGY UNIT DATA CAPTURE
 	actions.loadUrl 		= "/eu/load";
 	actions.saveUrl 		= "/eu/save";
 	actions.historyUrl 		= "/eu/history";
-// 	actions.reloadAfterSave	= false;
 	
 	actions.type = {
 					idName:['{{config("constants.euId")}}','{{config("constants.euFlowPhase")}}','{{config("constants.eventType")}}'],

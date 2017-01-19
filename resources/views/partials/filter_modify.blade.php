@@ -70,6 +70,16 @@
 								$(selectedObject+'CodeAllocType').addClass("clearBoth");
 								$(selectedObject+'CodeForecastType').addClass("clearBoth");
 							}
+							if($(currentObject+"IntObjectType").find(":selected").attr( "name")=="ENERGY_UNIT"||
+									$(currentObject+"IntObjectType").find(":selected").attr( "name")=="EU_TEST"){
+								if(objectDataSource=='EnergyUnit'||
+										objectDataSource=='Deferment'||
+										objectDataSource=='Storage'||
+										objectDataSource=='Tank'||
+										objectDataSource=='Flow') $(selectedObject+'CodeFlowPhase').hide();
+								else $(selectedObject+'CodeFlowPhase').show();
+							}
+							
 						}
 						if(prefix=="") $("#tdObjectContainer").css({'height':($("#filterFrequence").height()+'px')});
 						break;
