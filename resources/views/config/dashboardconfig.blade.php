@@ -289,7 +289,7 @@ function load_dash_board(obj){
 		
 	$("#boxDashboardList").dialog("close");
 	$(".container").remove();
-	updateName($(obj).html());
+	updateName($(obj).text());
 	//alert($(obj).attr("config"));
 	var cf=JSON.parse($(obj).attr('config'));
 	for(var i=0;i<cf.length;i++){
@@ -539,7 +539,13 @@ var update_content_pending=false;
 $(function() {
 <?php
 	if($dashboard_id>0&&$dashboard_row){
-		echo "load_dash_board_info('$dashboard_row->CONFIG',$dashboard_id,\"$dashboard_row->NAME\",\"$dashboard_row->BACKGROUND\"); update_content_pending=true;";
+		?>
+		var configdb = <?php echo json_encode($dashboard_row->CONFIG); ?>
+		
+		load_dash_board_info(configdb,'{{$dashboard_row->NAME}}','{{$dashboard_row->BACKGROUND}}');	
+		update_content_pending=true;
+		<?php
+// 		echo "load_dash_board_info('$dashboard_row->CONFIG',$dashboard_id,\"$dashboard_row->NAME\",\"$dashboard_row->BACKGROUND\"); update_content_pending=true;";
 	}
 ?>
 	CKEDITOR.config.width=780;
