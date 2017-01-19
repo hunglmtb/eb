@@ -245,7 +245,7 @@ function load_dash_board(obj){
 	d_bg=$(obj).attr('d_bg');
 	$("#boxDashboardList").dialog("close");
 	$(".container").remove();
-	$("#dashboard_name").html($(obj).html());
+	$("#dashboard_name").html($(obj).text());
 	//updateName($(obj).html());
 	//alert($(obj).attr("config"));
 	var cf=JSON.parse($(obj).attr('config'));
@@ -349,7 +349,7 @@ function loadChart(o){
 }
 function loadWorkflow(o){
 	//document.getElementById("ifWorkflow").contentWindow.document.write("<font family='Open Sans'>Loading...</font>");
-	$(o).attr("src","../wf/wfshow.php?bgcolor="+bgcolor+"&wf_id="+$(o).parent().attr("d_obj")+"&onlyshow");	
+	$(o).attr("src","/loadWfShow?bgcolor="+bgcolor+"&wf_id="+$(o).parent().attr("d_obj")+"&onlyshow");
 }
 var Months=["January","February","March","April","May","June","July","August","September","October","November","December"];
 function loadReport(o){
