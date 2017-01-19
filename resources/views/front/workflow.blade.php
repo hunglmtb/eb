@@ -230,6 +230,7 @@ var _workFlow = {
 				//	$('#task_config').html(data);
 				//	return;
 				//}
+				alert(data.result.value);
 				switch(data.result.value){
 					case 'ALLOC_CHECK':
 					case 'ALLOC_RUN':
@@ -243,6 +244,12 @@ var _workFlow = {
 						break;
 					case 'FDC_FLOW':
 						_workFlow.formFDCFLOW(data);
+						break;
+					case 'FDC_STORAGE':
+						_workFlow.formFDCStorage(data);
+						break;
+					case 'FDC_EU_TEST':
+						_workFlow.formFDCEUTEst(data);
 						break;
 					case 'INT_IMPORT_DATA':
 						_workFlow.formIntImportData(data);
@@ -604,6 +611,172 @@ var _workFlow = {
 				$('#txt_to').val(param.to);
 			}
 			$('#txt_email').val(param.email);
+		},
+		formFDCEUTEst : function(_data){
+			var str = '';
+			var facility = _data.result.Facility;
+			var energyUnit = _data.result.EnergyUnit;
+			$('#task_config').html(str);
+			
+			str += ' 	<div class="form-group allocation">';
+			str += ' 	<label class="col-md-2 control-label">Facility:</label>';
+			str += ' 	<div class="col-md-5">';
+			str += ' 		<select name="cbo_Facility" id="cbo_Facility" class="form-control" >';
+			for(var x in facility){
+				str += '	<option value="'+facility[x].ID+'">'+facility[x].NAME+'</option>';
+			}
+			str += ' 			</select>';
+			str += ' 		</div>';
+			str += ' 	</div>';
+			str += ' 	<div class="form-group allocation">';
+			str += ' 	<label class="col-md-2 control-label">Energy Unit</label>';
+			str += ' 	<div class="col-md-5">';
+			str += ' 		<select name="cbo_eu" id="cbo_eu" class="form-control" >';
+			str += ' 		<option value="0">(All)</option>';
+			for(var x in energyUnit){
+				str += '	<option value="'+energyUnit[x].ID+'">'+energyUnit[x].NAME+'</option>';
+			}
+			str += ' 	</select>';
+			str += ' </div>';
+			str += ' </div>';
+			str += ' <div class="form-group allocation">';
+			str += ' 	<label class="col-md-2 control-label">Set date:</label>';
+			str += ' 	<div class="col-md-5">';
+			str += ' 		<select id="cbo_datetype">';
+			str += ' 			<option value="date">Date</option>';
+			str += ' 			<option value="day" selected>This Day</option>';
+			str += ' 			<option value="month">This Month</option>';
+			str += ' 		</select>';
+			str += ' 		<span id="date_config" style="display:none;">';
+			str += ' 		<input type="date" class="form-control" name="txt_from" id="txt_from">';
+			str += ' 		<input type="date" class="form-control" name="txt_to" id="txt_to" >';
+			str += ' 		</span>';
+			str += ' 	</div>';
+			str += ' </div> <br>';
+			str += ' <div class="form-group">';
+			str += ' 	<label class="col-md-2 control-label">Send logs:</label>';
+			str += ' 	<div class="col-md-10">';
+			str += ' 		<input type="text" class="form-control" name="txt_email" id="txt_email" placeholder="email">';
+			str += ' 	</div>';
+			str += ' </div>';
+
+			$('#task_config').html(str);
+
+			$('#cbo_datetype').change(function(){
+				if($(this).val()=='date'){
+					$('#date_config').show();
+				}else{
+					$('#date_config').hide();
+				}
+				$('input[type=date]').css('height', 'auto');
+				$('input[type=date]').css('width', 130);
+			})
+			
+			$('input[type=text]').css('height', 'auto');
+			$('input[type=text]').css('width', 200);
+			$('#task_config select').css('width', 140);
+
+			var task = _data.result.task;  
+
+			if(task[0].task_config == '{}') return;
+			
+			var param = JSON.parse(task[0].task_config);
+			
+			$('#cbo_Facility').val(param.facility);
+			$('#cbo_eu').val(param.eu_id);			
+			
+			$('#cbo_datetype').val(param.type);			
+			$('#cbo_datetype').change();
+
+			if(param.from != ""){
+				$('#txt_from').val(param.from);
+				$('#txt_to').val(param.to);
+			}
+			$('#txt_email').val(param.email);
+			
+		},
+		formFDCStorage : function(_data){
+			var str = '';
+			var facility = _data.result.Facility;
+			var codeProductType = _data.result.CodeProductType;
+			$('#task_config').html(str);
+			
+			str += ' 	<div class="form-group allocation">';
+			str += ' 	<label class="col-md-2 control-label">Facility:</label>';
+			str += ' 	<div class="col-md-5">';
+			str += ' 		<select name="cbo_Facility" id="cbo_Facility" class="form-control" >';
+			for(var x in facility){
+				str += '	<option value="'+facility[x].ID+'">'+facility[x].NAME+'</option>';
+			}
+			str += ' 			</select>';
+			str += ' 		</div>';
+			str += ' 	</div>';
+			str += ' 	<div class="form-group allocation">';
+			str += ' 	<label class="col-md-2 control-label">Product type:</label>';
+			str += ' 	<div class="col-md-5">';
+			str += ' 		<select name="cbo_product" id="cbo_product" class="form-control" >';
+			str += ' 		<option value="0">(All)</option>';
+			for(var x in codeProductType){
+				str += '	<option value="'+codeProductType[x].ID+'">'+codeProductType[x].NAME+'</option>';
+			}
+			str += ' 	</select>';
+			str += ' </div>';
+			str += ' </div>';
+			str += ' <div class="form-group allocation">';
+			str += ' 	<label class="col-md-2 control-label">Set date:</label>';
+			str += ' 	<div class="col-md-5">';
+			str += ' 		<select id="cbo_datetype">';
+			str += ' 			<option value="date">Date</option>';
+			str += ' 			<option value="day" selected>This Day</option>';
+			str += ' 			<option value="month">This Month</option>';
+			str += ' 		</select>';
+			str += ' 		<span id="date_config" style="display:none;">';
+			str += ' 		<input type="date" class="form-control" name="txt_from" id="txt_from">';
+			str += ' 		<input type="date" class="form-control" name="txt_to" id="txt_to" >';
+			str += ' 		</span>';
+			str += ' 	</div>';
+			str += ' </div> <br>';
+			str += ' <div class="form-group">';
+			str += ' 	<label class="col-md-2 control-label">Send logs:</label>';
+			str += ' 	<div class="col-md-10">';
+			str += ' 		<input type="text" class="form-control" name="txt_email" id="txt_email" placeholder="email">';
+			str += ' 	</div>';
+			str += ' </div>';
+
+			$('#task_config').html(str);
+
+			$('#cbo_datetype').change(function(){
+				if($(this).val()=='date'){
+					$('#date_config').show();
+				}else{
+					$('#date_config').hide();
+				}
+				$('input[type=date]').css('height', 'auto');
+				$('input[type=date]').css('width', 130);
+			})
+			
+			$('input[type=text]').css('height', 'auto');
+			$('input[type=text]').css('width', 200);
+			$('#task_config select').css('width', 140);
+
+			var task = _data.result.task;  
+
+			if(task[0].task_config == '{}') return;
+			
+			var param = JSON.parse(task[0].task_config);
+			
+			$('#cbo_Facility').val(param.facility);
+			$('#cbo_product').val(param.product_type);			
+			
+			$('#cbo_datetype').val(param.type);			
+			$('#cbo_datetype').change();
+
+			if(param.from != ""){
+				$('#txt_from').val(param.from);
+				$('#txt_to').val(param.to);
+			}
+			$('#txt_email').val(param.email);
+			
 		},
 		formFDCFLOW : function(_data){
 			var str = '';
@@ -1444,6 +1617,24 @@ function showBoxTaskConfig(){
 						task_config['facility']=$('#cbo_Facility').val();
 						task_config['freq']=$('#cbo_freq').val();
 						task_config['phase_type']=$('#cbo_phasetype').val();
+						task_config['type']=$('#cbo_datetype').val();
+						if(task_config['type']=='date'){
+							task_config['from']=$('#txt_from').val();
+							task_config['to']=$('#txt_to').val();
+						}
+						task_config['email']=$('#txt_email').val();
+					}else if(_task['task_code']=='FDC_STORAGE'){
+						task_config['facility']=$('#cbo_Facility').val();
+						task_config['product_type']=$('#cbo_product').val();
+						task_config['type']=$('#cbo_datetype').val();
+						if(task_config['type']=='date'){
+							task_config['from']=$('#txt_from').val();
+							task_config['to']=$('#txt_to').val();
+						}
+						task_config['email']=$('#txt_email').val();
+					}else if(_task['task_code']=='FDC_EU_TEST'){
+						task_config['facility']=$('#cbo_Facility').val();
+						task_config['eu_id']=$('#cbo_eu').val();
 						task_config['type']=$('#cbo_datetype').val();
 						if(task_config['type']=='date'){
 							task_config['from']=$('#txt_from').val();

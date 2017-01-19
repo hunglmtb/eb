@@ -824,6 +824,24 @@ class DVController extends Controller {
 					$result[$m] = $tm;
 				}
 				break;
+			case 'FDC_EU_TEST':
+				$models = ['Facility', 'EnergyUnit'];
+				foreach ($models as $m){
+					$tm = [];
+					$model = 'App\\Models\\' .$m;
+					$tm = $model::all(['ID', 'NAME']);
+					$result[$m] = $tm;
+				}
+				break;
+			case 'FDC_STORAGE':
+				$models = ['Facility', 'CodeProductType',];
+				foreach ($models as $m){
+					$tm = [];
+					$model = 'App\\Models\\' .$m;
+					$tm = $model::all(['ID', 'NAME']);
+					$result[$m] = $tm;
+				}
+				break;
 			case 'INT_IMPORT_DATA':
 				$tm = [];
 				$tm = IntConnection::all(['ID', 'NAME']);
