@@ -275,6 +275,7 @@ class DVController extends Controller {
 		
 		foreach ( $vparam as $v ) {
 			$cell_id = $v ['ID'];
+			if (!array_key_exists('OBJECT_ID', $v)) continue;
 			$object_type = $v ['OBJECT_TYPE'];
 			$object_id 	= $v ['OBJECT_ID'];
 			$conn_id 	= array_key_exists('CONN_ID', $v)?$v ['CONN_ID']:-1;
