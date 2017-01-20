@@ -365,17 +365,18 @@ var actions = {
 							if(isNoChange) alert("no change to commit");
 							return !isNoChange;
 						},
-	doSave 				: function (reLoadParams){
+	doSave 				: function (reLoadParams,edittedData){
 							if (this.saveUrl) {
 								validated = actions.validating(reLoadParams);
 					//			actions.readyToLoad = true;
 								if(validated){
 									console.log ( "doLoad url: "+this.saveUrl );
 									showWaiting();
+									var postData	= typeof edittedData == "object"?postData:actions.loadSaveParams(reLoadParams);
 									$.ajax({
-										url: this.saveUrl,
+										url	: this.saveUrl,
 										type: "post",
-										data: actions.loadSaveParams(reLoadParams),
+										data: postData,
 										success:function(data){
 											hideWaiting();
 											if (typeof(actions.saveSuccess) == "function") {

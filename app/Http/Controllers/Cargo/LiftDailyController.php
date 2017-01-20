@@ -24,15 +24,15 @@ class LiftDailyController extends CodeController {
 	} */
 	public function getProperties($dcTable,$facility_id=false,$occur_date=null,$postData=null){
 		$properties = collect([
- 				(object)['data' =>	'UOM',			'title' => 'Month',			'width'	=>	70,'INPUT_TYPE'=>2,		'DATA_METHOD'=>5,'FIELD_ORDER'=>1],
-				(object)['data' =>	"cargo_name",	'title' => 'Cargo',			'width'	=>	130,'INPUT_TYPE'=>1,	'DATA_METHOD'=>5,'FIELD_ORDER'=>2],
+ 				(object)['data' =>	'UOM',			'title' => 'Month',			'width'	=>	60,'INPUT_TYPE'=>2,		'DATA_METHOD'=>5,'FIELD_ORDER'=>1],
+				(object)['data' =>	"cargo_name",	'title' => 'Cargo',			'width'	=>	80,'INPUT_TYPE'=>1,	'DATA_METHOD'=>5,'FIELD_ORDER'=>2],
 				(object)['data' =>	"xdate",		'title' => 'Date',			'width'	=>	60,'INPUT_TYPE'=>3,	'DATA_METHOD'=>5,'FIELD_ORDER'=>3],
-				(object)['data' =>	"opening_balance",'title' => 'Opening Balance','width'=>110,'INPUT_TYPE'=>2,	'DATA_METHOD'=>5,'FIELD_ORDER'=>3],
-				(object)['data' =>	"n_qty",		'title' => 'Nominated Qty',	'width'	=>	110,'INPUT_TYPE'=>2,	'DATA_METHOD'=>5,'FIELD_ORDER'=>4],
-				(object)['data' =>	"b_qty",		'title' => 'Lifted Qty',	'width'	=>	110,'INPUT_TYPE'=>2,	'DATA_METHOD'=>5,'FIELD_ORDER'=>5],
-				(object)['data' =>	"flow_qty",		'title' => 'Flow Qty',		'width'	=>	110,'INPUT_TYPE'=>2,	'DATA_METHOD'=>5,'FIELD_ORDER'=>6],
+				(object)['data' =>	"opening_balance",'title' => 'Opening Balance','width'=>60,'INPUT_TYPE'=>2,	'DATA_METHOD'=>5,'FIELD_ORDER'=>3],
+				(object)['data' =>	"n_qty",		'title' => 'Nominated Qty',	'width'	=>	60,'INPUT_TYPE'=>2,	'DATA_METHOD'=>5,'FIELD_ORDER'=>4],
+				(object)['data' =>	"b_qty",		'title' => 'Lifted Qty',	'width'	=>	60,'INPUT_TYPE'=>2,	'DATA_METHOD'=>5,'FIELD_ORDER'=>5],
+				(object)['data' =>	"flow_qty",		'title' => 'Flow Qty',		'width'	=>	60,'INPUT_TYPE'=>2,	'DATA_METHOD'=>5,'FIELD_ORDER'=>6],
 				(object)['data' =>	"flow_name",	'title' => 'Flow Name',		'width'	=>	110,'INPUT_TYPE'=>1,	'DATA_METHOD'=>5,'FIELD_ORDER'=>7],
-				(object)['data' =>	"cal_qty",		'title' => 'Balance Qty',	'width'	=>	110,'INPUT_TYPE'=>2,	'DATA_METHOD'=>5,'FIELD_ORDER'=>8],
+				(object)['data' =>	"cal_qty",		'title' => 'Balance Qty',	'width'	=>	150,'INPUT_TYPE'=>2,	'DATA_METHOD'=>5,'FIELD_ORDER'=>8],
 		]);
 		/* $uoms		= [];
 		$uoms[]		= \App\Models\PdCodeOrginality::all();

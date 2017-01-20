@@ -23,7 +23,8 @@ LIFTING ACCT DAILY BALANCE
 	});
 
 	actions.loadUrl = "/liftaccdailybalance/load";
-// 	actions.saveUrl = "/liftaccdailybalance/save";
+ 	actions.saveUrl = "/liftaccmonthlyadjust/save";//for insert monthly balance
+ 	
 	actions.type = {
 			idName:['ID'],
 			keyField:'ID',
@@ -47,7 +48,7 @@ LIFTING ACCT DAILY BALANCE
 						 
 //						             groups = api.data();
 						            groups = api.column(2, {page:'current'}).data();
-						            
+						            var insertValues	= [];
 						            groups.each( function ( group, i ) {
 						            	var xdate 	= moment.utc(group,configuration.time.DATETIME_FORMAT_UTC);
 						                if ( !xdate.isSame( last, 'month')) {
@@ -84,23 +85,62 @@ LIFTING ACCT DAILY BALANCE
 							                }
 
 							                if(i>0) total = rowDatas[i-1].cal_qty;
+
+							                var insertObject	= {	BALANCE_MONTH	: xdate.format(configuration.time.DATETIME_FORMAT_UTC),
+											                		BAL_VOL			: total,
+											                		dateString		: dateString};
+						                	insertValues.push(insertObject);
+
+						                	var rowTr			= $('<tr class="group"></tr>');
+							                $('<td colspan="8"><b>'+dateString+'</td>').appendTo(rowTr);
+							                var totalTd			= $('<td class="cellnumber" style="background-color: #8edee2;"></td>');
+							                var insertButton 	= $('<button class="floatLeft" style="">Insert</button>');
+							                insertButton.click(function(){
+							                	actions.insertMonthlyBalance([insertObject]);
+								            });
+							                insertButton.appendTo(totalTd);
+							                $('<b>'+total+'</b>').appendTo(totalTd);
+							                totalTd.appendTo(rowTr);
 							                
-						                    $(rows).eq( i ).before(
-						                        '<tr class="group"><td colspan="8"><b>'+dateString+
-						                        '</td><td class="cellnumber" style="background-color: #8edee2;"><b>'+total+'</b></td></tr>'
-						                    );
+						                    $(rows).eq( i ).before(rowTr);
 						                    last = xdate;
 						                }
 						            } );
-
 							        var table = $('#table_PdCargo').DataTable();
 							        actions.addClass2Header(table);
+
+							        if(insertValues.length>0){
+							        	var insertButton 	= $('<button class="" style="margin-left:5px">Insert All</button>');
+						                insertButton.click(function(){
+						                	actions.insertMonthlyBalance(insertValues);
+							            });
+						                insertButton.appendTo($('.dataTables_scrollHeadInner thead th.cal_qty'));
+							        }
 						        },
 							},
 				invisible:[]};
 		
 	}
-	
+
+	actions.insertMonthlyBalance	= function(values){
+		if(values.length>0){
+			var liftingAccount	= $("#PdLiftingAccount option:selected").text();
+			var texts			= "";
+			$.each(values, function( index, value ) {
+		        texts						+= "Month "+value.dateString+"\t\t value "+value.BAL_VOL+"\n";
+		        value.LIFTING_ACCOUNT_ID 	= $("#PdLiftingAccount option:selected").val();
+		        value.ADJUST_CODE 			= 2;
+		        value.COMMENT 				= "insert from daily action";
+		        value.ID					= "NEW_RECORD_DT_RowId"+index++;
+		        
+		   	});
+	    	if(confirm("Are you sure to insert Monthly Balance for "+liftingAccount+" with value?\n"+texts)){
+				actions.editedData.PdLiftingAccountMthData = values;
+		    	actions.doSave(true);
+	    	}
+		}
+		else alert("there is no monthly balance to insert");
+	}
 </script>
 @stop
 
