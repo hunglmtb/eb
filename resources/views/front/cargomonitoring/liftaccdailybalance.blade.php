@@ -97,7 +97,7 @@ LIFTING ACCT DAILY BALANCE
 						                	var rowTr			= $('<tr class="group"></tr>');
 							                $('<td colspan="8"><b>'+dateString+'</td>').appendTo(rowTr);
 							                var totalTd			= $('<td class="cellnumber" style="background-color: #8edee2;"></td>');
-							                var insertButton 	= $('<button class="floatLeft" style="">Insert</button>');
+							                var insertButton 	= $('<button class="floatLeft" style="">Generate L.A.Bal.</button>');
 							                insertButton.click(function(){
 							                	actions.insertMonthlyBalance([insertObject]);
 								            });
@@ -114,7 +114,7 @@ LIFTING ACCT DAILY BALANCE
 							        actions.addClass2Header(table);
 
 							        if(insertValues.length>0){
-							        	var insertButton 	= $('<button class="" style="margin-left:5px">Insert All</button>');
+							        	var insertButton 	= $('<button class="" style="margin-left:5px">Generate L.A.Bal.</button>');
 						                insertButton.click(function(){
 						                	actions.insertMonthlyBalance(insertValues);
 							            });
@@ -131,14 +131,14 @@ LIFTING ACCT DAILY BALANCE
 			var liftingAccount	= $("#PdLiftingAccount option:selected").text();
 			var texts			= "";
 			$.each(values, function( index, value ) {
-		        texts						+= "Month "+value.dateString+"\t\t value "+value.BAL_VOL+"\n";
+		        texts						+= liftingAccount+" \t\t "+value.dateString+" \t\t  "+value.BAL_VOL+"\n";
 		        value.LIFTING_ACCOUNT_ID 	= $("#PdLiftingAccount option:selected").val();
 		        value.ADJUST_CODE 			= 2;
-		        value.COMMENT 				= "insert from daily action";
+		        value.COMMENT 				= "Generate new Monthly Balance";
 		        value.ID					= "NEW_RECORD_DT_RowId"+index++;
 		        
 		   	});
-	    	if(confirm("Are you sure to insert Monthly Balance for "+liftingAccount+" with value?\n"+texts)){
+	    	if(confirm("Generate new Monthly Balance?\n"+texts)){
 				actions.editedData.PdLiftingAccountMthData = values;
 		    	actions.doSave(true);
 	    	}
