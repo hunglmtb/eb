@@ -24,6 +24,7 @@ LIFTING ACCT DAILY BALANCE
 
 	actions.loadUrl = "/liftaccdailybalance/load";
  	actions.saveUrl = "/liftaccmonthlyadjust/save";//for insert monthly balance
+	actions.reloadAfterSave	= true;
  	
 	actions.type = {
 			idName:['ID'],
@@ -64,19 +65,21 @@ LIFTING ACCT DAILY BALANCE
 			    								if (result.length >0) {
 			    									total 		= 0;
 			    									$.each(result, function( index, accountData ) {
-			    										$(rows).eq( i ).before(
-			    						                        '<tr class="group"><td colspan="7"><b>'+(index==0?dateString:"")+
-			    						                        '</b></td><td class="cellnumber"> '+accountData.ADJUST_NAME+
-			    						                        '</td><td class="cellnumber">'+accountData.BAL_VOL+'</td></tr>'
-			    						                );
 			    										var volume	= parseFloat(accountData.BAL_VOL);
 			    										volume	= isNaN(volume)?0:volume;
 			    										total	+= volume;
+			    										totalText = configuration.number.DECIMAL_MARK=='comma'?volume.toLocaleString('de-DE'):volume.toLocaleString("en-US"); 
+			    										$(rows).eq( i ).before(
+			    						                        '<tr class="group"><td colspan="7"><b>'+(index==0?dateString:"")+
+			    						                        '</b></td><td class="cellnumber"> '+accountData.ADJUST_NAME+
+			    						                        '</td><td class="cellnumber">'+totalText+'</td></tr>'
+			    						                );
 		    							            });
 				    								if (result.length >1) {
+				    									totalText = configuration.number.DECIMAL_MARK=='comma'?total.toLocaleString('de-DE'):total.toLocaleString("en-US"); 
 				    									$(rows).eq( i ).before(
 			    						                        '<tr class="group"><td colspan="8">'+
-			    						                        '</td><td class="cellnumber" style="background-color: #8edee2;"><b>'+total+'</b></td></tr>'
+			    						                        '</td><td class="cellnumber" style="background-color: #8edee2;"><b>'+totalText+'</b></td></tr>'
 			    						                );
 				    								}
 								                    last = xdate;
@@ -99,7 +102,8 @@ LIFTING ACCT DAILY BALANCE
 							                	actions.insertMonthlyBalance([insertObject]);
 								            });
 							                insertButton.appendTo(totalTd);
-							                $('<b>'+total+'</b>').appendTo(totalTd);
+							                totalText = configuration.number.DECIMAL_MARK=='comma'?total.toLocaleString('de-DE'):total.toLocaleString("en-US"); 
+							                $('<b>'+totalText+'</b>').appendTo(totalTd);
 							                totalTd.appendTo(rowTr);
 							                
 						                    $(rows).eq( i ).before(rowTr);
