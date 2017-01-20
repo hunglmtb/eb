@@ -27,8 +27,14 @@ CARGO PLANNING
 .td_highlight {color: #378de5;font-weight:bold;}
 #table_quality .td_plan {text-align:center;font-weight:bold}
 #table_quality .td_cal_balance {color:orange}
+#table_quality .td_monnth_bal {color:#360046; background:#f2c6ff}
 </style>
 <script>
+	function txt_balance_keypress(e){
+		if (e.keyCode == 13) {
+			actions.doLoad(true);
+		}
+	}
 	$( document ).ready(function() {
 		$("#mainContent").html("<form name='form_fdc' id='form_fdc'><div style='width:100%;overflow-x: auto;'><table border='0' cellpadding='2' cellspacing='2' id='table_quality' class='display compact'></table></div></form>");
 	    var onChangeFunction = function() {
@@ -80,6 +86,8 @@ CARGO PLANNING
 				function(data, status){
 						$("#table_quality").html(data);
 						$("#buttonLoadData").show();
+						if($("#txt_balance").val()==="")
+							$("#txt_balance").focus();
 				});
 			/*
 			postRequest("cargoplanning_load.php", formData,
