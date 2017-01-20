@@ -41,6 +41,19 @@ if(!$storage_id){
 	echo "No data ++";
 	exit;
 }
+$dateformat = str_replace("yy","Y",$dateformat);
+$df = explode("/",$dateformat);
+if(count($df >= 3)){
+	$mysql_dateformat = "%$df[0]/%$df[1]/%$df[2]";
+	//$mysql_dateformat = str_replace("yy","Y",$mysql_dateformat);
+	//echo "<tr><td colspan='6' style='color:orange;text-align:center'>Wrong date format $dateformat</td></tr></tbody>";
+	//exit;
+}
+else{
+	echo "<tr><td colspan='6' style='color:orange;text-align:center'>Wrong date format</td></tr></tbody>";
+	exit;
+}
+
 //saveWorkSpaceInfo($DateFrom, $DateTo, $facility_id);
 $date_from=$DateFrom;//toDateString($DateFrom);
 $date_to=$DateTo;//toDateString($DateTo);
@@ -86,7 +99,7 @@ while($row=mysql_fetch_assoc($result)){
 	$shipper_la["$row[SHIPPER_ID]"][] = $row["LA_ID"];
 }
 
-$sSQL="select DATE_FORMAT(a.OCCUR_DATE,'%m/%d/%Y') OCCUR_DATE,d.id LIFTING_ACCOUNT_ID, round(sum(a.FL_DATA_GRS_VOL*d.INTEREST_PCT/100),3) flow_qty
+$sSQL="select DATE_FORMAT(a.OCCUR_DATE,'$mysql_dateformat') OCCUR_DATE,d.id LIFTING_ACCOUNT_ID, round(sum(a.FL_DATA_GRS_VOL*d.INTEREST_PCT/100),3) flow_qty
 from flow_data_value a, flow b, pd_lifting_account d 
 where d.id in($lifting_acc_ids) and d.PROFIT_CENTER=b.COST_INT_CTR_ID and b.id=a.FLOW_ID 
 and a.OCCUR_DATE between '$date_from' and '$date_to' and exists(select 1 from storage_data_value x
@@ -146,22 +159,47 @@ if(!$balance) exit;
 echo '<tbody>';
 //if(count($la_data)==0) {echo "<tr><td colspan='6' style='color:orange;text-align:center'>No entitlement data</td></tr></tbody>"; exit;}
 
-$sSQL="select DATE_FORMAT(a.OCCUR_DATE,'%m/%d/%Y') OCCUR_DATE, max(a.AVAIL_SHIPPING_VOL) OPENING_BALANCE from storage_data_value a
-where a.OCCUR_DATE between '$date_from' and '$date_to' and a.storage_id=$storage_id group by a.OCCUR_DATE order by a.OCCUR_DATE 
-";
-
-//echo "<tr><td>$sSQL<td></tr>";
-$result=mysql_query($sSQL) or die("fail: ".$sSQL."-> error:".mysql_error());
 $vals = [];
 $last_value = null;
 $last_date = null;
 $last_minus = 0;
-while($row=mysql_fetch_assoc($result)){
+
+$d1 = date ("Y-m-d", strtotime($date_from));
+$d2 = $date_to;
+/*
+while (strtotime($d1) <= strtotime($d2)) {
+	$sSQL = "select DATE_FORMAT(ifnull(a.OCCUR_DATE,'$d1'),'$dateformat') OCCUR_DATE, max(a.AVAIL_SHIPPING_VOL) OPENING_BALANCE from storage_data_value a where a.OCCUR_DATE ='$d1' and a.storage_id=$storage_id";
+	$result=mysql_query($sSQL) or die("fail: ".$sSQL."-> error:".mysql_error());
+	$row = mysql_fetch_assoc($result);
+
+	//$row["OCCUR_DATE"]=$d1;
+	$d1 = date ("Y-m-d", strtotime("+1 day", strtotime($d1)));
+*/
+$sSQL="select a.OCCUR_DATE SQL_OCCUR_DATE, DATE_FORMAT(a.OCCUR_DATE,'$mysql_dateformat') OCCUR_DATE, max(a.AVAIL_SHIPPING_VOL) OPENING_BALANCE from storage_data_value a
+where a.OCCUR_DATE between '$date_from' and '$date_to' and a.storage_id=$storage_id group by a.OCCUR_DATE order by a.OCCUR_DATE 
+";	
+$result=mysql_query($sSQL) or die("fail: ".$sSQL."-> error:".mysql_error());
+$rowx=mysql_fetch_assoc($result);
+$log="";
+while(strtotime($d1) <= strtotime($d2)){
+	if($rowx["SQL_OCCUR_DATE"] > $d1 || !$rowx){
+		$row["OCCUR_DATE"] = date ($dateformat, strtotime($d1));
+		$row["OPENING_BALANCE"] = "";
+	}
+	else if($rowx["SQL_OCCUR_DATE"] == $d1){
+		$row = $rowx;
+		$rowx=mysql_fetch_assoc($result);
+	}
+	
 	$v = $row["OPENING_BALANCE"];
 	$rowvals = [];
 	$rowvals["OCCUR_DATE"] = $row["OCCUR_DATE"];
 	$rowvals["BALANCE"] = ($v?$v:$last_value);
 	$rowvals["PLAN"] = "";
+	
+	//Calculate by adding Monthly balance
+	$first_day_month = date ("Y-m-01", strtotime($d1));
+	$is_begin_month = ($d1 == $first_day_month);
 	//echo "<tr><td>$row[OCCUR_DATE]</td><td>$v</td><td></td>";
 	foreach($interest_percents as $id => $val){
 		$add_val = 0;
@@ -177,7 +215,15 @@ while($row=mysql_fetch_assoc($result)){
 			$v = $vals["ENT_LA_$id"];
 			$add_val = $la_data["$last_date"]["$id"];
 		}
-		$rowvals["ENT_LA_$id"] = $v;
+		if($is_begin_month){
+			if(!isset($monthly_balance["$id"][$first_day_month])){
+				$_sql = "select ifnull(BAL_VOL,0)+ifnull(ADJUST_VOL,0) MONTHLY_BAL from PD_LIFTING_ACCOUNT_MTH_DATA where LIFTING_ACCOUNT_ID = $id and DATE_FORMAT(BALANCE_MONTH, '%Y-%m-01') = '$first_day_month'";
+				$_re=mysql_query($_sql) or die("fail: ".$_sql."-> error:".mysql_error());
+				$_r=mysql_fetch_assoc($_re);
+				$monthly_balance["$id"][$first_day_month] = $_r["MONTHLY_BAL"];
+			}
+		}
+		$rowvals["ENT_LA_$id"] = $v + $monthly_balance["$id"][$first_day_month];
 		if(!$row["OPENING_BALANCE"])
 			$rowvals["BALANCE"] += $add_val;
 		//echo "<td id='ent_val_{$id}_{$row[ID]}' class='group1_td'>$v</td>";
@@ -253,6 +299,8 @@ while($row=mysql_fetch_assoc($result)){
 	}
 	$last_value = $rowvals["BALANCE"];
 	$last_date = $row["OCCUR_DATE"];
+	$d1 = date ("Y-m-d", strtotime("+1 day", strtotime($d1)));
 }
-echo "<tbody>";
+//echo "<tr><td colspan='6' style='color:orange;text-align:center'>$log</td></tr>";
+echo "</tbody>";
 ?>
