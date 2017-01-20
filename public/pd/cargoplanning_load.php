@@ -114,7 +114,7 @@ while($row=mysql_fetch_assoc($result)){
 }
 //echo "xxx".count($la_data); exit();
 echo '<thead><tr>
-	<td colspan="3" rowspan="2" style="background:#dddddd"><b>Open balance &gt; </b><input id="txt_balance" name="txt_balance" value="'.$balance.'" style="width:100px"></td>
+	<td colspan="3" rowspan="2" style="background:#dddddd"><b>Open balance &gt; </b><input id="txt_balance" name="txt_balance" value="'.$balance.'" style="width:100px" onkeypress="return txt_balance_keypress(event)"></td>
 	<td colspan="'.count($ent_r1).'" class="group1_th"><b>Entitlement</b></td>
 	<td colspan="'.count($shipper_r1).'" class="group2_th"><b>Planned Cargo</b></td>
 	<td colspan="'.count($ent_r1).'" class="group3_th"><b>Scheduled Cargo</b></td>
@@ -201,6 +201,8 @@ while(strtotime($d1) <= strtotime($d2)){
 	$first_day_month = date ("Y-m-01", strtotime($d1));
 	$is_begin_month = ($d1 == $first_day_month);
 	//echo "<tr><td>$row[OCCUR_DATE]</td><td>$v</td><td></td>";
+	$has_month_bal = false;
+	$has_month_adj = false;
 	foreach($interest_percents as $id => $val){
 		$add_val = 0;
 		if(count($la_data)==0){
@@ -215,12 +217,23 @@ while(strtotime($d1) <= strtotime($d2)){
 			$v = $vals["ENT_LA_$id"];
 			$add_val = $la_data["$last_date"]["$id"];
 		}
+		$month_bal["ENT_LA_$id"] = "";
+		$month_adj["ENT_LA_$id"] = "";
 		if($is_begin_month){
 			if(!isset($monthly_balance["$id"][$first_day_month])){
-				$_sql = "select ifnull(BAL_VOL,0)+ifnull(ADJUST_VOL,0) MONTHLY_BAL from PD_LIFTING_ACCOUNT_MTH_DATA where LIFTING_ACCOUNT_ID = $id and DATE_FORMAT(BALANCE_MONTH, '%Y-%m-01') = '$first_day_month'";
+				$_sql = "select ifnull(BAL_VOL,0)+ifnull(ADJUST_VOL,0) VAL from PD_LIFTING_ACCOUNT_MTH_DATA where LIFTING_ACCOUNT_ID = $id and ADJUST_CODE=2 and DATE_FORMAT(BALANCE_MONTH, '%Y-%m-01') = '$first_day_month'";
 				$_re=mysql_query($_sql) or die("fail: ".$_sql."-> error:".mysql_error());
-				$_r=mysql_fetch_assoc($_re);
-				$monthly_balance["$id"][$first_day_month] = $_r["MONTHLY_BAL"];
+				$r_bal=mysql_fetch_assoc($_re);
+				$_sql = "select ifnull(BAL_VOL,0)+ifnull(ADJUST_VOL,0) VAL from PD_LIFTING_ACCOUNT_MTH_DATA where LIFTING_ACCOUNT_ID = $id and ADJUST_CODE=3 and DATE_FORMAT(BALANCE_MONTH, '%Y-%m-01') = '$first_day_month'";
+				$_re=mysql_query($_sql) or die("fail: ".$_sql."-> error:".mysql_error());
+				$r_adj=mysql_fetch_assoc($_re);
+				$month_bal["ENT_LA_$id"] = $r_bal["VAL"];
+				$month_adj["ENT_LA_$id"] = $r_adj["VAL"];
+				if($month_bal["ENT_LA_$id"])
+					$has_month_bal = true;
+				if($month_adj["ENT_LA_$id"])
+					$has_month_adj = true;
+				$monthly_balance["$id"][$first_day_month] = $r_bal["VAL"]+$r_adj["VAL"];
 			}
 		}
 		$rowvals["ENT_LA_$id"] = $v + $monthly_balance["$id"][$first_day_month];
@@ -269,10 +282,49 @@ while(strtotime($d1) <= strtotime($d2)){
 			}
 		}
 	}
+	if($has_month_bal){
+		echo "<tr><td colspan='3' class='td_monnth_bal'>Monthly Balance</td>";
+		foreach($rowvals as $key => $value){
+			$html = "";
+			if(substr($key,0,4) == "ENT_"){
+				$class = 'td_monnth_bal';
+				$html = $month_bal[$key];
+			}
+			else if(substr($key,0,4) == "SHIP")
+				$class = 'group2_td';
+			else if(substr($key,0,4) == "SCHE")
+				$class = 'group3_td';
+			else
+				$class = "";
+			if($class)
+				echo "<td class='$class'><b>$html</b></td>";
+		}
+		echo "</tr>";
+	}
+	if($has_month_adj){
+		echo "<tr><td colspan='3' class='td_monnth_bal'>Monthly Adjust</td>";
+		foreach($rowvals as $key => $value){
+			$html = "";
+			if(substr($key,0,4) == "ENT_"){
+				$class = 'td_monnth_bal';
+				$html = $month_adj[$key];
+			}
+			else if(substr($key,0,4) == "SHIP")
+				$class = 'group2_td';
+			else if(substr($key,0,4) == "SCHE")
+				$class = 'group3_td';
+			else
+				$class = "";
+			if($class)
+				echo "<td class='$class'><b>$html</b></td>";
+		}
+		echo "</tr>";
+	}
 	echo "<tr>";
 	foreach($rowvals as $key => $value){
-		if(substr($key,0,4) == "ENT_")
+		if(substr($key,0,4) == "ENT_"){
 			$class = 'group1_td';
+		}
 		else if(substr($key,0,4) == "SHIP")
 			$class = 'group2_td';
 		else if(substr($key,0,4) == "SCHE")
