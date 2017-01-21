@@ -28,8 +28,43 @@ CARGO PLANNING
 #table_quality .td_plan {text-align:center;font-weight:bold}
 #table_quality .td_cal_balance {color:orange}
 #table_quality .td_monnth_bal {color:#360046; background:#f2c6ff}
+#table_quality .td_gen_cargo {text-align:center;color:white;cursor:pointer;background:#378de5}
+#table_quality .td_has_plan {border:1px solid #378de5}
 </style>
 <script>
+	function genCargoEntry(obj){
+		var values = [];
+		if(obj == undefined){
+			$(".td_gen_cargo").each(function(){
+				var x = $(this).attr('gen_cargo');
+				if(x != undefined && x != "" && x != null){
+					//console.log(x);
+					values.push(JSON.parse($(this).attr('gen_cargo')));
+				}
+			});
+		}
+		else{
+			values.push(JSON.parse($(obj).attr('gen_cargo')));
+		}
+		if(values.length>0){
+			var texts = "";
+			$.each(values, function( index, value ) {
+				texts += value.req_date+" \t\t  "+value.qty+"\n";
+			});		
+			if(confirm("Generate new Cargo Entry?\n"+texts)){
+				var post_data = "cargo_data="+JSON.stringify(values);
+				//console.log(post_data);
+				$.post("/pd/cargoplanning_gen_cargo.php",
+				post_data,
+				function(data, status){
+					alert(data==""?"Success":data);
+				}).fail(function(data) {
+					alert("Can not generate Cargo Entry");
+				});
+			}
+		}
+	}
+
 	function txt_balance_keypress(e){
 		if (e.keyCode == 13) {
 			actions.doLoad(true);

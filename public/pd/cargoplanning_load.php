@@ -113,12 +113,12 @@ while($row=mysql_fetch_assoc($result)){
 	$la_data["$row[OCCUR_DATE]"]["$row[LIFTING_ACCOUNT_ID]"] = $row["flow_qty"];
 }
 //echo "xxx".count($la_data); exit();
-echo '<thead><tr>
-	<td colspan="3" rowspan="2" style="background:#dddddd"><b>Open balance &gt; </b><input id="txt_balance" name="txt_balance" value="'.$balance.'" style="width:100px" onkeypress="return txt_balance_keypress(event)"></td>
+echo '<thead><tr height="40">
+	<td colspan="3" rowspan="1" style="background:#dddddd"><b>Open balance &gt; </b><input id="txt_balance" name="txt_balance" value="'.$balance.'" style="width:100px" onkeypress="return txt_balance_keypress(event)"></td>
 	<td colspan="'.count($ent_r1).'" class="group1_th"><b>Entitlement</b></td>
 	<td colspan="'.count($shipper_r1).'" class="group2_th"><b>Planned Cargo</b></td>
 	<td colspan="'.count($ent_r1).'" class="group3_th"><b>Scheduled Cargo</b></td>
-</tr><tr>';
+</tr><tr><td style="background:#dddddd"></td><td colspan="2" class="td_gen_cargo" onclick="genCargoEntry()">Generate All Cargo Entry</td>';
 foreach($ent_r1 as $id => $name){
 	echo "<td id='ent_la_{$id}' class='group1_th'>$name</td>";
 }
@@ -129,9 +129,9 @@ foreach($ent_r1 as $id => $name){
 	echo "<td id='sche_la_{$id}' class='group3_th'>$name</td>";
 }
 echo '</tr><tr>
-	<td rowspan="2" style="background:#cccccc"><b>Date</b></td>
-	<td rowspan="2" style="background:#cccccc"><b>Openning balance</b></td>
-	<td rowspan="2" style="background:#cccccc"><b>Plan cargo</b></td>
+	<td rowspan="2" style="background:#dddddd"><b>Date</b></td>
+	<td rowspan="2" style="background:#dddddd"><b>Openning balance</b></td>
+	<td rowspan="2" style="background:#dddddd"><b>Plan cargo</b></td>
 ';
 foreach($ent_r2 as $id => $name){
 	echo "<td id='ent_ba_{$id}' class='group1_th'>$name</td>";
@@ -187,7 +187,8 @@ while(strtotime($d1) <= strtotime($d2)){
 		$row["OPENING_BALANCE"] = "";
 	}
 	else if($rowx["SQL_OCCUR_DATE"] == $d1){
-		$row = $rowx;
+		$row["OCCUR_DATE"] = $rowx["OCCUR_DATE"];
+		$row["OPENING_BALANCE"] = $rowx["OPENING_BALANCE"];
 		$rowx=mysql_fetch_assoc($result);
 	}
 	
@@ -270,6 +271,7 @@ while(strtotime($d1) <= strtotime($d2)){
 					$shipper_max_id = $id;
 				}
 			}
+			$max = -1;
 			if($shipper_max_id > 0){
 				$highlight[] = "SHIPPER_$shipper_max_id";
 				foreach($shipper_la["$shipper_max_id"] as $key => $la_id){
@@ -277,6 +279,10 @@ while(strtotime($d1) <= strtotime($d2)){
 					$dx = round($cargo_sizes["$shipper_max_id"]*$interest_percents["$la_id"]/$shipper_total_pct["$shipper_max_id"],2);
 					$rowvals["SCHE_LA_$la_id"] = $dx;
 					$highlight[] = "ENT_LA_$la_id";
+					if($dx > $max){
+						$max = $dx;
+						$rowvals["GEN_CARGO"] = "{\"la_id\":\"$la_id\",\"storage_id\":\"$storage_id\",\"req_date\":\"$d1\",\"qty\":\"$dx\"}";
+					}
 				}
 				$last_minus = $cargo_sizes["$shipper_max_id"];
 			}
@@ -322,6 +328,8 @@ while(strtotime($d1) <= strtotime($d2)){
 	}
 	echo "<tr>";
 	foreach($rowvals as $key => $value){
+		if($key=="GEN_CARGO") continue;
+		$rowspan = "";
 		if(substr($key,0,4) == "ENT_"){
 			$class = 'group1_td';
 		}
@@ -331,6 +339,11 @@ while(strtotime($d1) <= strtotime($d2)){
 			$class = 'group3_td';
 		else
 			$class = "";
+		if($rowvals["PLAN"]=="Y" && $rowvals["GEN_CARGO"]){
+			$class .= ($class==""?"":" ")."td_has_plan";
+			if($key != "BALANCE" && $key != "PLAN")
+				$rowspan = 2;
+		}
 		if($key=="BALANCE" && !$row["OPENING_BALANCE"])
 			$class .= ($class==""?"":" ")."td_cal_balance";
 		if($key == "PLAN")
@@ -338,9 +351,12 @@ while(strtotime($d1) <= strtotime($d2)){
 		if (in_array($key, $highlight))
 			$class .= ($class==""?"":" ")."td_highlight";
 			
-		echo "<td class='$class'".($rowvals["PLAN"]=="Y"?" style='border:2px solid #378de5'":"").">$value</td>";
+		echo "<td class='$class'".($rowspan>1?" rowspan='$rowspan'":"").">$value</td>";
 	}
 	echo "</tr>";
+	if($rowvals["GEN_CARGO"]){
+		echo "<tr><td class='td_gen_cargo' gen_cargo='$rowvals[GEN_CARGO]' colspan='2' onclick=\"genCargoEntry(this)\">Create Cargo Entry</td></tr>";
+	}
 	if($shipper_max_id > 0){
 		foreach($shipper_la["$shipper_max_id"] as $key => $la_id){
 			//$dx = $cargo_sizes["$shipper_max_id"]/count($shipper_la["$shipper_max_id"]);
