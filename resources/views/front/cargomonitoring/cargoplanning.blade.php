@@ -53,7 +53,7 @@ CARGO PLANNING
 			var texts = "";
 			var storage_name = $("#Storage option:selected").text();
 			$.each(values, function( index, value ) {
-				texts += "<tr><td>"+storage_name+"</td><td>"+value.shipper_name+"</td><td>"+value.la_name+"</td><td>"+value.req_date+"</td><td>"+value.qty+"</td></tr>";
+				texts += "<tr><td>"+storage_name+"</td><td>"+value.shipper_name+"</td><td>"+value.la_name+"</td><td>"+value.req_date_disp+"</td><td>"+value.qty+"</td></tr>";
 				//texts += storage_name+" \t\t\t  "+value.shipper_name+" \t\t\t  "+value.la_name+" \t\t\t  "+value.req_date+" \t\t  "+value.qty+"\n";
 			});
 			$( "#confirm_cargo tbody" ).html(texts);

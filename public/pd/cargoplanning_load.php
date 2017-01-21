@@ -288,7 +288,7 @@ while(strtotime($d1) <= strtotime($d2)){
 						$max_la_id = $la_id;
 					}
 				}
-				$rowvals["GEN_CARGO"] = "{\"la_name\":\"".$ent_r1[$max_la_id]."\",\"shipper_name\":\"".$shipper_r1[$shipper_max_id]."\",\"la_id\":\"$max_la_id\",\"storage_id\":\"$storage_id\",\"req_date\":\"$d1\",\"qty\":\"$sum\"}";
+				$rowvals["GEN_CARGO"] = "{\"la_name\":\"".$ent_r1[$max_la_id]."\",\"shipper_name\":\"".$shipper_r1[$shipper_max_id]."\",\"la_id\":\"$max_la_id\",\"storage_id\":\"$storage_id\",\"req_date\":\"$d1\",\"req_date_disp\":\"$rowvals[OCCUR_DATE]\",\"qty\":\"$sum\"}";
 				$last_minus = $cargo_sizes["$shipper_max_id"];
 			}
 		}
