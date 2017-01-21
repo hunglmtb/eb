@@ -131,7 +131,7 @@ LIFTING ACCT DAILY BALANCE
 			var liftingAccount	= $("#PdLiftingAccount option:selected").text();
 			var texts			= "";
 			$.each(values, function( index, value ) {
-		        texts						+= liftingAccount+" \t\t "+value.dateString+" \t\t  "+value.BAL_VOL+"\n";
+		        texts						+= liftingAccount+"  "+value.dateString+"   "+value.BAL_VOL+"\n";
 		        value.LIFTING_ACCOUNT_ID 	= $("#PdLiftingAccount option:selected").val();
 		        value.ADJUST_CODE 			= 2;
 		        value.COMMENT 				= "Generate new Monthly Balance";
