@@ -11,7 +11,7 @@ CARGO PLANNING
 
 @section('adaptData')
 @parent
-<div id="confirm_cargo" style="display:none"></div>
+<div id="confirm_cargo" style="display:none"><table width='100%'><thead><tr><th>Storage</th><th>Shipper</th><th>Lifting Account</th><th>Request Date</th><th>Quantity</th></tr></thead><tbody></tbody></table></div>
 <style>
 #table_quality th div{width:100px;font-size:10pt}
 #table_quality thead td{text-align:center}
@@ -56,7 +56,7 @@ CARGO PLANNING
 				texts += "<tr><td>"+storage_name+"</td><td>"+value.shipper_name+"</td><td>"+value.la_name+"</td><td>"+value.req_date+"</td><td>"+value.qty+"</td></tr>";
 				//texts += storage_name+" \t\t\t  "+value.shipper_name+" \t\t\t  "+value.la_name+" \t\t\t  "+value.req_date+" \t\t  "+value.qty+"\n";
 			});
-			$( "#confirm_cargo" ).html("<table width='100%'>"+texts+"</table>");
+			$( "#confirm_cargo tbody" ).html(texts);
 			$( "#confirm_cargo" ).dialog({
 				  title: "Confirm Generate Cargo Entry",
 				  modal: true,
