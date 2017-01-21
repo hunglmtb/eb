@@ -113,12 +113,12 @@ while($row=mysql_fetch_assoc($result)){
 	$la_data["$row[OCCUR_DATE]"]["$row[LIFTING_ACCOUNT_ID]"] = $row["flow_qty"];
 }
 //echo "xxx".count($la_data); exit();
-echo '<thead><tr height="40">
-	<td colspan="3" rowspan="1" style="background:#dddddd"><b>Open balance &gt; </b><input id="txt_balance" name="txt_balance" value="'.$balance.'" style="width:100px" onkeypress="return txt_balance_keypress(event)"></td>
+echo '<thead><tr>
+	<td colspan="3" rowspan="2" style="background:#dddddd"><b>Open balance &gt; </b><input id="txt_balance" name="txt_balance" value="'.$balance.'" style="width:100px" onkeypress="return txt_balance_keypress(event)"></td>
 	<td colspan="'.count($ent_r1).'" class="group1_th"><b>Entitlement</b></td>
-	<td colspan="'.count($shipper_r1).'" class="group2_th"><b>Planned Cargo</b></td>
+	<td colspan="'.count($shipper_r1).'" class="group2_th"><b>Planned Cargo</b><br><input type="button" style="font-weight:normal;font-size:8pt;height:10px" onclick="genCargoEntry()" value="Generate All Cargo Entry"></td>
 	<td colspan="'.count($ent_r1).'" class="group3_th"><b>Scheduled Cargo</b></td>
-</tr><tr><td style="background:#dddddd"></td><td colspan="2" class="td_gen_cargo" onclick="genCargoEntry()">Generate All Cargo Entry</td>';
+</tr><tr>';
 foreach($ent_r1 as $id => $name){
 	echo "<td id='ent_la_{$id}' class='group1_th'>$name</td>";
 }
@@ -259,6 +259,7 @@ while(strtotime($d1) <= strtotime($d2)){
 	$shipper_max_id = -1;
 	$highlight = [];
 	$last_minus = 0;
+	$rowvals["GEN_CARGO"] = "";
 	if($balance > 0){
 		if($rowvals["BALANCE"] > $balance){
 			$rowvals["PLAN"] = "Y";
@@ -280,8 +281,8 @@ while(strtotime($d1) <= strtotime($d2)){
 					$rowvals["SCHE_LA_$la_id"] = $dx;
 					$highlight[] = "ENT_LA_$la_id";
 					if($dx > $max){
+						$rowvals["GEN_CARGO"] = "{\"la_name\":\"".$ent_r1[$la_id]."\",\"la_id\":\"$la_id\",\"storage_id\":\"$storage_id\",\"req_date\":\"$d1\",\"qty\":\"".$rowvals["SHIPPER_$shipper_max_id"]."\"}";
 						$max = $dx;
-						$rowvals["GEN_CARGO"] = "{\"la_id\":\"$la_id\",\"storage_id\":\"$storage_id\",\"req_date\":\"$d1\",\"qty\":\"$dx\"}";
 					}
 				}
 				$last_minus = $cargo_sizes["$shipper_max_id"];
@@ -339,10 +340,13 @@ while(strtotime($d1) <= strtotime($d2)){
 			$class = 'group3_td';
 		else
 			$class = "";
-		if($rowvals["PLAN"]=="Y" && $rowvals["GEN_CARGO"]){
+		/*if($rowvals["PLAN"]=="Y" && $rowvals["GEN_CARGO"]){
 			$class .= ($class==""?"":" ")."td_has_plan";
 			if($key != "BALANCE" && $key != "PLAN")
 				$rowspan = 2;
+		}*/
+		if($rowvals["PLAN"]=="Y"){
+			$class .= ($class==""?"":" ")."td_has_plan";
 		}
 		if($key=="BALANCE" && !$row["OPENING_BALANCE"])
 			$class .= ($class==""?"":" ")."td_cal_balance";
@@ -350,13 +354,15 @@ while(strtotime($d1) <= strtotime($d2)){
 			$class .= ($class==""?"":" ")."td_plan";
 		if (in_array($key, $highlight))
 			$class .= ($class==""?"":" ")."td_highlight";
-			
+		if($key=="SHIPPER_$shipper_max_id"){
+			$value = "<div title='Generate Cargo Entry' gen_cargo='$rowvals[GEN_CARGO]' onclick=\"genCargoEntry(this)\" class='box_gen_cargo'>GC</div>".$value;
+		}
 		echo "<td class='$class'".($rowspan>1?" rowspan='$rowspan'":"").">$value</td>";
 	}
 	echo "</tr>";
-	if($rowvals["GEN_CARGO"]){
+/*	if($rowvals["GEN_CARGO"]){
 		echo "<tr><td class='td_gen_cargo' gen_cargo='$rowvals[GEN_CARGO]' colspan='2' onclick=\"genCargoEntry(this)\">Create Cargo Entry</td></tr>";
-	}
+	}*/
 	if($shipper_max_id > 0){
 		foreach($shipper_la["$shipper_max_id"] as $key => $la_id){
 			//$dx = $cargo_sizes["$shipper_max_id"]/count($shipper_la["$shipper_max_id"]);
