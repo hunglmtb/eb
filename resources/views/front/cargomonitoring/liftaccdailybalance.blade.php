@@ -114,11 +114,11 @@ LIFTING ACCT DAILY BALANCE
 							        actions.addClass2Header(table);
 
 							        if(insertValues.length>0){
-							        	var insertButton 	= $('<button class="" style="margin-left:5px">Generate L.A.Bal.</button>');
+							        	var insertButton 	= $('<button class="" style="margin-right:5px">Generate L.A.Bal.</button>');
 						                insertButton.click(function(){
 						                	actions.insertMonthlyBalance(insertValues);
 							            });
-						                insertButton.appendTo($('.dataTables_scrollHeadInner thead th.cal_qty'));
+						                insertButton.prependTo($('.dataTables_scrollHeadInner thead th.cal_qty'));
 							        }
 						        },
 							},
