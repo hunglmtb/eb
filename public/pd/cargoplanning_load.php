@@ -116,8 +116,8 @@ while($row=mysql_fetch_assoc($result)){
 echo '<thead><tr>
 	<td colspan="3" rowspan="2" style="background:#dddddd"><b>Open balance &gt; </b><input id="txt_balance" name="txt_balance" value="'.$balance.'" style="width:100px" onkeypress="return txt_balance_keypress(event)"></td>
 	<td colspan="'.count($ent_r1).'" class="group1_th"><b>Entitlement</b></td>
-	<td colspan="'.count($shipper_r1).'" class="group2_th"><b>Planned Cargo</b><br><input type="button" style="font-weight:normal;font-size:8pt;height:10px" onclick="genCargoEntry()" value="Generate All Cargo Entry"></td>
-	<td colspan="'.count($ent_r1).'" class="group3_th"><b>Scheduled Cargo</b></td>
+	<td colspan="'.count($shipper_r1).'" class="group2_th"><b>Plan Cargo</b><br><input type="button" style="font-weight:normal;font-size:8pt;height:10px" onclick="genCargoEntry()" value="Generate All Cargo Entry"></td>
+	<td colspan="'.count($ent_r1).'" class="group3_th"><b>Schedule Cargo</b></td>
 </tr><tr>';
 foreach($ent_r1 as $id => $name){
 	echo "<td id='ent_la_{$id}' class='group1_th'>$name</td>";
@@ -272,19 +272,23 @@ while(strtotime($d1) <= strtotime($d2)){
 					$shipper_max_id = $id;
 				}
 			}
-			$max = -1;
 			if($shipper_max_id > 0){
 				$highlight[] = "SHIPPER_$shipper_max_id";
+				$max = -1;
+				$max_la_id = -1;
+				$sum = 0;
 				foreach($shipper_la["$shipper_max_id"] as $key => $la_id){
 					//$dx = $cargo_sizes["$shipper_max_id"]/count($shipper_la["$shipper_max_id"]);
 					$dx = round($cargo_sizes["$shipper_max_id"]*$interest_percents["$la_id"]/$shipper_total_pct["$shipper_max_id"],2);
 					$rowvals["SCHE_LA_$la_id"] = $dx;
 					$highlight[] = "ENT_LA_$la_id";
+					$sum += $dx;
 					if($dx > $max){
-						$rowvals["GEN_CARGO"] = "{\"la_name\":\"".$ent_r1[$la_id]."\",\"shipper_name\":\"".$shipper_r1[$shipper_max_id]."\",\"la_id\":\"$la_id\",\"storage_id\":\"$storage_id\",\"req_date\":\"$d1\",\"qty\":\"".$rowvals["SHIPPER_$shipper_max_id"]."\"}";
 						$max = $dx;
+						$max_la_id = $la_id;
 					}
 				}
+				$rowvals["GEN_CARGO"] = "{\"la_name\":\"".$ent_r1[$max_la_id]."\",\"shipper_name\":\"".$shipper_r1[$shipper_max_id]."\",\"la_id\":\"$max_la_id\",\"storage_id\":\"$storage_id\",\"req_date\":\"$d1\",\"qty\":\"$sum\"}";
 				$last_minus = $cargo_sizes["$shipper_max_id"];
 			}
 		}
