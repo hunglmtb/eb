@@ -281,7 +281,7 @@ while(strtotime($d1) <= strtotime($d2)){
 					$rowvals["SCHE_LA_$la_id"] = $dx;
 					$highlight[] = "ENT_LA_$la_id";
 					if($dx > $max){
-						$rowvals["GEN_CARGO"] = "{\"la_name\":\"".$ent_r1[$la_id]."\",\"la_id\":\"$la_id\",\"storage_id\":\"$storage_id\",\"req_date\":\"$d1\",\"qty\":\"".$rowvals["SHIPPER_$shipper_max_id"]."\"}";
+						$rowvals["GEN_CARGO"] = "{\"la_name\":\"".$ent_r1[$la_id]."\",\"shipper_name\":\"".$shipper_r1[$shipper_max_id]."\",\"la_id\":\"$la_id\",\"storage_id\":\"$storage_id\",\"req_date\":\"$d1\",\"qty\":\"".$rowvals["SHIPPER_$shipper_max_id"]."\"}";
 						$max = $dx;
 					}
 				}

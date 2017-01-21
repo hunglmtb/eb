@@ -51,7 +51,7 @@ CARGO PLANNING
 			var texts = "";
 			var storage_name = $("#Storage option:selected").text();
 			$.each(values, function( index, value ) {
-				texts += storage_name+" \t\t\t  "+value.la_name+" \t\t\t  "+value.req_date+" \t\t  "+value.qty+"\n";
+				texts += storage_name+" \t\t\t  "+value.shipper_name+" \t\t\t  "+value.la_name+" \t\t\t  "+value.req_date+" \t\t  "+value.qty+"\n";
 			});		
 			if(confirm("Generate new Cargo Entry?\n"+texts)){
 				var post_data = "cargo_data="+JSON.stringify(values);
