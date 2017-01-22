@@ -13,15 +13,15 @@ class ReportController extends Controller {
 	}
 	
 	public function _index() {
-		/* $facility = Facility::whereIn('ID', [18,19])->get ( [ 
+		$facility = Facility::whereIn('ID', [18,19])->get ( [ 
 				'ID',
 				'NAME' 
-		] ); */
+		] );
 		
-		$facility = Facility::get ( [
+		/* $facility = Facility::get ( [
 				'ID',
 				'NAME'
-		] );
+		] ); */
 		
 		$fogroup = FoGroup::get ( [
 				'ID',
