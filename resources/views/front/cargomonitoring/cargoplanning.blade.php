@@ -11,6 +11,7 @@ CARGO PLANNING
 
 @section('adaptData')
 @parent
+<div id="confirm_cargo" style="display:none"><table width='100%'><thead><tr><th>Storage</th><th>Shipper</th><th>Lifting Account</th><th>Request Date</th><th>Quantity</th></tr></thead><tbody></tbody></table></div>
 <style>
 #table_quality th div{width:100px;font-size:10pt}
 #table_quality thead td{text-align:center}
@@ -28,8 +29,72 @@ CARGO PLANNING
 #table_quality .td_plan {text-align:center;font-weight:bold}
 #table_quality .td_cal_balance {color:orange}
 #table_quality .td_monnth_bal {color:#360046; background:#f2c6ff}
+#table_quality .td_gen_cargo {text-align:center;color:white;cursor:pointer;background:#378de5}
+#table_quality .td_has_plan {border:1px solid #378de5}
+#table_quality .box_gen_cargo {cursor:pointer;position:absolute;background:#378de5;color:white;width:25px;text-align:center}
+#confirm_cargo td{padding-right:30px}
 </style>
 <script>
+	function genCargoEntry(obj){
+		var values = [];
+		if(obj == undefined){
+			$(".box_gen_cargo").each(function(){
+				var x = $(this).attr('gen_cargo');
+				if(x != undefined && x != "" && x != null){
+					//console.log(x);
+					values.push(JSON.parse($(this).attr('gen_cargo')));
+				}
+			});
+		}
+		else{
+			values.push(JSON.parse($(obj).attr('gen_cargo')));
+		}
+		if(values.length>0){
+			var texts = "";
+			var storage_name = $("#Storage option:selected").text();
+			$.each(values, function( index, value ) {
+				texts += "<tr><td>"+storage_name+"</td><td>"+value.shipper_name+"</td><td>"+value.la_name+"</td><td>"+value.req_date_disp+"</td><td>"+value.qty+"</td></tr>";
+				//texts += storage_name+" \t\t\t  "+value.shipper_name+" \t\t\t  "+value.la_name+" \t\t\t  "+value.req_date+" \t\t  "+value.qty+"\n";
+			});
+			$( "#confirm_cargo tbody" ).html(texts);
+			$( "#confirm_cargo" ).dialog({
+				  title: "Confirm Generate Cargo Entry",
+				  modal: true,
+				  width:700,
+				  buttons: {
+					"Generate": function(){
+						var post_data = "cargo_data="+JSON.stringify(values);
+						//console.log(post_data);
+						$.post("/pd/cargoplanning_gen_cargo.php",
+						post_data,
+						function(data, status){
+							alert(data==""?"Success":data);
+						}).fail(function(data) {
+							alert("Can not generate Cargo Entry");
+						});
+						$( this ).dialog( "close" );
+					},
+					Cancel: function() {
+					  $( this ).dialog( "close" );
+					}
+				  }
+				});	
+	/*
+			if(confirm("Generate new Cargo Entry?\n"+texts)){
+				var post_data = "cargo_data="+JSON.stringify(values);
+				//console.log(post_data);
+				$.post("/pd/cargoplanning_gen_cargo.php",
+				post_data,
+				function(data, status){
+					alert(data==""?"Success":data);
+				}).fail(function(data) {
+					alert("Can not generate Cargo Entry");
+				});
+			}
+			*/
+		}
+	}
+
 	function txt_balance_keypress(e){
 		if (e.keyCode == 13) {
 			actions.doLoad(true);
