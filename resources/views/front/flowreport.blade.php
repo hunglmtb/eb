@@ -213,10 +213,10 @@ var _report = {
 			<strong>Choose report&nbsp;&nbsp;</strong> <select size="1"
 				style="font-size: 11pt; width: 400px" name="cboReports"
 				id="cboReports" onchange="_report.loadCondition('cboReports')">
-				<option value="1">Mereenie Production Summary Report</option>
-				<option value="2">Mereenie Summary Report</option>
-				<option value="11">Mereenie Monthly Production Report</option>
-				<option value="12">Mereenie Monthly Injection Report</option>
+				<option value="1">Marine Production Summary Report</option>
+				<option value="2">Marine Summary Report</option>
+				<option value="11">Marine Monthly Production Report</option>
+				<option value="12">Marine Monthly Injection Report</option>
 				<option value="13">Welltest report</option>
 				<option value="3">Welltest summary</option>
 				<option value="4">Morning report</option>
