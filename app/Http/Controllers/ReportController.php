@@ -18,6 +18,11 @@ class ReportController extends Controller {
 				'NAME' 
 		] );
 		
+		/* $facility = Facility::get ( [
+				'ID',
+				'NAME'
+		] ); */
+		
 		$fogroup = FoGroup::get ( [
 				'ID',
 				'NAME'

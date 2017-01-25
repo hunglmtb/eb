@@ -5,25 +5,11 @@ $host = ENV('DB_HOST');
 @extends('core.bsdiagram')
 @section('title')
 <div class="title">REPORTS</div>
-@stop @section('content')
+@stop 
 
+@section('content')
 <link rel="stylesheet" href="/common/css/admin.css">
 <script type="text/javascript">
-
-$(function(){
-	var ebtoken = $('meta[name="_token"]').attr('content');
-	$.ajaxSetup({
-		headers: {
-			'X-XSRF-Token': ebtoken
-		}
-	});
-
-	$('#pageheader').css('display', 'none');
-	$('#cboReports').change();
-
-	_report.host = <?php echo $host;?>
-});
-
 var _report = {
 
 		host:'',
@@ -203,6 +189,23 @@ var _report = {
 			}
 		}
 }
+
+
+$(function(){
+	$('#pageheader').css('display', 'none');
+	$('#cboReports').change();
+	
+	var ebtoken = $('meta[name="_token"]').attr('content');
+	$.ajaxSetup({
+		headers: {
+			'X-XSRF-Token': ebtoken
+		}
+	});
+
+
+	//_report.host = '<?php echo $host;?>';
+});
+
 </script>
 
 <body style="margin: 0; overflow-x: hidden">
