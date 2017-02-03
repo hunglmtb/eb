@@ -23,7 +23,7 @@
 		
 		editBox.initExtraPostData = function (id,rowData,url){
 		 		return 	{id:id};
-		 	}
+		 }
 
 		editBox.getSaveDetailUrl = function (url,editId,viewId){
 	 		return 	editBox.saveUrl;

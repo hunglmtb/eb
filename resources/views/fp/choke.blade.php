@@ -12,7 +12,7 @@
  							"data"	=>	["isFilterModify"	=> true,
  										"isAction"			=> $isAction]],
  	];
- 	$filterGroups	= \Helper::getCommonGroupFilter();
+	$filterGroups	= isset($editFilters)?$editFilters:\Helper::getCommonGroupFilter();
  	if(isset($filterGroups['dateFilterGroup'])) unset($filterGroups['dateFilterGroup']);
 //  	$tables = ['ConstraintDiagram'	:['name':'Constraint Diagram']];
  ?>

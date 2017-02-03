@@ -4,10 +4,9 @@ use App\Models\EbBussinessModel;
 
  class Deferment extends EbBussinessModel 
 { 
-	protected $table = 'DEFERMENT';
-	protected $primaryKey = 'ID';
-	protected $dates = ['END_TIME','BEGIN_TIME'];
-	protected $fillable  = ['CODE', 
+	protected $table 	= 'DEFERMENT';
+	protected $dates 	= ['END_TIME','BEGIN_TIME'];
+	protected $fillable = ['CODE', 
 							'NAME', 
 							'FACILITY_ID', 
 							'EU_ID', 

@@ -53,15 +53,19 @@
 		return html;
 	};
 
+	actions.renderEditFilter	= function(rowData){
+	    var list = editBox.renderObjectsList(rowData.OBJECTS);
+		$("#objectList").html("");
+	    $("#objectList").addClass("product_filter");
+	    $("#editBoxContentview").css("float","left");
+	    $("#editBoxContentview").css("width","54%");
+	    list.appendTo($("#objectList"));
+	}
+	
 	var addMoreHandle	= function ( table,rowData,td,tab) {
 		var id = rowData['DT_RowId'];
 		var moreFunction = function(e){
-		    var list = editBox.renderObjectsList(rowData.OBJECTS);
-		    $("#objectList").html("");
-		    $("#objectList").addClass("product_filter");
-		    $("#editBoxContentview").css("float","left");
-		    $("#editBoxContentview").css("width","54%");
-		    list.appendTo($("#objectList"));
+		    actions.renderEditFilter(rowData);
 
 		    $("button[id=actionsavefilter]").remove();
 		    var actionsBtn = $("<button id ='actionsavefilter' class='myButton' style='width: 61px;float:right'>Save</button>");
