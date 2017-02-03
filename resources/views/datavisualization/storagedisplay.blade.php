@@ -8,6 +8,22 @@
 
 @extends('fp.choke')
 
+@section('secondary_action_extra')
+	<div class="product_filter" style="width: 97%;">
+		<table class="clearBoth" style="width: inherit;">
+			<tr>
+				<td align="right" colspan="1">
+					<button id="updateFilterBtn" class="myButton"onclick="editBox.finishSelectingObjects(true)" style="width: 61px">Done</button>
+				</td>
+			</tr>
+		</table>
+	</div>
+@stop
+
+
+@section('extra_editBoxContentview')
+@stop
+
 @section('graph_extra_view')
 <div style="
  	overflow: auto;    
@@ -24,7 +40,7 @@
 @section('action_extra')
 	@include('partials.diagram_action')
 	<script>
-		editBox.loadUrl = "/choke/filter";
+		editBox.loadUrl = "/storagedisplay/filter";
 	 	editBox.buildTableProperties = function (constrain){
 		 	var chartypes	= [	{ID	: "column", 	NAME	: "Column"},
 								{ID	: "line", 		NAME	: "Line"},
@@ -32,29 +48,28 @@
 			 	             	{ID	: "area", 		NAME	: "Area"},
 			 	             	{ID	: "areaspline", NAME	: "Curved Area"},
 		 	             	 ];
-		 	var plotItems 	= <?php echo json_encode($plotItems); ?>;
 	 	 	var first		= {};
-	 	 	first.width		= 60;
-	 	 	first.title		= "Action";
+	 	 	first.width		= 120;
+	 	 	first.title		= "Plot name";
 	 	 	first.data		= "ID";
 	 		var properties 	= [
 								first,
-	 	 		  				{	'data' 		: 'PlotViewConfig',
+	 	 		  				/* {	'data' 		: 'PlotViewConfig',
 	 	 		  					'title' 	: 'Plot name'  ,
 	 	 		  					'width'		: 120,
 	 	 		  					'INPUT_TYPE': 2,
 	 	 		  					DATA_METHOD	: 1,
 	 	 		  					columnDef	: {data	: plotItems},
-	 	 		  				},
+	 	 		  				}, */
 	 	 		  				{	'data' 		: 'FROM_DATE',
 	 	 		  					'title' 	: 'From date'  ,
-	 	 		  					'width'		: 100,
+	 	 		  					'width'		: 110,
 	 	 		  					'INPUT_TYPE': 3,
 	 	 		  					DATA_METHOD	: 1
 	 	 		  				},
 	 	 		  				{	'data' 		: 'TO_DATE',
 	 	 		  					'title' 	: 'To date'  ,
-	 	 		  					'width'		: 100,
+	 	 		  					'width'		: 110,
 	 	 		  					'INPUT_TYPE': 3,
 	 	 		  					DATA_METHOD	: 1
 	 	 		  				},
@@ -111,10 +126,11 @@
 <script>
 	actions.loadUrl = "/storagedisplay/load";
 	actions.saveUrl = "/storagedisplay/save";
+ 	var plotItems 	= <?php echo json_encode($plotItems); ?>;
 
 	actions['doMoreAddingRow'] = function(addingRow){
- 		addingRow['FROM_DATE'] 	= moment.utc($("#date_begin").val());
- 		addingRow['TO_DATE'] 	= moment.utc($("#date_end").val());
+ 		addingRow['FROM_DATE'] 	= /* getJsDate($("#date_begin").val()); */moment.utc($("#date_begin").val(),configuration.time.DATE_FORMAT);//moment.utc($("#date_begin").val());
+ 		addingRow['TO_DATE'] 	= /* getJsDate($("#date_end").val()); */moment.utc($("#date_end").val(),configuration.time.DATE_FORMAT);//moment.utc($("#date_end").val());
 		return addingRow;
 	}
 	
@@ -155,7 +171,6 @@
 			func();
 		}
 	};
-
 </script>
 @stop
 
@@ -244,7 +259,7 @@
 							return;
 						break;
 					}
-					if(typeof opreOnchange == "function" ) opreOnchange(id, dependentIds,more);
+					if(typeof opreOnchange == "function" && $("#"+id).is(":visible")) opreOnchange(id, dependentIds,more);
 				};
 </script>
 @stop
@@ -252,14 +267,26 @@
 @section('endDdaptData')
 @parent
 <script>
-	actions.renderFirsColumn = actions.deleteActionColumn;
+	actions.renderFirsColumn  = function ( data, type, rowData ) {
+		var id = rowData['DT_RowId'];
+		var html = '<a id="delete_row_'+id+'" class="actionLink" onclick="actions.deleteItemRow(\''+id+'\')">Delete</a>';;
+		var plotViewConfig	= parseFloat(rowData.PlotViewConfig);
+		var plotName 	= 'Select';
+		if(!isNaN(plotViewConfig)){
+			var result = $.grep(plotItems, function(e){ 
+           	 	return e.ID == rowData.PlotViewConfig;
+            });
+		    if (result.length > 0) plotName 	= result[0].NAME;
+		}
+		html += '<a id="edit_plot_item_'+id+'" class="actionLink clickable" onclick="actions.editPlotItem(\''+id+'\',this)">'+plotName+'</a>';
+		return html;
+	};
+	
 	editBox.updateDiagramRowValue = function( index, row) {
-// 		currentDiagram.MID_DATE		= $("#date_middle").val();
 		row.FROM_DATE		= moment.utc(row.FROM_DATE).format(configuration.time.DATE_FORMAT_UTC);
 		row.TO_DATE			= moment.utc(row.TO_DATE).format(configuration.time.DATE_FORMAT_UTC);
 	};
 	editBox.updateCurrentDiagramData = function( rows,convertJson) {
-// 		currentDiagram.YCAPTION	= $(".dataTables_scrollHeadInner table thead th.YCAPTION:first").text();
 	};
 
 	editBox.initNewDiagram = function(){
@@ -269,6 +296,50 @@
 			TITLE		: ''
 		};
 	}
+
+	actions.editPlotItem = function(id,element){
+	    editBox.editRow(id,{},editBox.loadUrl);
+	}
+
+	actions.deleteItemRow 	= function(id){
+		var tab				= '{{$tableTab}}';
+		var table			= $('#table_{{$tableTab}}').DataTable();
+		var row 			= table.row('#'+id);
+	    var rowData 		= row.data();
+		actions.deleteRowFunction(table,rowData,tab);
+	}
+	
+	
+	var currentId = null;
+// 	var oInitExtraPostData 	= editBox.initExtraPostData;
+	
+	editBox.initExtraPostData = function (id,element){
+		currentId = id;
+		var row = $('#table_{{$tableTab}}').DataTable().row('#'+currentId);
+	    var rowData = row.data();
+		var postData	= {id	: currentId};
+		jQuery.extend(postData, rowData.editFilterData);
+		
+		return 	postData;
+	};
+	
+	editBox.editSelectedObjects = function (dataStore,resultText,x){
+		if(currentId!=null) {
+			var row = $('#table_{{$tableTab}}').DataTable().row('#'+currentId);
+		    var rowData = row.data();
+			rowData.PlotViewConfig = dataStore.PlotViewConfig;
+			rowData.editFilterData = dataStore;
+			row.data(rowData).draw();
+		}
+	};
+	
+	actions.renderEditFilter	= function(rowData){
+	}
+
+	editBox.size = {
+			height 	: 350,
+			width 	: 500,
+		};
 </script>
 @stop
 

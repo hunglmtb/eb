@@ -79,10 +79,12 @@ class ProductDeliveryController extends CodeController {
 	public function storagedisplay() {
 		$filterGroups						= static::storagedisplayFilter();
 		$filterGroups['dateFilterGroup']	= [['id'=>'date_begin','name'=>'From date'],
-// 												['id'=>'date_middle','name'=>'Middle date'],
 												['id'=>'date_end','name'=>'To date']
 											];
-		return view ( 'datavisualization.storagedisplay',['filters'=>$filterGroups]);
+		return view ( 'datavisualization.storagedisplay',[
+				'filters'		=> $filterGroups,
+				'editFilters'	=> $filterGroups,
+		]);
 	}
 	
 	public function cargodocuments() {

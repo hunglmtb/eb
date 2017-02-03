@@ -515,3 +515,20 @@ table.dataTable thead .BAL_POWER,table.dataTable thead .ADJUST_POWER {
 .ui-dialog-titlebar{
 	min-height: 25px;
 }
+
+.editable-event, .input-append input{
+	width:auto;
+	max-width: 120px;
+}
+
+.weekDayLabel{
+	margin-right: 5px;
+}
+
+table.eventTable tbody td {
+    padding: 2px 4px;
+}
+
+input.datePickerInput{
+    max-width: 100px;
+}

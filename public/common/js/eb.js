@@ -204,8 +204,8 @@ var typetoclass = function (data){
 			return "checkbox";
 		case 6:
 			return "timepicker";
-		/*case 100:
-			return "color";*/
+		case 7:
+			return "EVENT";
 		default:
 			return data;
 	}
@@ -527,9 +527,10 @@ var actions = {
 			editable['type'] = type;
     	    editable['onblur'] = 'submit';
 			if (type=='date') {
-				editable['onblur'] 	= 'submit';
-				editable['format'] 	= configuration.picker.DATE_FORMAT_UTC;
-				editable			= actions.renderDatePicker(editable,columnName,cellData, rowData); 
+				editable['onblur'] 		= 'submit';
+				editable['format'] 		= configuration.picker.DATE_FORMAT_UTC;
+				editable				= actions.renderDatePicker(editable,columnName,cellData, rowData); 
+				editable['inputclass'] 	= "datePickerInput";
 //				editable['format'] = 'mm/dd/yyyy';
 //				editable['viewformat'] = 'mm/dd/yyyy';
 			}
@@ -541,12 +542,20 @@ var actions = {
 					editable['tpl'] = "<input class='cellnumber' type=\"text\" pattern=\"^[-]?[0-9]+([\.][0-9]{1,20})?\">";
 			}
 	    	break;
-	    	
+		case "EVENT":
+			editable['type'] 		= type;
+			editable['title'] 		= "";
+			editable['onblur'] 		= 'cancel';
+			editable['value'] 		= cellData;
+			editable['mode'] 		= "popup";
+			editable['placement'] 	= "left";
+			editable['showbuttons'] = true;
+	    	break;
 		case "datetimepicker":
-			editable['onblur'] = 'submit';
-			editable['type'] = 'datetime';
-			editable['format'] = configuration.picker.DATETIME_FORMAT_UTC;
-//			editable['format'] = 'mm/dd/yyyy hh:ii';
+			editable['onblur'] 	= 'submit';
+			editable['type'] 	= 'datetime';
+			editable['format'] 	= configuration.picker.DATETIME_FORMAT_UTC;
+//			editable['format'] 	= 'mm/dd/yyyy hh:ii';
 			editable['viewformat'] = configuration.picker.DATETIME_FORMAT;
 //			editable['viewformat'] = 'mm/dd/yyyy hh:ii';
 			editable['datetimepicker'] 	= 	{
@@ -633,6 +642,7 @@ var actions = {
     		  if(type=="timepicker") $(".table-condensed thead").css("visibility","hidden");
 //    		  $(".extension-buttons").css("display","none");
     		  $("#more_actions").html("");
+    		  if(typeof editable == "undefined") return;
     		  if(type=="number") {
 					$( editable.input.$input.get(0) ).closest( ".editable-container" ).css("float","right");
 					if (actions.historyUrl){
@@ -764,41 +774,37 @@ var actions = {
             $('[tabindex=' + (tabindex +1)+ ']').focus(); */
 	    };
 	},
-	extensionHandle		:	function(tab,columnName,rowData,limit,successFunction){
+	extensionHandle			:	function(tab,columnName,rowData,limit,successFunction){
+	},
+	deleteRowFunction		:	function(table,rowData,tab){
+		var id = rowData['DT_RowId'];
+		var isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
+		var rowData 	= table.row('#'+id).data();
+		var recordData 	= actions.deleteData;
+   		if (!(tab in recordData)) recordData[tab] = [];
+    	//remove in postdata
+    	var eData = recordData[tab];
+    	if(isAdding) {
+	    	var editedData = actions.editedData[tab];
+	    	if(editedData!=null){
+        		var result = $.grep(editedData, function(e){ 
+               	 	return e[actions.type.keyField] == rowData[actions.type.keyField];
+                });
+			    if (result.length > 0) editedData.splice( $.inArray(result[0], editedData), 1 );
+	    	}
+	   	}
+    	else{
+    		deleteObject = actions.initDeleteObject(tab,id,rowData);
+	    	eData.push(deleteObject);
+    	}
+        	//remove on table
+    	table.row('#'+id).remove().draw( false );
 	},
 	createdFirstCellColumnByTable : function(table,rowData,td,tab){
 		var id = rowData['DT_RowId'];
-		var isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
-
 		var deleteFunction = function(){
-			/*var r = table.fnGetPosition(td)[0];
-		    var rowData = table.api().data()[ r];*/
-		    var rowData = table.row('#'+id).data();
-   			var recordData = actions.deleteData;
-	   		if (!(tab in recordData)) {
-	    		recordData[tab] = [];
-	    	}
-	    	//remove in postdata
-        	var eData = recordData[tab];
-        	if(isAdding) {
-		    	var editedData = actions.editedData[tab];
-		    	if(editedData!=null){
-		        		var result = $.grep(editedData, function(e){ 
-		               	 return e[actions.type.keyField] == rowData[actions.type.keyField];
-		                });
-				    if (result.length > 0) {
-	//					    	result[0]['deleted'] = true;
-				    	editedData.splice( $.inArray(result[0], editedData), 1 );
-				    }
-		    	}
-		   	}
-        	else{
-        		deleteObject = actions.initDeleteObject(tab,id,rowData);
-		    	eData.push(deleteObject);
-        	}
-	        	//remove on table
-        	table.row('#'+id).remove().draw( false );
-		};
+			actions.deleteRowFunction(table,rowData,tab);
+		}
 //		$(td).find('#delete_row_'+id).click(deleteFunction);
 		table.$('#delete_row_'+id).click(deleteFunction);
 
@@ -1114,6 +1120,13 @@ var actions = {
 					return '';
 				};
 	    	break;
+	    	
+		case "EVENT":
+			cell["render"] = function ( data2, type2, row ) {
+				return typeof data2=="object"&&typeof data2.FREQUENCEMODE != "undefined"? data2.FREQUENCEMODE:"config event";
+			};
+	    	break;
+
 		}
 		return cell;
 	},

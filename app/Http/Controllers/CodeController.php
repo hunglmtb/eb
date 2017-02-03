@@ -39,10 +39,11 @@ use App\Models\IntSystem;
 use App\Models\PdTransitCarrier;
 use App\Models\Personnel;
 use App\Models\StandardUom;
-use App\Models\Tank;
-use Illuminate\Support\Facades\Lang;
+use App\Models\Tank;	
+use App\Models\TmTask;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Lang;
 
 class CodeController extends EBController {
 	 
@@ -1071,16 +1072,17 @@ class CodeController extends EBController {
 	    		case 'runby' :
 	    			$selectData = ['id'=>'runby','targets'=>$i,'COLUMN_NAME'=>$columnName];
 	    			$selectData['data'] = collect([
-											(object)['ID' =>	1	,'NAME' => 'System'  ],
-											(object)['ID' =>	2	,'NAME' => 'User'    ],
+											(object)['ID' =>	TmTask::RUN_BY_SYSTEM	,'NAME' => 'System'  ],
+											(object)['ID' =>	TmTask::RUN_BY_USER		,'NAME' => 'User'    ],
 										]);
 	    			$rs[] = $selectData;
 	    			break;
     			case 'status' :
     				$selectData = ['id'=>'status','targets'=>$i,'COLUMN_NAME'=>$columnName];
     				$selectData['data'] = collect([
-    						(object)['ID' =>	1	,'NAME' => 'Ready'  ],
-    						(object)['ID' =>	2	,'NAME' => 'Stop'    ],
+    						(object)['ID' =>	1	,'NAME' => 'Ready'   	],
+    						(object)['ID' =>	2	,'NAME' => 'Stop'    	],
+    						(object)['ID' =>	7	,'NAME' => 'Starting'   ],
     				]);
     				$rs[] = $selectData;
     				break;
