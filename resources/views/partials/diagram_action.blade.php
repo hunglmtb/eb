@@ -49,7 +49,8 @@
 		var html = renderFirsColumn(data, type, rowData );
 		var id = rowData['DT_RowId'];
 		isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
-		html += '<a id="item_edit_'+id+'" class="actionLink clickable">objects</a>';
+		var viewName = typeof rowData.viewName == "string"?rowData.viewName:"objects";
+		html += '<a id="item_edit_'+id+'" class="actionLink clickable">'+viewName+'</a>';
 		return html;
 	};
 
@@ -82,6 +83,7 @@
 						objects.push(span.data());
 					});
 					rowData.OBJECTS = objects;
+					if(typeof editBox.updateMoreObject == "function") editBox.updateMoreObject(rowData);
 	 				editBox.closeEditWindow(true);
 		    	}
 		    	else alert("please add object!");

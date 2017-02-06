@@ -67,6 +67,10 @@ class StorageDisplayController extends ChokeController {
 // 				if (!$plotViewConfig) continue;
 				if (!$objects||count($objects)<=0) {
 					$objects		= $plotViewConfig->parseViewConfig();
+					$category		= $plotViewConfig?$plotViewConfig->NAME:"category";
+				}
+				else{
+					$category		=  array_key_exists("viewName", $constraint)?$constraint['viewName']	:"category";
 				}
 				if (!$objects||count($objects)<=0) continue;
 						
@@ -84,7 +88,6 @@ class StorageDisplayController extends ChokeController {
 					$date_to		= $endDate;
 				} */
 				
-				$category			= $plotViewConfig?$plotViewConfig->NAME:"category";
 				$categories[] 		= $category;
 				$serie				= [];
 				$lineSeries			= [];

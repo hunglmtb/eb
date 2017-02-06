@@ -33,7 +33,7 @@
 			 	             	{ID	: "areaspline", NAME	: "Curved Area"},
 		 	             	 ];
 	 	 	var first		= {};
-	 	 	first.width		= 80;
+	 	 	first.width		= 120;
 	 	 	first.title		= "Plot name";
 	 	 	first.data		= "ID";
 	 		var properties 	= [
@@ -148,6 +148,7 @@
 											addingRow.PlotViewConfig:" ";
 				addingRow.CHART_TYPE	 = "column";
 				addingRow.OBJECTS		 = [];
+				addingRow.viewName		 = null;
 				return addingRow;
 			}
 			var func = actions.getDefaultAddButtonHandler(table,tab,doMoreFunction);
@@ -290,8 +291,20 @@
 					console.log ( "viewconfig get error "+rowData.PlotViewConfig);
 					$("#objectList").html("load view config error !");
 				}
-			}); 
+			});
 		}
+
+		var plotViewConfig	= parseFloat(rowData.PlotViewConfig);
+		var plotName 	= 'view name';
+		if(!isNaN(plotViewConfig)){
+			var result = $.grep(plotItems, function(e){ 
+           	 	return e.ID == rowData.PlotViewConfig;
+            });
+		    if (result.length > 0) plotName 	= result[0].NAME;
+		}
+		
+		$("#viewName").val(typeof rowData.viewName == "string" ? rowData.viewName : plotName);
+		$("#viewNameDiv").show();
 	};
 
 	editBox.getDiagramConfig = function (convertJson,rows){
@@ -314,6 +327,11 @@
 			delete row.ObjectPlotViewConfigId;
 		});
 		return convertJson?JSON.stringify(rows):rows;
+	}
+
+	editBox.updateMoreObject = function (rowData){
+		rowData.viewName = $("#viewName").val();
+		$("#item_edit_"+rowData['DT_RowId']).text(rowData.viewName);
 	}
 </script>
 @stop
