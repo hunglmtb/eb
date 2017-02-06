@@ -84,10 +84,25 @@
 			var columnDefs		= [];
 			$.each(properties, function( index, property ) {
 				if(typeof property.columnDef == "object") {
-					columnDefs.push({
-						targets	: index,
-						data	: property.columnDef.data
-					});
+					var uom = {
+							targets	: index,
+							data	: property.columnDef.data
+						};
+					if(property.data=="PlotViewConfig"){
+						uom["render"] = function ( data, type, rowData ) {
+							if(typeof rowData.viewName == "string") return rowData.viewName;
+							var plotViewConfig	= parseFloat(rowData.PlotViewConfig);
+							var plotName 	= 'view name';
+							if(!isNaN(plotViewConfig)){
+								var result = $.grep(plotItems, function(e){ 
+					           	 	return e.ID == rowData.PlotViewConfig;
+					            });
+							    if (result.length > 0) plotName 	= result[0].NAME;
+							}
+							return plotName;
+						};
+					}
+					columnDefs.push(uom);
 				}
 		   	});
 		   	
