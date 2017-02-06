@@ -3,7 +3,7 @@ namespace App\Models;
 
  class PlotViewConfig extends DynamicModel 
 { 
-	protected $table = 'plot_view_config'; 
+	protected $table = 'PLOT_VIEW_CONFIG'; 
 	
 	public $timestamps = false;
 	public $primaryKey  = 'ID';
@@ -40,13 +40,14 @@ namespace App\Models;
 			$cls=explode('~',$xs[5]);
 			$cal=$cls[0];
 			
-			$object["ObjectType"]		= $xs[0];
-			$object["ObjectId"]			= $xs[1];
-			$object["TableView"]		= $xs[2];
-			$object["Column"]			= $xs[3];
-			$object["FlowPhase"]		= $xs[4];
-			$object["Calculation"]		= $cal;
-			
+			$object["IntObjectType"]		= $xs[0];
+			$object["ObjectName"]			= $xs[1];
+			$object["ObjectDataSource"]		= $xs[2];
+			$object["ObjectTypeProperty"]	= $xs[3];
+			$object["CodeFlowPhase"]		= $xs[4];
+			$object["Calculation"]			= $cal;
+			$object["text"]					= $xs[count($xs)-1];
+				
 			/* #18:EU_TEST:230:V_EU_TEST_DATA_VALUE:EU_ID:::East Mereenie 21(V_EU_TEST_DATA_VALUE.EU_ID),
 			#18:EU_TEST:230:V_EU_TEST_DATA_VALUE:TEST_HRS:::Test Duration (hrs)(V_EU_TEST_DATA_VALUE.TEST_HRS),
 			#18:EU_TEST:230:V_EU_TEST_DATA_FDC_VALUE:OBS_TEMP:::OBS_TEMP(V_EU_TEST_DATA_FDC_VALUE.OBS_TEMP),

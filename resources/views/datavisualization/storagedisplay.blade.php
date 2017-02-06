@@ -8,22 +8,6 @@
 
 @extends('fp.choke')
 
-@section('secondary_action_extra')
-	<div class="product_filter" style="width: 97%;">
-		<table class="clearBoth" style="width: inherit;">
-			<tr>
-				<td align="right" colspan="1">
-					<button id="updateFilterBtn" class="myButton"onclick="editBox.finishSelectingObjects(true)" style="width: 61px">Done</button>
-				</td>
-			</tr>
-		</table>
-	</div>
-@stop
-
-
-@section('extra_editBoxContentview')
-@stop
-
 @section('graph_extra_view')
 <div style="
  	overflow: auto;    
@@ -40,7 +24,7 @@
 @section('action_extra')
 	@include('partials.diagram_action')
 	<script>
-		editBox.loadUrl = "/storagedisplay/filter";
+// 		editBox.loadUrl = "/storagedisplay/filter";
 	 	editBox.buildTableProperties = function (constrain){
 		 	var chartypes	= [	{ID	: "column", 	NAME	: "Column"},
 								{ID	: "line", 		NAME	: "Line"},
@@ -49,18 +33,18 @@
 			 	             	{ID	: "areaspline", NAME	: "Curved Area"},
 		 	             	 ];
 	 	 	var first		= {};
-	 	 	first.width		= 120;
+	 	 	first.width		= 80;
 	 	 	first.title		= "Plot name";
 	 	 	first.data		= "ID";
 	 		var properties 	= [
 								first,
-	 	 		  				/* {	'data' 		: 'PlotViewConfig',
+	 	 		  				{	'data' 		: 'PlotViewConfig',
 	 	 		  					'title' 	: 'Plot name'  ,
 	 	 		  					'width'		: 120,
 	 	 		  					'INPUT_TYPE': 2,
 	 	 		  					DATA_METHOD	: 1,
 	 	 		  					columnDef	: {data	: plotItems},
-	 	 		  				}, */
+	 	 		  				},
 	 	 		  				{	'data' 		: 'FROM_DATE',
 	 	 		  					'title' 	: 'From date'  ,
 	 	 		  					'width'		: 110,
@@ -129,8 +113,8 @@
  	var plotItems 	= <?php echo json_encode($plotItems); ?>;
 
 	actions['doMoreAddingRow'] = function(addingRow){
- 		addingRow['FROM_DATE'] 	= /* getJsDate($("#date_begin").val()); */moment.utc($("#date_begin").val(),configuration.time.DATE_FORMAT);//moment.utc($("#date_begin").val());
- 		addingRow['TO_DATE'] 	= /* getJsDate($("#date_end").val()); */moment.utc($("#date_end").val(),configuration.time.DATE_FORMAT);//moment.utc($("#date_end").val());
+ 		addingRow['FROM_DATE'] 	= moment.utc($("#date_begin").val(),configuration.time.DATE_FORMAT);
+ 		addingRow['TO_DATE'] 	= moment.utc($("#date_end").val(),configuration.time.DATE_FORMAT);
 		return addingRow;
 	}
 	
@@ -141,7 +125,6 @@
 	editBox.fillCurrentDiagram = function (currentDiagram){
  		currentDiagram.TITLE		= $("#txtDiagramName").val();
 		currentDiagram.FROM_DATE	= $("#date_begin").val();
-// 		currentDiagram.MID_DATE		= $("#date_middle").val();
 		currentDiagram.TO_DATE		= $("#date_end").val();
 // 		currentDiagram.CREATE_BY	= $("#txtDiagramName").val();
 // 		currentDiagram.CREATE_DATE	= $("#txtDiagramName").val();
@@ -153,7 +136,6 @@
 
 	editBox.updateFilterView = function(currentDiagram){
 		currentDiagram.FROM_DATE	= $("#date_begin").val();
-// 		currentDiagram.MID_DATE		= $("#date_middle").val();
 		currentDiagram.TO_DATE		= $("#date_end").val();
 	}
 	 
@@ -165,6 +147,7 @@
 				addingRow.PlotViewConfig = addingRow.PlotViewConfig!=null&&addingRow.PlotViewConfig!=""?
 											addingRow.PlotViewConfig:" ";
 				addingRow.CHART_TYPE	 = "column";
+				addingRow.OBJECTS		 = [];
 				return addingRow;
 			}
 			var func = actions.getDefaultAddButtonHandler(table,tab,doMoreFunction);
@@ -267,25 +250,12 @@
 @section('endDdaptData')
 @parent
 <script>
-	actions.renderFirsColumn  = function ( data, type, rowData ) {
-		var id = rowData['DT_RowId'];
-		var html = '<a id="delete_row_'+id+'" class="actionLink" onclick="actions.deleteItemRow(\''+id+'\')">Delete</a>';;
-		var plotViewConfig	= parseFloat(rowData.PlotViewConfig);
-		var plotName 	= 'Select';
-		if(!isNaN(plotViewConfig)){
-			var result = $.grep(plotItems, function(e){ 
-           	 	return e.ID == rowData.PlotViewConfig;
-            });
-		    if (result.length > 0) plotName 	= result[0].NAME;
-		}
-		html += '<a id="edit_plot_item_'+id+'" class="actionLink clickable" onclick="actions.editPlotItem(\''+id+'\',this)">'+plotName+'</a>';
-		return html;
-	};
 	
 	editBox.updateDiagramRowValue = function( index, row) {
 		row.FROM_DATE		= moment.utc(row.FROM_DATE).format(configuration.time.DATE_FORMAT_UTC);
 		row.TO_DATE			= moment.utc(row.TO_DATE).format(configuration.time.DATE_FORMAT_UTC);
 	};
+	
 	editBox.updateCurrentDiagramData = function( rows,convertJson) {
 	};
 
@@ -297,49 +267,54 @@
 		};
 	}
 
-	actions.editPlotItem = function(id,element){
-	    editBox.editRow(id,{},editBox.loadUrl);
-	}
-
-	actions.deleteItemRow 	= function(id){
-		var tab				= '{{$tableTab}}';
-		var table			= $('#table_{{$tableTab}}').DataTable();
-		var row 			= table.row('#'+id);
-	    var rowData 		= row.data();
-		actions.deleteRowFunction(table,rowData,tab);
-	}
-	
-	
-	var currentId = null;
-// 	var oInitExtraPostData 	= editBox.initExtraPostData;
-	
-	editBox.initExtraPostData = function (id,element){
-		currentId = id;
-		var row = $('#table_{{$tableTab}}').DataTable().row('#'+currentId);
-	    var rowData = row.data();
-		var postData	= {id	: currentId};
-		jQuery.extend(postData, rowData.editFilterData);
-		
-		return 	postData;
-	};
-	
-	editBox.editSelectedObjects = function (dataStore,resultText,x){
-		if(currentId!=null) {
-			var row = $('#table_{{$tableTab}}').DataTable().row('#'+currentId);
-		    var rowData = row.data();
-			rowData.PlotViewConfig = dataStore.PlotViewConfig;
-			rowData.editFilterData = dataStore;
-			row.data(rowData).draw();
+	editBox.editObjectMoreHandle = function (table,rowData,td,tab) {
+		if(typeof rowData.OBJECTS == "object" && rowData.OBJECTS.length >0 && rowData.PlotViewConfig == rowData.ObjectPlotViewConfigId){
+			actions.renderEditFilter(rowData.OBJECTS);
+		}
+		else{
+			$("#objectList").html("Loading...");
+			$.ajax({
+				url			: "/viewconfig/"+rowData.PlotViewConfig,
+				type		: "post",
+				data		: {},
+				success		: function(data){
+					rowData.ObjectPlotViewConfigId	= data.PlotViewConfig;
+					rowData.OBJECTS					= data.objects;
+					var originObjects				= {};
+					jQuery.extend(originObjects, rowData.OBJECTS);
+					rowData.originObjects			= originObjects;
+					actions.renderEditFilter(data.objects);
+					console.log ( "viewconfig get success "+rowData.PlotViewConfig);
+				},
+				error		: function(data) {
+					console.log ( "viewconfig get error "+rowData.PlotViewConfig);
+					$("#objectList").html("load view config error !");
+				}
+			}); 
 		}
 	};
-	
-	actions.renderEditFilter	= function(rowData){
-	}
 
-	editBox.size = {
-			height 	: 350,
-			width 	: 500,
-		};
+	editBox.getDiagramConfig = function (convertJson,rows){
+		$.each(rows,function( index, row) {
+			var shouldRemove	= true;
+			$.each(row.OBJECTS,function( index2, object) {
+				delete object.LoProductionUnit;
+				delete object.LoArea;
+				delete object.Facility;
+				delete object.CodeProductType;
+				if(typeof row.originObjects=="object"){
+					var a = $(object);
+					var b = $(row.originObjects[index2]);
+					shouldRemove = shouldRemove&&a.equals(b)
+				}
+				else shouldRemove = false;
+			});
+			if(shouldRemove) row.OBJECTS = '[]';
+			delete row.originObjects;
+			delete row.ObjectPlotViewConfigId;
+		});
+		return convertJson?JSON.stringify(rows):rows;
+	}
 </script>
 @stop
 

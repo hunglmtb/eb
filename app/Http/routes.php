@@ -213,6 +213,7 @@ Route::post('storagedisplay/loadchart', ['uses' =>'Cargo\StorageDisplayControlle
 Route::post('storagedisplay/load',		['uses' =>'Cargo\StorageDisplayController@load'		,'middleware' => 'checkRight:PD_CARGO_ADMIN_DISPLAY']);
 Route::post('storagedisplay/save',		['uses' =>'Cargo\StorageDisplayController@save'		,'middleware' => 'checkRight:PD_CARGO_ADMIN_DISPLAY']);
 Route::get('storagedisplay/diagram', 	['uses' =>'Cargo\StorageDisplayController@diagram'	,'middleware' => 'checkRight:PD_CARGO_ADMIN_DISPLAY']);
+Route::post('viewconfig/{id}',			['uses' =>'ViewConfigController@getViewConfigById'	,'middleware' => 'checkRight:CF_VIEW_CONFIG']);
 
 
 Route::get('pd/cargovoyage',			['uses' =>'ProductDeliveryController@cargovoyage',	'middleware' => 'checkRight:PD_CARGO_ACTION_VOYAGE']);
@@ -409,7 +410,7 @@ Route::get('config/dashboard',	['uses' =>'DVController@dashboardConfig',	'middle
 Route::post('dashboard/all',	['uses' =>'DataVisualization\DashboardController@all',	'middleware' => 'checkRight:VIS_DASHBOARD']);
 Route::post('dashboard/save',	['uses' =>'DataVisualization\DashboardController@save',	'middleware' => 'checkRight:VIS_DASHBOARD']);
 
-Route::get('viewconfig',['uses' =>'ViewConfigController@_indexViewConfig','middleware' => 'checkRight:CF_VIEW_CONFIG']);
+Route::get('viewconfig',		['uses' =>'ViewConfigController@_indexViewConfig','middleware' => 'checkRight:CF_VIEW_CONFIG']);
 Route::post('loadPlotObjects', 'ViewConfigController@loadPlotObjects');
 Route::post('getTableFields', 'ViewConfigController@getTableFields');
 Route::post('getListPlotItems', 'ViewConfigController@getListPlotItems');
