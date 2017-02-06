@@ -22,6 +22,7 @@
 		<parameterDescription><![CDATA[]]></parameterDescription>
 	</parameter>
 	<parameter name="ROOT_DIR" class="java.lang.String"/>
+	<parameter name="code" class="java.lang.String"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String">
 		<defaultValueExpression><![CDATA[$P{ROOT_DIR}+"/wellsummary/"]]></defaultValueExpression>
 	</parameter>
@@ -91,91 +92,91 @@ select *, c12+c16 c17 from(
 select *, c9+c10+c11 c12, c14+c15 c16,C25-C24+C26 c27, (c32+c33+c34+c35+c36+c37+c38+c39) C40, case when c33=0 then 0 else round(c46e*1000/c33,2) end c46 from
 (
 select 
-(select ifnull(sum(a.FL_DAY_GRS_VOL),0)
-from flow_day_value a, flow b
+(select ifnull(sum(a.FL_DATA_GRS_VOL),0)
+from flow_data_value a, flow b
 where a.flow_id=b.id and b.CODE='CTP_IND_OIL'
 and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01')) c9,
 
-(select ifnull(sum(a.FL_DAY_GRS_VOL),0)
-from flow_day_value a, flow b
+(select ifnull(sum(a.FL_DATA_GRS_VOL),0)
+from flow_data_value a, flow b
 where a.flow_id=b.id and b.CODE='ESS_PROD_OIL'
 and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01')) c10,
 
-(select ifnull(sum(a.FL_DAY_GRS_VOL),0)
-from flow_day_value a, flow b
+(select ifnull(sum(a.FL_DATA_GRS_VOL),0)
+from flow_data_value a, flow b
 where a.flow_id=b.id and b.CODE='CTP_REM_TNK_OIL'
 and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01')) c11,
 
-(select ifnull(sum(a.FL_DAY_GRS_VOL),0)
-from flow_day_value a, flow b
+(select ifnull(sum(a.FL_DATA_GRS_VOL),0)
+from flow_data_value a, flow b
 where a.flow_id=b.id and b.CODE='CTP_ALLOC_COND'
 and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01')) c14,
 
-(select ifnull(sum(a.FL_DAY_GRS_VOL),0)
-from flow_day_value a, flow b
+(select ifnull(sum(a.FL_DATA_GRS_VOL),0)
+from flow_data_value a, flow b
 where a.flow_id=b.id and b.CODE='ESS_ALLOC_COND'
 and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01')) c15,
 
 0 c22,0 c23,
 (select ifnull(sum(a.STORAGE_GRS_VOL),0)
-from storage_day_value a
+from storage_data_value a
 where a.occur_date=LAST_DAY(DATE_SUB($P{begin_date}, INTERVAL 1 MONTH))) c24,
 (select ifnull(sum(a.STORAGE_GRS_VOL),0)
-from storage_day_value a
+from storage_data_value a
 where a.occur_date=LAST_DAY(DATE_SUB($P{begin_date}, INTERVAL 0 MONTH))) c25,
 
-(select ifnull(sum(a.FL_DAY_GRS_VOL),0)
-from flow_day_value a, flow b
+(select ifnull(sum(a.FL_DATA_GRS_VOL),0)
+from flow_data_value a, flow b
 where a.flow_id=b.id and b.CODE='CTP_OIL_TCKT_TOTAL'
 and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01')) c26,
 
-(select ifnull(sum(a.FL_DAY_GRS_VOL),0)
-from flow_day_value a, flow b
+(select ifnull(sum(a.FL_DATA_GRS_VOL),0)
+from flow_data_value a, flow b
 where a.flow_id=b.id and b.CODE='CTP_REINJECTED_GAS'
 and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01')) c32,
 
-(select ifnull(sum(a.FL_DAY_GRS_VOL),0)
-from flow_day_value a, flow b
+(select ifnull(sum(a.FL_DATA_GRS_VOL),0)
+from flow_data_value a, flow b
 where a.flow_id=b.id and b.CODE='CTP_NT_GAS_SALE_TOT'
 and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01')) c33,
 
-(select ifnull(sum(a.FL_DAY_GRS_VOL),0)
-from flow_day_value a, flow b
+(select ifnull(sum(a.FL_DATA_GRS_VOL),0)
+from flow_data_value a, flow b
 where a.flow_id=b.id and b.CODE='CTP_COND_GE'
 and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01')) c34,
 
-(select ifnull(sum(a.FL_DAY_GRS_VOL),0)
-from flow_day_value a, flow b
+(select ifnull(sum(a.FL_DATA_GRS_VOL),0)
+from flow_data_value a, flow b
 where a.flow_id=b.id and b.CODE in ('CTP_FUEL_GAS','ESS_FUEL_GAS')
 and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01')) c35,
 
-(select ifnull(sum(a.FL_DAY_GRS_VOL),0)
-from flow_day_value a, flow b
+(select ifnull(sum(a.FL_DATA_GRS_VOL),0)
+from flow_data_value a, flow b
 where a.flow_id=b.id and b.CODE='CTP_GAS_FLARED'
 and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01')) c36,
 
-(select ifnull(sum(a.FL_DAY_GRS_VOL),0)
-from flow_day_value a, flow b
+(select ifnull(sum(a.FL_DATA_GRS_VOL),0)
+from flow_data_value a, flow b
 where a.flow_id=b.id and b.CODE='ESS_GAS_FLARED'
 and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01')) c37,
 
-(select ifnull(sum(a.FL_DAY_GRS_VOL),0)
-from flow_day_value a, flow b
+(select ifnull(sum(a.FL_DATA_GRS_VOL),0)
+from flow_data_value a, flow b
 where a.flow_id=b.id and b.CODE='CTP_REMOTE_FLARE_GAS'
 and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01')) c38,
 0 c39,
-(select ifnull(sum(a.FL_DAY_GRS_VOL),0)
-from flow_day_value a, flow b
+(select ifnull(sum(a.FL_DATA_GRS_VOL),0)
+from flow_data_value a, flow b
 where a.flow_id=b.id and b.CODE='CTP_GL_TOTAL'
 and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01')) c42,
     
-(select ifnull(sum(a.FL_DAY_GRS_ENGY)/1000,0)
-from flow_day_value a, flow b
+(select ifnull(sum(a.FL_DATA_GRS_ENGY)/1000,0)
+from flow_data_value a, flow b
 where a.flow_id=b.id and b.CODE='MER_TOT_REDIR_GAS'
 and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01')) c45,
 
-(select ifnull(sum(a.FL_DAY_GRS_ENGY),0)
-from flow_day_value a, flow b
+(select ifnull(sum(a.FL_DATA_GRS_ENGY),0)
+from flow_data_value a, flow b
 where a.flow_id=b.id and b.CODE='CTP_NT_GAS_SALE_TOT'
 and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01')) c46e
 ) x) x) x) x]]>
@@ -250,7 +251,7 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				<textElement verticalAlignment="Bottom">
 					<font fontName="SansSerif" size="14" isBold="true" pdfFontName="Helvetica-Bold" pdfEncoding=""/>
 				</textElement>
-				<text><![CDATA[Marine Production Summary Report]]></text>
+				<text><![CDATA[Mereenie Production Summary Report]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="20" y="50" width="80" height="16" uuid="eea15840-3bc5-4b86-bb80-e23dc6946b67"/>
@@ -266,6 +267,10 @@ and date_format(a.occur_date,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01'))
 				</textElement>
 				<textFieldExpression><![CDATA[$P{report_time}]]></textFieldExpression>
 			</textField>
+			<image>
+				<reportElement x="410" y="20" width="140" height="50" uuid="12b2000f-8bd2-48db-8871-7e93e58bdd9e"/>
+				<imageExpression><![CDATA[$P{ROOT_DIR}+"/res/cplogo.png"]]></imageExpression>
+			</image>
 			<staticText>
 				<reportElement x="20" y="76" width="260" height="16" uuid="98173485-fad1-44cf-9a15-a76bf4d185b1"/>
 				<textElement>

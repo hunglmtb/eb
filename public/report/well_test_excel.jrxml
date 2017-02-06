@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.1.0.final using JasperReports Library version 6.1.0  -->
-<!-- 2016-01-19T16:06:57 -->
+<!-- 2016-02-29T08:58:12 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Well_summary" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="13a397aa-fce7-40fe-b679-f115a7b2ae9c">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter "/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
@@ -28,15 +28,16 @@
 	<parameter name="report_time" class="java.lang.String"/>
 	<queryString language="SQL">
 		<![CDATA[select b.name well_name, date_format(a.EFFECTIVE_DATE,'%d/%m/%Y') test_date, 
-round(a.EU_TEST_LIQ_HC_VOL*a.TEST_HRS/24,3) oil,
-round(a.EU_TEST_TOTAL_GAS_VOL*a.TEST_HRS/24,3) gas,
-round(a.EU_TEST_GAS_LIFT_VOL*a.TEST_HRS/24,3) gas_lift,
-round(a.EU_TEST_WTR_VOL*a.TEST_HRS/24,3) water,
+round(a.EU_TEST_LIQ_HC_VOL*24/a.TEST_HRS,3) oil,
+round(a.EU_TEST_TOTAL_GAS_VOL*24/a.TEST_HRS,3) gas,
+round(a.EU_TEST_GAS_LIFT_VOL*24/a.TEST_HRS,3) gas_lift,
+round(a.EU_TEST_WTR_VOL*24/a.TEST_HRS,3) water,
 a.EU_TEST_ANNU_PRESS tubing_press,
 a.EU_TEST_SEPARATOR_PRESS sepa_press,
 round(a.CHOKE_SETTING) CHOKE_SETTING,
+case a.CHOKE_UOM when 1 then '%' when 2 then '/64' end CHOKE_UOM,
 a.COMMENT
-from eu_test_day_fdc_value a, energy_unit b
+from eu_test_data_fdc_value a, energy_unit b
 where a.eu_id=b.id
 and date_format(a.EFFECTIVE_DATE,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01')]]>
 	</queryString>
@@ -49,6 +50,7 @@ and date_format(a.EFFECTIVE_DATE,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/0
 	<field name="tubing_press" class="java.math.BigDecimal"/>
 	<field name="sepa_press" class="java.math.BigDecimal"/>
 	<field name="CHOKE_SETTING" class="java.math.BigDecimal"/>
+	<field name="CHOKE_UOM" class="java.lang.String"/>
 	<field name="COMMENT" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
@@ -68,14 +70,14 @@ and date_format(a.EFFECTIVE_DATE,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/0
 				<text><![CDATA[Well Tests]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="50" width="80" height="20" uuid="eea15840-3bc5-4b86-bb80-e23dc6946b67"/>
+				<reportElement x="0" y="50" width="100" height="20" uuid="eea15840-3bc5-4b86-bb80-e23dc6946b67"/>
 				<textElement>
 					<font size="11" isBold="true" pdfFontName="Helvetica-Bold"/>
 				</textElement>
 				<text><![CDATA[Report Period: ]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="80" y="50" width="380" height="20" uuid="11bb2194-ff58-4948-89b5-a084c700d3cf"/>
+				<reportElement x="100" y="50" width="360" height="20" uuid="11bb2194-ff58-4948-89b5-a084c700d3cf"/>
 				<textElement>
 					<font size="11" isBold="true" pdfFontName="Helvetica-Bold"/>
 				</textElement>
@@ -195,8 +197,7 @@ and date_format(a.EFFECTIVE_DATE,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/0
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
 				</textElement>
-				<text><![CDATA[Choke Position
-(%)]]></text>
+				<text><![CDATA[Choke Position]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="640" y="0" width="160" height="40" forecolor="#FFFFFF" backcolor="#EF7521" uuid="a4b57de8-f838-4775-a566-6b2ae1da75bb"/>
@@ -269,7 +270,7 @@ and date_format(a.EFFECTIVE_DATE,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/0
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{oil}!=null?new java.text.DecimalFormat("#,##0.00").format($F{oil}):"0"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{oil}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToBandHeight" x="280" y="0" width="60" height="16" uuid="f5cd1352-2cfe-428e-9bbc-b236c26c993f"/>
@@ -282,7 +283,7 @@ and date_format(a.EFFECTIVE_DATE,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/0
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{water}!=null?new java.text.DecimalFormat("#,##0.00").format($F{water}):"0"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{water}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToBandHeight" x="340" y="0" width="60" height="16" uuid="5f8817dc-109b-4410-8c4b-dfcd7f421a93"/>
@@ -295,7 +296,7 @@ and date_format(a.EFFECTIVE_DATE,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/0
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{gas}!=null?new java.text.DecimalFormat("#,##0.00").format($F{gas}):"0"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{gas}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToBandHeight" x="400" y="0" width="60" height="16" uuid="4a1bc988-09a2-4135-9603-265d3a249b79"/>
@@ -308,7 +309,7 @@ and date_format(a.EFFECTIVE_DATE,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/0
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{gas_lift}!=null?new java.text.DecimalFormat("#,##0.00").format($F{gas_lift}):"0"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{gas_lift}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToBandHeight" x="460" y="0" width="60" height="16" uuid="791b0608-e651-4896-8053-3813b70b046d"/>
@@ -321,7 +322,7 @@ and date_format(a.EFFECTIVE_DATE,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/0
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{tubing_press}!=null?new java.text.DecimalFormat("#,##0.00").format($F{tubing_press}):""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{tubing_press}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToBandHeight" x="520" y="0" width="60" height="16" uuid="dc29973c-d815-40ca-bcf4-3baab805d3b1"/>
@@ -334,7 +335,7 @@ and date_format(a.EFFECTIVE_DATE,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/0
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{CHOKE_SETTING}+"%"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{CHOKE_SETTING}+$F{CHOKE_UOM}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToBandHeight" x="580" y="0" width="60" height="16" uuid="80667469-5982-4a7e-b7a2-bbb2c4c09f95"/>
@@ -347,7 +348,7 @@ and date_format(a.EFFECTIVE_DATE,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/0
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{sepa_press}!=null?new java.text.DecimalFormat("#,##0.00").format($F{sepa_press}):""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{sepa_press}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="640" y="0" width="160" height="16" uuid="904e0691-c863-4de8-a96c-66dcb75df97f"/>

@@ -1,6 +1,7 @@
 public/filemanager/
 public/lib/
 public/fileUpload/
+public/report/output.*
 vendor/*
 .settings/
 composer.lock

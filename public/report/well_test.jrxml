@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.1.0.final using JasperReports Library version 6.1.0  -->
-<!-- 2016-02-10T19:26:16 -->
+<!-- 2016-02-29T08:58:19 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Well_summary" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="13a397aa-fce7-40fe-b679-f115a7b2ae9c">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter "/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
@@ -28,16 +28,16 @@
 	<parameter name="report_time" class="java.lang.String"/>
 	<queryString language="SQL">
 		<![CDATA[select b.name well_name, date_format(a.EFFECTIVE_DATE,'%d/%m/%Y') test_date, 
-round(a.EU_TEST_LIQ_HC_VOL*a.TEST_HRS/24,3) oil,
-round(a.EU_TEST_TOTAL_GAS_VOL*a.TEST_HRS/24,3) gas,
-round(a.EU_TEST_GAS_LIFT_VOL*a.TEST_HRS/24,3) gas_lift,
-round(a.EU_TEST_WTR_VOL*a.TEST_HRS/24,3) water,
+round(a.EU_TEST_LIQ_HC_VOL*24/a.TEST_HRS,3) oil,
+round(a.EU_TEST_TOTAL_GAS_VOL*24/a.TEST_HRS,3) gas,
+round(a.EU_TEST_GAS_LIFT_VOL*24/a.TEST_HRS,3) gas_lift,
+round(a.EU_TEST_WTR_VOL*24/a.TEST_HRS,3) water,
 a.EU_TEST_ANNU_PRESS tubing_press,
 a.EU_TEST_SEPARATOR_PRESS sepa_press,
 round(a.CHOKE_SETTING) CHOKE_SETTING,
 case a.CHOKE_UOM when 1 then '%' when 2 then '/64' end CHOKE_UOM,
 a.COMMENT
-from eu_test_day_fdc_value a, energy_unit b
+from eu_test_data_fdc_value a, energy_unit b
 where a.eu_id=b.id
 and date_format(a.EFFECTIVE_DATE,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/01')]]>
 	</queryString>
@@ -83,6 +83,13 @@ and date_format(a.EFFECTIVE_DATE,'%Y/%m/01')=date_format($P{begin_date},'%Y/%m/0
 				</textElement>
 				<textFieldExpression><![CDATA[$P{report_time}]]></textFieldExpression>
 			</textField>
+			<image>
+				<reportElement x="660" y="10" width="140" height="50" uuid="bafdfa93-514b-4468-8d53-bdc2feef5ecc">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{ROOT_DIR}+"/res/cplogo.png"]]></imageExpression>
+			</image>
 		</band>
 	</title>
 	<pageHeader>

@@ -13,7 +13,7 @@ if (isset ( $exportType )) {
 	// echo $System->getProperties();
 	try {
 		java ( "java.lang.Class" )->forName ( "com.mysql.jdbc.Driver" );
-		$connection = java ( "java.sql.DriverManager" )->getConnection ( "jdbc:mysql://localhost/eb", "root", "" );
+		$connection = java ( "java.sql.DriverManager" )->getConnection ( "jdbc:mysql://localhost/eb_mero", "root", "" );
 		$root = realpath ( "." );
 		$in = $root . "\well_test" . ($exportType == "Excel" ? "_excel" : "") . ".jrxml";
 		$report = java ( "net.sf.jasperreports.engine.JasperCompileManager" )->compileReport ( $in );

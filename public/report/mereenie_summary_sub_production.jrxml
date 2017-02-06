@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.1.0.final using JasperReports Library version 6.1.0  -->
+<!-- 2016-10-30T01:05:47 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="mereenie_summary_sub_production" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="1ec0eccc-40e5-4724-a3e7-783ce0d26ecf">
+	<property name="com.jaspersoft.studio.data.sql.tables" value="ZWIuZW5lcmd5X3VuaXRfZGF5X2FsbG9jIEFTICwxODMsOTs="/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter "/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<parameter name="startTime" class="java.util.Date">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<parameter name="endTime" class="java.util.Date">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<parameter name="facility_id" class="java.lang.Integer"/>
+	<queryString language="SQL">
+		<![CDATA[select event_type,event_name,eu_id,comp_id,well_name,comp_name,case when v_gas>0 or v_oil>0 or v_water>0 then active_days else 0.00 end active_days,v_gas,v_oil,v_water
+from(
+select event_type,case event_type when 1 then 'Production Wells' when 2 then 'Injection Wells' else 'Suspended Wells' end event_name,eu_id,comp_id,well_name,comp_name,max(active_days) active_days,
+sum(v_gas)/1000 v_gas,sum(v_oil) v_oil,sum(v_water) v_water
+from
+(
+SELECT c.event_type,a.eu_id,a.id comp_id,b.name well_name,a.name comp_name,round(sum(f.active_hrs*(case when c.GRS_VOL>0 then 1 else 1 end))/24,2) active_days, null v_gas, sum(c.GRS_VOL) v_oil,null v_water
+FROM `well_comp_interval_perf` a, energy_unit b, well_comp_interval_perf_data_alloc c,energy_unit_data_value f
+WHERE a.eu_id=b.id and b.facility_id in (23)
+and c.comp_interval_perf_id=a.id
+and f.eu_id=b.id and f.occur_date=c.occur_date and f.FLOW_PHASE=c.FLOW_PHASE and f.event_type=c.event_type
+and date_format(c.occur_date,'%Y/%m/01')=date_format($P{startTime},'%Y/%m/01')
+and c.FLOW_PHASE=1 and c.event_type in (1,2)
+group by c.event_type,a.eu_id,a.id
+union all
+SELECT c.event_type,a.eu_id,a.id comp_id,b.name well_name,a.name comp_name,round(sum(f.active_hrs*(case when c.GRS_VOL>0 then 1 else 1 end))/24,2) active_days, sum(c.GRS_VOL) v_gas, null v_oil,null v_water
+FROM `well_comp_interval_perf` a, energy_unit b, well_comp_interval_perf_data_alloc c,energy_unit_data_value f
+WHERE a.eu_id=b.id and b.facility_id in (23)
+and c.comp_interval_perf_id=a.id
+and f.eu_id=b.id and f.occur_date=c.occur_date and f.FLOW_PHASE=c.FLOW_PHASE and f.event_type=c.event_type
+and date_format(c.occur_date,'%Y/%m/01')=date_format($P{startTime},'%Y/%m/01')
+and c.FLOW_PHASE=2 and c.event_type in (1,2)
+group by c.event_type,a.eu_id,a.id
+union all
+SELECT c.event_type,a.eu_id,a.id comp_id,b.name well_name,a.name comp_name,round(sum(f.active_hrs*(case when c.GRS_VOL>0 then 1 else 1 end))/24,2) active_days, null v_gas, null v_oil,sum(c.GRS_VOL) v_water
+FROM `well_comp_interval_perf` a, energy_unit b, well_comp_interval_perf_data_alloc c,energy_unit_data_value f
+WHERE a.eu_id=b.id and b.facility_id in (23)
+and c.comp_interval_perf_id=a.id
+and f.eu_id=b.id and f.occur_date=c.occur_date and f.FLOW_PHASE=c.FLOW_PHASE and f.event_type=c.event_type
+and date_format(c.occur_date,'%Y/%m/01')=date_format($P{startTime},'%Y/%m/01')
+and c.FLOW_PHASE=3 and c.event_type in (1,2)
+group by c.event_type,a.eu_id,a.id
+union all
+select 100 event_type,a.eu_id,a.id comp_id,b.name well_name,a.name comp_name, 0 active_days,0 v_gas,0 v_oil,0 v_water
+from `well_comp_interval_perf` a, energy_unit b
+WHERE a.eu_id=b.id and b.facility_id in (23)
+and not exists(
+	select  1 from energy_unit_data_alloc c 
+	where  c.eu_id=b.id
+	and c.FLOW_PHASE>0 and c.event_type in (1,2) and c.EU_DATA_GRS_VOL>0
+	and date_format(c.occur_date,'%Y/%m/01')=date_format($P{startTime},'%Y/%m/01')
+)
+group by event_type,a.eu_id,a.id
+) x
+group by x.event_type,x.eu_id,x.comp_id order by x.event_type,x.well_name,x.comp_name 
+) x]]>
+	</queryString>
+	<field name="event_type" class="java.lang.Integer"/>
+	<field name="event_name" class="java.lang.String"/>
+	<field name="eu_id" class="java.lang.Integer"/>
+	<field name="comp_id" class="java.lang.Integer"/>
+	<field name="well_name" class="java.lang.String"/>
+	<field name="comp_name" class="java.lang.String"/>
+	<field name="active_days" class="java.math.BigDecimal"/>
+	<field name="v_gas" class="java.math.BigDecimal"/>
+	<field name="v_oil" class="java.math.BigDecimal"/>
+	<field name="v_water" class="java.math.BigDecimal"/>
+	<variable name="subTotalGas" class="java.math.BigDecimal" resetType="Group" resetGroup="GroupEventType" calculation="Sum">
+		<variableExpression><![CDATA[$F{v_gas}]]></variableExpression>
+	</variable>
+	<variable name="subTotalOil" class="java.math.BigDecimal" resetType="Group" resetGroup="GroupEventType" calculation="Sum">
+		<variableExpression><![CDATA[$F{v_oil}]]></variableExpression>
+	</variable>
+	<variable name="subTotalWater" class="java.math.BigDecimal" resetType="Group" resetGroup="GroupEventType" calculation="Sum">
+		<variableExpression><![CDATA[$F{v_water}]]></variableExpression>
+	</variable>
+	<group name="GroupEventType" isReprintHeaderOnEachPage="true">
+		<groupExpression><![CDATA[$F{event_type}]]></groupExpression>
+		<groupHeader>
+			<band height="42">
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				<staticText>
+					<reportElement mode="Opaque" x="360" y="16" width="60" height="26" backcolor="#F9C7A6" uuid="a0b57373-ca62-422d-86e9-c5c61e8f9290"/>
+					<box>
+						<topPen lineColor="#B1B1B1"/>
+						<leftPen lineColor="#B1B1B1"/>
+						<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Gas
+(ksm3)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="310" y="16" width="50" height="26" backcolor="#F9C7A6" uuid="d222e064-992a-4297-85e1-6cabf889f74b"/>
+					<box>
+						<topPen lineColor="#B1B1B1"/>
+						<leftPen lineColor="#B1B1B1"/>
+						<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Days 
+Online]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="16" width="160" height="26" backcolor="#F9C7A6" uuid="b0a120bb-3791-4304-ac99-57483c5bafd8">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineColor="#B1B1B1"/>
+						<leftPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Well]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="480" y="16" width="60" height="26" backcolor="#F9C7A6" uuid="eda25c1d-3cad-4696-a3d4-b5d1a4052c33"/>
+					<box>
+						<topPen lineColor="#B1B1B1"/>
+						<leftPen lineColor="#B1B1B1"/>
+						<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Water
+(kL)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="160" y="16" width="150" height="26" backcolor="#F9C7A6" uuid="9588adb8-ee01-44ff-9236-38ce88345124"/>
+					<box>
+						<topPen lineColor="#B1B1B1"/>
+						<leftPen lineColor="#B1B1B1"/>
+						<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Perforation Interval]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="420" y="16" width="60" height="26" backcolor="#F9C7A6" uuid="fc62c072-7b59-40cc-a6cd-88d64deb26a6"/>
+					<box>
+						<topPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<leftPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Oil
+(kL)]]></text>
+				</staticText>
+				<textField>
+					<reportElement mode="Opaque" x="0" y="0" width="540" height="16" forecolor="#FFFFFF" backcolor="#EF7521" uuid="affd9a36-38a4-44c4-b3bf-b5c143e2f78d">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<box leftPadding="3">
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{event_name}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="31">
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="0" width="360" height="16" backcolor="#DBDBDB" uuid="92aa6337-4137-438b-839a-2cea630a83ae">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<box leftPadding="3">
+						<topPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<leftPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<text><![CDATA[Total]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement mode="Opaque" x="360" y="0" width="60" height="16" backcolor="#DBDBDB" uuid="9a0fe891-b88f-46bc-b08f-aef41b08e15a"/>
+					<box rightPadding="3">
+						<topPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<leftPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.00").format($V{subTotalGas})]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement mode="Opaque" x="420" y="0" width="60" height="16" backcolor="#DBDBDB" uuid="b9258843-64d1-40c4-97cd-67c766f70a41"/>
+					<box rightPadding="3">
+						<topPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<leftPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{subTotalOil}!=null?new java.text.DecimalFormat("#,##0.00").format($V{subTotalOil}):"N/A"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement mode="Opaque" x="480" y="0" width="60" height="16" backcolor="#DBDBDB" uuid="9724ba64-a140-4828-b332-96d7a9a9a59d"/>
+					<box rightPadding="3">
+						<topPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<leftPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+						<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{subTotalWater}!=null?new java.text.DecimalFormat("#,##0.00").format($V{subTotalWater}):"N/A"]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<detail>
+		<band height="16">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<textField>
+				<reportElement x="0" y="0" width="160" height="16" uuid="a37cb151-38a7-4d0c-8a28-91c85cd882a1">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box leftPadding="3">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{well_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="160" y="0" width="150" height="16" uuid="315d0074-f0f6-4f9a-bd58-ca588309d0a4">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box leftPadding="3">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#B1B1B1"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{comp_name}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="310" y="0" width="50" height="16" uuid="7c45fb4a-4b18-4c9f-874e-8716465176ab"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<leftPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{active_days}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="360" y="0" width="60" height="16" uuid="4f927494-cfff-43e4-a2e9-ce3ff8fd60fa"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<leftPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{v_gas}==null?"0.00":new java.text.DecimalFormat("#,##0.00").format($F{v_gas})]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="420" y="0" width="60" height="16" uuid="28cd86d2-c6fd-4da7-b03c-76e0e28d082e"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<leftPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{event_type}==2?"N/A":($F{v_oil}==null?"0.00":new java.text.DecimalFormat("#,##0.00").format($F{v_oil}))]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="480" y="0" width="60" height="16" uuid="08e20227-cd6d-46c6-90af-f1b0879a601d"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<leftPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<bottomPen lineWidth="1.0" lineColor="#B1B1B1"/>
+					<rightPen lineWidth="1.0" lineColor="#B1B1B1"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{event_type}==2?"N/A":($F{v_water}==null?"0.00":new java.text.DecimalFormat("#,##0.00").format($F{v_water}))]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
