@@ -50,6 +50,7 @@
 		var id = rowData['DT_RowId'];
 		isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
 		var viewName = typeof rowData.viewName == "string"?rowData.viewName:"objects";
+		viewName	 = "objects";
 		html += '<a id="item_edit_'+id+'" class="actionLink clickable">'+viewName+'</a>';
 		return html;
 	};
@@ -254,6 +255,7 @@
 									},
     	    	};
 		$("#objectList").css('display','none');
+		$("#viewNameDiv").css('display','none');
 		editBox.showDialog(option,success);
 	    $("button[id=actionsavefilter]").remove();
 	}

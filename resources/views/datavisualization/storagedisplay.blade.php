@@ -331,7 +331,8 @@
 
 	editBox.updateMoreObject = function (rowData){
 		rowData.viewName = $("#viewName").val();
-		$("#item_edit_"+rowData['DT_RowId']).text(rowData.viewName);
+		$("#"+rowData['DT_RowId']).find( ".PlotViewConfig:first" ).text(rowData.viewName);
+// 		$("#item_edit_"+rowData['DT_RowId']).text(rowData.viewName);
 	}
 </script>
 @stop
