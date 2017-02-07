@@ -73,8 +73,14 @@
 		var moreFunction = function(e){
 		    actions.renderEditFilter(rowData.OBJECTS);
 
-		    $("button[id=actionsavefilter]").remove();
-		    var actionsBtn = $("<button id ='actionsavefilter' class='myButton' style='width: 61px;float:right'>Save</button>");
+		    $("button[class=saveAction]").remove();
+		    var saveAsBtn = $("<button id ='actionSaveAsFilter' class='saveAction' style='width: 61px;float:right;margin-left:5px'>Save as</button>");
+		    saveAsBtn.click(function() {
+		    	alert("please add object!");
+			});
+// 		    saveAsBtn.appendTo($("#objectListContainer"));
+		    
+		    var actionsBtn = $("<button id ='actionSaveFilter' class='saveAction' style='width: 61px;float:right;margin-left:5px'>Save</button>");
 		    actionsBtn.click(function() {
 		    	var lis			= $("#objectList ul:first li");
 		    	if(lis.length>0){
@@ -99,8 +105,8 @@
 				title	: "Edit Summary Item",
 				close	: function(event) {
 							$("#objectList").css('display','none');
-							$("button[id=actionsavefilter]").css('display','none');
-						    $("button[id=actionsavefilter]").remove();
+							$("button[class=saveAction]").css('display','none');
+						    $("button[class=saveAction]").remove();
 					   	 },
 		   	 	open	: function( event, ui ) {
 							$("#objectList").css('display','block');
@@ -257,7 +263,7 @@
 		$("#objectList").css('display','none');
 		$("#viewNameDiv").css('display','none');
 		editBox.showDialog(option,success);
-	    $("button[id=actionsavefilter]").remove();
+	    $("button[class=saveAction]").remove();
 	}
 
 	editBox.updateDiagramRowValue = function( index, row) {

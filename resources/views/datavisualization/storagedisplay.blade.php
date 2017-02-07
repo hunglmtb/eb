@@ -324,20 +324,22 @@
 
 	editBox.getDiagramConfig = function (convertJson,rows){
 		$.each(rows,function( index, row) {
-			var shouldRemove	= true;
-			$.each(row.OBJECTS,function( index2, object) {
-				delete object.LoProductionUnit;
-				delete object.LoArea;
-				delete object.Facility;
-				delete object.CodeProductType;
-				if(typeof row.originObjects=="object"){
-					var a = $(object);
-					var b = $(row.originObjects[index2]);
-					shouldRemove = shouldRemove&&a.equals(b)
-				}
-				else shouldRemove = false;
-			});
-			if(shouldRemove) row.OBJECTS = '[]';
+			if(typeof row.OBJECTS =="object"){
+				var shouldRemove	= true;
+				$.each(row.OBJECTS,function( index2, object) {
+	// 				delete object.LoProductionUnit;
+	// 				delete object.LoArea;
+	// 				delete object.Facility;
+	// 				delete object.CodeProductType;
+					if(typeof row.originObjects=="object"){
+						var a = $(object);
+						var b = $(row.originObjects[index2]);
+						shouldRemove = shouldRemove&&a.equals(b)
+					}
+					else shouldRemove = false;
+				});
+				if(shouldRemove) row.OBJECTS = '[]';
+			}
 			delete row.originObjects;
 			delete row.ObjectPlotViewConfigId;
 		});
