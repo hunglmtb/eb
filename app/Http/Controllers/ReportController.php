@@ -19,6 +19,7 @@ class ReportController extends Controller {
 		$data = $request->all ();
 		$reports = RptReport::where('GROUP','=', $data['group_id'])
 			->select("ID", "NAME", "FILE")
+			->orderBy('ORDER')
 			->get();
 		return response ()->json ($reports);		
 	}
@@ -27,6 +28,7 @@ class ReportController extends Controller {
 		$data = $request->all ();
 		$reports = RptParam::where('REPORT_ID','=', $data['report_id'])
 			->select("ID", "CODE", "NAME", "VALUE_TYPE", "REF_TABLE")
+			->orderBy('ORDER')
 			->get();
     	for($i=0;$i<count($reports);$i++){
     		if($reports[$i]->REF_TABLE)
