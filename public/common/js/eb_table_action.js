@@ -11,6 +11,10 @@ var intVal = function ( i ) {
 		return false;
 	};
 	
+	actions.getAddingRowIndex	= function () {
+		return index++;
+	};
+	
 	actions['getDefaultAddButtonHandler'] = function (table,tab,doMore){
 		return function () {
 			var columns = table.settings()[0].aoColumns;
@@ -19,7 +23,7 @@ var intVal = function ( i ) {
 			if(sample!=null){
 				addingRow = jQuery.extend({}, sample);
 			}
-			addingRow['DT_RowId'] = 'NEW_RECORD_DT_RowId_'+(index++);
+			addingRow['DT_RowId'] = 'NEW_RECORD_DT_RowId_'+actions.getAddingRowIndex();
 			addingRow['ID'] = addingRow['DT_RowId'];
 //				var addingRow = {};
 			$.each(columns, function( i, vl ) {

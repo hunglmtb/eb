@@ -42,6 +42,10 @@
 		return true;
 	}
 
+	actions.getAddingRowIndex	= function () {
+		return Math.random().toString(36).substring(5);
+	};
+
 	if(typeof addingOptions == "object") addingOptions.keepColumns = ['GROUP','COLOR'];
 
 	var renderFirsColumn = actions.renderFirsColumn;
@@ -49,26 +53,40 @@
 		var html = renderFirsColumn(data, type, rowData );
 		var id = rowData['DT_RowId'];
 		isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
-		html += '<a id="item_edit_'+id+'" class="actionLink clickable">objects</a>';
+		var viewName = typeof rowData.viewName == "string"?rowData.viewName:"objects";
+		viewName	 = "objects";
+		html += '<a id="item_edit_'+id+'" class="actionLink clickable">'+viewName+'</a>';
 		return html;
 	};
 
-	actions.renderEditFilter	= function(rowData){
-	    var list = editBox.renderObjectsList(rowData.OBJECTS);
+	actions.renderEditFilter	= function(objects){
+	    var list = editBox.renderObjectsList(objects);
 		$("#objectList").html("");
 	    $("#objectList").addClass("product_filter");
 	    $("#editBoxContentview").css("float","left");
 	    $("#editBoxContentview").css("width","54%");
 	    list.appendTo($("#objectList"));
+
+	    $("#box_loading").css("display","none");
+	    $("#editBoxContentview").show();
+	    $("#contrainList").hide();
 	}
 	
 	var addMoreHandle	= function ( table,rowData,td,tab) {
 		var id = rowData['DT_RowId'];
 		var moreFunction = function(e){
-		    actions.renderEditFilter(rowData);
+			e.preventDefault();
+			
+		    actions.renderEditFilter(rowData.OBJECTS);
 
-		    $("button[id=actionsavefilter]").remove();
-		    var actionsBtn = $("<button id ='actionsavefilter' class='myButton' style='width: 61px;float:right'>Save</button>");
+		    $("button[class=saveAction]").remove();
+		    var saveAsBtn = $("<button id ='actionSaveAsFilter' class='saveAction' style='width: 61px;float:right;margin-left:5px'>Save as</button>");
+		    saveAsBtn.click(function() {
+		    	alert("please add object!");
+			});
+// 		    saveAsBtn.appendTo($("#objectListContainer"));
+		    
+		    var actionsBtn = $("<button id ='actionSaveFilter' class='saveAction' style='width: 61px;float:right;margin-left:5px'>Save</button>");
 		    actionsBtn.click(function() {
 		    	var lis			= $("#objectList ul:first li");
 		    	if(lis.length>0){
@@ -78,6 +96,7 @@
 						objects.push(span.data());
 					});
 					rowData.OBJECTS = objects;
+					if(typeof editBox.updateMoreObject == "function") editBox.updateMoreObject(rowData);
 	 				editBox.closeEditWindow(true);
 		    	}
 		    	else alert("please add object!");
@@ -92,18 +111,16 @@
 				title	: "Edit Summary Item",
 				close	: function(event) {
 							$("#objectList").css('display','none');
-							$("button[id=actionsavefilter]").css('display','none');
-						    $("button[id=actionsavefilter]").remove();
+							$("button[class=saveAction]").css('display','none');
+						    $("button[class=saveAction]").remove();
 					   	 },
 		   	 	open	: function( event, ui ) {
 							$("#objectList").css('display','block');
 						},
 			});
-			$("#box_loading").css("display","none");
-		    $("#editBoxContentview").show();
-		    $("#contrainList").hide();
 		    editBox.renderFilter();
 		    currentSpan = null;
+		    if(typeof editBox.editObjectMoreHandle == "function") editBox.editObjectMoreHandle(table,rowData,td,tab);
 		};
 		table.$('#item_edit_'+id).click(moreFunction);
 	};
@@ -175,6 +192,7 @@
 
 	editBox.renderContrainTable = function (value,convertJson=true){
 		var properties	= editBox.buildTableProperties(value);
+		convertJson		= convertJson && typeof value.CONFIG == "string";
 		var tableData = {
 				dataSet		: convertJson?JSON.parse(value.CONFIG):value.CONFIG,
 				properties	: properties,
@@ -249,8 +267,9 @@
 									},
     	    	};
 		$("#objectList").css('display','none');
+		$("#viewNameDiv").css('display','none');
 		editBox.showDialog(option,success);
-	    $("button[id=actionsavefilter]").remove();
+	    $("button[class=saveAction]").remove();
 	}
 
 	editBox.updateDiagramRowValue = function( index, row) {
@@ -262,17 +281,24 @@
 		currentDiagram.YCAPTION	= $(".dataTables_scrollHeadInner table thead th.YCAPTION:first").text();
 	};
 
-	editBox.updateCurrentContrain = function (convertJson){
+	editBox.updateCurrentContrain = function (convertJson,buildParamFunction){
 		var table				= $('#table_{{$tableTab}}').DataTable();
 		var rows				= table.data().toArray();
 		$.each(rows,editBox.updateDiagramRowValue);
-		currentDiagram.CONFIG	= convertJson?JSON.stringify(rows):rows;
+		currentDiagram.CONFIG	= typeof buildParamFunction == "function"? 
+									buildParamFunction(convertJson,rows):
+									(convertJson?JSON.stringify(rows):rows);
 		if(typeof editBox.fillCurrentDiagram == "function") editBox.fillCurrentDiagram(currentDiagram);
 		editBox.updateCurrentDiagramData(rows,convertJson);
 	}
 						
 	editBox.saveConstrain = function (){
-		editBox.updateCurrentContrain(true);
+		editBox.updateCurrentContrain(true,editBox.getDiagramConfig);
+		if(currentDiagram.TITLE==""){
+			var s = prompt("Please enter diagram name", "diagram name");
+			if (s == null || s== "") return;
+			else currentDiagram.TITLE = s;
+		}
 		var saveData	= {
 							editedData	: {
 											{{$tableTab}}	: [currentDiagram]

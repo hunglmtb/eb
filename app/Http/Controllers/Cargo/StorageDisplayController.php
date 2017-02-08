@@ -3,14 +3,25 @@ namespace App\Http\Controllers\Cargo;
 
 use App\Http\Controllers\Forecast\ChokeController;
 use App\Http\Controllers\ProductDeliveryController;
-use Illuminate\Http\Request;
-use App\Models\PlotViewConfig; 
+use App\Models\PlotViewConfig;
 use App\Models\StorageDisplayChart;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 
 class StorageDisplayController extends ChokeController {
     
 	public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
 		$dataSet = StorageDisplayChart::orderBy("TITLE")->get();
+		/* $dataSet->each(function ($item, $key) {
+			if ($item&&$item instanceof Model) {
+				$item->CONFIG	= $item->CONFIG;
+				if ($item->CONFIG) {
+					foreach($item->CONFIG as $index => $objectRow ){
+						$objectRow["PlotViewConfig"] = $objectRow["PlotViewConfig"];
+					}
+				}
+			}
+		}); */
 		return ['dataSet'=>$dataSet];
 	}
 	
@@ -39,7 +50,8 @@ class StorageDisplayController extends ChokeController {
 		$sumField		= "V";
 		if (count($constraints['CONFIG'])>0){
 			$categories	= [];
-			$minY 		= 1000000000;
+			$minY 		= null;
+			$maxY 		= null;
 			$summaryLine= [];
 			$series		= [];
 			$plotLines	= [];
@@ -50,13 +62,18 @@ class StorageDisplayController extends ChokeController {
 				$color				= $constraint['COLOR'];
 				$negative			= $constraint['NEGATIVE'];
 				$minus				= $negative==1?"-":"";
+				$objects			= array_key_exists("OBJECTS", $constraint)?$constraint['OBJECTS']:null;
 				$plotViewConfigId	= $constraint['PlotViewConfig'];
-				
 				$plotViewConfig		= PlotViewConfig::find($plotViewConfigId);
-				if (!$plotViewConfig) continue;
-				
-				$objects			= $plotViewConfig->parseViewConfig();
-				if (!$objects||count($objects)<=0) continue;
+// 				if (!$plotViewConfig) continue;
+				if (!$objects||count($objects)<=0) {
+					$objects		= $plotViewConfig->parseViewConfig();
+					$category		= $plotViewConfig?$plotViewConfig->NAME:"category";
+				}
+				else{
+					$category		=  array_key_exists("viewName", $constraint)?$constraint['viewName']	:"category";
+				}
+				if (!$objects||!is_array($objects)||count($objects)<=0) continue;
 						
 				$beginDate			= array_key_exists("FROM_DATE", $constraint)?$constraint['FROM_DATE']	:$beginDate;
 				$endDate			= array_key_exists("TO_DATE", $constraint)	?$constraint['TO_DATE']		:$endDate;
@@ -72,23 +89,25 @@ class StorageDisplayController extends ChokeController {
 					$date_to		= $endDate;
 				} */
 				
-				$category			= $plotViewConfig->NAME;
 				$categories[] 		= $category;
 				$serie				= [];
 				$lineSeries			= [];
 				foreach($objects as $index => $object ){
-					$tableView		= $object["TableView"];
+					$tableView		= $object["ObjectDataSource"];
 					$tableName		= strpos($tableView, "V_")===0?substr($tableView, 2):$tableView;
 					$modelName		= \Helper::getModelName($tableName);
 					
 					$datefield		= property_exists($modelName, "dateField")?$modelName::$dateField:null;
 					$objectIdField	= $modelName::$idField;
 					
-					$objectType		= $object["ObjectType"];
-					$objectId		= $object["ObjectId"];
-					$flowPhase		= $object["FlowPhase"];
-					$queryField		= $object["Column"];
-					$calculation	= $object["Calculation"];
+					$objectType		= $object["IntObjectType"];
+					$objectId		= $object["ObjectName"];
+					$flowPhase		= array_key_exists("CodeFlowPhase", $object)?$object["CodeFlowPhase"]:0;
+					$queryField		= $object["ObjectTypeProperty"];
+					$calculation	= array_key_exists("Calculation", $object)?$object["Calculation"]:
+									 (array_key_exists("cboOperation", $object)&&array_key_exists("txtConstant", $object)
+									 		&&$object["cboOperation"]!=""&&$object["txtConstant"]!=""?
+									 			$object["cboOperation"].$object["txtConstant"]:"");
 					
 					$is_eutest		= false;
 					$is_defer		= false;
@@ -101,7 +120,7 @@ class StorageDisplayController extends ChokeController {
 					
 					
 					$where			= [$objectIdField	=> $objectId];
-					if ($objectType=="ENERGY_UNIT" && !$is_eutest && !$is_defer)  $where['FLOW_PHASE']	= $flowPhase;
+					if ($objectType=="ENERGY_UNIT" && !$is_eutest && !$is_defer && $flowPhase>0)  $where['FLOW_PHASE']	= $flowPhase;
 					
 					$lineQuery		= null;
 					$query			= null;
@@ -139,10 +158,13 @@ class StorageDisplayController extends ChokeController {
 							"data"  => $dataSet,
 					];
 					foreach($dataSet as $index => $data ){
+						$dataValue		= $data->V;
 						if (array_key_exists($data->D, $summaryLine))
-							$summaryLine[$data->D]->V	+= $data->V;
-							else
-								$summaryLine[$data->D]	= (object) array('D' => $data->D,'V' => $data->V);
+							$summaryLine[$data->D]->V	+= $dataValue;
+						else
+							$summaryLine[$data->D]	= (object) array('D' => $data->D,'V' => $dataValue);
+						if ((!$minY||$minY>$dataValue)&&$dataValue) $minY = $dataValue;
+						if ((!$maxY||$maxY<$dataValue)&&$dataValue) $maxY = $dataValue;
 					}
 				}
 				if ($rLineQuery) {
@@ -151,12 +173,15 @@ class StorageDisplayController extends ChokeController {
 										->selectRaw("sum($sumField) as $sumField")
 										->first();
 					if($rDataSet){
+						$rValue			= $rDataSet->$sumField;
 						$plotLines[] 	= [
 										"label"		=> ["text"	=> $category],
 										"color"		=> "#$color",
 // 										"dashStyle"	=> 'shortdash',
-										"value"		=> $rDataSet->$sumField,
+										"value"		=> $rValue,
 									];
+						if ((!$minY||$minY>$rValue)&&$rValue) $minY 	= $rValue;
+						if ((!$maxY||$maxY<$rValue)&&$rValue) $maxY	= $rValue;
 					}
 				}
 			}
@@ -179,7 +204,8 @@ class StorageDisplayController extends ChokeController {
 										"series"		=> $series,
 										"plotLines"		=> $plotLines,
 										"ycaption"		=> $ycaption,
-										"minY"			=> $minY==1000000000?0:$minY,
+										"minY"			=> $minY,
+										"maxY"			=> $maxY,
 			];
 		}
 		$summaryData["constraints"] 	= $constraints;

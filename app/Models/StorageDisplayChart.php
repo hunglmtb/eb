@@ -14,4 +14,8 @@ namespace App\Models;
 							 'STORAGE_ID',
 							 'CREATE_BY',
 							 'CREATE_DATE'];
+	
+	public function getConfigAttribute($value){
+		return json_decode($value,true);
+	}
 }  

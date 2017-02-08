@@ -83,7 +83,7 @@ class ProductDeliveryController extends CodeController {
 											];
 		return view ( 'datavisualization.storagedisplay',[
 				'filters'		=> $filterGroups,
-				'editFilters'	=> $filterGroups,
+// 				'editFilters'	=> $filterGroups,
 		]);
 	}
 	

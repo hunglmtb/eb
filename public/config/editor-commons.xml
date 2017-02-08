@@ -14,6 +14,7 @@
 		<add as="Object Mapping" action="objectMapping" icon="/images/connect.gif" if="validRoot"/> -->
 		<add as="Surveillance Setting" action="surveillanceSetting" icon="/images/preferences.gif" if="validRoot"/> -->
 		<add as="Set Image" action="setCellImage" icon="/images/image.gif" if="validRoot"/> -->
+		<add as="Set Alert" action="setAlert" icon="/images/ic_setting.png" if="validRoot"/> -->
 		<separator/>
 		<add as="shape" if="cell">
 			<add as="group" action="group" icon="/images/group.gif" if="ncells"/>
@@ -68,6 +69,12 @@
 			function (editor)
 			{
 				surveillanceSetting();
+			}
+		]]></add>
+		<add as="setAlert"><![CDATA[
+			function (editor)
+			{
+				setAlert();
 			}
 		]]></add>
 		<add as="open"><![CDATA[

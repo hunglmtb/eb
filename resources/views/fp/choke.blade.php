@@ -50,7 +50,8 @@ Constrain diagrams
 
 @section('extra_editBoxContentview')
 <div id="objectListContainer" style="overflow-x: hidden;z-index: 1001;position: relative;float: right;width:44%;height:100%">
-	<div id="objectList" style="height:90%;width:100%;overflow-x: hidden;"></div>
+	<div id="objectList" style="height:80%;width:100%;overflow-x: hidden;"></div>
+	<div id="viewNameDiv" style="width:100%;overflow-x: hidden;display:none">View Name<input id="viewName" type="text" style="width:auto"></div>
 </div>
 @stop
 

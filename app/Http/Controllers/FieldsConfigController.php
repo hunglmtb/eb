@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 use App\Models\CfgDataSource;
 use App\Models\CfgFieldProps;
-use App\Models\CodeDataMethod;
-use App\Models\CfgInputType;
 
 use DB;
 use Illuminate\Http\Request;
@@ -18,13 +16,8 @@ class FieldsConfigController extends Controller {
 	
 	public function _index() {
 		$cfg_data_source = collect(CfgDataSource::all('NAME')->toArray());
-		$code_data_method = CodeDataMethod::where(['ACTIVE'=>1])->orderBy('ORDER')->get(['ID', 'NAME']);
-		$cfg_input_type = CfgInputType::all('ID', 'NAME');
-		
 		return view ( 'front.fieldsconfig',[
 				'cfg_data_source' 		=> $cfg_data_source,
-				'code_data_method'		=> $code_data_method,
-				'cfg_input_type'		=> $cfg_input_type,
 		]);
 	}
 	

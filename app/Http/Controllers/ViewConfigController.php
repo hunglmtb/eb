@@ -31,6 +31,15 @@ class ViewConfigController extends Controller {
 		return view ( 'front.viewconfig', ['code_forecast_type'=>$code_forecast_type, 'code_plan_type'=>$code_plan_type, 'code_alloc_type'=>$code_alloc_type]);
 	}
 	
+	
+	public function getViewConfigById($plotViewConfigId){
+		$plotViewConfig		= PlotViewConfig::find($plotViewConfigId);
+		$objects			= $plotViewConfig?$plotViewConfig->parseViewConfig():[];
+		return response ()->json (["PlotViewConfig"		=> $plotViewConfigId,
+									"objects"			=> $objects
+		]);
+	}
+	
 	public function loadPlotObjects(Request $request){
 		$data = $request->all ();	
 		

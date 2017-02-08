@@ -16,13 +16,15 @@
 	         });
          });
 
+// 		var minRange	= 0;
 		$.each(diagram.plotLines, function( index, value ) {
 			pvalue = parseFloat(value.value);
 			pvalue	= isNaN(pvalue)?null:pvalue;
 			value.value	= pvalue;
 			value.width		= 2;
+// 			if(minRange<pvalue) minRange = pvalue;
          });
-		
+
 		/* if(diagram.minY>0){
 			var lineData = Array.apply(null, Array(diagram.groups.length)).map(function (_, i) {return diagram.minY;});
 			series.push({
@@ -97,6 +99,9 @@
                     }
                 },
                 yAxis: { // Primary yAxis
+//                 	minRange	: minRange,
+                	max			: diagram.maxY,
+                    min			: diagram.minY,
                     labels: {
                         format: '{value}',
                     },
