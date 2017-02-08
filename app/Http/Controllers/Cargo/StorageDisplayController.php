@@ -50,7 +50,8 @@ class StorageDisplayController extends ChokeController {
 		$sumField		= "V";
 		if (count($constraints['CONFIG'])>0){
 			$categories	= [];
-			$minY 		= 1000000000;
+			$minY 		= null;
+			$maxY 		= null;
 			$summaryLine= [];
 			$series		= [];
 			$plotLines	= [];
@@ -72,7 +73,7 @@ class StorageDisplayController extends ChokeController {
 				else{
 					$category		=  array_key_exists("viewName", $constraint)?$constraint['viewName']	:"category";
 				}
-				if (!$objects||count($objects)<=0) continue;
+				if (!$objects||!is_array($objects)||count($objects)<=0) continue;
 						
 				$beginDate			= array_key_exists("FROM_DATE", $constraint)?$constraint['FROM_DATE']	:$beginDate;
 				$endDate			= array_key_exists("TO_DATE", $constraint)	?$constraint['TO_DATE']		:$endDate;
@@ -157,10 +158,13 @@ class StorageDisplayController extends ChokeController {
 							"data"  => $dataSet,
 					];
 					foreach($dataSet as $index => $data ){
+						$dataValue		= $data->V;
 						if (array_key_exists($data->D, $summaryLine))
-							$summaryLine[$data->D]->V	+= $data->V;
-							else
-								$summaryLine[$data->D]	= (object) array('D' => $data->D,'V' => $data->V);
+							$summaryLine[$data->D]->V	+= $dataValue;
+						else
+							$summaryLine[$data->D]	= (object) array('D' => $data->D,'V' => $dataValue);
+						if ((!$minY||$minY>$dataValue)&&$dataValue) $minY = $dataValue;
+						if ((!$maxY||$maxY<$dataValue)&&$dataValue) $maxY = $dataValue;
 					}
 				}
 				if ($rLineQuery) {
@@ -169,12 +173,15 @@ class StorageDisplayController extends ChokeController {
 										->selectRaw("sum($sumField) as $sumField")
 										->first();
 					if($rDataSet){
+						$rValue			= $rDataSet->$sumField;
 						$plotLines[] 	= [
 										"label"		=> ["text"	=> $category],
 										"color"		=> "#$color",
 // 										"dashStyle"	=> 'shortdash',
-										"value"		=> $rDataSet->$sumField,
+										"value"		=> $rValue,
 									];
+						if ((!$minY||$minY>$rValue)&&$rValue) $minY 	= $rValue;
+						if ((!$maxY||$maxY<$rValue)&&$rValue) $maxY	= $rValue;
 					}
 				}
 			}
@@ -197,7 +204,8 @@ class StorageDisplayController extends ChokeController {
 										"series"		=> $series,
 										"plotLines"		=> $plotLines,
 										"ycaption"		=> $ycaption,
-										"minY"			=> $minY==1000000000?0:$minY,
+										"minY"			=> $minY,
+										"maxY"			=> $maxY,
 			];
 		}
 		$summaryData["constraints"] 	= $constraints;

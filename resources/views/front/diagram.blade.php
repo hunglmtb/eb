@@ -4,9 +4,18 @@ $currentSubmenu = '/diagram';
 $cur_diagram_id = 0;
 ?>
 
+
+@section('editBoxContentview')
+@parent
+<div id="fieldsConfigContainer" style='height:100%;width: 100%;overflow:auto'>
+	@include('core.fields_config')
+</div>
+@stop
+
 @extends('core.bsdiagram')
 
 @section('content')
+@include('core.float_dialog')
 
 <script type="text/javascript">
 
@@ -1422,6 +1431,50 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 			ed.graph.model.endUpdate();
 		}
 	}
+
+	_fieldconfig.getTableField 	= function(table,field) {
+		return editBox.initExtraPostData();
+	}
+	
+	editBox.size = {	height 	: 520,
+						width 	: 630,
+					};
+
+	editBox.initExtraPostData = function (id,rowData,url){
+		if(currentObjectMapping){
+			var surveillance = currentObjectMapping.getAttribute('surveillance');
+			if(surveillance.length>0){
+				var objects	= surveillance.split("@");
+				if(objects.length>0){
+					var splits	= objects[0].split("/");
+					if(splits.length>1){
+						var table			= splits[0];
+						var field_effected	= splits[1];
+				 		return 	{	table			: table,
+				 					field_effected	: field_effected,
+				 		};
+					}
+				}
+			}
+		}
+// 		alert("please add surveillance to object");
+		throw new Error("no surveillance");
+	 }
+	editBox.dialogOpenFunction	=	function( event, ui ) {
+		$("#floatBox").closest(".ui-dialog").removeClass("ui-dialog");
+	};
+	editBox.editGroupSuccess = function(data,span){
+		_fieldconfig.setData(data);
+	};
+	
+	function setAlert(){
+		var id 			= 1;
+		var rowData 	= {};
+		var url 		= "/getprop";
+// 		var viewId 		= "";
+		editBox.editRow(id,rowData,url/* ,viewId */)
+	}
+	
 	function surveillanceSetting()
 	{
 		$('#sur_fields').html('Loading...');								

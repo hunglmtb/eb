@@ -40,6 +40,18 @@
 				viewId 		= option.viewId;
 				editId		= postData.id;
 				var dSize	= typeof option.size=='object'?option.size: editBox.size;
+				var dialogOpenFunction	= typeof editBox.dialogOpenFunction=='function'?editBox.dialogOpenFunction: function( event, ui ) {
+							    			$(".savebtn").remove();
+											var saveUrl = editBox.getSaveDetailUrl(url,editId,viewId);
+									    	if (typeof(editBox.saveDetail) == "function" && typeof saveUrl == "string") {
+										        	var saveBtn = editBox.getSaveButton(viewId+"_"+editId);
+										        	saveBtn.click(function(e){
+														   e.preventDefault();
+														   editBox.saveDetail(editId,editBox['saveFloatDialogSucess'],saveUrl);
+													});
+													saveBtn.insertBefore('.ui-dialog-titlebar-close');
+											}
+										};
 				var dialogOptions = {
 							editId	: editId,
 							height	: dSize.height,
@@ -56,18 +68,7 @@
 											editBox.enableRefresh = false;
 										} 
 								   	 },
-						    open	: function( event, ui ) {
-						    			$(".savebtn").remove();
-										var saveUrl = editBox.getSaveDetailUrl(url,editId,viewId);
-								    	if (typeof(editBox.saveDetail) == "function" && typeof saveUrl == "string") {
-									        	var saveBtn = editBox.getSaveButton(viewId+"_"+editId);
-									        	saveBtn.click(function(e){
-													   e.preventDefault();
-													   editBox.saveDetail(editId,editBox['saveFloatDialogSucess'],saveUrl);
-												});
-												saveBtn.insertBefore('.ui-dialog-titlebar-close');
-										}
-									},
+						    open	: dialogOpenFunction,
 							create	: function() {
 								
 						    }
@@ -135,7 +136,6 @@
 				 		url 		: editUrl,
 				 		viewId 		: vId,
 	    	    	};
-	 		
 			editBox.showDialog(option,success);
 	    }
 		

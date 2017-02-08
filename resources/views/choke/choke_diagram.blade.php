@@ -19,8 +19,18 @@
 			},
 			error		: function(data) {
 				if(isShowWaiting)	hideWaiting();
-				console.log ( "requestGenDiagram error "/*+JSON.stringify(data)*/);
-				container.html("error when generate diagram");
+				var link = $("<a >error when generate diagram</a>");
+				link.appendTo(container);
+				var errorBox = $("<div>");
+				errorBox.html(data.responseText);
+				errorBox.appendTo(container);
+				errorBox.hide();
+				link.click(function(e){
+					if(errorBox.is(':visible')) errorBox.hide();
+					else errorBox.show();
+				});
+				console.log ( "requestGenDiagram error "/* +JSON.stringify(data) */);
+// 				container.html("<a >error when generate diagram</a>");
 			}
 		});
 	}

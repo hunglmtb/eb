@@ -42,6 +42,10 @@
 		return true;
 	}
 
+	actions.getAddingRowIndex	= function () {
+		return Math.random().toString(36).substring(5);
+	};
+
 	if(typeof addingOptions == "object") addingOptions.keepColumns = ['GROUP','COLOR'];
 
 	var renderFirsColumn = actions.renderFirsColumn;
@@ -71,6 +75,8 @@
 	var addMoreHandle	= function ( table,rowData,td,tab) {
 		var id = rowData['DT_RowId'];
 		var moreFunction = function(e){
+			e.preventDefault();
+			
 		    actions.renderEditFilter(rowData.OBJECTS);
 
 		    $("button[class=saveAction]").remove();

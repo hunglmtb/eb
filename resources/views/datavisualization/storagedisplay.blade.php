@@ -33,7 +33,7 @@
 			 	             	{ID	: "areaspline", NAME	: "Curved Area"},
 		 	             	 ];
 	 	 	var first		= {};
-	 	 	first.width		= 120;
+	 	 	first.width		= 80;
 	 	 	first.title		= "Plot name";
 	 	 	first.data		= "ID";
 	 		var properties 	= [
@@ -284,8 +284,9 @@
 	}
 
 	editBox.editObjectMoreHandle = function (table,rowData,td,tab) {
-		if(typeof rowData.OBJECTS == "object" && rowData.OBJECTS.length >0 && rowData.PlotViewConfig == rowData.ObjectPlotViewConfigId){
-			actions.renderEditFilter(rowData.OBJECTS);
+		if(typeof rowData.OBJECTS == "object" && rowData.OBJECTS.length >0 &&
+				 (typeof rowData.PlotViewConfig == "undefined" || typeof rowData.ObjectPlotViewConfigId == "undefined" || rowData.PlotViewConfig == rowData.ObjectPlotViewConfigId)){
+					actions.renderEditFilter(rowData.OBJECTS);
 		}
 		else{
 			$("#objectList").html("Loading...");
@@ -295,11 +296,11 @@
 				data		: {},
 				success		: function(data){
 					rowData.ObjectPlotViewConfigId	= data.PlotViewConfig;
-					rowData.OBJECTS					= data.objects;
 					var originObjects				= {};
 					jQuery.extend(originObjects, rowData.OBJECTS);
 					rowData.originObjects			= originObjects;
-					actions.renderEditFilter(data.objects);
+					rowData.OBJECTS					= data.objects;
+					actions.renderEditFilter(rowData.OBJECTS);
 					console.log ( "viewconfig get success "+rowData.PlotViewConfig);
 				},
 				error		: function(data) {
@@ -324,7 +325,7 @@
 
 	editBox.getDiagramConfig = function (convertJson,rows){
 		$.each(rows,function( index, row) {
-			if(typeof row.OBJECTS =="object"){
+			/* if(typeof row.OBJECTS =="object"){
 				var shouldRemove	= true;
 				$.each(row.OBJECTS,function( index2, object) {
 	// 				delete object.LoProductionUnit;
@@ -339,9 +340,9 @@
 					else shouldRemove = false;
 				});
 				if(shouldRemove) row.OBJECTS = '[]';
-			}
+			} */
 			delete row.originObjects;
-			delete row.ObjectPlotViewConfigId;
+// 			delete row.ObjectPlotViewConfigId;
 		});
 		return convertJson?JSON.stringify(rows):rows;
 	}
