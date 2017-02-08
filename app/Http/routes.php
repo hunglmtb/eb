@@ -387,6 +387,8 @@ Route::post('getKey', 'DVController@getKey');
 Route::resource('runAlloc', 'RunController@runAlloc');
 
 Route::get('workreport',['uses' =>'ReportController@_index','middleware' => 'checkRight:VIS_REPORT']);
+Route::post('report/loadreports','ReportController@loadReports');
+Route::post('report/loadparams','ReportController@loadParams');
 Route::get('loadWfShow', 'wfShowController@loadData');
 Route::post('reLoadtTmworkflow', 'wfShowController@reLoadtTmworkflow');
 Route::post('finish_workflowtask', 'wfShowController@finish_workflowtask');
