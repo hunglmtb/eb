@@ -32,7 +32,7 @@ $currentSubmenu = '/allocset';
 <script src="/common/js/allocset.js"></script>
 <script type="text/javascript">
 $().ready(function() {
-	$("#MySplitter").height($(window).height()-200);
+	$("#MySplitter").height($(window).height()-150);
 	$("#MySplitter").splitter({
 		type: "h", 
 	});
@@ -148,7 +148,7 @@ var _configallocation = {
 }
 </script>
 <body style="margin: 0px">
-	<div id="container" style = "width:1322px">
+	<div id="container" style = "">
 		<div id="dialog_edit_condition" title="Edit condition" style="display: none">
 			<form>
 				<span id="ele_x" class="brc_out" style="display: none"> <span

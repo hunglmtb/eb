@@ -58,7 +58,7 @@
 		<div class="inner" style="color:#333">
 		Powered by<br>
 		<img width="110" src="../img/edataviz_logo.png" style="margin:5px 0px" alt="eDataViz"><br>
-		<font size="1">Copyright &copy; 2016 eDataViz LLC</font>
+		<font size="1">Copyright &copy; 2017 eDataViz LLC</font>
 		</div>		
 		<a target="_blank" href="http://www.edataviz.com"></a>
 		<div class="corner-1"></div>
