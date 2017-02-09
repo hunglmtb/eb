@@ -799,17 +799,18 @@ var actions = {
     	//remove in postdata
     	var eData = recordData[tab];
     	if(isAdding) {
-	    	var editedData = actions.editedData[tab];
-	    	if(editedData!=null){
-        		var result = $.grep(editedData, function(e){ 
-               	 	return e[actions.type.keyField] == rowData[actions.type.keyField];
-                });
-			    if (result.length > 0) editedData.splice( $.inArray(result[0], editedData), 1 );
-	    	}
+	    	
 	   	}
     	else{
     		deleteObject = actions.initDeleteObject(tab,id,rowData);
 	    	eData.push(deleteObject);
+    	}
+    	var editedData = actions.editedData[tab];
+    	if(editedData!=null){
+    		var result = $.grep(editedData, function(e){ 
+           	 	return e[actions.type.keyField] == rowData[actions.type.keyField];
+            });
+		    if (result.length > 0) editedData.splice( $.inArray(result[0], editedData), 1 );
     	}
         	//remove on table
     	table.row('#'+id).remove().draw( false );
