@@ -277,6 +277,7 @@ function editRunner(runner_id) {
 	$("#cboRunnerAllocType").val($("#alloc_type_" + runner_id).text());
 	$("#cboTheorPhase").val($("#theor_phase_" + runner_id).text());
 	$("#cboTheorValueType").val($("#theor_value_type_" + runner_id).text());
+	$("#chkFromAllocOption").prop('checked', $("#runner_item" + runner_id).data("from_option")=="1");
 
 	$("#objsFrom").html($("#Qobjectfrom_" + runner_id).html());
 	$("#objsFrom span")
@@ -321,7 +322,7 @@ function editRunner(runner_id) {
 }
 function show_edit_runner() {	
 	$("#addRunner_box").dialog({
-		width : 700,
+		width : 760,
 		height : 480,
 		modal : true,
 		title : "Edit runner"
@@ -329,7 +330,7 @@ function show_edit_runner() {
 	
 	$("#cboObjType").change();
 }
-function cancelAddRunner() {
+function closeBoxEditRunner() {
 	$("#addRunner_box").dialog("close");
 }
 
@@ -355,14 +356,14 @@ function addRunner() {
 		"alloc_type" : $("#cboRunnerAllocType").val(),
 		"theor_phase" : $("#cboTheorPhase").val(),
 		"theor_value_type" : $("#cboTheorValueType").val(),
+		"from_option" : $("#chkFromAllocOption").is(":checked")?1:0,
 		"obj_from" : vRunnerFrom,
 		"obj_to" : toObject	,
 		"runner_name" :  $("#txtRunnerName").val()	
 	}
 	
 	sendAjaxNotMessage('/addrunner', param, function(data){
-		cancelAddRunner();
-		$("#edit_close").trigger("click");
+		closeBoxEditRunner();
 		loadRunnersList(current_job_id, current_job_name);
 	});
 }
@@ -484,6 +485,7 @@ function saveRunnerEdit(runner_id) {
 				"alloc_type" : $("#cboRunnerAllocType").val(),
 				"theor_phase" : $("#cboTheorPhase").val(),
 				"theor_value_type" : $("#cboTheorValueType").val(),
+				"from_option" : $("#chkFromAllocOption").is(":checked")?1:0,
 				"obj_from" : fromObject,
 				"obj_to" : toObject
 			}
@@ -494,9 +496,8 @@ function saveRunnerEdit(runner_id) {
 				else {
 					alert("Saved successfully");
 				}
+				closeBoxEditRunner();
 				loadRunnersList(current_job_id, current_job_name);
-				// $('#boxAddRunner').hide();
-				$("#edit_close").trigger("click");
 			});
 
 	/*postRequest("index.php?act="

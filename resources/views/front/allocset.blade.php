@@ -29,7 +29,7 @@ $currentSubmenu = '/allocset';
 <script src="/common/js/jquery.js"></script>
 <script src="/common/js/jquery-ui.js"></script>
 <script src="/common/js/splitter.js"></script>
-<script src="/common/js/allocset.js"></script>
+<script src="/common/js/allocset.js?1"></script>
 <script type="text/javascript">
 $().ready(function() {
 	$("#MySplitter").height($(window).height()-150);
@@ -418,58 +418,48 @@ var _configallocation = {
 					</table>
 
 
-					<table id="table5" style="background: #e0e0e0">
-						<tr>
-							<td width="300"><font color="black"><span class="fixed"> Minus</span><b>From
+					<table id="table55" cellspacing="0" style="width:100%;margin-top:10px">
+						<tr style="background: #e0e0e0;">
+							<td width="50%"><font color="black"><span class="fixed"> Minus</span><b>From
 										objects</b></font></td>
-							<td width="300"><font color="black"><span class="fixed"> Fixed</span><b>To
+							<td width="50%"><font color="black"><span class="fixed"> Fixed</span><b>To
 										objects</b></font></td>
+						</tr>
+						<tr style="background: #f8f8f8;">
+							<td valign="top"><div style="overflow:auto;width:100%;height:200px"><span id="objsFrom">...</span></div></td>
+							<td valign="top"><div style="overflow:auto;width:100%;height:200px"><span id="objsTo">...</span></div></td>
 						</tr>
 					</table>
-
-					<div
-						style="height: 200px; overflow: auto; width: 610px; background: #f0f0f0">
-						<table style="">
-							<tr>
-								<td width="300" valign="top"><span id="objsFrom">...</span></td>
-								<td width="300" valign="top"><span id="objsTo">...</span></td>
-							</tr>
-						</table>
-					</div>
-
 					<table border="0" cellpadding="2">
 						<tr>
-							<td>Order <input id="txtRunnerOrder" style="width: 60px"
+
+							<td style="line-height:28px">Order <input id="txtRunnerOrder" style="width: 60px"
 								type="number" name="txtRunnerOrder" size="20">
-							</td>
-
-						</tr>
-						<tr>
-
-							<td>Allocation type <select id="cboRunnerAllocType"	name="cboRunnerAllocType">
+								&nbsp; &nbsp;<input type="checkbox" id="chkFromAllocOption"> Don't use From Allocation data
+								<br>Allocation type <select id="cboRunnerAllocType"	name="cboRunnerAllocType">
 								@foreach($codeAllocType as $re)
 									<option value="{!!$re['ID']!!}">{!!$re['NAME']!!}</option> 
 								@endforeach
 							</select> 
-								<br>Theor. phase <select id="cboTheorPhase"	name="cboTheorPhase">
+								&nbsp; &nbsp;Theor. phase <select id="cboTheorPhase"	name="cboTheorPhase">
 								<option value="">(No change)</option>
 								@foreach($codeFlowPhase as $re)
 									<option value="{!!$re['ID']!!}">{!!$re['NAME']!!}</option> 
 								@endforeach
 							</select> 
-								<br>Theor. value type <select id="cboTheorValueType" name="cboTheorValueType">
+								&nbsp; &nbsp;Theor. value type <select id="cboTheorValueType" name="cboTheorValueType">
 								<option value="">(No change)</option>
 								@foreach($codeAllocValueType as $re)
 									<option value="{!!$re['ID']!!}">{!!$re['NAME']!!}</option> 
 								@endforeach
 							</select>
-								<div style="position: absolute; width: 400px; bottom: 20px; left: 50%; margin-left: -200px; text-align: center">
+								<div style="position: absolute; width: 400px; bottom: 10px; left: 50%; margin-left: -200px; text-align: center">
 									<input onClick="addRunner()" type="button" value="Add Runner"
 										name="B3" id="QaddRunner"> <input onClick="saveRunnerEdit()"
 										type="button" value="Save" style="display: none"
 										id="QsaveRunnerEdit"> <input onClick="saveRunnerClone()"
 										type="button" value="Save as New Runner" style="display: none"
-										id="QsaveRunnerCopy"> <input onClick="cancelAddRunner()"
+										id="QsaveRunnerCopy"> <input onClick="closeBoxEditRunner()"
 										type="button" value="Cancel" name="B4">
 								</div>
 							</td>
