@@ -131,7 +131,7 @@ class StorageController extends CodeController {
     	}
     	$storage_ids = array_unique($storage_ids);
 
-     	\DB::enableQueryLog();
+//     	\DB::enableQueryLog();
 
     	foreach($storage_ids as $storage_id){
 	    	$values = TankDataValue::join($tank,function ($query) use ($tankDataValue,$tank,$storage_id) {
@@ -148,7 +148,7 @@ class StorageController extends CodeController {
 	  		$values['OCCUR_DATE'] = $occur_date;
 	  		StorageDataValue::updateOrCreate($attributes,$values);
     	}
-     	\Log::info(\DB::getQueryLog());
+//     	\Log::info(\DB::getQueryLog());
     }
     
 	public function getHistoryConditions($table,$rowData,$row_id){
