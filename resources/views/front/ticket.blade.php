@@ -32,6 +32,12 @@ RUN TICKET CAPTURE
 	}
 	addingOptions.keepColumns = ['OCCUR_DATE','TICKET_NO','TICKET_TYPE'];
 
+	actions.extraDataSetColumns = {'TARGET_TANK': 'PHASE_TYPE'};
+	
+	source['PHASE_TYPE']	={	dependenceColumnName	:	['TARGET_TANK'],
+								url						: 	'/ticket/loadsrc'
+	};
+
 	actions['parseChartDate'] = function(datetime){
 		date = moment.utc(datetime,configuration.time.DATETIME_FORMAT_UTC);
 		y 		= date.year();

@@ -126,11 +126,11 @@ Route::post('deferment/wommr/save', 		'DefermentController@save');
 Route::post('deferment/history', 		'DefermentController@history');
 
 
-Route::get('dc/ticket',			['uses' =>'ProductManagementController@ticket','middleware' => 'checkRight:FDC_TICKET']);
-Route::post('ticket/load',		['uses' =>	'TicketController@load','middleware' => 'saveWorkspace']);
-Route::post('ticket/save', 		'TicketController@save');
-Route::post('ticket/history', 	'TicketController@history');
-
+Route::get('dc/ticket',			['uses' => 'ProductManagementController@ticket','middleware' => 'checkRight:FDC_TICKET']);
+Route::post('ticket/load',		['uses' => 'TicketController@load','middleware' => 'saveWorkspace']);
+Route::post('ticket/save', 		['uses' => 'TicketController@save','middleware' => 'checkRight:FDC_TICKET']);
+Route::post('ticket/history', 	['uses' => 'TicketController@history','middleware' => 'checkRight:FDC_TICKET']);
+Route::post('ticket/loadsrc', 	['uses' => 'TicketController@loadsrc','middleware' => 'checkRight:FDC_TICKET']);
 //---------
 Route::get('fo/safety',			['uses' =>'FOController@safety','middleware' => 'checkRight:FOP_SAFETY']);
 Route::post('safety/load',		['uses' =>	'SafetyController@load','middleware' => 'saveWorkspace']);

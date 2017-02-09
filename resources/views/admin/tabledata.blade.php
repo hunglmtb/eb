@@ -23,28 +23,6 @@ $useBootrapCss						= false;
 						},
 					};
 
-	source.initRequest = function(tab,columnName,newValue,collection){
-		postData = actions.loadedData[tab];
-		srcData = {	name : columnName,
-					value : newValue,
-					Facility : postData['Facility'],
- 					target: source[columnName].dependenceColumnName,
-// 					srcType : srcType,
-				};
-		return srcData;
-	}
-
-	var renderFirsColumn = actions.renderFirsColumn;
-	actions.renderFirsColumn  = function ( data, type, rowData ) {
-		var html = renderFirsColumn(data, type, rowData );
-		var id = rowData['DT_RowId'];
-		isAdding = (typeof id === 'string') && (id.indexOf('NEW_RECORD_DT_RowId') > -1);
-		if(!isAdding){
-			html += '<a id="edit_row_'+id+'" class="actionLink">Edit</a>';
-		}
-		return html;
-	};
-
 	actions.tableChange = function(e){
 		var s=$("#listTables :selected").text();
 		if(s!="" && s!="undefined")

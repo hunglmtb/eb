@@ -6,9 +6,9 @@ use Carbon\Carbon;
 
  class RunTicketValue extends FeatureTicketModel 
 { 
-	protected $table = 'RUN_TICKET_VALUE';
-	protected $primaryKey = 'ID';
-	protected $dates = ['OCCUR_DATE','REPORT_DATE'];
+	protected $table 		= 'RUN_TICKET_VALUE';
+	protected $primaryKey 	= 'ID';
+	protected $dates 		= ['OCCUR_DATE','REPORT_DATE'];
 	protected $fillable  = [
 							'OCCUR_DATE',
 							'TICKET_NO',
@@ -27,7 +27,11 @@ use Carbon\Carbon;
 							'TICKET_NET_MASS',
 							'TICKET_WTR_VOL',
 							'LOADING_TIME',
-							'REPORT_DATE'
+							'REPORT_DATE',
+							'PHASE_TYPE',
+							'FLOW_ID',
+							'TARGET_TANK',
+			
 	];
 	
 	

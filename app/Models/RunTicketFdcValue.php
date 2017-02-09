@@ -13,7 +13,6 @@ use App\Models\FeatureTicketModel;
 							'TICKET_TYPE', 
 							'BA_ID', 
 							'TANK_ID', 
-							'TARGET_TANK', 
 							'OCCUR_DATE', 
 							'LAST_DATA_READ', 
 							'OBS_API', 
@@ -36,6 +35,9 @@ use App\Models\FeatureTicketModel;
 							'TEMP_UOM', 
 							'PRESS_UOM', 
 							'CARRIER_ID',
-							'REPORT_DATE'
+							'REPORT_DATE',
+							'PHASE_TYPE',
+							'FLOW_ID',
+							'TARGET_TANK', 
 	];
 } 

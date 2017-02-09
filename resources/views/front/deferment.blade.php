@@ -61,17 +61,6 @@ DEFERMENT DATA CAPTURE
 	actions.enableUpdateView = function(tab,postData){
 		return tab=="Deferment";
 	};
-	
-	source.initRequest = function(tab,columnName,newValue,collection){
-		postData = actions.loadedData[tab];
-		srcData = {	name : columnName,
-					value : newValue,
-					Facility : postData['Facility'],
- 					target: source[columnName].dependenceColumnName,
-// 					srcType : srcType,
-				};
-		return srcData;
-	}
 
 	actions.getTableOption	= function(data,tab){
 		if(tab=="Deferment") return {};

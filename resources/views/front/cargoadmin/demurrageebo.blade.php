@@ -69,13 +69,6 @@ DEMURRAGE/EBO
 		}
 	}
 /*
-	source.initRequest = function(tab,columnName,newValue,collection, rowData){
-		postData = actions.loadedData[tab];
-		srcData = {						
- 					row_id : rowData['DT_RowId']
-				};
-		return srcData;
-	}
 
 	actions.dominoColumnSuccess = function(_data, dependenceColumnNames, rowData, tab){
 		var data = _data.dataSet;

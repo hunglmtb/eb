@@ -225,11 +225,13 @@ var typetoclass = function (data){
 };
 
 var source = {
-		initRequest	:	 function(tab,columnName,newValue,collection, rowData){
+		initRequest	:	 function(tab,columnName,newValue,collection){
 			postData = actions.loadedData[tab];
 			srcData = {	name : columnName,
 						value : newValue,
-						};
+						Facility : postData['Facility'],
+					};
+			if(typeof source[columnName] == "object") srcData.target	= source[columnName].dependenceColumnName;
 			return srcData;
 		}
 	};
