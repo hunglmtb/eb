@@ -124,6 +124,7 @@ class AllocationController extends Controller {
 		$alloc_type = $data ['alloc_type'];
 		$theor_value_type = $data ['theor_value_type'];
 		$theor_phase = $data ['theor_phase'];
+		$from_option = $data ['from_option'];
 		$obj_froms = explode ( ',', $data ['obj_from'] );
 		$obj_tos = explode ( ',', $data ['obj_to'] );
 		
@@ -133,7 +134,8 @@ class AllocationController extends Controller {
 			'ORDER'=>$order,
 			'ALLOC_TYPE'=>$alloc_type,
 			'THEOR_VALUE_TYPE'=>$theor_value_type,
-			'THEOR_PHASE'=>$theor_phase
+			'THEOR_PHASE'=>$theor_phase,
+			'FROM_OPTION'=>$from_option
 		];
 		
 		$condition = array (
@@ -235,7 +237,7 @@ class AllocationController extends Controller {
 					$bgcolor = "#eeeeee";
 				else
 					$bgcolor = "#f8f8f8";
-				$str .= "<tr bgcolor='$bgcolor'>";
+				$str .= "<tr bgcolor='$bgcolor' class='runner_item' id='runner_item" . $row->ID . "' data-from_option='" . $row->FROM_OPTION . "'>";
 				$str .= "<td style=\"cursor:pointer\" onclick=\"\"><span id='Qorder_" . $row->ID . "'>$row->ORDER</span></td>";
 				$str .= "<td><span id='Qrunner_name_" . $row->ID . "'>$row->NAME</span></td>";
 				$str .= "<td><span style='display:none' id='alloc_type_" . $row->ID . "'>$row->ALLOC_TYPE</span><span style='display:none' id='theor_value_type_" . $row->ID . "'>$row->THEOR_VALUE_TYPE</span><span style='display:none' id='theor_phase_" . $row->ID . "'>$row->THEOR_PHASE</span>$row->ALLOC_TYPE_NAME" . ($row->THEOR_PHASE_NAME ? "<br><font size=1 color=green>(Theor phase: $row->THEOR_PHASE_NAME)</font>" : "") . ($row->THEOR_VALUE_TYPE_NAME ? "<br><font size=1 color=green>(Theor value type: $row->THEOR_VALUE_TYPE_NAME)</font>" : "") . "</td>";
@@ -568,8 +570,9 @@ class AllocationController extends Controller {
 		$alloc_type = $data ['alloc_type'];
 		$theor_value_type = $data ['theor_value_type'];
 		$theor_phase = $data ['theor_phase'];
+		$from_option = $data ['from_option'];
 		//Update order
-		AllocRunner::where(['ID'=>$runner_id])->update(['NAME'=>$runner_name, 'ORDER'=>$order, 'ALLOC_TYPE'=>$alloc_type, 'THEOR_VALUE_TYPE'=>$theor_value_type, 'THEOR_PHASE'=>$theor_phase]);
+		AllocRunner::where(['ID'=>$runner_id])->update(['NAME'=>$runner_name, 'ORDER'=>$order, 'ALLOC_TYPE'=>$alloc_type, 'THEOR_VALUE_TYPE'=>$theor_value_type, 'THEOR_PHASE'=>$theor_phase, 'FROM_OPTION'=>$from_option]);
 		
 		//Delete all Object in runner
 		AllocRunnerObjects::where(['RUNNER_ID'=>$runner_id])->delete();

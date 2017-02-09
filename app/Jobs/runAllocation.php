@@ -818,7 +818,9 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 			$total_to = $sum [0]->total_to;
 			// _log("command: $sSQL");
 			$this->_log ( "total_to (theor): $total_to", 2 );
-			if($total_to)
+			if($total_from == 0)
+				$this->_log ( "Allocation factor: 0");
+			else if($total_to)
 				$this->_log ( "Allocation factor: ".round($total_from/$total_to,4), 2 );
 		} else {
 			$ret = $this->_log ( "TO object not found", 1 );
@@ -986,8 +988,8 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 		}
 
 		// Alloc
-		if ($total_to == 0) {
-			$ret = $this->_log ( "total_to is zero, can not calculate", 1 );
+		if ($total_to == 0 && $total_from !=0) {
+			$ret = $this->_log ( "total_to is zero (total_from<>0), can not calculate", 1 );
 			if ($ret === false)
 				return false;
 		}
@@ -996,7 +998,10 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 			if ($row->ALLOC_THEOR === '' || $row->ALLOC_THEOR == null) {
 				$row->ALLOC_THEOR = 0;
 			}
-			$v_to = $total_from * $row->ALLOC_THEOR / $total_to;
+			if ($total_to == 0 && $total_from ==0)
+				$v_to = 0;
+			else
+				$v_to = $total_from * $row->ALLOC_THEOR / $total_to;
 			//$this->_log ("v_to = $total_from * {$row->ALLOC_THEOR} / $total_to = ".$v_to, 2 );
 
 			if ($obj_type_to == $OBJ_TYPE_FLOW) {

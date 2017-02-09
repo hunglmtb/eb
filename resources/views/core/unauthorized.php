@@ -6,6 +6,6 @@
 <hr>
 <footer role="contentinfo">
 		<div style="text-align: center; padding: 10px; color: #666">
-			<font face="Arial" size="1">Copyright &copy; 2016 eDataViz LLC</font>
+			<font face="Arial" size="1">Copyright &copy; 2017 eDataViz LLC</font>
 		</div>
 </footer>

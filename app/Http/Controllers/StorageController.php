@@ -115,6 +115,8 @@ class StorageController extends CodeController {
 	    			\DB::raw("sum(END_LEVEL) 		as	END_LEVEL"),
 	    			\DB::raw("sum(TANK_GRS_VOL) 		as	GRS_VOL"),
 	    			\DB::raw("sum(TANK_NET_VOL) 		as	NET_VOL"),
+	    			\DB::raw("sum(TANK_GRS_MASS) 		as	GRS_MASS"),
+	    			\DB::raw("sum(TANK_NET_MASS) 		as	NET_MASS"),
 	    			\DB::raw("sum(AVAIL_SHIPPING_VOL) as	AVAIL_SHIPPING_VOL")];
     	$attributes = ['OCCUR_DATE'=>$occur_date];
     	$storage_ids = [];
