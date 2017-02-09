@@ -21,7 +21,7 @@ class ReportController extends Controller {
 			->select("ID", "NAME", "FILE")
 			->orderBy('ORDER')
 			->get();
-		return response ()->json ($reports);		
+		return response ()->json ($reports);
 	}
 	
 	public function loadParams(Request $request) {
@@ -57,6 +57,7 @@ class ReportController extends Controller {
     		{
     			$reports = RptReport::where('GROUP','=', $row->ID)
 					->select("ID", "NAME", "FILE")
+					->orderBy('ORDER')
 					->get();
 				break;
 			}
