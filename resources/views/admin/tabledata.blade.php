@@ -401,6 +401,14 @@ function scopeChange(c){
 "<option value='CODE_PERSONNEL_TITLE'>CODE_PERSONNEL_TITLE</option>"+
 		"";
 	}
+	else if($("#cboObjectScope").val()=="REPORT")
+	{
+		s=
+"<option>RPT_GROUP</option>"+
+"<option>RPT_REPORT</option>"+
+"<option>RPT_PARAM</option>"+
+		"";
+	}
 	else if($("#cboObjectScope").val()=="GHG")
 	{
 		s=
@@ -483,6 +491,7 @@ function scopeChange(c){
 				<option value="AUDIT">AUDIT TRAIL tables</option>
 				<option value="TAGMAP">TAG MAPPING</option>
 				<option value="GHG">GHG tables</option>
+				<option value="REPORT">REPORT tables</option>
 				</select></td>
 					</tr>
 				</table>
