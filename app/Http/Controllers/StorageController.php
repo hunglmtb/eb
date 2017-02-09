@@ -106,32 +106,33 @@ class StorageController extends CodeController {
     
     
     protected function afterSave($resultRecords,$occur_date) {
-//     	\DB::enableQueryLog();
     	$tankDataValue = TankDataValue::getTableName();
     	$tank = Tank::getTableName();
     	$columns = [ \DB::raw("sum(BEGIN_VOL) 	as	BEGIN_VOL"),
 	    			\DB::raw("sum(END_VOL) 			as	END_VOL"),
 	    			\DB::raw("sum(BEGIN_LEVEL) 		as	BEGIN_LEVEL"),
 	    			\DB::raw("sum(END_LEVEL) 		as	END_LEVEL"),
-	    			\DB::raw("sum(TANK_GRS_VOL) 		as	GRS_VOL"),
-	    			\DB::raw("sum(TANK_NET_VOL) 		as	NET_VOL"),
-	    			\DB::raw("sum(TANK_GRS_MASS) 		as	GRS_MASS"),
-	    			\DB::raw("sum(TANK_NET_MASS) 		as	NET_MASS"),
+	    			\DB::raw("sum(TANK_GRS_VOL) 		as	STORAGE_GRS_VOL"),
+	    			\DB::raw("sum(TANK_NET_VOL) 		as	STORAGE_NET_VOL"),
+	    			\DB::raw("sum(TANK_GRS_MASS) 		as	STORAGE_GRS_MASS"),
+	    			\DB::raw("sum(TANK_NET_MASS) 		as	STORAGE_NET_MASS"),
 	    			\DB::raw("sum(AVAIL_SHIPPING_VOL) as	AVAIL_SHIPPING_VOL")];
     	$attributes = ['OCCUR_DATE'=>$occur_date];
     	$storage_ids = [];
     	foreach($resultRecords as $mdlName => $records ){
-//     		$mdl = "App\Models\\".$mdlName;
-//     		$mdlRecords = $mdl::with('Tank')->whereIn();
     		foreach($records as $mdlRecord ){
-	    		$storageID = $mdlRecord->getStorageId();
-	    		if ($storageID) {
-		    		$storage_ids[] = $storageID;
-	    		}
+				if($mdlRecord->modelName == "TankDataValue"){
+					$storageID = $mdlRecord->getStorageId();
+					if ($storageID) {
+						$storage_ids[] = $storageID;
+					}
+				}
     		}
     	}
     	$storage_ids = array_unique($storage_ids);
-    	 
+
+     	\DB::enableQueryLog();
+
     	foreach($storage_ids as $storage_id){
 	    	$values = TankDataValue::join($tank,function ($query) use ($tankDataValue,$tank,$storage_id) {
 						    					$query->on("$tank.ID",'=',"$tankDataValue.TANK_ID")
@@ -147,7 +148,7 @@ class StorageController extends CodeController {
 	  		$values['OCCUR_DATE'] = $occur_date;
 	  		StorageDataValue::updateOrCreate($attributes,$values);
     	}
-//     	\Log::info(\DB::getQueryLog());
+     	\Log::info(\DB::getQueryLog());
     }
     
 	public function getHistoryConditions($table,$rowData,$row_id){
