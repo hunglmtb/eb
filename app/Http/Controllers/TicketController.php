@@ -33,6 +33,8 @@ class TicketController extends CodeController {
 					"FLOW_PHASE"		=> $item->FLOW_PHASE,
 					"TANK_ID"			=> $item->TANK_ID,
     				"ID"				=> $item->ID,
+					"TICKET_NO"			=> $item->TICKET_NO,
+    				"OCCUR_DATE"		=> $item->OCCUR_DATE->toDateString(),
 			];
 		});
 		return $objectIds;
