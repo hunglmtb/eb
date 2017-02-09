@@ -34,17 +34,6 @@ TAG MAPPING CONFIG
 
 	addingOptions.keepColumns = ['TABLE_NAME','COLUMN_NAME','OBJECT_TYPE'];
 
-	source.initRequest = function(tab,columnName,newValue,collection){
-		postData = actions.loadedData[tab];
-		srcData = {	name : columnName,
-					value : newValue,
-					Facility : postData['Facility'],
- 					target: source[columnName].dependenceColumnName,
-// 					srcType : srcType,
-				};
-		return srcData;
-	}
-
 	actions['doMoreAddingRow'] = function(addingRow){
 		if(typeof addingRow['OBJECT_TYPE'] == "undefined") addingRow['OBJECT_TYPE'] 	= $('#IntObjectType').val();
 		addingRow['OBJECT_ID'] 		= $('#ObjectName').val();

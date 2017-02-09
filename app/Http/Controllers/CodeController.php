@@ -730,6 +730,7 @@ class CodeController extends EBController {
 	    				$rs[] = $selectData;
 	    				break;
 		    	case 'PRODUCT_TYPE' :
+		    	case 'PHASE_TYPE' :
 		    		$selectData = ['id'=>'CodeProductType','targets'=>$i,'COLUMN_NAME'=>$columnName];
 		    		$selectData['data'] = CodeProductType::all();
 		    		$rs[] = $selectData;
@@ -764,11 +765,11 @@ class CodeController extends EBController {
 	    			$selectData['data'] = CodeTicketType::all();
 	    			$rs[] = $selectData;
 	    			break;
-    			case 'TARGET_TANK' :
+    			/* case 'TARGET_TANK' :
     				$selectData = ['id'=>'Tank','targets'=>$i,'COLUMN_NAME'=>$columnName];
     				$selectData['data'] = Tank::where('FACILITY_ID', $facility_id)->get();
     				$rs[] = $selectData;
-    				break;
+    				break; */
     			case 'CARRIER_ID' :
     			case 'PD_TRANSIT_CARRIER_ID' :
     			case 'CONNECTING_CARRIER' :
@@ -1181,16 +1182,20 @@ class CodeController extends EBController {
     	$sourceColumnValue = $postData['value'];
     	$dataSet = [];
     
-    	if (array_key_exists($sourceColumn, $this->extraDataSetColumns)) {
-    		$extraDataSetColumn = $this->extraDataSetColumns[$sourceColumn];
-    		$targetColumn = $extraDataSetColumn['column'];
-    		$data = $this->loadTargetEntries($sourceColumnValue,$sourceColumn,$extraDataSetColumn,null);
-    		$dataSet[$targetColumn] = [	'data'			=>	$data,
-    				'ofId'			=>	$sourceColumnValue,
-    				'sourceColumn'	=>	$sourceColumn
-    		];
+    	$targets	= array_key_exists("target", $postData)?$postData["target"]:null;
+    	$targets	= $targets&&is_array($targets)&&count($targets)>0?$targets:
+    					($this->extraDataSetColumns&&array_key_exists($sourceColumn, $this->extraDataSetColumns)?
+    							[$this->extraDataSetColumns[$sourceColumn]]:null);
+    	if ($targets) {
+		    foreach($targets as $extraDataSetColumn ){
+			   	$targetColumn = is_array($extraDataSetColumn)?$extraDataSetColumn['column']:$extraDataSetColumn;
+			   	$data = $this->loadTargetEntries($sourceColumnValue,$sourceColumn,$extraDataSetColumn,$postData);
+			   	$dataSet[$targetColumn] = [	'data'			=>	$data,
+			   			'ofId'			=>	$sourceColumnValue,
+			   			'sourceColumn'	=>	$sourceColumn
+			   	];
+		    }
     	}
-    
     	return response()->json(['dataSet'=>$dataSet,
     			'postData'=>$postData]);
     }

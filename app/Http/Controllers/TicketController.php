@@ -13,6 +13,10 @@ class TicketController extends CodeController {
 		
  		$this->valueModel = "RunTicketValue";
 		$this->keyColumns = [$this->idColumn,$this->phaseColumn,'TANK_ID','OCCUR_DATE','TICKET_NO'];
+		
+		$this->extraDataSetColumns = [	
+										'PHASE_TYPE'		=>	'TARGET_TANK',
+		];
 	}
 	
 	public function enableBatchRun($dataSet,$mdlName,$postData){
@@ -27,8 +31,8 @@ class TicketController extends CodeController {
 		$objectIds = $dataSet->map(function ($item, $key) {
 			return ["DT_RowId"			=> $item->DT_RowId,
 					"FLOW_PHASE"		=> $item->FLOW_PHASE,
-					"TANK_ID"			=> $item->TANK_ID
-					// 					"TANK_ID"			=> $item->TANK_ID,
+					"TANK_ID"			=> $item->TANK_ID,
+    				"ID"				=> $item->ID,
 			];
 		});
 		return $objectIds;
@@ -50,21 +54,43 @@ class TicketController extends CodeController {
     					->where($wheres)
 				    	->whereBetween('OCCUR_DATE', [$occur_date,$date_end])
 				    	->select(
+				    			"$dcTable.*",
 								"$dcTable.ID as $dcTable",
 				    			"$dcTable.TANK_ID as OBJ_ID",
 				    			"$tank.PRODUCT as FLOW_PHASE",
 				    			"$dcTable.ID as DT_RowId",
-				    			"$dcTable.OCCUR_DATE as T_OCCUR_DATE",
-				    			"$dcTable.*") 
+				    			"$dcTable.OCCUR_DATE as T_OCCUR_DATE"
+				    			) 
   		    			->orderBy("$dcTable.OCCUR_DATE")
   		    			->orderBy("$dcTable.LOADING_TIME")
   		    			->orderBy("$dcTable.TICKET_NO")
   		    			->get();
 //  		\Log::info(\DB::getQueryLog());
- 		    			
-    	return ['dataSet'=>$dataSet,
-//     			'objectIds'=>$objectIds
+  		$extraDataSet 	= $this->getExtraDataSet($dataSet, null);
+    	return ['dataSet'		=>$dataSet,
+     			'extraDataSet'	=>$extraDataSet
     	];
+    }
+    
+    public function loadTargetEntries($sourceColumnValue,$sourceColumn,$extraDataSetColumn,$postData){
+    	$data = null;
+    	switch ($sourceColumn) {
+    		case 'PHASE_TYPE':
+    			switch ($extraDataSetColumn) {
+    				case 'TARGET_TANK':
+    					$targetEloquent = "App\Models\Tank";
+    					$data = $targetEloquent::where('PRODUCT','=',$sourceColumnValue)
+    											->select(
+    												"*",
+					    							"ID as value",
+					    							"NAME as text"
+					    						)
+    											->get();
+    					break;
+    			}
+    			break;
+    	}
+    	return $data;
     }
     
     public function checkExistPostEntry($editedData,$model,$element,$idColumn){
@@ -80,7 +106,6 @@ class TicketController extends CodeController {
 		    	(array_search($element[$ticketNo],$ticketNos)===FALSE);
     	return $notExist;
     }
-    
     
     public function getHistoryConditions($dcTable,$rowData,$row_id){
     	return ['TANK_ID'			=>	$rowData["TANK_ID"],
