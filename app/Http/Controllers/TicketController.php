@@ -20,7 +20,7 @@ class TicketController extends CodeController {
 	}
 	
 	public function enableBatchRun($dataSet,$mdlName,$postData){
-		return true;
+		return false;
 	}
 	
     public function getFirstProperty($dcTable){
