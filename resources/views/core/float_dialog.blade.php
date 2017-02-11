@@ -164,6 +164,67 @@
 					(texts.hasOwnProperty('ObjectTypeProperty')? 	texts["ObjectTypeProperty"]		:"")+
 					")";
 		};
+
+		editBox.renderEditFilter	= function(objects){
+		    $("#box_loading").css("display","none");
+		    $("#editBoxContentview").show();
+		    $("#contrainList").hide();
+		}
+		
+		editBox.addMoreHandle	= function ( table,rowData,td,tab,element) {
+			var id = rowData['DT_RowId'];
+			var moreFunction = function(e){
+				e.preventDefault();
+
+				if(typeof editBox.renderEditFilter == "function") editBox.renderEditFilter(rowData.OBJECTS);
+
+			    $("button[class=saveAction]").remove();
+			    var saveAsBtn = $("<button id ='actionSaveAsFilter' class='saveAction' style='width: 61px;float:right;margin-left:5px'>Save as</button>");
+			    saveAsBtn.click(function() {
+			    	alert("please add object!");
+				});
+//	 		    saveAsBtn.appendTo($("#objectListContainer"));
+			    
+			    var actionsBtn = $("<button id ='actionSaveFilter' class='saveAction' style='width: 61px;float:right;margin-left:5px'>Save</button>");
+			    actionsBtn.click(function() {
+			    	var lis			= $("#objectList ul:first li");
+			    	if(lis.length>0){
+						var objects		= [];
+						$.each(lis, function( index, li) {
+							var span = $(li).find("span:first");
+							objects.push(span.data());
+						});
+						rowData.OBJECTS = objects;
+						if(typeof editBox.updateMoreObject == "function") editBox.updateMoreObject(rowData);
+		 				editBox.closeEditWindow(true);
+			    	}
+			    	else alert("please add object!");
+				});
+			    actionsBtn.appendTo($("#objectListContainer"));
+			    $("#floatBox").dialog( {
+					editId	: "editBoxContentview",
+					height	: editBox.size.height,
+					width	: editBox.size.width, 
+					position: { my: 'top', at: 'top+150' },
+					modal	: true,
+					title	: "Edit Summary Item",
+					close	: function(event) {
+								$("#objectList").css('display','none');
+								$("button[class=saveAction]").css('display','none');
+							    $("button[class=saveAction]").remove();
+						   	 },
+			   	 	open	: function( event, ui ) {
+								$("#objectList").css('display','block');
+							},
+				});
+	 		    if(typeof editBox.renderFilter == "function")  editBox.renderFilter();
+			    currentSpan = null;
+			    if(typeof editBox.editObjectMoreHandle == "function") editBox.editObjectMoreHandle(table,rowData,td,tab);
+			    editBox.currentId = id;
+			    editBox.currentTable = table;
+			};
+			element.click(moreFunction);
+		}
 	}
 </script>
 @yield('editBoxParams')

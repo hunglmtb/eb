@@ -525,6 +525,7 @@ var actions = {
 	},
 	applyEditable : function (tab,type,td, cellData, rowData, property,collection){
 		var columnName = typeof property === 'string'?property:property.data;
+		if(typeof type == "object" && typeof type.applyEditable == "function") return type.applyEditable(tab,type,td, cellData, rowData, property,collection);
 		var successFunction = actions.getEditSuccessfn(property,tab,td, rowData, columnName,collection,type);
 		var  editable = {
 	    	    title: 'edit',
@@ -926,7 +927,7 @@ var actions = {
 		return isKeep;
 	},
 	getCellType : function(data,type,cindex){
-		type = actions.extraDataSetColumns.hasOwnProperty(data.properties[cindex].data)?'select':type;
+		type = typeof type != "object" && actions.extraDataSetColumns.hasOwnProperty(data.properties[cindex].data)?'select':type;
 		return type;
 	},
 	
@@ -1116,23 +1117,8 @@ var actions = {
 			cell["render"] = function ( data2, type2, row ) {
 					if (data2==null||data2=='') return "&nbsp";
  	        		collection = actions.getExtraDataSetColumn(data,cindex,row);
-		     		if(collection!=null){
-		     			var result = $.grep(collection, function(e){
-		     				if(typeof(e) !== "undefined"){
-		     					if(e.hasOwnProperty('ID')) {
-		     						return e['ID'] == data2;
-		     					}
-		     					else if(e.hasOwnProperty('value')) {
-		     						return e['value'] == data2;
-		     					}
-		     				}
-		    				return false;
-		     			});
-		     			if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined" &&result[0].hasOwnProperty('NAME')){
-		     				return result[0]['NAME'];
-		     			}
-		     		}
-					return '';
+ 	        		cellDataText = actions.getValueTextOfSelect(collection,data2);
+					return cellDataText;
 				};
 	    	break;
 	    	
@@ -1143,7 +1129,29 @@ var actions = {
 	    	break;
 
 		}
+		if(typeof type == "object" && type.render == "function") {
+			cell["render"] = type.render(data,cindex);
+		}
 		return cell;
+	},
+	getValueTextOfSelect : function (collection,data2) {
+		if(collection!=null){
+ 			var result = $.grep(collection, function(e){
+ 				if(typeof(e) !== "undefined"){
+ 					if(e.hasOwnProperty('ID')) {
+ 						return e['ID'] == data2;
+ 					}
+ 					else if(e.hasOwnProperty('value')) {
+ 						return e['value'] == data2;
+ 					}
+ 				}
+				return false;
+ 			});
+ 			if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined" &&result[0].hasOwnProperty('NAME')){
+ 				return result[0]['NAME'];
+ 			}
+ 		}
+		 return "&nbsp";
 	},
 	createdFirstCellColumn : function (td, cellData, rowData, row, col) {
 		$(td).css('z-index','1');

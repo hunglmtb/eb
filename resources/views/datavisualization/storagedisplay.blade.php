@@ -286,7 +286,7 @@
 	editBox.editObjectMoreHandle = function (table,rowData,td,tab) {
 		if(typeof rowData.OBJECTS == "object" && rowData.OBJECTS.length >0 &&
 				 (typeof rowData.PlotViewConfig == "undefined" || typeof rowData.ObjectPlotViewConfigId == "undefined" || rowData.PlotViewConfig == rowData.ObjectPlotViewConfigId)){
-					actions.renderEditFilter(rowData.OBJECTS);
+					editBox.renderEditFilter(rowData.OBJECTS);
 		}
 		else{
 			$("#objectList").html("Loading...");
@@ -300,7 +300,7 @@
 					jQuery.extend(originObjects, rowData.OBJECTS);
 					rowData.originObjects			= originObjects;
 					rowData.OBJECTS					= data.objects;
-					actions.renderEditFilter(rowData.OBJECTS);
+					editBox.renderEditFilter(rowData.OBJECTS);
 					console.log ( "viewconfig get success "+rowData.PlotViewConfig);
 				},
 				error		: function(data) {

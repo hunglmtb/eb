@@ -51,6 +51,7 @@
 						break;
 					case "ObjectDataSource":
 						var objectDataSource 	= $(currentObject+'ObjectDataSource').val();
+						if(typeof objectDataSource == "undefined") break;
 						objectDataSource 		= objectDataSource.replace(/_/g," ");
 						objectDataSource 		= objectDataSource.toLowerCase().replace(/\b[a-z]/g, function(letter) {
 						    return letter.toUpperCase();
