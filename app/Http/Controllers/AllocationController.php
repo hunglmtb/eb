@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Jobs\runAllocation;
 use App\Models\AllocJob;
 use App\Models\CodeAllocType;
+use App\Models\CodeAllocFromOption;
 use App\Models\CodeAllocValueType;
 use App\Models\CodeFlowPhase;
 use App\Models\Facility;
@@ -96,6 +97,7 @@ class AllocationController extends Controller {
 		$code_alloc_type = CodeAllocType::all('ID', 'NAME');
 		$codeFlowPhase = CodeFlowPhase::all('ID', 'NAME');
 		$codeAllocValueType = CodeAllocValueType::all('ID', 'NAME');
+		$codeAllocFromOption = CodeAllocFromOption::all('ID', 'NAME');
 	
 		return view ( 'front.allocset', [
 				'result'=>$result, 
@@ -103,6 +105,7 @@ class AllocationController extends Controller {
 				'facility'=>$facility,
 				'codeAllocType'=>$code_alloc_type,
 				'codeFlowPhase' =>$codeFlowPhase,
+				'codeAllocFromOption' =>$codeAllocFromOption,
 				'codeAllocValueType' =>$codeAllocValueType
 		]);
 	}
@@ -173,13 +176,15 @@ class AllocationController extends Controller {
 		$code_alloc_value_type = CodeAllocValueType::getTableName();
 		$code_alloc_type = CodeAllocType::getTableName();
 		$code_flow_phase = CodeFlowPhase::getTableName();
+		$code_alloc_from_option = CodeAllocFromOption::getTableName();
 		
 		$result = DB::table ( $alloc_runner . ' AS a' )
 		->leftjoin ( $code_alloc_value_type . ' AS t', 'a.theor_value_type', '=', 't.ID' )
 		->leftjoin ( $code_alloc_type . ' AS b', 'a.alloc_type', '=', 'b.ID' )
 		->leftjoin ( $code_flow_phase . ' AS c', 'a.theor_phase', '=', 'c.ID' )
+		->leftjoin ( $code_alloc_from_option . ' AS d', 'a.from_option', '=', 'd.ID' )
 		->where ( ['a.JOB_ID' => $data['job_id']])
-		->orderBy('a.ORDER')->select('a.*', 't.NAME AS THEOR_VALUE_TYPE_NAME', 'b.NAME AS ALLOC_TYPE_NAME','c.NAME AS THEOR_PHASE_NAME')->get();
+		->orderBy('a.ORDER')->select('a.*', 't.NAME AS THEOR_VALUE_TYPE_NAME', 'b.NAME AS ALLOC_TYPE_NAME','c.NAME AS THEOR_PHASE_NAME','d.NAME as ALLOC_FROM_SOURCE')->get();
 		$i=0;
 		$str = "";
 		$runner_options="";
@@ -241,10 +246,14 @@ class AllocationController extends Controller {
 				$str .= "<td style=\"cursor:pointer\" onclick=\"\"><span id='Qorder_" . $row->ID . "'>$row->ORDER</span></td>";
 				$str .= "<td><span id='Qrunner_name_" . $row->ID . "'>$row->NAME</span></td>";
 				$str .= "<td><span style='display:none' id='alloc_type_" . $row->ID . "'>$row->ALLOC_TYPE</span><span style='display:none' id='theor_value_type_" . $row->ID . "'>$row->THEOR_VALUE_TYPE</span><span style='display:none' id='theor_phase_" . $row->ID . "'>$row->THEOR_PHASE</span>$row->ALLOC_TYPE_NAME" . ($row->THEOR_PHASE_NAME ? "<br><font size=1 color=green>(Theor phase: $row->THEOR_PHASE_NAME)</font>" : "") . ($row->THEOR_VALUE_TYPE_NAME ? "<br><font size=1 color=green>(Theor value type: $row->THEOR_VALUE_TYPE_NAME)</font>" : "") . "</td>";
+				$in_option = "";
+				if($row->ALLOC_FROM_SOURCE){
+					$in_option = "<font color='green'>&gt;&gt; $row->ALLOC_FROM_SOURCE</font><br>";
+				}
 				if ($count_in > 5)
-					$str .= "<td>" . str_replace ( "{objects}", "$count_in objects", $o_in_x ) . "<span id='Qobjectfrom_" . $row->ID . "' style='display:none'>$o_in</span></td>";
+					$str .= "<td>$in_option" . str_replace ( "{objects}", "$count_in objects", $o_in_x ) . "<span id='Qobjectfrom_" . $row->ID . "' style='display:none'>$o_in</span></td>";
 				else
-					$str .= "<td><span id='Qobjectfrom_" . $row->ID . "'>$o_in</span></td>";
+					$str .= "<td>$in_option<span id='Qobjectfrom_" . $row->ID . "'>$o_in</span></td>";
 				if ($count_out > 5)
 					$str .= "<td>" . str_replace ( "{objects}", "$count_out objects", $o_out_x ) . "<span id='Qobjectto_" . $row->ID . "' style='display:none'>$o_out</span></td>";
 				else

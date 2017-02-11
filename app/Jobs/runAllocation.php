@@ -279,7 +279,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     	->join ( 'code_alloc_value_type AS c', 'c.id', '=', 'b.value_type' )
     	->leftjoin('code_alloc_value_type AS t', 'a.theor_value_type', '=', 't.id')
     	->where(['a.id'=>$runner_id])
-    	->get(['a.ALLOC_TYPE', 'a.THEOR_PHASE', 'c.CODE AS ALLOC_ATTR_CODE', 't.CODE AS THEOR_ATTR_CODE', 'b.*']);
+    	->get(['a.ALLOC_TYPE', 'a.THEOR_PHASE', 'a.FROM_OPTION', 'c.CODE AS ALLOC_ATTR_CODE', 't.CODE AS THEOR_ATTR_CODE', 'b.*']);
     	//\Log::info ( \DB::getQueryLog () );
 		$row = $tmps[0];
     	if($row)
@@ -288,6 +288,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     		$alloc_type=$row->ALLOC_TYPE;
     		$theor_attr=$row->THEOR_ATTR_CODE;
     		$theor_phase=$row->THEOR_PHASE;
+			$from_option=$row->FROM_OPTION;
 
     		$alloc_oil=($row->ALLOC_OIL == 1);
     		$alloc_gas=($row->ALLOC_GAS == 1);
@@ -296,11 +297,11 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     		$alloc_water=($row->ALLOC_WATER == 1);
     		$alloc_comp=($row->ALLOC_COMP == 1);
 
-    		if($alloc_oil) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 1,$theor_phase,$alloc_comp,$alloc_type,$theor_attr);
-    		if($alloc_gas) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 2,$theor_phase,$alloc_comp,$alloc_type,$theor_attr);
-    		if($alloc_water) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 3,$theor_phase,$alloc_comp,$alloc_type,$theor_attr);
-    		if($alloc_gaslift) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 21,$theor_phase,$alloc_comp,$alloc_type,$theor_attr);
-    		if($alloc_condensate) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 5,$theor_phase,$alloc_comp,$alloc_type,$theor_attr);
+    		if($alloc_oil) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 1,$theor_phase,$alloc_comp,$alloc_type,$theor_attr,$from_option);
+    		if($alloc_gas) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 2,$theor_phase,$alloc_comp,$alloc_type,$theor_attr,$from_option);
+    		if($alloc_water) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 3,$theor_phase,$alloc_comp,$alloc_type,$theor_attr,$from_option);
+    		if($alloc_gaslift) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 21,$theor_phase,$alloc_comp,$alloc_type,$theor_attr,$from_option);
+    		if($alloc_condensate) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 5,$theor_phase,$alloc_comp,$alloc_type,$theor_attr,$from_option);
     	}
     	else
     	{
@@ -501,7 +502,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     	return null;
     }
 
-    private function run_runner($runner_id, $from_date, $to_date, $alloc_attr, $alloc_phase, $theor_phase, $alloc_comp, $alloc_type, $theor_attr)
+    private function run_runner($runner_id, $from_date, $to_date, $alloc_attr, $alloc_phase, $theor_phase, $alloc_comp, $alloc_type, $theor_attr, $from_option)
     {
     	$runner_name = AllocRunner::where ( [
     			'ID' => $runner_id
@@ -819,7 +820,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 			// _log("command: $sSQL");
 			$this->_log ( "total_to (theor): $total_to", 2 );
 			if($total_from == 0)
-				$this->_log ( "Allocation factor: 0");
+				$this->_log ( "Allocation factor: 0", 2 );
 			else if($total_to)
 				$this->_log ( "Allocation factor: ".round($total_from/$total_to,4), 2 );
 		} else {
@@ -1630,7 +1631,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     	->leftJoin ( 'code_alloc_value_type AS c2', 'c2.id', '=', 'a.THEOR_VALUE_TYPE' )
     	->where(['b.id'=>$job_id])
     	->orderBy('a.ORDER')
-    	->get(['a.ID AS RUNNER_ID', 'a.ALLOC_TYPE', 'a.THEOR_PHASE', 'c.CODE AS ALLOC_ATTR_CODE', 'c2.CODE AS THEOR_ATTR_CODE', 'b.*']);
+    	->get(['a.ID AS RUNNER_ID', 'a.ALLOC_TYPE', 'a.FROM_OPTION', 'a.THEOR_PHASE', 'c.CODE AS ALLOC_ATTR_CODE', 'c2.CODE AS THEOR_ATTR_CODE', 'b.*']);
     	//\Log::info ( \DB::getQueryLog () );
 
     	$count=0;
@@ -1639,6 +1640,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     		$alloc_type=$row->ALLOC_TYPE;
     		$theor_attr=$row->THEOR_ATTR_CODE;
     		$theor_phase=$row->THEOR_PHASE;
+			$from_option=$row->FROM_OPTION;
 
     		$alloc_oil=($row->ALLOC_OIL == 1);
     		$alloc_gas=($row->ALLOC_GAS == 1);
@@ -1647,11 +1649,11 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     		$alloc_condensate=($row->ALLOC_CONDENSATE == 1);
     		$alloc_comp=($row->ALLOC_COMP == 1);
     		$runner_id=$row->RUNNER_ID;
-    		if($alloc_oil) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 1,$theor_phase,$alloc_comp,$alloc_type,$theor_attr);
-    		if($alloc_gas) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 2,$theor_phase,$alloc_comp,$alloc_type,$theor_attr);
-    		if($alloc_water) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 3,$theor_phase,$alloc_comp,$alloc_type,$theor_attr);
-    		if($alloc_gaslift) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 21,$theor_phase,$alloc_comp,$alloc_type,$theor_attr);
-    		if($alloc_condensate) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 5,$theor_phase,$alloc_comp,$alloc_type,$theor_attr);
+    		if($alloc_oil) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 1,$theor_phase,$alloc_comp,$alloc_type,$theor_attr,$from_option);
+    		if($alloc_gas) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 2,$theor_phase,$alloc_comp,$alloc_type,$theor_attr,$from_option);
+    		if($alloc_water) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 3,$theor_phase,$alloc_comp,$alloc_type,$theor_attr,$from_option);
+    		if($alloc_gaslift) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 21,$theor_phase,$alloc_comp,$alloc_type,$theor_attr,$from_option);
+    		if($alloc_condensate) $this->run_runner($runner_id, $from_date, $to_date, $alloc_attr, 5,$theor_phase,$alloc_comp,$alloc_type,$theor_attr,$from_option);
     		$count++;
     	}
     	if($count==0){

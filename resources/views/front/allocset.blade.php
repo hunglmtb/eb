@@ -29,7 +29,7 @@ $currentSubmenu = '/allocset';
 <script src="/common/js/jquery.js"></script>
 <script src="/common/js/jquery-ui.js"></script>
 <script src="/common/js/splitter.js"></script>
-<script src="/common/js/allocset.js?1"></script>
+<script src="/common/js/allocset.js?3"></script>
 <script type="text/javascript">
 $().ready(function() {
 	$("#MySplitter").height($(window).height()-150);
@@ -435,7 +435,12 @@ var _configallocation = {
 
 							<td style="line-height:28px">Order <input id="txtRunnerOrder" style="width: 60px"
 								type="number" name="txtRunnerOrder" size="20">
-								&nbsp; &nbsp;<input type="checkbox" id="chkFromAllocOption"> Don't use From Allocation data
+								&nbsp; &nbsp;From data source <select id="cboAllocFromOption" name="cboAllocFromOption">
+								<option value="">Default (Alloc >> Standard >> Theor data)</option>
+								@foreach($codeAllocFromOption as $re)
+									<option value="{!!$re['ID']!!}">{!!$re['NAME']!!}</option> 
+								@endforeach
+							</select>
 								<br>Allocation type <select id="cboRunnerAllocType"	name="cboRunnerAllocType">
 								@foreach($codeAllocType as $re)
 									<option value="{!!$re['ID']!!}">{!!$re['NAME']!!}</option> 

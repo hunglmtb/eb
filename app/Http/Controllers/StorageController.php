@@ -109,13 +109,14 @@ class StorageController extends CodeController {
     	$tankDataValue = TankDataValue::getTableName();
     	$tank = Tank::getTableName();
     	$columns = [ \DB::raw("sum(BEGIN_VOL) 	as	BEGIN_VOL"),
-	    			\DB::raw("sum(END_VOL) 			as	END_VOL"),
-	    			\DB::raw("sum(BEGIN_LEVEL) 		as	BEGIN_LEVEL"),
-	    			\DB::raw("sum(END_LEVEL) 		as	END_LEVEL"),
+	    			\DB::raw("sum(END_VOL) 		as	END_VOL"),
+	    			\DB::raw("sum(BEGIN_LEVEL) 	as	BEGIN_LEVEL"),
+	    			\DB::raw("sum(END_LEVEL) 	as	END_LEVEL"),
 	    			\DB::raw("sum(TANK_GRS_VOL) 		as	STORAGE_GRS_VOL"),
 	    			\DB::raw("sum(TANK_NET_VOL) 		as	STORAGE_NET_VOL"),
 	    			\DB::raw("sum(TANK_GRS_MASS) 		as	STORAGE_GRS_MASS"),
 	    			\DB::raw("sum(TANK_NET_MASS) 		as	STORAGE_NET_MASS"),
+	    			\DB::raw("sum(TANK_WTR_VOL) 		as	STORAGE_WTR_VOL"),
 	    			\DB::raw("sum(AVAIL_SHIPPING_VOL) as	AVAIL_SHIPPING_VOL")];
     	$attributes = ['OCCUR_DATE'=>$occur_date];
     	$storage_ids = [];
