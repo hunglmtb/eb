@@ -621,7 +621,7 @@ class CodeController extends EBController {
 			
 			$new_value 	= $editedData[$this->fdcModel];
 			unset($editedData[$this->fdcModel]);
-			array_unshift($editedData, $new_value);
+			$editedData = [$this->fdcModel => $new_value] + $editedData;
 		}
 	}
 	
