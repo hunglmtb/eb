@@ -1,6 +1,10 @@
 <?php
-
 namespace App\Jobs;
+
+define("OBJ_TYPE_FLOW", 1);
+define("OBJ_TYPE_EU", 2);
+define("OBJ_TYPE_TANK", 3);
+define("OBJ_TYPE_STORAGE", 4);
 
 use App\Jobs\Job;
 use Illuminate\Contracts\Bus\SelfHandling;
@@ -501,7 +505,99 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     	}
     	return null;
     }
+	private function getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu){
+		switch ($obj_type_from) {
+			case OBJ_TYPE_FLOW :
+				$sum = DB::table ( "FLOW_DATA_$type AS a" )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.FLOW_ID', $arrfrom )->select ( DB::raw ( "sum((case when a.FLOW_ID in ($ids_minus) then -1 else 1 end)*IFNULL(a.FL_DATA_$alloc_attr,0)) AS total_from" ) )->get();
+				break;
 
+			case OBJ_TYPE_EU :
+				$sum = DB::table ( "ENERGY_UNIT_DATA_$type AS a" )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.EU_ID', $arrfrom )->where ( [
+						'a.FLOW_PHASE' => $alloc_phase,
+						'a.EVENT_TYPE' => $event_type
+				] )->select ( DB::raw ( "sum((case when a.EU_ID in ($ids_minus) then -1 else 1 end)*IFNULL(a.EU_DATA_$alloc_attr_eu,0)) AS total_from" ) )->get ();
+				break;
+
+			case OBJ_TYPE_TANK :
+				$sum = DB::table ( "TANK_DATA_$type AS a" )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $arrfrom )->select ( DB::raw ( "sum((case when a.TANK_ID in ($ids_minus) then -1 else 1 end)*IFNULL(a.TANK_$alloc_attr,0)) AS total_from" ) )->get ();
+				break;
+
+			case OBJ_TYPE_STORAGE :
+				$sum = DB::table ( "STORAGE_DATA_$type AS a" )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $arrfrom )->select ( DB::raw ( "sum((case when a.STORAGE_ID in ($ids_minus) then -1 else 1 end)*IFNULL(a.STORAGE_$alloc_attr,0)) AS total_from" ) )->get ();
+				break;
+		}
+		$total_from = $sum [0]->total_from;
+		return $total_from;
+	}
+	
+	private function getAllocFrom($type, $obj_type_from, $ids_from, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu){
+		$arrfrom = explode ( ',', $ids_from );
+		switch ($obj_type_from) {
+			case OBJ_TYPE_FLOW :
+				$alloc_from = DB::table ( "FLOW_DATA_$type AS a" )->join ( 'FLOW AS b', 'a.FLOW_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.FLOW_ID', $arrfrom )->SELECT ( DB::raw ( "IFNULL(a.FL_DATA_$alloc_attr,0) AS ALLOC_VALUE", 'a.FLOW_ID AS OBJECT_ID', 'b.NAME AS OBJECT_NAME', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR' ) )->get ();
+				break;
+
+			case OBJ_TYPE_EU :
+				$alloc_from = DB::table ( "ENERGY_UNIT_DATA_$type AS a" )->join ( 'ENERGY_UNIT AS b', 'a.EU_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.EU_ID', $arrfrom )->where ( [
+						'a.FLOW_PHASE' => $alloc_phase,
+						'a.EVENT_TYPE' => $event_type
+				] )->SELECT ( DB::raw ( "IFNULL(a.EU_DATA_$alloc_attr_eu,0) AS ALLOC_VALUE", 'a.EU_ID AS OBJECT_ID', 'b.NAME AS OBJECT_NAME', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR', 'a.FLOW_PHASE' ) )->get ();
+				break;
+
+			case OBJ_TYPE_TANK :
+				$alloc_from = DB::table ( "TANK_DATA_$type AS a" )->join ( 'TANK AS b', 'a.TANK_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $arrfrom )->select ( DB::raw ( "IFNULL(a.TANK_$alloc_attr,0) AS ALLOC_VALUE", 'a.TANK_ID AS OBJECT_ID', 'b.NAME AS OBJECT_NAME', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR' ) )->get ();
+				break;
+
+			case OBJ_TYPE_STORAGE :
+				$alloc_from = DB::table ( "STORAGE_DATA_$type AS a" )->join ( 'STORAGE AS b', 'a.STORAGE_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $arrfrom )->select ( DB::raw ( "IFNULL(a.STORAGE_$alloc_attr,0) AS ALLOC_VALUE", 'a.STORAGE_ID AS OBJECT_ID', 'b.NAME AS OBJECT_NAME', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR' ) )->get ();
+				break;
+		}
+		return $alloc_from;
+	}
+	
+	private function buildFromData($obj_type_from, $ids_from, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu, $from_option){
+		$arrfrom = explode ( ',', $ids_from );
+		if(!$from_option)
+			$from_option = 0;
+		$sum = null;
+		$type = "";
+		switch ($from_option){
+			case 0: //default: alloc >> std >> theor
+				$type = "ALLOC";
+				$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
+				if(!$sum){
+					$type = "VALUE";
+					$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
+				}
+				if(!$sum){
+					$type = "THEOR";
+					$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
+				}
+				break;
+			case 1: //std >> theor
+				$type = "VALUE";
+				$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
+				if(!$sum){
+					$type = "THEOR";
+					$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
+				}
+				break;
+			case 2: //std
+				$type = "VALUE";
+				$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
+				break;
+			case 3: //theor
+				$type = "THEOR";
+				$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
+				break;
+			case 4: //alloc
+				$type = "ALLOC";
+				$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
+				break;
+		}
+		return ["type" => $type, "sum" => $sum];
+	}
+	
     private function run_runner($runner_id, $from_date, $to_date, $alloc_attr, $alloc_phase, $theor_phase, $alloc_comp, $alloc_type, $theor_attr, $from_option)
     {
     	$runner_name = AllocRunner::where ( [
@@ -558,11 +654,6 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 		$obj_type_from = "";
 		$obj_type_to = "";
 
-		$OBJ_TYPE_FLOW = 1;
-		$OBJ_TYPE_EU = 2;
-		$OBJ_TYPE_TANK = 3;
-		$OBJ_TYPE_STORAGE = 4;
-
 		$rows = AllocRunnerObjects::where ( [
 				'RUNNER_ID' => $runner_id
 		] )->get ();
@@ -590,128 +681,15 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 		}
 
 		if ($ids_from) {
-			$total_from = 0;
-			$sum = [ ];
-			$sSQL_alloc_from = [ ];
-			$arrfrom = explode ( ',', $ids_from );
-			if ($obj_type_from == $OBJ_TYPE_FLOW) {
-				// //\DB::enableQueryLog ();
-				$sum = DB::table ( 'FLOW_DATA_ALLOC AS a' )->leftjoin ( 'FLOW_DATA_VALUE AS v', function ($join) {
-					$join->on ( 'v.FLOW_ID', '=', 'a.FLOW_ID' );
-					$join->on ( 'v.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
-				} )->leftjoin ( 'FLOW_DATA_THEOR AS t', function ($join) {
-					$join->on ( 't.FLOW_ID', '=', 'a.FLOW_ID' );
-					$join->on ( 't.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
-				} )->join ( 'FLOW AS b', 'a.FLOW_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.FLOW_ID', $arrfrom )->SELECT ( DB::raw ( 'sum((case when a.FLOW_ID in (' . $ids_minus . ') then -1 else 1 end)*IF(IFNULL(a.FL_DATA_' . $alloc_attr . ',0)>0,a.FL_DATA_' . $alloc_attr . ',IF(IFNULL(v.FL_DATA_' . $alloc_attr . ',0)>0,v.FL_DATA_' . $alloc_attr . ',t.FL_DATA_' . $alloc_attr . '))) AS total_from' ) )->get ();
-				// //\Log::info ( \DB::getQueryLog () );
-
-				//\DB::enableQueryLog ();
-				$sSQL_alloc_from = DB::table ( 'FLOW_DATA_ALLOC AS a' )->leftjoin ( 'FLOW_DATA_VALUE AS v', function ($join) {
-					$join->on ( 'v.FLOW_ID', '=', 'a.FLOW_ID' );
-					$join->on ( 'v.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
-				} )->leftjoin ( 'FLOW_DATA_THEOR AS t', function ($join) {
-					$join->on ( 't.FLOW_ID', '=', 'a.FLOW_ID' );
-					$join->on ( 't.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
-				} )->join ( 'FLOW AS b', 'a.FLOW_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.FLOW_ID', $arrfrom )->SELECT ( DB::raw ( 'IF(IFNULL(a.FL_DATA_' . $alloc_attr . ',0)>0,a.FL_DATA_' . $alloc_attr . ',IF(IFNULL(v.FL_DATA_' . $alloc_attr . ',0)>0,v.FL_DATA_' . $alloc_attr . ',t.FL_DATA_' . $alloc_attr . ')) AS ALLOC_VALUE', 'a.FLOW_ID AS OBJECT_ID', 'b.NAME AS OBJECT_NAME', 'a.ACTIVE_HRS', 'b.NAME AS ALLOC_VALUE', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR' ) )->get ();
-				//\Log::info ( \DB::getQueryLog () );
-			} else if ($obj_type_from == $OBJ_TYPE_EU) {
-				// //\DB::enableQueryLog ();
-				$sum = DB::table ( 'ENERGY_UNIT_DATA_ALLOC AS a' )->leftjoin ( 'ENERGY_UNIT_DATA_VALUE AS v', function ($join) {
-					$join->on ( 'v.EU_ID', '=', 'a.EU_ID' );
-					$join->on ( 'v.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
-					$join->on ( 'v.FLOW_PHASE', '=', 'a.FLOW_PHASE' );
-					$join->on ( 'v.EVENT_TYPE', '=', 'a.EVENT_TYPE' );
-				} )->leftjoin ( 'ENERGY_UNIT_DATA_THEOR AS t', function ($join) {
-					$join->on ( 't.EU_ID', '=', 'a.EU_ID' );
-					$join->on ( 't.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
-					$join->on ( 't.FLOW_PHASE', '=', 'a.FLOW_PHASE' );
-					$join->on ( 't.EVENT_TYPE', '=', 'a.EVENT_TYPE' );
-				} )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.EU_ID', $arrfrom )->where ( [
-						'a.FLOW_PHASE' => $alloc_phase
-				] )->where ( [
-						'a.EVENT_TYPE' => $event_type
-				] )->SELECT ( DB::raw ( 'sum((case when a.EU_ID in (' . $ids_minus . ') then -1 else 1 end)*IF(IFNULL(a.EU_DATA_' . $alloc_attr_eu . ',0)>0,a.EU_DATA_' . $alloc_attr_eu . ',IF(IFNULL(v.EU_DATA_' . $alloc_attr_eu . ',0)>0,v.EU_DATA_' . $alloc_attr_eu . ',t.EU_DATA_' . $alloc_attr_eu . '))) AS total_from' ) )->get ();
-				// //\Log::info ( \DB::getQueryLog () );
-
-				//\DB::enableQueryLog ();
-				$sSQL_alloc_from = DB::table ( 'ENERGY_UNIT_DATA_ALLOC AS a' )->leftjoin ( 'ENERGY_UNIT_DATA_VALUE AS v', function ($join) {
-					$join->on ( 'v.EU_ID', '=', 'a.EU_ID' );
-					$join->on ( 'v.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
-					$join->on ( 'v.FLOW_PHASE', '=', 'a.FLOW_PHASE' );
-					$join->on ( 'v.EVENT_TYPE', '=', 'a.EVENT_TYPE' );
-				} )->leftjoin ( 'ENERGY_UNIT_DATA_THEOR AS t', function ($join) {
-					$join->on ( 't.EU_ID', '=', 'a.EU_ID' );
-					$join->on ( 't.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
-					$join->on ( 't.FLOW_PHASE', '=', 'a.FLOW_PHASE' );
-					$join->on ( 't.EVENT_TYPE', '=', 'a.EVENT_TYPE' );
-				} )->join ( 'ENERGY_UNIT AS b', 'a.EU_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.EU_ID', $arrfrom )->where ( [
-						'a.FLOW_PHASE' => $alloc_phase
-				] )->where ( [
-						'a.EVENT_TYPE' => $event_type
-				] )->SELECT ( DB::raw ( 'IF(IFNULL(a.EU_DATA_' . $alloc_attr_eu . ',0)>0,a.EU_DATA_' . $alloc_attr_eu . ',IF(IFNULL(v.EU_DATA_' . $alloc_attr_eu . ',0)>0,v.EU_DATA_' . $alloc_attr_eu . ',t.EU_DATA_' . $alloc_attr_eu . ')) AS ALLOC_VALUE', 'a.EU_ID AS OBJECT_ID', 'b.NAME AS OBJECT_NAME', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR', 'a.FLOW_PHASE' ) )->get ();
-				//\Log::info ( \DB::getQueryLog () );
-			} else if ($obj_type_from == $OBJ_TYPE_TANK) {
-				// //\DB::enableQueryLog ();
-				$sum = DB::table ( 'TANK_DATA_ALLOC AS a' )->leftjoin ( 'TANK_DATA_VALUE AS v', function ($join) {
-					$join->on ( 'v.TANK_ID', '=', 'a.TANK_ID' );
-					$join->on ( 'v.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
-				} )->join ( 'TANK AS b', 'a.TANK_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $arrfrom )->select ( DB::raw ( 'sum((case when a.TANK_ID in (' . $ids_minus . ') then -1 else 1 end)*IF(IFNULL(a.TANK_' . $alloc_attr . ',0)>0,a.TANK_' . $alloc_attr . ',v.TANK_' . $alloc_attr . ')) AS total_from' ) )->get ();
-				// //\Log::info ( \DB::getQueryLog () );
-
-				// //\DB::enableQueryLog ();
-				$sSQL_alloc_from = DB::table ( 'TANK_DATA_ALLOC AS a' )->leftjoin ( 'TANK_DATA_VALUE AS v', function ($join) {
-					$join->on ( 'v.TANK_ID', '=', 'a.TANK_ID' );
-					$join->on ( 'v.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
-				} )->join ( 'TANK AS b', 'a.TANK_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $arrfrom )->select ( DB::raw ( 'IF(IFNULL(a.TANK_' . $alloc_attr . ',0)>0,a.TANK_' . $alloc_attr . ',v.TANK_' . $alloc_attr . ') AS total_from', 'a.TANK_ID AS OBJECT_ID', 'b.NAME AS OBJECT_NAME', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR' ) )->get ();
-				// //\Log::info ( \DB::getQueryLog () );
-			} else if ($obj_type_from == $OBJ_TYPE_STORAGE) {
-
-				// //\DB::enableQueryLog ();
-				$sum = DB::table ( 'STORAGE_DATA_ALLOC AS a' )->leftjoin ( 'STORAGE_DATA_VALUE AS v', function ($join) {
-					$join->on ( 'v.STORAGE_ID', '=', 'a.STORAGE_ID' );
-					$join->on ( 'v.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
-				} )->join ( 'STORAGE AS b', 'a.STORAGE_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $arrfrom )->select ( DB::raw ( 'sum((case when a.STORAGE_ID in (' . $ids_minus . ') then -1 else 1 end)*IF(IFNULL(a.STORAGE_' . $alloc_attr . ',0)>0,a.STORAGE_' . $alloc_attr . ',a.STORAGE_' . $alloc_attr . ')) AS total_from' ) )->get ();
-				// //\Log::info ( \DB::getQueryLog () );
-
-				//\DB::enableQueryLog ();
-				$sSQL_alloc_from = DB::table ( 'STORAGE_DATA_ALLOC AS a' )->leftjoin ( 'STORAGE_DATA_VALUE AS v', function ($join) {
-					$join->on ( 'v.STORAGE_ID', '=', 'a.STORAGE_ID' );
-					$join->on ( 'v.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
-				} )->join ( 'STORAGE AS b', 'a.STORAGE_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $arrfrom )->select ( DB::raw ( 'IF(IFNULL(a.STORAGE_' . $alloc_attr . ',0)>0,a.STORAGE_' . $alloc_attr . ',a.STORAGE_' . $alloc_attr . ') AS total_from', 'a.STORAGE_ID AS OBJECT_ID', 'b.NAME as OBJECT_NAME', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR' ) )->get ();
-				//\Log::info ( \DB::getQueryLog () );
-			}
-			$total_from = $sum [0]->total_from;
-
-			// _log("command: $sSQL");
-			// _log("sSQL_alloc_from: $sSQL_alloc_from");
-			$this->_log ( "total_from (allocated ~ std value ~ theor): $total_from", 2 );
-
-			if ($total_from <= 0){ // does not have value at "ALLOCATION", use data from STD VALUE
-				$subSum = [ ];
-				$sum = [ ];
-				switch ($obj_type_from) {
-					case $OBJ_TYPE_FLOW :
-						$sum = DB::table ( 'FLOW_DATA_VALUE AS a' )->join ( 'FLOW AS b', 'a.FLOW_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.FLOW_ID', $arrfrom )->select ( DB::raw ( 'sum(FL_DATA_' . $alloc_attr . ') AS total_from' ) )->get ();
-						break;
-
-					case $OBJ_TYPE_EU :
-						$sum = DB::table ( 'ENERGY_UNIT_DATA_VALUE AS a' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.EU_ID', $arrfrom )->where ( [
-						'a.FLOW_PHASE' => $alloc_phase
-						] )->select ( DB::raw ( 'sum(FL_DATA_' . $alloc_attr . ') AS total_from' ) )->get ();
-						break;
-
-					case $OBJ_TYPE_TANK :
-						$sum = DB::table ( 'TANK_DATA_VALUE AS a' )->join ( 'TANK AS b', 'a.TANK_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $arrfrom )->select ( DB::raw ( 'sum(TANK_' . $alloc_attr . ') AS total_from' ) )->get ();
-						break;
-
-					case $OBJ_TYPE_STORAGE :
-						$sum = DB::table ( 'STORAGE_DATA_VALUE AS a' )->join ( 'STORAGE AS b', 'a.STORAGE_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $arrfrom )->select ( DB::raw ( 'sum(STORAGE_' . $alloc_attr . ') AS total_from' ) )->get ();
-						break;
-				}
-
-				$total_from = $sum [0]->total_from;
-				$this->_log ( "total_from (std value): $total_from", 2 );
-			}
+			$alloc_from = [ ];
+			$ret = $this->buildFromData($obj_type_from, $ids_from, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu, $from_option);
+			$total_from = $ret["sum"];
+			$type_from = $ret["type"];
+			if($type_from)
+				$alloc_from = $this->getAllocFrom($type_from, $obj_type_from, $ids_from, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
+			$this->_log ( "total_from ($type_from): $total_from", 2 );
+			if(!$total_from) $total_from= 0;
+			
 		} else {
 			$ret = $this->_log ( "From objects not found", 1 );
 			if ($ret === false)
@@ -721,7 +699,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 			$arrto = explode ( ',', $ids_to );
 			$sum = [ ];
 			$sSQL_alloc = [ ];
-			if ($obj_type_to == $OBJ_TYPE_FLOW) {
+			if ($obj_type_to == OBJ_TYPE_FLOW) {
 				$sum = DB::table ( 'FLOW_DATA_THEOR AS a' )->join ( 'FLOW AS b', 'a.FLOW_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.FLOW_ID', $arrto )->where ( [
 						'b.PHASE_ID' => $theor_phase
 				] )->select ( DB::raw ( 'sum(FL_DATA_' . $theor_attr . ') AS total_to' ) )->get ();
@@ -747,7 +725,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 						'a.OCCUR_DATE AS OCCUR_DATE_STR',
 						'a.FL_DATA_' . $theor_attr . ' AS ALLOC_VALUE'
 				] );
-			} else if ($obj_type_to == $OBJ_TYPE_EU) {
+			} else if ($obj_type_to == OBJ_TYPE_EU) {
 				$sum = DB::table ( 'ENERGY_UNIT_DATA_THEOR AS a' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.EU_ID', $arrto )->where ( [
 						'a.FLOW_PHASE' => $theor_phase,
 						'a.FLOW_PHASE' => $theor_phase,
@@ -779,7 +757,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 						'a.FLOW_PHASE',
 						'EU_DATA_' . $theor_attr_eu . ' AS ALLOC_VALUE'
 				] );
-			} else if ($obj_type_to == $OBJ_TYPE_TANK) {
+			} else if ($obj_type_to == OBJ_TYPE_TANK) {
 				$sum = DB::table ( 'TANK_DATA_VALUE AS a' )->join ( 'TANK AS b', 'a.TANK_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $arrto )->select ( DB::raw ( 'sum(TANK_' . $theor_attr . ') AS total_to' ) )->get ();
 
 				$sSQL_alloc = DB::table ( 'TANK_DATA_VALUE AS a' )->join ( 'TANK AS b', 'a.TANK_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $arrto )->get ( [
@@ -797,7 +775,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 						'a.OCCUR_DATE AS OCCUR_DATE_STR',
 						'a.TANK_' . $theor_attr . ' AS ALLOC_VALUE'
 				] );
-			} else if ($obj_type_to == $OBJ_TYPE_STORAGE) {
+			} else if ($obj_type_to == OBJ_TYPE_STORAGE) {
 				$sum = DB::table ( 'STORAGE_DATA_VALUE AS a' )->join ( 'STORAGE AS b', 'a.STORAGE_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $arrto )->select ( DB::raw ( 'sum(STORAGE_' . $theor_attr . ') AS total_to' ) )->get ();
 
 				$sSQL_alloc = DB::table ( 'STORAGE_DATA_VALUE AS a' )->join ( 'STORAGE AS b', 'a.STORAGE_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $arrto )->get ( [
@@ -832,7 +810,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 		if ($ids_fixed) {
 			$rows = [ ];
 			$arrfixed = explode ( ',', $ids_fixed );
-			if ($obj_type_to == $OBJ_TYPE_FLOW) {
+			if ($obj_type_to == OBJ_TYPE_FLOW) {
 				//\DB::enableQueryLog ();
 				$rows = DB::table ( 'FLOW_DATA_VALUE AS a' )->leftjoin ( 'FLOW_DATA_THEOR AS t', function ($join) {
 					$join->on ( 't.FLOW_ID', '=', 'a.FLOW_ID' );
@@ -841,7 +819,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 						'b.PHASE_ID' => $alloc_phase
 				] )->whereIn ( 'a.FLOW_ID', $arrfixed )->SELECT ( DB::raw ( 'IF(IFNULL(a.FL_DATA_' . $alloc_attr . ',0)>0,a.FL_DATA_' . $alloc_attr . ',t.FL_DATA_' . $alloc_attr . ') AS FIXED_VALUE', 'a.FLOW_ID AS OBJECT_ID', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR' ) )->get ();
 				//\Log::info ( \DB::getQueryLog () );
-			} else if ($obj_type_to == $OBJ_TYPE_EU) {
+			} else if ($obj_type_to == OBJ_TYPE_EU) {
 				//\DB::enableQueryLog ();
 				$rows = DB::table ( 'ENERGY_UNIT_DATA_VALUE AS a' )->leftjoin ( 'ENERGY_UNIT_DATA_THEOR AS t', function ($join) {
 					$join->on ( 't.EU_ID', '=', 'a.EU_ID' );
@@ -855,11 +833,11 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 
 				SELECT ( DB::raw ( 'IF(IFNULL(a.EU_DATA_' . $alloc_attr . ',0)>0,a.EU_DATA_' . $alloc_attr . ',t.EU_DATA_' . $alloc_attr . ') AS FIXED_VALUE', 'a.EU_ID AS OBJECT_ID', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR' ) )->get ();
 				//\Log::info ( \DB::getQueryLog () );
-			} else if ($obj_type_to == $OBJ_TYPE_TANK) {
+			} else if ($obj_type_to == OBJ_TYPE_TANK) {
 				//\DB::enableQueryLog ();
 				$rows = DB::table ( 'TANK_DATA_VALUE AS a' )->join ( 'TANK AS b', 'a.TANK_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $arrfixed )->SELECT ( 'a.TANK_ID AS OBJECT_ID', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR', 'TANK_' . $alloc_attr . ' AS FIXED_VALUE' )->get ();
 				//\Log::info ( \DB::getQueryLog () );
-			} else if ($obj_type_to == $OBJ_TYPE_STORAGE) {
+			} else if ($obj_type_to == OBJ_TYPE_STORAGE) {
 				//\DB::enableQueryLog ();
 				$rows = DB::table ( 'STORAGE_DATA_VALUE AS a' )->join ( 'STORAGE AS b', 'a.STORAGE_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $arrfixed )->SELECT ( 'a.STORAGE_ID AS OBJECT_ID', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR', 'STORAGE_' . $alloc_attr . ' AS FIXED_VALUE' )->get ();
 				//\Log::info ( \DB::getQueryLog () );
@@ -870,7 +848,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 			foreach ( $rows as $row ) {
 				$v_to = $row->FIXED_VALUE;
 				$total_fixed += $v_to;
-				if ($obj_type_to == $OBJ_TYPE_FLOW) {
+				if ($obj_type_to == OBJ_TYPE_FLOW) {
 					$ro = FlowDataAlloc::where ( [
 							'FLOW_ID' => $row->OBJECT_ID
 					] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->select ( 'ID' )->first ();
@@ -897,7 +875,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 
 					$this->_log ( $sSQL, 2 );
 				}
-				else if ($obj_type_to == $OBJ_TYPE_EU) {
+				else if ($obj_type_to == OBJ_TYPE_EU) {
 					$ro = EnergyUnitDataAlloc::where ( [
 							'EU_ID' => $row->OBJECT_ID,
 							'FLOW_PHASE' => $alloc_phase,
@@ -928,7 +906,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 					}
 
 					$this->_log ( $sSQL, 2 );
-				} else if ($obj_type_to == $OBJ_TYPE_TANK) {
+				} else if ($obj_type_to == OBJ_TYPE_TANK) {
 					$ro = TankDataAlloc::where ( [
 							'TANK_ID' => $row->OBJECT_ID
 					] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->select ( 'ID' )->first ();
@@ -954,7 +932,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 					}
 
 					$this->_log ( $sSQL, 2 );
-				} else if ($obj_type_to == $OBJ_TYPE_STORAGE) {
+				} else if ($obj_type_to == OBJ_TYPE_STORAGE) {
 					$ro = StorageDataAlloc::where ( [
 							'STORAGE_ID' => $row->OBJECT_ID
 					] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->select ( 'ID' )->first ();
@@ -1005,7 +983,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 				$v_to = $total_from * $row->ALLOC_THEOR / $total_to;
 			//$this->_log ("v_to = $total_from * {$row->ALLOC_THEOR} / $total_to = ".$v_to, 2 );
 
-			if ($obj_type_to == $OBJ_TYPE_FLOW) {
+			if ($obj_type_to == OBJ_TYPE_FLOW) {
 				$ro = FlowDataAlloc::where ( [
 						'FLOW_ID' => $row->OBJECT_ID
 				] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->select ( 'ID' )->first ();
@@ -1080,7 +1058,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 					$this->_log ( $sSQL, 2 );
 				}
 				// /////// END of Flow COST_INT_CTR allocation
-			} else if ($obj_type_to == $OBJ_TYPE_EU) {
+			} else if ($obj_type_to == OBJ_TYPE_EU) {
 				$ro = EnergyUnitDataAlloc::where ( [
 						'EU_ID' => $row->OBJECT_ID,
 						'FLOW_PHASE' => $alloc_phase,
@@ -1174,7 +1152,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 				if ($alloc_attr == "GRS_VOL" || $alloc_attr == "GRS_MASS") {
 					$this->allocWellCompletion ( $row->OBJECT_ID, $row->OCCUR_DATE, $alloc_phase, $event_type, $alloc_attr, $v_to );
 				}
-			} else if ($obj_type_to == $OBJ_TYPE_TANK) {
+			} else if ($obj_type_to == OBJ_TYPE_TANK) {
 				$ro = TankDataAlloc::where ( [
 						'TANK_ID' => $row->OBJECT_ID
 				] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->select ( 'ID' )->first ();
@@ -1200,7 +1178,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 				}
 
 				$this->_log ( $sSQL, 2 );
-			} else if ($obj_type_to == $OBJ_TYPE_STORAGE) {
+			} else if ($obj_type_to == OBJ_TYPE_STORAGE) {
 				$ro = StorageDataAlloc::where ( [
 						'STORAGE_ID' => $row->OBJECT_ID
 				] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->select ( 'ID' )->first ();
@@ -1278,7 +1256,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 			);
 
 			// step 1: calculate composition for all "from" object
-			foreach ( $sSQL_alloc_from as $row ) {
+			foreach ( $alloc_from as $row ) {
 				$this->_log ( "Calculate composition _FROM, object_name: " . $row->OBJECT_NAME . ",date" . $row->OCCUR_DATE_STR . ",2" );
 				$object_id = $row->OBJECT_ID;
 				$occur_date = $row->OCCUR_DATE_STR;
@@ -1287,7 +1265,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 					foreach ( $comp_total_from as $x => $x_value ) {
 						$comp_total_from [$x] += $row->ALLOC_VALUE * $quality_from [$x];
 					}
-					if ($obj_type_from == $OBJ_TYPE_FLOW) {
+					if ($obj_type_from == OBJ_TYPE_FLOW) {
 						if ($success && $this->alloc_act == "run") {
 							FlowCompDataAlloc::where ( [
 									'FLOW_ID' => $object_id
@@ -1540,7 +1518,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 					$quality_from = $this->getQualityGas ( $object_id, $obj_type_code, $occur_date, $F );
 
 					if ($quality_from && $this->alloc_act == "run") {
-						if ($obj_type_to == $OBJ_TYPE_FLOW) {
+						if ($obj_type_to == OBJ_TYPE_FLOW) {
 							FlowCompDataAlloc::where ( [
 									'FLOW_ID' => $object_id
 							] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->delete ();

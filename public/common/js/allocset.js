@@ -763,14 +763,6 @@ function showAllocResult() {
 	$('#boxRunAlloc').show();
 }
 
-$("#chk_gas").change(function() {
-	var t = $(this).prop("checked");
-	if (t == false)
-		$("#chk_comp").prop("checked", false);
-	t = (t ? '' : 'none');
-	$("#chk_comp").parent().css("display", t);
-})
-
 function loadCbo(data){
 	var cbo = '';
 	$('#cboObjects').html(cbo);

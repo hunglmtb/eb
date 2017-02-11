@@ -22,6 +22,7 @@ namespace App\Models;
 							'SW', 
 							'STORAGE_GRS_VOL', 
 							'STORAGE_NET_VOL', 
+							'STORAGE_WTR_VOL', 
 							'STORAGE_DENSITY', 
 							'STORAGE_GRS_MASS', 
 							'STORAGE_NET_MASS', 

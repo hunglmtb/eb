@@ -11,26 +11,14 @@ $currentSubmenu = '/allocrun';
 
 @section('group') 
 <div id="controlSearch">
-	<div class="filter">
-		<div style="height: 20px;"><b>Network</b></div>
-		<select id="cboNetworks" onchange="_runallocation.getListAllocJob();">
+<table>
+<tr><td><b>Network</b></td><td><b>From Date</b></td><td><b>To Date</b></td><td></td></tr>
+<tr><td><select id="cboNetworks" onchange="_runallocation.getListAllocJob();">
 			@foreach($result as $re)
 				<option value="{!!$re['ID']!!}">{!!$re['NAME']!!}</option> 
 			@endforeach
-		</select>
-	</div>
-	<div class="filter" > 	
-		<div style="height: 22px;"><b>From Date </b></div> 
-		<input id="begin_date" style="width: 140px; margin-top:0px; height: 26px;" type="text" class="datepicker"> 
-	</div>
-	<div class="filter" > 	
-		<div style="height: 22px;"><b>To Date </b></div> 
-		<input id="end_date" style="width: 140px; margin-top:0px; height: 26px;" type="text" class="datepicker"> 
-	</div>
-	<div class="filter" > 
-		<div style="height: 22px;">&nbsp;</div>
-		<input type = "button" value = "Run all allocation jobs" onclick="_runallocation.runAllAllocJob();">
-	</div>
+		</select></td><td><input id="begin_date" style="width: 140px; margin-top:0px; height: 26px;" type="text" class="datepicker"></td><td><input id="end_date" style="width: 140px; margin-top:0px; height: 26px;" type="text" class="datepicker"></td><td><input type = "button" value = "Run all allocation jobs" onclick="_runallocation.runAllAllocJob();"></td></tr>
+</table>
 </div>
 @stop
 
@@ -161,8 +149,6 @@ var _runallocation = {
 }
 </script>
 
- 
-
 @section('content')
 <body style="margin: 0px">
 	<div id="container" style="width:100%">
@@ -182,14 +168,9 @@ var _runallocation = {
 				<tbody id="bodyJobsList">
 				</tbody>
 			</table>
-
-			<br>
-			<div
-				style="box-sizing: border-box; padding: 20px; position: relative; width: 100%; height: 450px; border: 1px solid #bbbbbb; background: #ffffff"
-				id="boxRunAlloc">
+			<div style="box-sizing: border-box; padding: 10px; position: relative; width: 100%; height: 400px; border: 1px solid #bbbbbb; background: #ffffff; overflow: auto" id="boxRunAlloc">
 				<b><span style="font-size: 13pt">Allocation log:</span></b><br>
-				<div id="allocLog"
-					style="box-sizing: border-box; width: 100% px; height: 340px; overflow: auto">....</div>
+				<div id="allocLog">....</div>
 			</div>
 	</div>
 </body>
