@@ -29,7 +29,7 @@ $currentSubmenu = '/allocset';
 <script src="/common/js/jquery.js"></script>
 <script src="/common/js/jquery-ui.js"></script>
 <script src="/common/js/splitter.js"></script>
-<script src="/common/js/allocset.js?3"></script>
+<script src="/common/js/allocset.js?5"></script>
 <script type="text/javascript">
 $().ready(function() {
 	$("#MySplitter").height($(window).height()-150);
@@ -475,6 +475,15 @@ var _configallocation = {
 	</div>
 <!-- Runner list -->
 <script>
+
+$("#chk_gas").change(function() {
+	var t = $(this).prop("checked");
+	if (t == false)
+		$("#chk_comp").prop("checked", false);
+	t = (t ? '' : 'none');
+	$("#chk_comp").parent().css("display", t);
+});
+
 function cloneNetwork(){
 	var nid=$("#cboNetworks").val();
 	if(!(nid>0)){
