@@ -615,9 +615,13 @@ class CodeController extends EBController {
     
     
 	protected function preSave(&$editedData, &$affectedIds, $postData) {
-		if ($editedData&&array_key_exists ($this->fdcModel, $editedData )) {
+		if ($this->fdcModel&&$editedData&&array_key_exists ($this->fdcModel, $editedData )) {
 			$this->preSaveModel ( $editedData, $affectedIds, $this->valueModel,$this->fdcModel);
 			$this->preSaveModel ( $editedData, $affectedIds, $this->theorModel,$this->fdcModel);
+			
+			$new_value 	= $editedData[$this->fdcModel];
+			unset($editedData[$this->fdcModel]);
+			array_unshift($editedData, $new_value);
 		}
 	}
 	
