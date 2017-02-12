@@ -19,9 +19,9 @@ class FeatureTicketModel extends EbBussinessModel
 		return Tank::where("ID",">",0)->orderBy("NAME")->get();
 	}
 	
-	public static function findManyWithConfig($updatedIds) {
+	/* public static function findManyWithConfig($updatedIds) {
 		$table	= static::getTableName();
 		$tank 	= Tank::getTableName();
 		return parent::join("Tank","$tank.ID","=","$table.TARGET_TANK")->whereIn ("$table.ID", $updatedIds )->select("$table.*","$tank.NAME as TARGET_TANK")->get();
-	}
+	} */
 }

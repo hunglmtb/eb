@@ -12,7 +12,24 @@
  										"isAction"			=> $isAction]],
  	];
  	
- 	$filterGroups	= $filters;
+//  	$filterGroups	= $filters;
+ 	$filterGroups = array(	'productionFilterGroup'	=> [['name'			=>'CodeProductType',
+											 			'independent'	=>true,
+ 														'filterName'	=>'Phase Type',
+						 								"defaultEnable"	=> false,
+ 														'extra'			=> ["Facility","CodeProductType"],
+											 			'dependences'	=>["Tank"]],
+													 	],
+ 			'frequenceFilterGroup'	=> [	["name"			=> "Tank",
+						 					"defaultEnable"	=> false,
+											"getMethod"		=> "loadBy",
+ 											"source"		=> ['productionFilterGroup'=>["Facility","CodeProductType"]]],
+						 			],
+ 			'enableButton'			=> false,
+  			'FacilityDependentMore'	=> ["Tank"],
+ 			'extra' 				=> ['CodeProductType']
+ 	);
+ 	
  	if(isset($filterGroups['dateFilterGroup'])) unset($filterGroups['dateFilterGroup']);
  	$filterGroups['enableButton']	= false;
 ?>
@@ -98,7 +115,7 @@ RUN TICKET CAPTURE
 @parent
 <script>
 	editBox.size	= {	height 	: 180,
-					width 	: 650,
+						width 	: 700,
 					};
 	editBox.hidenFields = [{name:'Tank',field:'TANK_ID'}];
 </script>
@@ -112,17 +129,17 @@ RUN TICKET CAPTURE
 	var tanks 	= <?php echo json_encode($tanks); ?>
 	
 	editBox.editSelectedObjects	= function(dataStore,resultText){
-		if(typeof editBox.currentId != "undefined" && typeof editBox.currentTable == "object"){
+		if(typeof editBox.currentId != "undefined"){
 			var tab 	= getActiveTabID();
         	var table 	= $('#table_'+tab).DataTable();
 			var rowData	= table.row( '#'+editBox.currentId).data();
-			rowData.TARGET_TANK	= dataStore.tank;
+			rowData.TARGET_TANK	= dataStore.Tank;
 			/* var success = actions.getEditSuccessfn(null,tab,null,rowData,"TARGET_TANK",[],"select");
 			success(null,parseFloat(dataStore.tank)); */
 
 			rowData 	= actions.putModifiedData(tab,"TARGET_TANK",rowData.TARGET_TANK,rowData,"text");
-			cellDataText = actions.getValueTextOfSelect(tanks,rowData.TARGET_TANK);
-			rowData.TARGET_TANK	 = cellDataText;
+			/* cellDataText = actions.getValueTextOfSelect(tanks,rowData.TARGET_TANK);
+			rowData.TARGET_TANK	 = cellDataText; */
 			table.row( '#'+editBox.currentId ).data(rowData);
 
 			
@@ -133,6 +150,13 @@ RUN TICKET CAPTURE
 		}
 	}
 
+	var orenderFilter = editBox.renderFilter;
+	editBox.renderFilter = function(rowData){
+		orenderFilter(rowData);
+		$('#secondary_CodeProductType').val(rowData.PHASE_TYPE);
+		$('#secondary_CodeProductType').change();
+ 		$('#secondary_CodeProductType').attr('disabled','disabled');
+	};
 </script>
 @stop
 

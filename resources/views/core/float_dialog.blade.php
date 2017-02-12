@@ -217,11 +217,11 @@
 								$("#objectList").css('display','block');
 							},
 				});
-	 		    if(typeof editBox.renderFilter == "function")  editBox.renderFilter();
-			    currentSpan = null;
-			    if(typeof editBox.editObjectMoreHandle == "function") editBox.editObjectMoreHandle(table,rowData,td,tab);
 			    editBox.currentId = id;
 			    editBox.currentTable = table;
+	 		    if(typeof editBox.renderFilter == "function")  editBox.renderFilter(rowData);
+			    currentSpan = null;
+			    if(typeof editBox.editObjectMoreHandle == "function") editBox.editObjectMoreHandle(table,rowData,td,tab);
 			};
 			element.click(moreFunction);
 		}

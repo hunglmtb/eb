@@ -945,7 +945,7 @@ var actions = {
 	createCommonCell	: function(td,data,type,property,rowData){
 		colName 			= property.data;
 		$(td).addClass( "contenBoxBackground");
-		$(td).addClass( "cell"+type );
+		if(typeof type == "string") $(td).addClass( "cell"+type );
 		$(td).addClass( colName );
 		var isEdittable = !data.locked&&actions.isEditable(property,rowData,data.rights);
 		if(isEdittable) $(td).addClass( "editInline" );
@@ -1036,6 +1036,11 @@ var actions = {
         	}
 		};
 
+		if(typeof type == "object" && typeof type.render == "function") {
+			cell["render"] = type.render(data,cindex);
+			return cell;
+		}
+		
 		switch(type){
 		case "text":
 		case "color":
@@ -1128,9 +1133,6 @@ var actions = {
 			};
 	    	break;
 
-		}
-		if(typeof type == "object" && type.render == "function") {
-			cell["render"] = type.render(data,cindex);
 		}
 		return cell;
 	},
