@@ -209,13 +209,14 @@ function loadRunnersList(job_id, job_name, not_reload_runners) {
 	};
 	
 	sendAjax('/getrunnerslist', param, function(data){
+		//console.log(data);
 		if (data == null) return;
 		var ss = data.split("#$%");
 		$('#bodyRunnersList').html(ss[0]);
 		$("#cond_from_runner").html(ss[1]);
 		$("#cond_to_runner").html(ss[1]);
 		defaultBoxAddRunner();
-		showRunnersList();		
+		showRunnersList();
 	});
 	cancelEdit();
 }

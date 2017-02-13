@@ -29,7 +29,7 @@ $currentSubmenu = '/allocset';
 <script src="/common/js/jquery.js"></script>
 <script src="/common/js/jquery-ui.js"></script>
 <script src="/common/js/splitter.js"></script>
-<script src="/common/js/allocset.js?5"></script>
+<script src="/common/js/allocset.js?6"></script>
 <script type="text/javascript">
 $().ready(function() {
 	$("#MySplitter").height($(window).height()-150);
@@ -490,25 +490,28 @@ function cloneNetwork(){
 		alert("Please select allocation network to clone");
 		return;
 	}
-	var s="";
-	s=prompt("Please enter new network name","[New network name]");
-	s=s.trim();
-	if(s=="")
+	var network_name = prompt("Please enter new network name","[New network name]");
+	network_name=network_name.trim();
+	if(network_name=="")
 	{
 		return;
 	}
 
 	param = {
 		'network_id' : nid,
-		'network_name' : s
+		'network_name' : network_name
 	}
 	
 	sendAjax('/clonenetwork', param, function(data){
-		if(data!=""){
-			alert(data);
+		console.log(data);
+		if(data.message.length > 0){
+			alert(data.message);
 		}
-		else{
-			location.reload();
+		if(data.success == true){
+			$("#cboNetworks").append("<option value='"+data.new_network_id+"'>"+network_name+"</option>");
+			$("#cboNetworks").val(data.new_network_id);
+			$("#cboNetworks").change();
+			//location.reload();
 		}
 	});
 }

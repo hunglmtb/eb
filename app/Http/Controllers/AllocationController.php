@@ -412,7 +412,9 @@ class AllocationController extends Controller {
 		
 		$network_id=$data['network_id'];
 		$network_name=addslashes($data['network_name']);
-		$str = "Clone allocation group successfully";
+		$message = "Clone allocation group successfully";
+		$success = true;
+		$new_network_id = -1;
 		if($network_id>0 && $network_name){			
 			$condition = array (
 					'ID' => -1
@@ -421,16 +423,14 @@ class AllocationController extends Controller {
 			$new_network_id = $tmp->ID;
 			
 			if($new_network_id>0){
-				$result_job = AllocJob::where(['NETWORK_ID' => $network_id])->get(['ID']);
+				$result_job = AllocJob::where(['NETWORK_ID' => $network_id])
+					->select('ID' ,'CODE', 'NAME', 'NETWORK_ID', 'VALUE_TYPE', 'LAST_RUN', 'ALLOC_OIL', 'ALLOC_GAS', 'ALLOC_WATER', 'ALLOC_COMP', 'ALLOC_GASLIFT', 'ALLOC_CONDENSATE')
+					->get();
 				foreach ($result_job as $row_job)
 				{
-					$allocjob = [];
-					$allocjob = AllocJob::where(['ID'=>$row_job->ID])
-					->select('CODE', 'NAME', 'NETWORK_ID', 'VALUE_TYPE', 'LAST_RUN', 'ALLOC_OIL', 'ALLOC_GAS', 'ALLOC_WATER', 'ALLOC_COMP', 'ALLOC_GASLIFT', 'ALLOC_CONDENSATE')
-					->first();	
+					$allocjob = $row_job->toArray();
+					$allocjob['ID'] = null;
 					$allocjob['NETWORK_ID'] = $new_network_id;
-					
-					$allocjob = json_decode(json_encode($allocjob), true);
 					
 					$condition = array (
 							'ID' => -1
@@ -438,27 +438,24 @@ class AllocationController extends Controller {
 					$tmp = AllocJob::updateOrCreate ( $condition, $allocjob );
 					$new_job_id = $tmp->ID;
 					if($new_job_id>0){
-						$result_runner = AllocRunner::where(['JOB_ID'=>$row_job->ID])->get(['ID']);
+						$result_runner = AllocRunner::where(['JOB_ID'=>$row_job->ID])->select('ID', 'CODE', 'NAME', 'JOB_ID', 'ORDER', 'ALLOC_TYPE', 'THEOR_PHASE', 'THEOR_VALUE_TYPE', 'LAST_RUN')->get();
 						foreach ($result_runner as $row_runner)
 						{
-							$allocRunner = AllocRunner::where(['ID'=>$row_runner->ID])
-							->get(['CODE', 'NAME', 'JOB_ID', 'ORDER', 'ALLOC_TYPE', 'THEOR_PHASE', 'THEOR_VALUE_TYPE', 'LAST_RUN']);
-							$allocRunner->JOB_ID = $new_job_id;
-							
-							$allocRunner = json_decode(json_encode($allocRunner), true);
+							$allocRunner = $row_runner->toArray();
+							$allocRunner["ID"] = null;
+							$allocRunner["JOB_ID"] = $new_job_id;
 							$condition = array (
 									'ID' => -1
 							);
 							$tmp = AllocRunner::updateOrCreate ( $condition, $allocRunner );
 							$new_runner_id = $tmp->ID;
 							if($new_runner_id>0){
-								$result_objs = AllocRunnerObjects::where(['RUNNER_ID'=>$row_runner->ID])->get(['ID']);
+								$result_objs = AllocRunnerObjects::where(['RUNNER_ID'=>$row_runner->ID])->select('RUNNER_ID', 'OBJECT_TYPE', 'OBJECT_ID', 'DIRECTION', 'FIXED', 'MINUS')->get();
 								foreach ($result_objs as $row_objs)
 								{									
-									$allocRunnerObjects = AllocRunnerObjects::where(['ID'=>$row_objs->ID])
-									->get(['RUNNER_ID', 'OBJECT_TYPE', 'OBJECT_ID', 'DIRECTION', 'FIXED', 'MINUS']);
-									$allocRunnerObjects->RUNNER_ID = $new_runner_id;
-									$allocRunnerObjects = json_decode(json_encode($allocRunnerObjects), true);
+									$allocRunnerObjects = $row_objs->toArray();
+									$allocRunnerObjects["ID"] = null;
+									$allocRunnerObjects["RUNNER_ID"] = $new_runner_id;
 									AllocRunnerObjects::insert($allocRunnerObjects);
 								}
 							}
@@ -466,12 +463,16 @@ class AllocationController extends Controller {
 					}
 				}
 			}
-			else
-				$str = "Can not add new network";
+			else{
+				$success = false;
+				$message = "Can not add new network";
+			}
 		}
-		else
-			$str = "Incorect input data";
-		return response ()->json ( $str );
+		else{
+			$success = false;
+			$message = "Incorect input data";
+		}
+		return response ()->json ( ["success" => $success, "message" => $message, "new_network_id" => $new_network_id ] );
 	}
 	public function jobdiagram($job_id) {
 		return view ( 'front.jobdiagram', [ 
