@@ -525,12 +525,17 @@ var actions = {
 	},
 	applyEditable : function (tab,type,td, cellData, rowData, property,collection){
 		var columnName = typeof property === 'string'?property:property.data;
+		if(typeof tabIndex == "undefined") tabIndex = 10000;
+		$(td).attr('tabindex', tabIndex++);
+		$(td).focus(function() {
+			$(this).editable('show');
+		});
 		if(typeof type == "object" && typeof type.applyEditable == "function") return type.applyEditable(tab,type,td, cellData, rowData, property,collection);
 		var successFunction = actions.getEditSuccessfn(property,tab,td, rowData, columnName,collection,type);
 		var  editable = {
 	    	    title: 'edit',
 	    	    emptytext: '',
-	    	    onblur		: 'submit',
+	    	    onblur		: 'cancel',
 	    	    showbuttons:false,
 	    	    success: successFunction,
 	    	};
@@ -540,7 +545,7 @@ var actions = {
 		case "number":
 		case "date":
 			editable['type'] = type;
-    	    editable['onblur'] = 'submit';
+    	    editable['onblur'] = 'cancel';
 			if (type=='date') {
 				editable['onblur'] 		= 'submit';
 				editable['format'] 		= configuration.picker.DATE_FORMAT_UTC;
@@ -602,8 +607,9 @@ var actions = {
 			editable['type'] = type;
 			editable['source'] = collection;
 			editable['value'] = cellData==null?(collection!=null&&collection[0]!=null?collection[0].ID:0):cellData;
-			$(td).editable(editable);
-			return;
+//			$(td).editable(editable);
+//			return;
+	    	break;
 		case "color":
 			$(td).addClass( "_colorpicker" );
 			$(td).data(cellData);
@@ -682,13 +688,22 @@ var actions = {
 		    		if(configuration.number.DECIMAL_MARK=='comma') val = val.replace('.',',')
 					editable.input.$input.val(val);
     		  }
-    		  editable.input.$input.get(0).select();
+//    		  if(typeof  editable.input.$input.get(0) != "undefined") editable.input.$input.get(0).select();
+    		  editable.input.$input.attr('tabindex', -1);
 //    		  if(type=="timepicker") $(".table-condensed th").text("");
     	});
     	
     	$(td).on('hidden', function(e, reason) {
 			var hid ='eb_' +tab+"_"+rowData.DT_RowId+"_"+columnName;
     		$("#" +hid).remove();
+    		if(reason === 'save' /*|| reason === 'cancel'*/) {
+    	        //auto-open next editable
+    			var nextElement = $(this).closest('.editable').nextAll('.editable:first');
+    			if(nextElement.length>0) nextElement.editable('show');
+    			else {
+    				$(this).closest('tr').next().find('.editable:first').editable('show');
+    			}
+    	    } 
     	});
     	
     	$(td).on('save', function(e, params) {
