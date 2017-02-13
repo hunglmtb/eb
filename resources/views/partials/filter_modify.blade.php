@@ -51,6 +51,7 @@
 						break;
 					case "ObjectDataSource":
 						var objectDataSource 	= $(currentObject+'ObjectDataSource').val();
+						if(typeof objectDataSource == "undefined") break;
 						objectDataSource 		= objectDataSource.replace(/_/g," ");
 						objectDataSource 		= objectDataSource.toLowerCase().replace(/\b[a-z]/g, function(letter) {
 						    return letter.toUpperCase();
@@ -110,14 +111,14 @@
 		 	isFirstDisplay = false;
 		 	editBox.editGroupSuccess = function(data,span){
 		 		$("#editBoxContentview").html(data);
-		 		editBox.renderFilter();
+		 		editBox.renderFilter(span);
 		 		if(typeof editBox.updateExtraFilterData == "function"){
 		 			var dataStore = typeof span.data == "function"? span.data():{};
 					editBox.updateExtraFilterData(dataStore);
 		 		}
 			};
 
-			editBox.renderFilter = function(){
+			editBox.renderFilter = function(rowData){
 		 		filters.afterRenderingDependences("secondary_ObjectName");
 		 		filters.preOnchange("secondary_IntObjectType");
 		 		filters.preOnchange("secondary_ObjectDataSource");

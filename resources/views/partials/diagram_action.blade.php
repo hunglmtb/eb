@@ -59,70 +59,20 @@
 		return html;
 	};
 
-	actions.renderEditFilter	= function(objects){
+	var orenderEditFilter =  editBox.renderEditFilter;
+	editBox.renderEditFilter	= function(objects){
+	    orenderEditFilter();
 	    var list = editBox.renderObjectsList(objects);
 		$("#objectList").html("");
 	    $("#objectList").addClass("product_filter");
 	    $("#editBoxContentview").css("float","left");
 	    $("#editBoxContentview").css("width","54%");
 	    list.appendTo($("#objectList"));
-
-	    $("#box_loading").css("display","none");
-	    $("#editBoxContentview").show();
-	    $("#contrainList").hide();
 	}
 	
 	var addMoreHandle	= function ( table,rowData,td,tab) {
 		var id = rowData['DT_RowId'];
-		var moreFunction = function(e){
-			e.preventDefault();
-			
-		    actions.renderEditFilter(rowData.OBJECTS);
-
-		    $("button[class=saveAction]").remove();
-		    var saveAsBtn = $("<button id ='actionSaveAsFilter' class='saveAction' style='width: 61px;float:right;margin-left:5px'>Save as</button>");
-		    saveAsBtn.click(function() {
-		    	alert("please add object!");
-			});
-// 		    saveAsBtn.appendTo($("#objectListContainer"));
-		    
-		    var actionsBtn = $("<button id ='actionSaveFilter' class='saveAction' style='width: 61px;float:right;margin-left:5px'>Save</button>");
-		    actionsBtn.click(function() {
-		    	var lis			= $("#objectList ul:first li");
-		    	if(lis.length>0){
-					var objects		= [];
-					$.each(lis, function( index, li) {
-						var span = $(li).find("span:first");
-						objects.push(span.data());
-					});
-					rowData.OBJECTS = objects;
-					if(typeof editBox.updateMoreObject == "function") editBox.updateMoreObject(rowData);
-	 				editBox.closeEditWindow(true);
-		    	}
-		    	else alert("please add object!");
-			});
-		    actionsBtn.appendTo($("#objectListContainer"));
-		    $("#floatBox").dialog( {
-				editId	: "editBoxContentview",
-				height	: editBox.size.height,
-				width	: editBox.size.width, 
-				position: { my: 'top', at: 'top+150' },
-				modal	: true,
-				title	: "Edit Summary Item",
-				close	: function(event) {
-							$("#objectList").css('display','none');
-							$("button[class=saveAction]").css('display','none');
-						    $("button[class=saveAction]").remove();
-					   	 },
-		   	 	open	: function( event, ui ) {
-							$("#objectList").css('display','block');
-						},
-			});
-		    editBox.renderFilter();
-		    currentSpan = null;
-		    if(typeof editBox.editObjectMoreHandle == "function") editBox.editObjectMoreHandle(table,rowData,td,tab);
-		};
-		table.$('#item_edit_'+id).click(moreFunction);
+		editBox.addMoreHandle(table,rowData,td,tab,table.$('#item_edit_'+id));
 	};
 	actions['addMoreHandle']  = addMoreHandle;
 

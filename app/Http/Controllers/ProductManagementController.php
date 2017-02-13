@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Tank;
 
 
 class ProductManagementController extends EBController {
@@ -99,7 +100,10 @@ class ProductManagementController extends EBController {
 						['id'=>'date_end','name'=>'To Date'],
 				)
 		);
-		return view ( 'front.ticket',['filters'=>$filterGroups]);
+		$tanks	= Tank::all();
+		return view ( 'front.ticket',['filters'=>$filterGroups,
+				'tanks'			=>$tanks
+		]);
 	}
 	
 }

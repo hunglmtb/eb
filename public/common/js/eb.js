@@ -525,11 +525,17 @@ var actions = {
 	},
 	applyEditable : function (tab,type,td, cellData, rowData, property,collection){
 		var columnName = typeof property === 'string'?property:property.data;
+		if(typeof tabIndex == "undefined") tabIndex = 10000;
+		$(td).attr('tabindex', tabIndex++);
+		$(td).focus(function() {
+			$(this).editable('show');
+		});
+		if(typeof type == "object" && typeof type.applyEditable == "function") return type.applyEditable(tab,type,td, cellData, rowData, property,collection);
 		var successFunction = actions.getEditSuccessfn(property,tab,td, rowData, columnName,collection,type);
 		var  editable = {
 	    	    title: 'edit',
 	    	    emptytext: '',
-	    	    onblur		: 'submit',
+	    	    onblur		: 'cancel',
 	    	    showbuttons:false,
 	    	    success: successFunction,
 	    	};
@@ -539,7 +545,7 @@ var actions = {
 		case "number":
 		case "date":
 			editable['type'] = type;
-    	    editable['onblur'] = 'submit';
+    	    editable['onblur'] = 'cancel';
 			if (type=='date') {
 				editable['onblur'] 		= 'submit';
 				editable['format'] 		= configuration.picker.DATE_FORMAT_UTC;
@@ -601,8 +607,9 @@ var actions = {
 			editable['type'] = type;
 			editable['source'] = collection;
 			editable['value'] = cellData==null?(collection!=null&&collection[0]!=null?collection[0].ID:0):cellData;
-			$(td).editable(editable);
-			return;
+//			$(td).editable(editable);
+//			return;
+	    	break;
 		case "color":
 			$(td).addClass( "_colorpicker" );
 			$(td).data(cellData);
@@ -681,13 +688,22 @@ var actions = {
 		    		if(configuration.number.DECIMAL_MARK=='comma') val = val.replace('.',',')
 					editable.input.$input.val(val);
     		  }
-    		  editable.input.$input.get(0).select();
+//    		  if(typeof  editable.input.$input.get(0) != "undefined") editable.input.$input.get(0).select();
+    		  editable.input.$input.attr('tabindex', -1);
 //    		  if(type=="timepicker") $(".table-condensed th").text("");
     	});
     	
     	$(td).on('hidden', function(e, reason) {
 			var hid ='eb_' +tab+"_"+rowData.DT_RowId+"_"+columnName;
     		$("#" +hid).remove();
+    		if(reason === 'save' /*|| reason === 'cancel'*/) {
+    	        //auto-open next editable
+    			var nextElement = $(this).closest('.editable').nextAll('.editable:first');
+    			if(nextElement.length>0) nextElement.editable('show');
+    			else {
+    				$(this).closest('tr').next().find('.editable:first').editable('show');
+    			}
+    	    } 
     	});
     	
     	$(td).on('save', function(e, params) {
@@ -926,7 +942,7 @@ var actions = {
 		return isKeep;
 	},
 	getCellType : function(data,type,cindex){
-		type = actions.extraDataSetColumns.hasOwnProperty(data.properties[cindex].data)?'select':type;
+		type = typeof type != "object" && actions.extraDataSetColumns.hasOwnProperty(data.properties[cindex].data)?'select':type;
 		return type;
 	},
 	
@@ -944,7 +960,7 @@ var actions = {
 	createCommonCell	: function(td,data,type,property,rowData){
 		colName 			= property.data;
 		$(td).addClass( "contenBoxBackground");
-		$(td).addClass( "cell"+type );
+		if(typeof type == "string") $(td).addClass( "cell"+type );
 		$(td).addClass( colName );
 		var isEdittable = !data.locked&&actions.isEditable(property,rowData,data.rights);
 		if(isEdittable) $(td).addClass( "editInline" );
@@ -1035,6 +1051,11 @@ var actions = {
         	}
 		};
 
+		if(typeof type == "object" && typeof type.render == "function") {
+			cell["render"] = type.render(data,cindex);
+			return cell;
+		}
+		
 		switch(type){
 		case "text":
 		case "color":
@@ -1116,23 +1137,8 @@ var actions = {
 			cell["render"] = function ( data2, type2, row ) {
 					if (data2==null||data2=='') return "&nbsp";
  	        		collection = actions.getExtraDataSetColumn(data,cindex,row);
-		     		if(collection!=null){
-		     			var result = $.grep(collection, function(e){
-		     				if(typeof(e) !== "undefined"){
-		     					if(e.hasOwnProperty('ID')) {
-		     						return e['ID'] == data2;
-		     					}
-		     					else if(e.hasOwnProperty('value')) {
-		     						return e['value'] == data2;
-		     					}
-		     				}
-		    				return false;
-		     			});
-		     			if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined" &&result[0].hasOwnProperty('NAME')){
-		     				return result[0]['NAME'];
-		     			}
-		     		}
-					return '';
+ 	        		cellDataText = actions.getValueTextOfSelect(collection,data2);
+					return cellDataText;
 				};
 	    	break;
 	    	
@@ -1144,6 +1150,25 @@ var actions = {
 
 		}
 		return cell;
+	},
+	getValueTextOfSelect : function (collection,data2) {
+		if(collection!=null){
+ 			var result = $.grep(collection, function(e){
+ 				if(typeof(e) !== "undefined"){
+ 					if(e.hasOwnProperty('ID')) {
+ 						return e['ID'] == data2;
+ 					}
+ 					else if(e.hasOwnProperty('value')) {
+ 						return e['value'] == data2;
+ 					}
+ 				}
+				return false;
+ 			});
+ 			if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined" &&result[0].hasOwnProperty('NAME')){
+ 				return result[0]['NAME'];
+ 			}
+ 		}
+		 return "&nbsp";
 	},
 	createdFirstCellColumn : function (td, cellData, rowData, row, col) {
 		$(td).css('z-index','1');
