@@ -121,8 +121,8 @@ class StorageController extends CodeController {
     	$attributes = ['OCCUR_DATE'=>$occur_date];
     	$storage_ids = [];
     	foreach($resultRecords as $mdlName => $records ){
-    		foreach($records as $mdlRecord ){
-				if($mdlRecord->modelName == "TankDataValue"){
+			if($mdlName == "TankDataValue"){
+				foreach($records as $mdlRecord ){
 					$storageID = $mdlRecord->getStorageId();
 					if ($storageID) {
 						$storage_ids[] = $storageID;
