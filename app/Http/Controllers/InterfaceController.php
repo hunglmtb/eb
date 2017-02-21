@@ -975,7 +975,7 @@ class InterfaceController extends Controller {
 									$keys_check_x = str_replace ( "@VALUE_{$var}@", $value, $keys_check_x );
 								$V_x = str_replace ( "@VALUE_{$var}@", $value, $V_x );
 								$X_x = str_replace ( "@VALUE_{$var}@", $value, $X_x );
-								\Log::info("@VALUE_$var@, $value");
+								//\Log::info("@VALUE_$var@, $value");
 							}
 							if($applyFormula){
 								if($col_obj_id){
