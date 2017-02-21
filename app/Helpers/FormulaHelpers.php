@@ -395,7 +395,8 @@ class FormulaHelpers {
     	$fid = $formulaRow->ID;
     	$flow_phase = $formulaRow->FLOW_PHASE;
     	$object_id = $formulaRow->OBJECT_ID;
-    	$formula = $formulaRow->FORMULA;
+    	$formula 	= $formulaRow->FORMULA;
+    	$fDisplay	= $formulaRow->FORMULA;
     	if (!$formula) 	{
     		$logs = $show_echo?["error"		=> true,
     				"reason"	=> "formula $formulaRow->NAME was empty. Please set it in formula table"]:false;
@@ -741,10 +742,12 @@ class FormulaHelpers {
     		else if(is_array($vars[$v])) {
     			//$varsKey[$v] = $vars[$v];
     			//$f=str_replace($v,"\$varsKey['$v']",$f);
-				$tmp = reset($vars[$v]);
+				/* $tmp = reset($vars[$v]);
 				while(is_array($tmp))
 					$tmp = reset($tmp);
-				$f=str_replace($v,$tmp,$f);
+				$tmp = reset($vars[$v]);
+				$f=str_replace($v,'$tmp',$f); */
+				$f=str_replace($v,"\$vars['$v']",$f);
     		}
     		else $f=str_replace($v,$vars[$v],$f);
     				//if() echo "$f<br>";
@@ -753,7 +756,7 @@ class FormulaHelpers {
     
     	$s='$vf = '.$f.";";
     	
-    	if($show_echo) $logs["variables"][] =  ["content" => $f,	"type" => "sql"];
+    	if($show_echo) $logs["variables"][] =  ["content" => $fDisplay,	"type" => "sql"];
     	
     	
     	if(!(self::php_syntax_error($s)))
