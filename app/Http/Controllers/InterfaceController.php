@@ -865,8 +865,11 @@ class InterfaceController extends Controller {
 					}
 				}
 				*/
-				if(!$sheet)
+				if(!$sheet){
+					$str = "Sheet not found. Please check tab name";
+					$reader->select(['str'=>$str])->first();
 					return;
+				}
 				if($applyFormula){
 					$objectIds = [];
 					$dates = [];
@@ -938,7 +941,7 @@ class InterfaceController extends Controller {
 							if (strlen ( $exp ) == 1 && ord ( strtolower ( $exp ) ) >= 97 && ord ( strtolower ( $exp ) ) <= 122) {
 								$key = ord ( strtolower ( $exp ) ) - 96;
 								$vars [$key] = $exp;
-								$value = "'@VALUE_$key'";
+								$value = "'@VALUE_{$key}@'";
 							}
 							if ($dateformat)
 								$value = "STR_TO_DATE($value,'$dateformat')";
@@ -969,9 +972,10 @@ class InterfaceController extends Controller {
 								//\Log::info("rangeToArray ( $vvv . $row )=".$value);
 								// $value=mysql_real_escape_string($sheet->getCell($vvv.$row)->getFormattedValue());//$data->sheets[$i][cells][$j][$var];
 								if ($keys_check_x)
-									$keys_check_x = str_replace ( "@VALUE_$var", $value, $keys_check_x );
-								$V_x = str_replace ( "@VALUE_$var", $value, $V_x );
-								$X_x = str_replace ( "@VALUE_$var", $value, $X_x );
+									$keys_check_x = str_replace ( "@VALUE_{$var}@", $value, $keys_check_x );
+								$V_x = str_replace ( "@VALUE_{$var}@", $value, $V_x );
+								$X_x = str_replace ( "@VALUE_{$var}@", $value, $X_x );
+								//\Log::info("@VALUE_$var@, $value");
 							}
 							if($applyFormula){
 								if($col_obj_id){
