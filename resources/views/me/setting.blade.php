@@ -83,11 +83,18 @@ $currentSubmenu ='/me/setting';
 		<div style="float:left">
 			<p class="function_title">Change language</p>
 			<div class="dropdown">
-				<a data-toggle="dropdown" class="dropdown-toggle" href="#"><img width="32" height="32" alt="{{ session('locale') }}"  src="{!! asset('img/' . session('locale') . '-flag.png') !!}" />&nbsp; <b class="caret"></b></a>
+				<a data-toggle="dropdown" class="dropdown-toggle" href="#">
+					<img width="32" height="32" alt="{{ session('locale') }}"  src="{!! asset('img/' . session('locale') . '-flag.png') !!}" />
+					&nbsp; {{ Config::get('app.languageNames')[session('locale')] }}
+					<b class="caret"></b>
+				</a>
 				<ul class="dropdown-menu">
 				@foreach ( config('app.languages') as $user)
 					@if($user !== config('app.locale'))
-						<li><a href="{!! url('language') !!}/{{ $user }}"><img width="32" height="32" alt="{{ $user }}" src="{!! asset('img/' . $user . '-flag.png') !!}"></a></li>
+						<li><a href="{!! url('language') !!}/{{ $user }}">
+							<img width="32" height="32" alt="{{ $user }}" src="{!! asset('img/' . $user . '-flag.png') !!}">
+							&nbsp; {{ Config::get('app.languageNames')[$user] }}
+						</a></li>
 					@endif
 				@endforeach
 				</ul>

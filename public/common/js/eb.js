@@ -525,12 +525,12 @@ var actions = {
 	},
 	applyEditable : function (tab,type,td, cellData, rowData, property,collection){
 		var columnName = typeof property === 'string'?property:property.data;
+		if(typeof type == "object" && typeof type.applyEditable == "function") return type.applyEditable(tab,type,td, cellData, rowData, property,collection);
 		if(typeof tabIndex == "undefined") tabIndex = 10000;
 		$(td).attr('tabindex', tabIndex++);
 		$(td).focus(function() {
 			$(this).editable('show');
 		});
-		if(typeof type == "object" && typeof type.applyEditable == "function") return type.applyEditable(tab,type,td, cellData, rowData, property,collection);
 		var successFunction = actions.getEditSuccessfn(property,tab,td, rowData, columnName,collection,type);
 		var  editable = {
 	    	    title: 'edit',

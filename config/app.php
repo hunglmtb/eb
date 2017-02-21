@@ -78,8 +78,12 @@ return [
 	! and at least, add the ISO code in languages array.
 	*/
 
-	'languages' => ['en',/*  'fr', 'pt-BR', */'ro','es'],	
-
+	'languages' 	=> ['en',/*  'fr', 'pt-BR', */'ro','es'],	
+	'languageNames' => ['en'	=> "English",
+						'ro'	=> "Romania",
+						'es'	=> "Spain",
+	],
+		
 	/*
 	|--------------------------------------------------------------------------
 	| Application Fallback Locale
