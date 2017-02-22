@@ -28,6 +28,7 @@ use App\Models\CodeProductType;
 use App\Models\CodeQltySrcType;
 use App\Models\CodeReadingFrequency;
 use App\Models\CodeSafetySeverity;
+use App\Models\CodeStatus;
 use App\Models\CodeTestingMethod;
 use App\Models\CodeTestingUsage;
 use App\Models\CodeTicketType;
@@ -700,11 +701,14 @@ class CodeController extends EBController {
 	    			break;
     			case 'EU_STATUS' :
     				$selectData = ['id'=>'EuStatus','targets'=>$i,'COLUMN_NAME'=>$columnName];
+				/*
     				$selectData['data'] = collect([
 													(object)['ID' =>	-1	,'NAME' => '(Auto)'    ],
 													(object)['ID' =>	1	,'NAME' => 'Online'    ],
 													(object)['ID' =>	0	,'NAME' => 'Offline'   ],
 												]);
+				*/
+    				$selectData['data'] = CodeStatus::all();
     				$rs[] = $selectData;
     				break;
 	    			
