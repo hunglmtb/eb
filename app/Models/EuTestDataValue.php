@@ -62,6 +62,7 @@ use App\Models\QltyData;
 		$this->EU_TEST_GAS_HC_VOL		= 	$sourceEntry->EU_TEST_GAS_HC_VOL*$rat	+	$_add;
 		$this->EU_TEST_WTR_VOL			= 	$sourceEntry->EU_TEST_WTR_VOL*$rat;
 		$this->EU_TEST_GAS_LIFT_VOL		= 	$sourceEntry->EU_TEST_GAS_LIFT_VOL*$rat;
+		$this->EU_TEST_LIQ_HC_MASS		= 	$sourceEntry->EU_TEST_LIQ_HC_MASS*$rat;
 		
 		if($quality&&isset($quality->ENGY_RATE)&&is_numeric($quality->ENGY_RATE)){
 			$this->EU_TEST_GAS_LIFT_ENGY	= 	$this->EU_TEST_GAS_LIFT_VOL*$quality->ENGY_RATE;
