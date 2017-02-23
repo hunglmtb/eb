@@ -9,6 +9,9 @@ $host = ENV('DB_HOST');
 
 @section('content')
 <link rel="stylesheet" href="/common/css/admin.css">
+<style>
+#box_conditions .param_name {min-width:60px;padding-right:10px}
+</style>
 <script type="text/javascript">
 function getDefaultDate(month){
 	var d = new Date();
@@ -67,7 +70,7 @@ var _report = {
 				hideWaiting();
 				var html="";
 				data.forEach(function(item, index){
-					html += '<tr id="condition_'+item.ID+'"><td>'+item.NAME+'</td><td>';
+					html += '<tr id="condition_'+item.ID+'"><td class="param_name">'+item.NAME+'</td><td>';
 					if(item.VALUE_TYPE==1){
 						if(item.REF_LIST){
 							var list_html = '';
@@ -94,7 +97,7 @@ var _report = {
 					html += '</td></tr>';
 				});
 				if(html != "")
-					html = '<table style="width: 100%">' + html + '</table><hr>';
+					html = '<table>' + html + '</table><hr>';
 				$("#box_conditions").html(html);
 			},
 			error: function(data) {
