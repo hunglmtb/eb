@@ -552,7 +552,7 @@ var actions = {
 		case "number":
 		case "date":
 			editable['type'] = type;
-    	    editable['onblur'] = 'cancel';
+    	    editable['onblur'] = 'submit';
 			if (type=='date') {
 				editable['onblur'] 		= 'submit';
 				editable['format'] 		= configuration.picker.DATE_FORMAT_UTC;
@@ -704,13 +704,14 @@ var actions = {
     	$(td).on('hidden', function(e, reason) {
 			var hid ='eb_' +tab+"_"+rowData.DT_RowId+"_"+columnName;
     		$("#" +hid).remove();
-    		if(reason === 'save' /*|| reason === 'cancel'*/) {
+    		if(reason === 'save' || reason === 'cancel') {
     	        //auto-open next editable
-    			var nextElement = $(this).closest('.editable').nextAll('.editable:first');
+    			/*var nextElement = $(this).closest('.editable').nextAll('.editable:first');
     			if(nextElement.length>0) nextElement.editable('show');
     			else {
     				$(this).closest('tr').next().find('.editable:first').editable('show');
     			}
+    			 */
     	    } 
     	});
     	
@@ -727,9 +728,9 @@ var actions = {
 					params.submitValue = numberValue;
 				}
     	    	else {
-//    	    		rowData[columnName]	= " ";
-//    	    		params.newValue = " ";
-//					params.submitValue = " ";
+    	    		/*rowData[columnName]	= " ";
+    	    		params.newValue = " ";
+					params.submitValue = " ";*/
     	    	}
     	    }
     	});
