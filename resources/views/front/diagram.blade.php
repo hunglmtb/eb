@@ -1461,6 +1461,12 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 					};
 
 	editBox.initExtraPostData = function (id,rowData,url){
+		var c;
+		//Get all medel selsected
+		for (c in ed.graph.selectionModel.cells)
+		{
+			currentObjectMapping	=	ed.graph.selectionModel.cells[c];
+		}
 		if(currentObjectMapping){
 			var surveillance = currentObjectMapping.getAttribute('surveillance');
 			if(surveillance.length>0){
