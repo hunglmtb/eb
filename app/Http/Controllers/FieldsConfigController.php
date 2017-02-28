@@ -156,14 +156,8 @@ class FieldsConfigController extends Controller {
 		$data 					= $request->all ();
 		$table 					= $data['table'];
 		$field 					= $data['field_effected'];
-		$re_prop 				= CfgFieldProps::where(['TABLE_NAME'=>$table, 'COLUMN_NAME'=>$field])->select('*')->get();
-		$mdl					= \Helper::getModelName($table);
-		$objectExtension 		= method_exists($mdl,"getObjects")?$mdl::getObjects():[];
-		$objectExtensionTarget 	= method_exists($mdl,"getObjectTargets")?$mdl::getObjectTargets():[];
-		return response ()->json ([	"data"					=> $re_prop,
-									"objectExtension"		=> $objectExtension,
-									'objectExtensionTarget'	=> $objectExtensionTarget,
-		]);
+		$respondData			= CfgFieldProps::getFieldProperties($table,$field);
+		return response ()->json ($respondData);
 	}
 	
 	public function putValue(&$param,$data,$field){

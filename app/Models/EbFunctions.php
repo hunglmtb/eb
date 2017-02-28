@@ -9,7 +9,7 @@ use App\Models\DynamicModel;
 // 	protected $primaryKey = 'CODE';
 	
 	public static function loadBy($sourceData){
-		$entries = static ::where('USE_FOR','like',"%TASK_GROUP%")
+		$entries = EbFunctions ::where('USE_FOR','like',"%TASK_GROUP%")
 							->whereIn('LEVEL',[1,2])
 							->select(/* "CODE", */"ID",
 									"PATH as FUNCTION_URL",
@@ -19,16 +19,36 @@ use App\Models\DynamicModel;
 		return $entries;
 	}
 	
-	public static function find($id){
-		if($id==="0"||$id===0){
+	public static function loadByCode($code=null){
+		
+		$query = EbFunctions ::where('USE_FOR','like',"%TASK_GROUP%")
+		->whereIn('LEVEL',[1,2]);
+		if ($code&&$code!="") {
+			$query->where("CODE","=",$code);
+		}
+		$entries = $query->select(
+				"CODE as ID",
+				"PATH as FUNCTION_URL",
+				\DB::raw("concat(case when PARENT_CODE is null then '' else '--- ' end,NAME) as NAME"))
+				->orderBy("CODE")
+				->get();
+		$entries->each(function ($item, $key) {
+			$item->primaryKey = "CODE";
+		});
+		return $entries;
+	}
+	
+	
+	public static function findByCode($code){
+		/* if($id==="0"||$id===0){
 			$instance		= new EbFunctions;
 			$instance->CODE	= 0;
 			$instance->NAME	= "All";
 			return $instance;
-		}
+		} */
 		/* else if(is_string($id)) return static::where('CODE',$id)->first();
 		else  */
-		return static::where('ID',$id)->first();
+		return EbFunctions::where('CODE',$code)->first();
 	}
 	
 	public function ExtensionEbFunctions($option=null){

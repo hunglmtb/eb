@@ -1,24 +1,24 @@
 (function ($) {
     "use strict";
     
-    var EVENT = function (options) {
-        this.init('EVENT', options, EVENT.defaults);
+    var TASK = function (options) {
+        this.init('TASK', options, TASK.defaults);
     };
 
     //inherit from Abstract input
-    $.fn.editableutils.inherit(EVENT, $.fn.editabletypes.abstractinput);
+    $.fn.editableutils.inherit(TASK, $.fn.editabletypes.abstractinput);
 
-    $.extend(EVENT.prototype, {
+    $.extend(TASK.prototype, {
         /**
         Renders input from tpl
 
         @method render() 
         **/        
         render: function() {
-        	this.$input 	= this.$tpl.find('input');
-        	this.$select 	= this.$tpl.find('select');
-        	this.$span 		= this.$tpl.find('span');
-        	this.$rows 		= this.$tpl.find('.DATAROW');
+           this.$input = this.$tpl.find('input');
+           this.$select = this.$tpl.find('select');
+           this.$rows = this.$tpl.find('.DATAROW');
+           this.$span = this.$tpl.find('span');
         },
         
         /**
@@ -31,17 +31,7 @@
                 $(element).empty();
                 return; 
             }
-        	var text = "";
-        	switch(this.options.configType){
-        	case "EVENT" :
-        		text = value.FREQUENCEMODE;
-        		break;
-        	case "TASK" :
-        		text = this.$input.filter('[name="JOB"]').text();
-        		break;
-        	}
-        	text=text!=""?text:"config";
-        	var html = '<b>' + text+ '</b>';
+        	var html = '<b>' + value.FREQUENCEMODE+ '</b>';
             $(element).html(html); 
         },
         
@@ -104,24 +94,15 @@
         @param {mixed} value
        **/         
        value2input: function(value) {
-			if(typeof value == "undefined" || !value) return;
-			switch(this.options.configType){
-				case "EVENT" :
-					this.$select.filter('[name="FREQUENCEMODE"]').val(value.FREQUENCEMODE);
-					this.$input.filter('[name="INTERVALDAY"]').val(value.INTERVALDAY);
-					this.renderDatetimeValue('STARTTIME',value.STARTTIME);
-					this.renderDatetimeValue('ENDTIME',value.ENDTIME);
-					this.renderValue('.WEEKDAYROW',value.WEEKDAY);
-					this.renderValue('.DAYROW',value.MONTHDAY);
-					this.renderValue('.MONTHROW',value.MONTH);
-				break;
-				case "TASK" :
-					this.$select.filter('[name="NETWORK"]').val(value.NETWORK);
-					this.$select.filter('[name="JOB"]').val(value.JOB);
-					this.renderDatetimeValue('DATE',value.DATE);
-					this.$input.filter('[name="SENDLOG"]').val(value.SENDLOG);
-				break;
-			}
+           if(typeof value == "undefined" || !value) return;
+           
+    	   this.$select.filter('[name="FREQUENCEMODE"]').val(value.FREQUENCEMODE);
+    	   this.$input.filter('[name="INTERVALDAY"]').val(value.INTERVALDAY);
+    	   this.renderDatetimeValue('STARTTIME',value.STARTTIME);
+    	   this.renderDatetimeValue('ENDTIME',value.ENDTIME);
+    	   this.renderValue('.WEEKDAYROW',value.WEEKDAY);
+    	   this.renderValue('.DAYROW',value.MONTHDAY);
+    	   this.renderValue('.MONTHROW',value.MONTH);
        },       
        
        /**
@@ -130,34 +111,22 @@
         @method input2value() 
        **/          
        input2value: function() {
-			var value	= {};
-			switch(this.options.configType){
-				case "EVENT" :
-					var weekdays = this.extractValue('.WEEKDAYROW');
-					var months 	= this.extractValue('.MONTHROW');
-					var days 	= this.extractValue('.DAYROW');
-					var startTime= this.getDatetimeValue('STARTTIME');
-					var endTime	= this.getDatetimeValue('ENDTIME');
-					value	= {
-							FREQUENCEMODE	: this.$select.filter('[name="FREQUENCEMODE"]').val(),
-							INTERVALDAY		: this.$input.filter('[name="INTERVALDAY"]').val(),
-							STARTTIME		: startTime,
-							ENDTIME			: endTime,
-							WEEKDAY			: weekdays,
-							MONTHDAY		: days,
-							MONTH			: months,
-					};
-				break;
-				case "TASK" :
-					value	= {
-							NETWORK			: this.$input.filter('[name="NETWORK"]').val(),
-							JOB				: this.$input.filter('[name="JOB"]').val(),
-							DATE			: this.getDatetimeValue('DATE'),
-							SENDLOG			: this.$input.filter('[name="SENDLOG"]').val(),
-					};
-				break;
-			}
-			return value;
+    	   var weekdays = this.extractValue('.WEEKDAYROW');
+    	   var months 	= this.extractValue('.MONTHROW');
+    	   var days 	= this.extractValue('.DAYROW');
+    	   var startTime= this.getDatetimeValue('STARTTIME');
+    	   var endTime	= this.getDatetimeValue('ENDTIME');
+
+    	   var value	= {
+		    			   FREQUENCEMODE	: this.$select.filter('[name="FREQUENCEMODE"]').val(),
+		    			   INTERVALDAY		: this.$input.filter('[name="INTERVALDAY"]').val(),
+		    			   STARTTIME		: startTime,
+		    			   ENDTIME			: endTime,
+		    			   WEEKDAY			: weekdays,
+		    			   MONTHDAY			: days,
+		    			   MONTH			: months,
+			       		};
+           return value;
        },
        
        getDatetimeValue: function(filterName) {
@@ -191,7 +160,13 @@
     		   });
     	   }
        },
-       activateTimeEvent: function() {
+       
+        /**
+        Activates input: sets focus on the first field.
+        
+        @method activate() 
+       **/        
+       activate: function() {
     	   var editableInputs 	= this.$input;
     	   var frequenceMode = this.$select.filter('[name="FREQUENCEMODE"]');
     	   frequenceMode.change(function() {
@@ -200,62 +175,41 @@
     		   $(".DAYROW").hide();
     		   $(".WEEKDAYROW").hide();
     		   
-    		   switch ($(this).val()){
-    		   case	"ONCETIME":
-    			   $(".INTERVALROW").hide();
-    			   break;
-    		   case	"DAILY":
-    			   break;
-    		   case	"WEEKLY":
-    			   $(".WEEKDAYROW").show();
-    			   break;
-    		   case	"MONTHLY":
-    			   $(".DAYROW").show();
-    			   $(".WEEKDAYROW").show();
-    			   $(".MONTHROW").show();
-    			   break;
-    		   }
-    	   });
+        	   switch ($(this).val()){
+        	   case	"ONCETIME":
+        		   $(".INTERVALROW").hide();
+        		   break;
+        	   case	"DAILY":
+        		   break;
+        	   case	"WEEKLY":
+        		   $(".WEEKDAYROW").show();
+        		   break;
+        	   case	"MONTHLY":
+        		   $(".DAYROW").show();
+        		   $(".WEEKDAYROW").show();
+        		   $(".MONTHROW").show();
+        		   break;
+        	   }
+	       });
     	   frequenceMode.change();
-    	   this.renderDateTimePicker('[name="STARTTIME"],[name="ENDTIME"]');
-       },
-       renderDateTimePicker: function(filterQuery) {
-    	   var  editable = {
-    			   title			: 'edit',
-    			   clear			: false,
-    			   emptytext		: '',
-    			   onblur			: 'submit',
-    			   showbuttons		: false,
-    			   mode				: 'popup',
-    			   type				: 'datetime',
-    			   format			: configuration.picker.DATETIME_FORMAT_UTC,
-    			   viewformat		: configuration.picker.DATETIME_FORMAT,
-    			   datetimepicker	: {
-    				   minuteStep :5,
-    				   showMeridian : true,
-    			   },
-    	   };
-    	   var datetimeInputs	= this.$span.filter(filterQuery);
-    	   datetimeInputs.editable(editable);
     	   
-       },
-       activateJobEvent: function() {
-    	   this.renderDateTimePicker('[name="DATE"]');
-       },
-        /**
-        Activates input: sets focus on the first field.
-        
-        @method activate() 
-       **/        
-       activate: function() {
-			switch(this.options.configType){
-			case "EVENT" :
-				this.activateTimeEvent();
-				break;
-			case "TASK" :
-				this.activateJobEvent();
-				break;
-			}
+	       var  editable = {
+		    	    title			: 'edit',
+		    	    clear			: false,
+		    	    emptytext		: '',
+		    	    onblur			: 'submit',
+		    	    showbuttons		: false,
+		    	    mode			: 'popup',
+		    	    type			: 'datetime',
+		    	    format			: configuration.picker.DATETIME_FORMAT_UTC,
+		    	    viewformat		: configuration.picker.DATETIME_FORMAT,
+		    	    datetimepicker	: {
+						          		minuteStep :5,
+						          		showMeridian : true,
+						            },
+		    	};
+	       var datetimeInputs	= this.$span.filter('[name="STARTTIME"],[name="ENDTIME"]');
+	       datetimeInputs.editable(editable);
 	       $( ".editable-container" ).draggable();
        },  
        
@@ -274,7 +228,7 @@
     });
 
     
-    EVENT.defaults = $.extend({}, $.fn.editabletypes.abstractinput.defaults, {
+    TASK.defaults = $.extend({}, $.fn.editabletypes.abstractinput.defaults, {
         tpl: '<table class="eventTable" style="width:inherit;"><tbody><tr><td><label><span>Recurring</span></label></td><td><select class="editable-event" name="FREQUENCEMODE"><option value="ONCETIME">ONCETIME</option><option value="DAILY">DAILY</option><option value="WEEKLY">WEEKLY</option><option value="MONTHLY">MONTHLY</option></select></td></tr>'+
    	 		 '<tr class="INTERVALROW" ><td><label><span>Recur every</span></label></td><td><input class="editable-event" type="number" name="INTERVALDAY"><label><span> day(s)</span></label></td></tr>'+
         	 '<tr class="STARTTIMEROW" ><td><label><span>Start Time</span></label></td><td><span class="editable-event clickable" name="STARTTIME">set datetime</span></td></tr>'+
@@ -284,8 +238,7 @@
         	 '<tr class="DATAROW DAYROW" ><td> <label><span>Day</span></label></td><td colspan="3"> <label><input type="checkbox" name="chk_day[]" value="1"> 1</label><label><input type="checkbox" name="chk_day[]" value="2"> 2</label><label><input type="checkbox" name="chk_day[]" value="3"> 3</label><label><input type="checkbox" name="chk_day[]" value="4"> 4</label><label><input type="checkbox" name="chk_day[]" value="5"> 5</label><label><input type="checkbox" name="chk_day[]" value="6"> 6</label><label><input type="checkbox" name="chk_day[]" value="7"> 7</label><label><input type="checkbox" name="chk_day[]" value="8"> 8</label><label><input type="checkbox" name="chk_day[]" value="9"> 9</label><label><input type="checkbox" name="chk_day[]" value="10"> 10</label><label><input type="checkbox" name="chk_day[]" value="11"> 11</label><label><input type="checkbox" name="chk_day[]" value="12"> 12</label><label><input type="checkbox" name="chk_day[]" value="13"> 13</label><label><input type="checkbox" name="chk_day[]" value="14"> 14</label><label><input type="checkbox" name="chk_day[]" value="15"> 15</label><label><input type="checkbox" name="chk_day[]" value="16"> 16</label><br>'+
         	 '<label><input type="checkbox" name="chk_day[]" value="17"> 17</label><label><input type="checkbox" name="chk_day[]" value="18"> 18</label><label><input type="checkbox" name="chk_day[]" value="19"> 19</label><label><input type="checkbox" name="chk_day[]" value="20"> 20</label><label><input type="checkbox" name="chk_day[]" value="21"> 21</label><label><input type="checkbox" name="chk_day[]" value="22"> 22</label><label><input type="checkbox" name="chk_day[]" value="23"> 23</label><label><input type="checkbox" name="chk_day[]" value="24"> 24</label><label><input type="checkbox" name="chk_day[]" value="25"> 25</label><label><input type="checkbox" name="chk_day[]" value="26"> 26</label><label><input type="checkbox" name="chk_day[]" value="27"> 27</label><label><input type="checkbox" name="chk_day[]" value="28"> 28</label><label><input type="checkbox" name="chk_day[]" value="29"> 29</label><label><input type="checkbox" name="chk_day[]" value="30"> 30</label><label><input type="checkbox" name="chk_day[]" value="31"> 31</label></td></tr>'+
             '</tbody></table>',
-        inputclass	: '',
-        configType	: 'EVENT',
+        inputclass: ''
     });
-    $.fn.editabletypes.EVENT = EVENT;
+    $.fn.editabletypes.TASK = TASK;
 }(window.jQuery));

@@ -251,6 +251,11 @@ var actions = {
 	objectIds 			: {},
 	extraDataSetColumns : {},
 	extraDataSet 		: {},
+	type 				: {
+							idName			:['ID'],
+							keyField		:'ID',
+							saveKeyField 	:'ID',
+							},
 	loadSuccess 		: function(data){/*alert("success");*/},
 	loadError 			: function(data){/*alert(JSON.stringify(data.responseText));*/alert('loading data error!');},
 	shouldLoad 			: function(data){return false;},
@@ -525,17 +530,19 @@ var actions = {
 	},
 	applyEditable : function (tab,type,td, cellData, rowData, property,collection){
 		var columnName = typeof property === 'string'?property:property.data;
+		$(td).editable("destroy");
 		if(typeof type == "object" && typeof type.applyEditable == "function") return type.applyEditable(tab,type,td, cellData, rowData, property,collection);
 		if(typeof tabIndex == "undefined") tabIndex = 10000;
-		$(td).attr('tabindex', tabIndex++);
-		$(td).focus(function() {
+		if($(td).attr('tabindex') == -1) $(td).attr('tabindex', tabIndex++);
+		if(type != "EVENT") $(td).focus(function() {
 			$(this).editable('show');
 		});
 		var successFunction = actions.getEditSuccessfn(property,tab,td, rowData, columnName,collection,type);
 		var  editable = {
 	    	    title: 'edit',
 	    	    emptytext: '',
-	    	    onblur		: 'cancel',
+	    	    onblur			: 'cancel',
+//				mode		: "inline",
 	    	    showbuttons:false,
 	    	    success: successFunction,
 	    	};
@@ -570,6 +577,7 @@ var actions = {
 			editable['mode'] 		= "popup";
 			editable['placement'] 	= "left";
 			editable['showbuttons'] = true;
+			if(typeof actions.configEventType == "function") actions.configEventType(editable,columnName,cellData,rowData);
 	    	break;
 		case "datetimepicker":
 			editable['onblur'] 	= 'submit';
@@ -726,11 +734,16 @@ var actions = {
     	    }
     	});
 	},
+	renderResultByRule  : function(td, color,cssProperty) {
+		if(typeof td == "function") td(color,cssProperty);
+		else $(td).css(cssProperty, color);
+	},
 	addCellNumberRules  : function(td, property,newValue,rowData,originColor,phase="manual") {
 		if(typeof newValue == "string") newValue = newValue.replace(",",".");
 		newValue	= parseFloat(newValue);
 		if(isNaN(newValue)) return;
 		if(newValue==null||newValue==""||newValue==" ") return;
+		
 		if(phase=="loading"){
 			var minValue = typeof(property.VALUE_MIN) !== "undefined"&&
 			property.VALUE_MIN != null &&
@@ -742,7 +755,8 @@ var actions = {
 					parseFloat(property.VALUE_MAX):Number.MAX_VALUE;
 			
 			if(minValue<maxValue && (newValue < 	minValue || newValue > maxValue)) {
-				$(td).css('background-color', 'red');
+//				$(td).css('background-color', 'red');
+				actions.renderResultByRule(td,"red",'background-color');
 				return;
 			}
 		}
@@ -754,9 +768,12 @@ var actions = {
 		property.VALUE_WARNING_MAX != null &&
 		property.VALUE_WARNING_MAX != ""?
 		parseFloat(property.VALUE_WARNING_MAX):Number.MAX_VALUE;
-		if(newValue <= minWarningValue || newValue >= maxWarningValue) $(td).css('background-color', 'yellow');
+		if(newValue <= minWarningValue || newValue >= maxWarningValue) 
+			actions.renderResultByRule(td,"yellow",'background-color');
+//			$(td).css('background-color', 'yellow');
 		else {
-			$(td).css('background-color', originColor);
+			actions.renderResultByRule(td,originColor,'background-color');
+//			$(td).css('background-color', originColor);
 			var rangePercent = typeof(property.RANGE_PERCENT) !== "undefined"&&
 								property.RANGE_PERCENT != null &&
 								property.RANGE_PERCENT != ""&&
@@ -769,8 +786,12 @@ var actions = {
 				lastValue		= !isNaN(lastValue)?lastValue:0;
 				maxcompareValue	= (rangePercent+100)*lastValue/100;
 				mincompareValue	= (-rangePercent+100)*lastValue/100;
-				if(lastValue>0&&(newValue>maxcompareValue||newValue<mincompareValue)) $(td).css('color', 'blue');
-				else $(td).css('color', '');
+				if(lastValue>0&&(newValue>maxcompareValue||newValue<mincompareValue))
+//					$(td).css('color', 'blue');
+					actions.renderResultByRule(td,"blue",'color');
+				else
+//					$(td).css('color', '');
+					actions.renderResultByRule(td,"",'color');
 			}
 		}
 	},
@@ -853,7 +874,7 @@ var actions = {
 	dominoColumnSuccess	:	function(data,dependenceColumnNames,rowData,tab){
 		$.each(dependenceColumnNames, function( i, dependence ) {
 			dataSet = data.dataSet[dependence].data;
-			if(typeof(dataSet) !== "undefined"&&dataSet.length>0){
+			if(typeof(dataSet) == "object" &&dataSet !=null &&dataSet.length>0){
 				sourceColumn = data.dataSet[dependence].sourceColumn;
 				ofId = data.dataSet[dependence].ofId;
 				cellData=dataSet[0]['ID'];
@@ -863,12 +884,18 @@ var actions = {
 				}
 				actions.extraDataSet[sourceColumn][ofId] = dataSet;
 				dependencetd = $('#'+DT_RowId+" ."+dependence);
-				actions.applyEditable(tab,'select',dependencetd, cellData, rowData, dependence,dataSet);
+				var editableType = actions.getEditableType(tab,dependence);
+				actions.applyEditable(tab,editableType,dependencetd, cellData, rowData, dependence,dataSet);
 				actions.putModifiedData(tab,dependence,cellData,rowData);
 //				createdFirstCellColumnByTable(table,rowData,dependencetd,tab);
 			}
 		});
 		console.log ( "success dominoColumns "+data );
+	},
+	getEditableType : function(tab,columnName){
+		var table = $('#table_'+tab).DataTable();
+		table.settings();
+		return "select";
 	},
 	getKeyFieldSet : function(tab){
 		if(typeof(actions.type.idName) == "function"){
@@ -1144,7 +1171,8 @@ var actions = {
 	    	
 		case "EVENT":
 			cell["render"] = function ( data2, type2, row ) {
-				return typeof data2=="object"&&typeof data2.FREQUENCEMODE != "undefined"? data2.FREQUENCEMODE:"config event";
+				if(typeof actions.renderEventConfig == "function") return actions.renderEventConfig( columnName,data2, type2, row);
+				return "config";
 			};
 	    	break;
 

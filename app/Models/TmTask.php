@@ -33,20 +33,20 @@ use Carbon\Carbon;
 							'last_check',
 							'next_run'];
 	
-	
-	public static function getKeyColumns(&$newData,$occur_date,$postData)
-	{
-		$attributes	= parent::getKeyColumns($newData,$occur_date,$postData);
-		if (array_key_exists("time_config", $newData)) {
-			$timeConfig = count($newData ['time_config'])>0?json_encode($newData ['time_config']):null;
-			$newData["time_config"] = $timeConfig;
-		}
-		return $attributes;
+	public function setTaskConfigAttribute($value){
+		$this->attributes['task_config'] = json_encode($value);
 	}
 	
+	public function setTimeConfigAttribute($value){
+		$this->attributes['time_config'] = json_encode($value);
+	}
 	
  	public function getTimeConfigAttribute($value){
         return json_decode ( $value , true );
+    }
+    
+    public function getTaskConfigAttribute($value){
+    	return json_decode ( $value , true );
     }
 	
 	public function handleScheduleJob(){

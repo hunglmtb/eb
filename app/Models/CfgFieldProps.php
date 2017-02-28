@@ -34,10 +34,45 @@ class CfgFieldProps extends DynamicModel
     }
     
     
+    public static function getOriginProperties($where,$runQuery= true){
+    	$properties = CfgFieldProps::where($where)
+    	->orderBy('FIELD_ORDER')
+    	->select('COLUMN_NAME as data',
+    			'COLUMN_NAME as name',
+     			'FDC_WIDTH as width',
+    			'LABEL as title',
+    			"DATA_METHOD",
+    			"INPUT_ENABLE",
+    			'INPUT_TYPE',
+    			'VALUE_MAX',
+    			'VALUE_MIN',
+    			'VALUE_WARNING_MAX',
+    			'VALUE_WARNING_MIN',
+    			'RANGE_PERCENT',
+    			'VALUE_FORMAT',
+    			'ID',
+    			'FIELD_ORDER',
+    			'OBJECT_EXTENSION'
+    	);
+    	if ($runQuery) $properties = $properties->get();
+    	return $properties;
+    }
     public static function getConfigFields($tableName){
     	return static ::where('TABLE_NAME', '=', $tableName)
 									->where('USE_FDC', '=', 1)
 									->orderBy('FIELD_ORDER')
 									->select('COLUMN_NAME');
     }
+    
+     public static function getFieldProperties($table,$field){
+     	$re_prop 				= CfgFieldProps::where(['TABLE_NAME'=>$table, 'COLUMN_NAME'=>$field])->select('*')->get();
+     	$mdl					= \Helper::getModelName($table);
+     	$objectExtension 		= method_exists($mdl,"getObjects")?$mdl::getObjects():[];
+     	$objectExtensionTarget 	= method_exists($mdl,"getObjectTargets")?$mdl::getObjectTargets():[];
+     	
+     	return ["data"					=> $re_prop,
+     			"objectExtension"		=> $objectExtension,
+     			'objectExtensionTarget'	=> $objectExtensionTarget,
+     	];
+     }
 }

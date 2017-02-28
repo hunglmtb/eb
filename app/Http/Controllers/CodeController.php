@@ -175,30 +175,7 @@ class CodeController extends EBController {
     				$results["objectIds"]	= [$mdlName	=> $objectIds];
     			}
     			
-    			$lastValues	= [];
-    			foreach($rQueryList as $column => $rQuerys){
-    				$rQuery	= null;
-    				foreach($rQuerys as $query){
-    					$rQuery	= $rQuery&&$query?$rQuery->union($query):$query;
-    				};
-    				if ($rQuery) {
-    					$values	= $rQuery->get();
-	    				if ($values) {
-	    					$values	= $values->keyBy('DT_RowId');
-	    					$lastValues[$column]	= $values;
-	    				}
-    				}
-    			};
-    			
-    			foreach($lastValues as $column => $values){
-    				$key = $properties->search(function ($item, $key) use ($column) {
-    					return $item&&$item instanceof Model && $item->data == $column;
-    				});
-    				if ($key>=0) {
-    					$property	= $properties->get($key);
-	    				if ($property) $property->LAST_VALUES = $values;
-    				}
-    			};
+    			$this->updatePropertiesWithLastValue($properties,$rQueryList);
     		}
     	}
     	return $results;
@@ -214,6 +191,33 @@ class CodeController extends EBController {
     		];
     	});
     	return $objectIds;
+    }
+    
+    public function updatePropertiesWithLastValue($properties,$rQueryList){
+    	$lastValues	= [];
+		foreach($rQueryList as $column => $rQuerys){
+			$rQuery	= null;
+			foreach($rQuerys as $query){
+				$rQuery	= $rQuery&&$query?$rQuery->union($query):$query;
+			};
+			if ($rQuery) {
+				$values	= $rQuery->get();
+				if ($values) {
+					$values	= $values->keyBy('DT_RowId');
+					$lastValues[$column]	= $values;
+				}
+			}
+		};
+		
+		foreach($lastValues as $column => $values){
+			$key = $properties->search(function ($item, $key) use ($column) {
+				return $item&&$item instanceof Model && $item->data == $column;
+			});
+			if ($key>=0) {
+				$property	= $properties->get($key);
+				if ($property) $property->LAST_VALUES = $values;
+			}
+		};
     }
     
     public function enableBatchRun($dataSet,$mdlName,$postData){
@@ -371,26 +375,10 @@ class CodeController extends EBController {
     
     
     public function getOriginProperties($dcTable){
-    	$properties = CfgFieldProps::where('TABLE_NAME', '=', $dcTable)
-    	->where('USE_FDC', '=', 1)
-    	->orderBy('FIELD_ORDER')
-    	->get(['COLUMN_NAME as data',
-    			'COLUMN_NAME as name',
-     			'FDC_WIDTH as width',
-    			'LABEL as title',
-    			"DATA_METHOD",
-    			"INPUT_ENABLE",
-    			'INPUT_TYPE',
-    			'VALUE_MAX',
-    			'VALUE_MIN',
-    			'VALUE_WARNING_MAX',
-    			'VALUE_WARNING_MIN',
-    			'RANGE_PERCENT',
-    			'VALUE_FORMAT',
-    			'ID',
-    			'FIELD_ORDER',
-    			'OBJECT_EXTENSION',
-    	]);
+    	$where	= ['TABLE_NAME' => $dcTable,
+    			'USE_FDC' => 1,
+    	];
+    	$properties	= CfgFieldProps::getOriginProperties($where);
     	return $properties;
     }
     

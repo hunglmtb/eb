@@ -166,7 +166,8 @@ function display()
 			   'occur_date':occur_date,
 			   'flow_phase':flow_phase
 		   },
-		   function(data){
+		   function(respondData){
+				var data = respondData.data;
 				if(data.substr(0,2)!='ok')
 				{
 					alert(data);
