@@ -171,5 +171,36 @@
 		alert(msg);
 		if(actions.reloadAfterSave) actions.doLoad(true);
  	};
+
+//  	actions.delay = true;
+	var saveBtnPos;
+	actions.preEditableShow  = function(){
+ 		/* $('#buttonSave').attr("disabled", true);
+ 		$('#buttonSave').prop('disabled', true); */
+
+ 		 var $somediv = $('#buttonSave');
+ 		saveBtnPos      = $.extend({
+ 	         width:    $somediv.outerWidth(),
+ 	         height:   $somediv.outerHeight()
+ 	      }, $somediv.position());
+ 		$('<div>', {
+            id:    'btnoverlay',
+            css:   {
+               position:         'absolute',
+               top:              saveBtnPos.top,
+               left:             saveBtnPos.left,
+               width:            saveBtnPos.width,
+               height:           saveBtnPos.height,
+               backgroundColor:  '#000',
+               opacity:          0.0
+            }
+        }).insertAfter($somediv);
+	};
+	
+	actions.preEditableHiden  = function(){
+		/* $('#buttonSave').attr("disabled", false);
+		$('#buttonSave').prop('disabled', false); */
+ 		$('#btnoverlay').remove();
+	};
 </script>
 @stop
