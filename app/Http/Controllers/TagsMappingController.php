@@ -75,8 +75,9 @@ class TagsMappingController extends CodeController {
     	switch ($sourceColumn) {
     		case 'TABLE_NAME':
     			//note for multi db
-				$db_schema="energy_builder";
-//        			\DB::enableQueryLog();
+// 				$db_schema="energy_builder";
+				$db_schema = ENV('DB_DATABASE');
+				//        			\DB::enableQueryLog();
 				$data = \DB::table('INFORMATION_SCHEMA.COLUMNS')
 		    				->where('TABLE_SCHEMA','=',$db_schema)
 		    				->where('TABLE_NAME','=',$sourceColumnValue)
