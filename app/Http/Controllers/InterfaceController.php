@@ -332,8 +332,8 @@ class InterfaceController extends Controller {
 					$html = "";
 					$datatype = "";
 					if(!$datatype) $datatype="NUMBER";
-// 					$db_schema = ENV('DB_DATABASE');
-					$db_schema="energy_builder";
+ 					$db_schema = ENV('DB_DATABASE');
+// 					$db_schema="energy_builder";
 					
 					for ($row = $rowStart; $row <= $rowFinish; $row++)
 					{
