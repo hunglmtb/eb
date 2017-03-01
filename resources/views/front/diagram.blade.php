@@ -17,6 +17,7 @@ $cur_diagram_id = 0;
 @section('content')
 @include('core.float_dialog')
 
+<script type="text/javascript" src="/common/js/eb.js"></script>
 <script type="text/javascript">
 
 $(function(){
@@ -891,7 +892,8 @@ function display()
 			'flow_phase':flow_phase
 		}
 
-		sendAjax('/getValueSurveillance', param, function(data){
+		sendAjax('/getValueSurveillance', param, function(respondData){
+			var data = respondData.data;
 			if(data.substr(0,2)!='ok')
 			{
 				alert(data);
@@ -922,6 +924,24 @@ function display()
 						if(typeof label!=='undefined'){
 							if(vs[1]!="%SF")
 								label.setAttribute('label', vs[1]);
+								var renderFuntion = function(color,cssProperty){
+									label.style = "fontColor="+color+";";
+								}
+								var cellConfig	= respondData.cellConfigs[vs[0]];
+								
+								rowData			= {
+													DT_RowId				: cellConfig.OBJECT_ID
+												};
+								rowData[actions.type.idName[0]] = cellConfig.OBJECT_ID;
+								
+								var cIndex		= cellConfig.index;
+								var property 	= respondData.properties[cIndex];
+								var objectRules	= actions.getObjectRules(property,rowData);
+								var newValue	= cellConfig.value;
+// 								label.setStyle("fontColor:red;");
+// 								label.style = "strokeColor=red;fillColor=green;fontColor=blue;";
+        						var basicRules		= actions.getBasicRules(property,objectRules);
+ 								actions.addCellNumberRules(renderFuntion,basicRules,newValue,rowData,"","loading");
 						}
 					}
 				}
@@ -1441,6 +1461,12 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 					};
 
 	editBox.initExtraPostData = function (id,rowData,url){
+		var c;
+		//Get all medel selsected
+		for (c in ed.graph.selectionModel.cells)
+		{
+			currentObjectMapping	=	ed.graph.selectionModel.cells[c];
+		}
 		if(currentObjectMapping){
 			var surveillance = currentObjectMapping.getAttribute('surveillance');
 			if(surveillance.length>0){

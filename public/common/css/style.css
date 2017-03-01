@@ -532,3 +532,6 @@ table.eventTable tbody td {
 input.datePickerInput{
     max-width: 100px;
 }
+.eventTaskInput{
+    min-width: 200px;
+}

@@ -20,14 +20,16 @@ use App\Models\TmWorkflow;
 use App\Models\TmWorkflowTask;
 use App\Models\User;
 use App\Models\Dashboard;
-
+use App\Models\EnergyUnit;
+use App\Models\Flow;
+use Illuminate\Database\Eloquent\Collection;
 use App\Jobs\runAllocation;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 
-class DVController extends Controller {
+class DVController extends CodeController {
 	
 	public function __construct() {
 		$this->isReservedName = config ( 'database.default' ) === 'oracle';
@@ -273,6 +275,10 @@ class DVController extends Controller {
 		
 		if (!$vparam || !is_array($vparam) ||count($vparam)<=0)  return response ()->json ( "empty param" );
 		
+		$cells_data = [];
+		$fieldConfigs = [];
+		$cellConfigs = [];
+		
 		foreach ( $vparam as $v ) {
 			$cell_id = $v ['ID'];
 			if (!array_key_exists('OBJECT_ID', $v)) continue;
@@ -281,7 +287,6 @@ class DVController extends Controller {
 			$conn_id 	= array_key_exists('CONN_ID', $v)?$v ['CONN_ID']:-1;
 			$phase_config = $v ['SUR_PHASE_CONFIG'];
 			$su = $v ['SU'];
-			
 			if ($object_type == 'ENERGY_UNIT') {
 				$phase_configs = explode ( "!!", $phase_config );
 				
@@ -307,9 +312,9 @@ class DVController extends Controller {
 							$datas [$as2 [0]] = $as2;
 						}
 					}
-					$table = strtolower ( $table );
-					$table = str_replace ( ' ', '', ucwords ( str_replace ( '_', ' ', $table ) ) );
-					$model = 'App\\Models\\' . $table;
+					$model = strtolower ( $table );
+					$model = str_replace ( ' ', '', ucwords ( str_replace ( '_', ' ', $model ) ) );
+					$model = 'App\\Models\\' . $model;
 // 					\DB::enableQueryLog ();
 					$conditions = explode ( ',', $flow_phases );
 					$tmps = $model::where ( [ 
@@ -329,12 +334,24 @@ class DVController extends Controller {
 						}
 					}
 					$cells_data ["$cell_id"] ["%SF"] = $arr;
+					$cellConfigs[$cell_id] = ["table"=>$table,"field"=>$field,"value"	=> $value, "OBJECT_ID"	=> $object_id];
+					
+					$item	= new EnergyUnit; 
+					$item->{$item::$idField}	= $object_id;
+					$item->DT_RowId				= $object_id;
+					if (!array_key_exists($table, $fieldConfigs)) 
+						$fieldConfigs[$table] = [	"fields"	=> [$field	=> []],
+													"model"		=> $model,
+												];
+					$fieldConfigs[$table]["fields"][$field][$cell_id] = $item;
+						
+// 					if ($item) $fieldConfigs[$table]["fields"][$field][$cell_id][] = $item;
 				}
 			}
 			
 			$field_tables = explode ( "@", $su );
 			$label = "";
-			
+			$item	= null;
 			foreach ( $field_tables as $field_table ) {
 				if (strpos ( $field_table, "TAG:" ) !== FALSE) {
 					if ($conn_id > 0) {
@@ -355,14 +372,18 @@ class DVController extends Controller {
 							$xlabel = "$table/$field";
 						}
 						
-						$table = strtolower ( $table );
-						$table = str_replace ( ' ', '', ucwords ( str_replace ( '_', ' ', $table ) ) );
-						$model = 'App\\Models\\' . $table;
+						$model = strtolower ( $table );
+						$model = str_replace ( ' ', '', ucwords ( str_replace ( '_', ' ', $model ) ) );
+						$model = 'App\\Models\\' . $model;
 						
 						$condition = array ();
+						$item		= null;
 						if ($object_type == 'FLOW') {
 							$value = "--";
 							$condition ['FLOW_ID'] = $object_id;
+							$item	= new Flow;
+							$item->{$item::$idField}	= $object_id;
+							$item->DT_RowId				= $object_id;
 						} else {
 							if ($object_type == 'TANK') {
 								$value = "--";
@@ -380,6 +401,9 @@ class DVController extends Controller {
 											$value = "--";
 											$condition ['EU_ID'] = $object_id;
 											$condition ['FLOW_PHASE'] = $flow_phase;
+											$item	= new EnergyUnit;
+											$item->{$item::$idField}	= $object_id;
+											$item->DT_RowId				= $object_id;
 										} else {
 											$value = "--";
 										}
@@ -397,8 +421,17 @@ class DVController extends Controller {
 						if (count ( $values ) > 0) {
 							$value = $values->FIELD_VALUE;
 						}
+						$rawValue	= $value;
+						$value = (is_numeric ( $value ) ? number_format ( $value, 2 ) : $value);
+						$cells_data ["$cell_id"] ["$xlabel"] = $value;
+						$cellConfigs[$cell_id] = ["table"=>$table,"field"=>$field,"value"	=> $rawValue, "OBJECT_ID"	=> $object_id];
 						
-						$cells_data ["$cell_id"] ["$xlabel"] = (is_numeric ( $value ) ? number_format ( $value, 2 ) : $value);
+						if (!array_key_exists($table, $fieldConfigs))
+							$fieldConfigs[$table] = [	"fields"	=> [$field	=> []],
+														"model"		=> $model,
+							];
+						$fieldConfigs[$table]["fields"][$field][$cell_id] = $item;
+						
 					}
 				}
 			}
@@ -464,7 +497,50 @@ class DVController extends Controller {
 			}
 		}
 		
-		return response ()->json ( "ok$ret" );
+		$properties 	= $this->getExtendProperties($fieldConfigs,$occur_date,$cellConfigs);
+		
+// 		return response ()->json ( "ok$ret" );
+		return response ()->json ([
+									"data"			=> "ok$ret",
+									"fieldConfigs"	=> 	$fieldConfigs,
+									"cellConfigs"	=> 	$cellConfigs,
+									'properties'	=>	$properties,
+		] );
+	}
+	
+	public function getExtendProperties($fieldConfigs,$occur_date,&$cellConfigs) {
+		$properties 		= new Collection;
+    	$rQueryList			= [];
+    	$index				= 0;
+		foreach ( $fieldConfigs as $table => $fields ) {
+			$mdlName			= $fields["model"] ;
+			foreach ( $fields["fields"] as $field => $fieldData) {
+				$where	= [	'TABLE_NAME' 	=> $table,
+							'COLUMN_NAME' 	=> $field,
+				];
+				$property	= CfgFieldProps::getOriginProperties($where,false)->first();
+				if ($property&&$property instanceof CfgFieldProps) {
+// 					$fieldData["data"] 	= $property;
+// 					$fields[$field] 	= $fieldData;
+					foreach ( $fieldData as $cell_id => $item) {
+						if ($item&&$property->shouldLoadLastValueOf($item)) {
+							$column		= $property->data;
+							$query		= $item->getLastValueOfColumn($mdlName,$column,$occur_date);
+							if ($query) {
+								if (!array_key_exists($column, $rQueryList)) $rQueryList[$column] = [];
+								$rQueryList[$column][]	= $query;
+							}
+						}
+						$cellConfigs[$cell_id]["index"] = $index;
+					}
+					$properties->push($property);
+					$index++;
+				}
+			}
+ 			$fieldConfigs[$table] = $fields;
+		}
+		$this->updatePropertiesWithLastValue($properties,$rQueryList);
+		return $properties;
 	}
 	
 	public function uploadFile() {

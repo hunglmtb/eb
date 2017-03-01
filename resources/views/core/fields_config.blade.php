@@ -248,6 +248,7 @@ var _fieldconfig = {
 				type		: 'address',
 				onblur		: 'ignore',
 				placement	: 'left',
+				mode		: "popup",		
 				value		: targets,
 		    });
 			basic.on('save', function(e, params) {
@@ -416,13 +417,6 @@ var _fieldconfig = {
             	<input type="button" id="save" onClick="_fieldconfig.saveprop()" style="width:100px;" value="Save">
                 <input type="reset" id="reset" onClick="_fieldconfig.reset()" style="width:100px;" value="Reset">
 			</div>
-
-
-	<!-- <link href="/common/css/bootstrap.css" rel="stylesheet"/>
-	<link href="/common/css/bootstrap-responsive.css" rel="stylesheet"/>
-	<link href="/common/css/bootstrap-editable.css" rel="stylesheet"/>
- 	<script src="/common/js/bootstrap.js"></script>
-	<script src="/common/js/bootstrap-editable.js"></script> -->
 	
 	<link href="/jqueryui-editable/css/jqueryui-editable.css" rel="stylesheet"/>
 	<script src="/jqueryui-editable/js/jqueryui-editable.js"></script>

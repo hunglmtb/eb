@@ -55,7 +55,7 @@ class TaskmanController extends CodeController {
   		
 		return [ 
 				'dataSet' 		=> $dataSet,
-     			'extraDataSet'	=>$extraDataSet
+      			'extraDataSet'	=>$extraDataSet
 		]
 		;
 	}
@@ -64,7 +64,7 @@ class TaskmanController extends CodeController {
 		$data = null;
 		switch ($sourceColumn) {
 			case 'task_group':
-				$group		= EbFunctions::find($sourceColumnValue);
+				$group		= EbFunctions::findByCode($sourceColumnValue);
 				if ($group) $data = $group->ExtensionEbFunctions();
 				break;
 		}

@@ -176,12 +176,12 @@ class EbBussinessModel extends DynamicModel {
 		return null;
 	}
 	
-	public function getLastValueOfColumn($mdlName,$column,$occur_date,$postData,$returnQuery=true) {
+	public function getLastValueOfColumn($mdlName,$column,$occur_date,$postData=null,$returnQuery=true) {
 		if (!$occur_date) return null;
+		$mdlName	= strpos($mdlName, 'App\Models\\')===false?'App\Models\\'.$mdlName:$mdlName;
 		$newData	= $this->getKeyAttributes($mdlName,$column);
 		if (!$newData) return null;
 		
-		$mdlName	= 'App\Models\\'.$mdlName;
 		$where		= $mdlName::getKeyColumns($newData,$occur_date,$postData);
 		unset($where[$mdlName::$dateField]);
 		$query		= $mdlName :: where($where)
