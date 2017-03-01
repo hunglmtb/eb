@@ -218,7 +218,7 @@ class FormulaController extends Controller {
 			foreach ($data['cboObjName'] as $selectedOption)
 			    $objname.= ($objname==""?"":",").$selectedOption;
 		}
-		
+		$objname = trim($objname);
 		if($data['isvar'] == 0)
 		{
 			$formula_id=$data['formula_id'];
@@ -279,7 +279,6 @@ class FormulaController extends Controller {
 					'COMMENT' => $data['txtComment'],
 					'GROUP_ID'=>$data['group_id'],
 					'OBJECT_TYPE'=>$data['cboObjType'],
-					'OBJECT_ID' =>$str,
 					'TABLE_NAME'=>$data['txtTableName'],
 					'VALUE_COLUMN'=>$data['txtValueColumn'],
 					'OBJ_ID_COLUMN'=>$data['txtIDColumn'],
@@ -290,6 +289,8 @@ class FormulaController extends Controller {
 // 					'BEGIN_DATE'=>$begin_date,
 // 					'END_DATE'=>$end_date
 				];
+				if($str) $p['OBJECT_ID'] =$str;
+
 				$begin_date = $data ['txtBeginDate'];
 				if ($begin_date != "") $p['BEGIN_DATE'] = \Helper::parseDate($begin_date);
 				$end_date = $data ['txtEndDate'];
@@ -337,7 +338,6 @@ class FormulaController extends Controller {
 					'ORDER' => $data['txtOrder'],
 					'FORMULA_ID' => $data['formula_id'],
 					'OBJECT_TYPE' => $data['cboObjType'],
-					'OBJECT_ID'  => $str,
 					'TABLE_NAME' => $data['txtTableName'],
 					'VALUE_COLUMN' => $data['txtValueColumn'],
 					'OBJ_ID_COLUMN' => $data['txtIDColumn'],
@@ -346,6 +346,8 @@ class FormulaController extends Controller {
 					'ALLOC_TYPE' => $data['cboAllocType'],
 					'COMMENT' => $data['txtComment']
 				];
+				
+				if($str) $pra1['OBJECT_ID'] =$str;
 				
 				FoVar::where(['ID'=>$var_id])->update($pra1);
 			}
