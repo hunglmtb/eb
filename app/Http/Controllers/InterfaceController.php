@@ -937,12 +937,30 @@ class InterfaceController extends Controller {
 									$dateformat = substr ( $exp, $k + 1, $l - $k - 1 );
 								$exp = substr ( $exp, 0, $k );
 							}
-							$value = "'$exp'";
-							if (strlen ( $exp ) == 1 && ord ( strtolower ( $exp ) ) >= 97 && ord ( strtolower ( $exp ) ) <= 122) {
-								$key = ord ( strtolower ( $exp ) ) - 96;
-								$vars [$key] = $exp;
-								$value = "'@VALUE_{$key}@'";
+							
+							$is_constant = false;
+							if($exp[0]=='"') // constant
+							{
+								$is_constant = true;
+								$exp = str_replace ( '"', '', $exp );
 							}
+							$value = "'$exp'";
+							
+							if(!$is_constant){
+								$is_col_ref = true;
+								for ($ie=0; $ie<strlen($exp); $ie++) {
+									$ord = ord($exp[$ie]);
+									if($ord < 65 || $ord > 90){
+										$is_col_ref = false;
+										break;
+									}
+								}
+								if($is_col_ref){
+									$vars[] = $exp;
+									$value = "'@VALUE_{$exp}@'";
+								}
+							}
+
 							if ($dateformat)
 								$value = "STR_TO_DATE($value,'$dateformat')";
 							if ($iskey) {
@@ -967,10 +985,10 @@ class InterfaceController extends Controller {
 							$keys_check_x = $keys_check;
 							$V_x = $V;
 							$X_x = $X;
-							foreach ( $vars as $var => $vvv ) {
-								$value = $sheet->rangeToArray ( $vvv . $row ) [0] [0];
-								//\Log::info("rangeToArray ( $vvv . $row )=".$value);
-								// $value=mysql_real_escape_string($sheet->getCell($vvv.$row)->getFormattedValue());//$data->sheets[$i][cells][$j][$var];
+							foreach ( $vars as $var ) {
+								$value = $sheet->rangeToArray ( $var . $row ) [0] [0];
+								//\Log::info("rangeToArray ( $var . $row )=".$value);
+								// $value=mysql_real_escape_string($sheet->getCell($var.$row)->getFormattedValue());//$data->sheets[$i][cells][$j][$var];
 								if ($keys_check_x)
 									$keys_check_x = str_replace ( "@VALUE_{$var}@", $value, $keys_check_x );
 								$V_x = str_replace ( "@VALUE_{$var}@", $value, $V_x );
