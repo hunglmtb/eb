@@ -681,10 +681,6 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 			}
 		}
 
-		foreach($ids_to as $obj_type_to => $ids){
-			$this->_log ( "obj type to $obj_type_to: ".implode(",",$ids)."<br>", 2 );
-		}
-
 		if (count($ids_from)>0) {
 			$alloc_from_all = [];
 			$ret = $this->buildFromData($ids_from, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu, $from_option);
