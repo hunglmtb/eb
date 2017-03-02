@@ -93,14 +93,20 @@ class StorageDisplayController extends ChokeController {
 				$serie				= [];
 				$lineSeries			= [];
 				foreach($objects as $index => $object ){
-					$tableView		= $object["ObjectDataSource"];
-					$tableName		= strpos($tableView, "V_")===0?substr($tableView, 2):$tableView;
-					$modelName		= \Helper::getModelName($tableName);
-					
-					$datefield		= property_exists($modelName, "dateField")?$modelName::$dateField:null;
-					$objectIdField	= $modelName::$idField;
-					
 					$objectType		= $object["IntObjectType"];
+					$tableView		= $object["ObjectDataSource"];
+					$tableName		= $tableView;
+					if (strpos($tableView, "V_")===0) {
+						$modelName		= \DB::table($tableName);
+						$datefield		= null;
+						$objectIdField	= $objectType."_ID";
+					}
+					else{
+						$modelName		= \Helper::getModelName($tableName);
+						$datefield		= property_exists($modelName, "dateField")?$modelName::$dateField:null;
+						$objectIdField	= $modelName::$idField;
+					}
+					
 					$objectId		= $object["ObjectName"];
 					$flowPhase		= array_key_exists("CodeFlowPhase", $object)?$object["CodeFlowPhase"]:0;
 					$queryField		= $object["ObjectTypeProperty"];
@@ -136,8 +142,11 @@ class StorageDisplayController extends ChokeController {
 						else if($query)	$rquery = $query;
 					}
 					else{
-						$lineQuery		= $modelName::where($objectIdField,$objectId)
-													->select(\DB::raw("$minus($queryField$calculation) as $sumField"))
+						if (is_string($modelName))
+							$lineQuery = $modelName::where($objectIdField,$objectId)->select(\DB::raw("$minus($queryField$calculation) as $sumField"))
+													->take(1);
+						else 
+							$lineQuery = $modelName->where($objectIdField,$objectId)->select(\DB::raw("$minus($queryField$calculation) as $sumField"))
 													->take(1);
 						if ($rLineQuery&&$lineQuery) $rLineQuery->union($lineQuery);
 						else if ($lineQuery) $rLineQuery = $lineQuery;
@@ -168,8 +177,9 @@ class StorageDisplayController extends ChokeController {
 					}
 				}
 				if ($rLineQuery) {
+					$binding = $rLineQuery instanceof  Illuminate\Database\Eloquent\Builder ? $rLineQuery->getQuery():$rLineQuery;
 					$rDataSet	= \DB::table( \DB::raw("({$rLineQuery->toSql()}) as sub") )
-										->mergeBindings($rLineQuery->getQuery()) // you need to get underlying Query Builder
+										->mergeBindings($binding) // you need to get underlying Query Builder
 										->selectRaw("sum($sumField) as $sumField")
 										->first();
 					if($rDataSet){

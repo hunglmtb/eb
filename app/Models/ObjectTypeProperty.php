@@ -13,6 +13,7 @@ use App\Models\DynamicModel;
 			$tmp 		= \DB::table('INFORMATION_SCHEMA.COLUMNS')
 							->where('TABLE_SCHEMA','=',$db_schema)
 							->where('TABLE_NAME','=',$code)
+							->where('COLUMN_NAME','<>',"ID")
 							->whereIn('DATA_TYPE',['decimal','int','double'])
 							->select(['COLUMN_NAME AS ID','COLUMN_NAME AS CODE', 'COLUMN_NAME AS NAME'])
 							->get();
