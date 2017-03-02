@@ -1373,7 +1373,7 @@ var actions = {
 		var tblWdth = actions.getTableWidth(data,autoWidth,tab);
 		if(!autoWidth) {
 //			$('#table_'+tab).css('width',(tblWdth+20)+'px');
-			$('#table_'+tab).css('min-width',(tblWdth+20)+'px');
+//			$('#table_'+tab).css('min-width',(tblWdth+20)+'px');
 //			$('#container_'+tab).css('min-width',(tblWdth+20)+'px');
 			autoWidth = tblWdth < $(window).width()-30;
 		}
@@ -1385,8 +1385,8 @@ var actions = {
 		          destroy: true,
 		          "columnDefs": uoms,
 		          "scrollX": true,
-//		         "autoWidth": false,
-		         "autoWidth": autoWidth,
+		         "autoWidth": false,
+//		         "autoWidth": autoWidth,
 //		       	"scrollY":        "37vh",
 //		         "scrollY":        "250px",
 		       	scrollY:        tHeight,
