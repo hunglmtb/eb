@@ -6,5 +6,5 @@ vendor/*
 .settings/
 composer.lock
 .env
-config/database.php
+#config/database.php
 
