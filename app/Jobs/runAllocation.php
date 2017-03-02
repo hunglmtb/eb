@@ -531,71 +531,80 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 	}
 	
 	private function getAllocFrom($type, $obj_type_from, $ids_from, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu){
-		$arrfrom = explode ( ',', $ids_from );
 		switch ($obj_type_from) {
 			case OBJ_TYPE_FLOW :
-				$alloc_from = DB::table ( "FLOW_DATA_$type AS a" )->join ( 'FLOW AS b', 'a.FLOW_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.FLOW_ID', $arrfrom )->SELECT ( DB::raw ( "IFNULL(a.FL_DATA_$alloc_attr,0) AS ALLOC_VALUE", 'a.FLOW_ID AS OBJECT_ID', 'b.NAME AS OBJECT_NAME', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR' ) )->get ();
+				$alloc_from = DB::table ( "FLOW_DATA_$type AS a" )->join ( 'FLOW AS b', 'a.FLOW_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.FLOW_ID', $ids_from )->SELECT ( DB::raw ( "IFNULL(a.FL_DATA_$alloc_attr,0) AS ALLOC_VALUE", 'a.FLOW_ID AS OBJECT_ID', 'b.NAME AS OBJECT_NAME', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR' ) )->get ();
 				break;
 
 			case OBJ_TYPE_EU :
-				$alloc_from = DB::table ( "ENERGY_UNIT_DATA_$type AS a" )->join ( 'ENERGY_UNIT AS b', 'a.EU_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.EU_ID', $arrfrom )->where ( [
+				$alloc_from = DB::table ( "ENERGY_UNIT_DATA_$type AS a" )->join ( 'ENERGY_UNIT AS b', 'a.EU_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.EU_ID', $ids_from )->where ( [
 						'a.FLOW_PHASE' => $alloc_phase,
 						'a.EVENT_TYPE' => $event_type
 				] )->SELECT ( DB::raw ( "IFNULL(a.EU_DATA_$alloc_attr_eu,0) AS ALLOC_VALUE", 'a.EU_ID AS OBJECT_ID', 'b.NAME AS OBJECT_NAME', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR', 'a.FLOW_PHASE' ) )->get ();
 				break;
 
 			case OBJ_TYPE_TANK :
-				$alloc_from = DB::table ( "TANK_DATA_$type AS a" )->join ( 'TANK AS b', 'a.TANK_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $arrfrom )->select ( DB::raw ( "IFNULL(a.TANK_$alloc_attr,0) AS ALLOC_VALUE", 'a.TANK_ID AS OBJECT_ID', 'b.NAME AS OBJECT_NAME', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR' ) )->get ();
+				$alloc_from = DB::table ( "TANK_DATA_$type AS a" )->join ( 'TANK AS b', 'a.TANK_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $ids_from )->select ( DB::raw ( "IFNULL(a.TANK_$alloc_attr,0) AS ALLOC_VALUE", 'a.TANK_ID AS OBJECT_ID', 'b.NAME AS OBJECT_NAME', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR' ) )->get ();
 				break;
 
 			case OBJ_TYPE_STORAGE :
-				$alloc_from = DB::table ( "STORAGE_DATA_$type AS a" )->join ( 'STORAGE AS b', 'a.STORAGE_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $arrfrom )->select ( DB::raw ( "IFNULL(a.STORAGE_$alloc_attr,0) AS ALLOC_VALUE", 'a.STORAGE_ID AS OBJECT_ID', 'b.NAME AS OBJECT_NAME', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR' ) )->get ();
+				$alloc_from = DB::table ( "STORAGE_DATA_$type AS a" )->join ( 'STORAGE AS b', 'a.STORAGE_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $ids_from )->select ( DB::raw ( "IFNULL(a.STORAGE_$alloc_attr,0) AS ALLOC_VALUE", 'a.STORAGE_ID AS OBJECT_ID', 'b.NAME AS OBJECT_NAME', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR' ) )->get ();
 				break;
 		}
 		return $alloc_from;
 	}
 	
-	private function buildFromData($obj_type_from, $ids_from, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu, $from_option){
-		$arrfrom = explode ( ',', $ids_from );
+	private function buildFromData($ids_from, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu, $from_option){
+
 		if(!$from_option)
 			$from_option = 0;
-		$sum = null;
-		$type = "";
-		switch ($from_option){
-			case 0: //default: alloc >> std >> theor
-				$type = "ALLOC";
-				$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
-				if(!$sum){
+		$sum_all = null;
+		$type_all = [];
+		foreach($ids_from as $obj_type_from => $arrfrom){
+			$ids_minus_str = "-999";
+			if(array_key_exists($obj_type_from,$ids_minus)){
+				foreach($ids_minus[$obj_type_from] as $obj_id_minus){
+					$ids_minus_str .= ",$obj_id_minus";
+				}
+			}
+			switch ($from_option){
+				case 0: //default: alloc >> std >> theor
+					$type = "ALLOC";
+					$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus_str, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
+					if(!$sum){
+						$type = "VALUE";
+						$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus_str, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
+					}
+					if(!$sum){
+						$type = "THEOR";
+						$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus_str, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
+					}
+					break;
+				case 1: //std >> theor
 					$type = "VALUE";
-					$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
-				}
-				if(!$sum){
+					$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus_str, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
+					if(!$sum){
+						$type = "THEOR";
+						$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus_str, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
+					}
+					break;
+				case 2: //std
+					$type = "VALUE";
+					$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus_str, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
+					break;
+				case 3: //theor
 					$type = "THEOR";
-					$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
-				}
-				break;
-			case 1: //std >> theor
-				$type = "VALUE";
-				$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
-				if(!$sum){
-					$type = "THEOR";
-					$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
-				}
-				break;
-			case 2: //std
-				$type = "VALUE";
-				$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
-				break;
-			case 3: //theor
-				$type = "THEOR";
-				$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
-				break;
-			case 4: //alloc
-				$type = "ALLOC";
-				$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
-				break;
+					$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus_str, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
+					break;
+				case 4: //alloc
+					$type = "ALLOC";
+					$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus_str, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
+					break;
+			}
+			$sum_all += $sum;
+			$type_all[$obj_type_from] = $type;
 		}
-		return ["type" => $type, "sum" => $sum];
+		return ["type" => $type_all, "sum" => $sum_all];
 	}
 	
     private function run_runner($runner_id, $from_date, $to_date, $alloc_attr, $alloc_phase, $theor_phase, $alloc_comp, $alloc_type, $theor_attr, $from_option)
@@ -646,13 +655,13 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 		$total_to = 0;
 		$total_fixed = 0;
 
-		$ids_from = "";
-		$ids_to = "";
-		$ids_fixed = "";
-		$ids_minus = "-999";
+		$ids_from = [];
+		$ids_to = [];
+		$ids_fixed = [];
+		$ids_minus = [];
 
-		$obj_type_from = "";
-		$obj_type_to = "";
+		//$obj_type_from = [];
+		//$obj_type_to = "";
 
 		$rows = AllocRunnerObjects::where ( [
 				'RUNNER_ID' => $runner_id
@@ -660,34 +669,29 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 
 		foreach ( $rows as $row ) {
 			if ($row->DIRECTION == 1) {
-				if (! $obj_type_from)
-					$obj_type_from = $row->OBJECT_TYPE;
-					if ($row->OBJECT_TYPE == $obj_type_from) {
-						$ids_from .= ($ids_from ? "," : "") . $row->OBJECT_ID;
-					}
-					if ($row->MINUS == 1)
-						$ids_minus .= ($ids_minus ? "," : "") . $row->OBJECT_ID;
+				$ids_from[$row->OBJECT_TYPE][] = $row->OBJECT_ID;
+				if ($row->MINUS == 1)
+					$ids_minus[$row->OBJECT_TYPE][] = $row->OBJECT_ID;
 			} else {
-				if (! $obj_type_to)
-					$obj_type_to = $row->OBJECT_TYPE;
-					if ($row->OBJECT_TYPE == $obj_type_to) {
-						if ($row->FIXED == 1){
-							$ids_fixed .= ($ids_fixed ? "," : "") . $row->OBJECT_ID;
-						}else{
-							$ids_to .= ($ids_to ? "," : "") . $row->OBJECT_ID;
-						}
-					}
+				if ($row->FIXED == 1){
+					$ids_fixed[$row->OBJECT_TYPE][] = $row->OBJECT_ID;
+				}else{
+					$ids_to[$row->OBJECT_TYPE][] = $row->OBJECT_ID;
+				}
 			}
 		}
 
-		if ($ids_from) {
-			$alloc_from = [ ];
-			$ret = $this->buildFromData($obj_type_from, $ids_from, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu, $from_option);
+		if (count($ids_from)>0) {
+			$alloc_from_all = [];
+			$ret = $this->buildFromData($ids_from, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu, $from_option);
 			$total_from = $ret["sum"];
-			$type_from = $ret["type"];
-			if($type_from)
-				$alloc_from = $this->getAllocFrom($type_from, $obj_type_from, $ids_from, $ids_minus, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
-			$this->_log ( "total_from ($type_from): $total_from", 2 );
+			$type_from_all = $ret["type"];
+			if(count($type_from_all)>0)
+				foreach($type_from_all as $obj_type_from => $type_from){
+					$alloc_from = $this->getAllocFrom($type_from, $obj_type_from, (array_key_exists($obj_type_from,$ids_from)?$ids_from[$obj_type_from]:[]), (array_key_exists($obj_type_from,$ids_minus)?$ids_minus[$obj_type_from]:[]), $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
+					$alloc_from_all[$obj_type_from] = $alloc_from;
+				}
+			$this->_log ( "total_from: $total_from", 2 );
 			if(!$total_from) $total_from= 0;
 			
 		} else {
@@ -695,106 +699,111 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 			if ($ret === false)
 				return false;
 		}
-		if ($ids_to) {
-			$arrto = explode ( ',', $ids_to );
-			$sum = [ ];
-			$sSQL_alloc = [ ];
-			if ($obj_type_to == OBJ_TYPE_FLOW) {
-				$sum = DB::table ( 'FLOW_DATA_THEOR AS a' )->join ( 'FLOW AS b', 'a.FLOW_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.FLOW_ID', $arrto )->where ( [
-						'b.PHASE_ID' => $theor_phase
-				] )->select ( DB::raw ( 'sum(FL_DATA_' . $theor_attr . ') AS total_to' ) )->get ();
+		if (count($ids_to)>0) {
+			//$arrto = explode ( ',', $ids_to );
+			$sSQL_alloc_all = [ ];
+			$sSQL_alloc_to_all = [ ];
+			$total_to = 0;
+			foreach($ids_to as $obj_type_to => $arrto){
+				if ($obj_type_to == OBJ_TYPE_FLOW) {
+					$sum = DB::table ( 'FLOW_DATA_THEOR AS a' )->join ( 'FLOW AS b', 'a.FLOW_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.FLOW_ID', $arrto )->where ( [
+							'b.PHASE_ID' => $theor_phase
+					] )->select ( DB::raw ( 'sum(FL_DATA_' . $theor_attr . ') AS total_to' ) )->get ();
 
-				$sSQL_alloc = DB::table ( 'FLOW_DATA_THEOR AS a' )->join ( 'FLOW AS b', 'a.FLOW_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.FLOW_ID', $arrto )->where ( [
-						'b.PHASE_ID' => $theor_phase
-				] )->get ( [
-						'a.FLOW_ID AS OBJECT_ID',
-						'b.NAME AS OBJECT_NAME',
-						'a.ACTIVE_HRS',
-						'a.OCCUR_DATE',
-						'a.OCCUR_DATE AS OCCUR_DATE_STR',
-						'a.FL_DATA_' . $theor_attr . ' AS ALLOC_THEOR'
-				] );
+					$sSQL_alloc = DB::table ( 'FLOW_DATA_THEOR AS a' )->join ( 'FLOW AS b', 'a.FLOW_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.FLOW_ID', $arrto )->where ( [
+							'b.PHASE_ID' => $theor_phase
+					] )->get ( [
+							'a.FLOW_ID AS OBJECT_ID',
+							'b.NAME AS OBJECT_NAME',
+							'a.ACTIVE_HRS',
+							'a.OCCUR_DATE',
+							'a.OCCUR_DATE AS OCCUR_DATE_STR',
+							'a.FL_DATA_' . $theor_attr . ' AS ALLOC_THEOR'
+					] );
 
-				$sSQL_alloc_to = DB::table ( 'FLOW_DATA_ALLOC AS a' )->join ( 'FLOW AS b', 'a.FLOW_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.FLOW_ID', $arrto )->where ( [
-						'b.PHASE_ID' => $theor_phase
-				] )->get ( [
-						'a.FLOW_ID AS OBJECT_ID',
-						'b.NAME AS OBJECT_NAME',
-						'a.ACTIVE_HRS',
-						'a.OCCUR_DATE',
-						'a.OCCUR_DATE AS OCCUR_DATE_STR',
-						'a.FL_DATA_' . $theor_attr . ' AS ALLOC_VALUE'
-				] );
-			} else if ($obj_type_to == OBJ_TYPE_EU) {
-				$sum = DB::table ( 'ENERGY_UNIT_DATA_THEOR AS a' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.EU_ID', $arrto )->where ( [
-						'a.FLOW_PHASE' => $theor_phase,
-						'a.FLOW_PHASE' => $theor_phase,
-						'a.EVENT_TYPE' => $event_type
-				] )->select ( DB::raw ( 'sum(EU_DATA_' . $theor_attr_eu . ') AS total_to' ) )->get ();
-//\DB::enableQueryLog ();
-				$sSQL_alloc = DB::table ( 'ENERGY_UNIT_DATA_THEOR AS a' )->join ( 'ENERGY_UNIT AS b', 'a.EU_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.EU_ID', $arrto )->where ( [
-						'a.FLOW_PHASE' => $theor_phase,
-						'a.EVENT_TYPE' => $event_type
-				] )->get ( [
-						'a.EU_ID AS OBJECT_ID',
-						'b.NAME AS OBJECT_NAME',
-						'a.ACTIVE_HRS',
-						'a.OCCUR_DATE',
-						'a.OCCUR_DATE AS OCCUR_DATE_STR',
-						'a.FLOW_PHASE',
-						'EU_DATA_' . $theor_attr_eu . ' AS ALLOC_THEOR'
-				] );
-//\Log::info ( \DB::getQueryLog () );
-				$sSQL_alloc_to = DB::table ( 'ENERGY_UNIT_DATA_ALLOC AS a' )->join ( 'ENERGY_UNIT AS b', 'a.EU_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.EU_ID', $arrto )->where ( [
-						'a.FLOW_PHASE' => $theor_phase,
-						'a.EVENT_TYPE' => $event_type
-				] )->get ( [
-						'a.EU_ID AS OBJECT_ID',
-						'b.NAME AS OBJECT_NAME',
-						'a.ACTIVE_HRS',
-						'a.OCCUR_DATE',
-						'a.OCCUR_DATE AS OCCUR_DATE_STR',
-						'a.FLOW_PHASE',
-						'EU_DATA_' . $theor_attr_eu . ' AS ALLOC_VALUE'
-				] );
-			} else if ($obj_type_to == OBJ_TYPE_TANK) {
-				$sum = DB::table ( 'TANK_DATA_VALUE AS a' )->join ( 'TANK AS b', 'a.TANK_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $arrto )->select ( DB::raw ( 'sum(TANK_' . $theor_attr . ') AS total_to' ) )->get ();
+					$sSQL_alloc_to = DB::table ( 'FLOW_DATA_ALLOC AS a' )->join ( 'FLOW AS b', 'a.FLOW_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.FLOW_ID', $arrto )->where ( [
+							'b.PHASE_ID' => $theor_phase
+					] )->get ( [
+							'a.FLOW_ID AS OBJECT_ID',
+							'b.NAME AS OBJECT_NAME',
+							'a.ACTIVE_HRS',
+							'a.OCCUR_DATE',
+							'a.OCCUR_DATE AS OCCUR_DATE_STR',
+							'a.FL_DATA_' . $theor_attr . ' AS ALLOC_VALUE'
+					] );
+				} else if ($obj_type_to == OBJ_TYPE_EU) {
+					$sum = DB::table ( 'ENERGY_UNIT_DATA_THEOR AS a' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.EU_ID', $arrto )->where ( [
+							'a.FLOW_PHASE' => $theor_phase,
+							'a.FLOW_PHASE' => $theor_phase,
+							'a.EVENT_TYPE' => $event_type
+					] )->select ( DB::raw ( 'sum(EU_DATA_' . $theor_attr_eu . ') AS total_to' ) )->get ();
+	//\DB::enableQueryLog ();
+					$sSQL_alloc = DB::table ( 'ENERGY_UNIT_DATA_THEOR AS a' )->join ( 'ENERGY_UNIT AS b', 'a.EU_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.EU_ID', $arrto )->where ( [
+							'a.FLOW_PHASE' => $theor_phase,
+							'a.EVENT_TYPE' => $event_type
+					] )->get ( [
+							'a.EU_ID AS OBJECT_ID',
+							'b.NAME AS OBJECT_NAME',
+							'a.ACTIVE_HRS',
+							'a.OCCUR_DATE',
+							'a.OCCUR_DATE AS OCCUR_DATE_STR',
+							'a.FLOW_PHASE',
+							'EU_DATA_' . $theor_attr_eu . ' AS ALLOC_THEOR'
+					] );
+	//\Log::info ( \DB::getQueryLog () );
+					$sSQL_alloc_to = DB::table ( 'ENERGY_UNIT_DATA_ALLOC AS a' )->join ( 'ENERGY_UNIT AS b', 'a.EU_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.EU_ID', $arrto )->where ( [
+							'a.FLOW_PHASE' => $theor_phase,
+							'a.EVENT_TYPE' => $event_type
+					] )->get ( [
+							'a.EU_ID AS OBJECT_ID',
+							'b.NAME AS OBJECT_NAME',
+							'a.ACTIVE_HRS',
+							'a.OCCUR_DATE',
+							'a.OCCUR_DATE AS OCCUR_DATE_STR',
+							'a.FLOW_PHASE',
+							'EU_DATA_' . $theor_attr_eu . ' AS ALLOC_VALUE'
+					] );
+				} else if ($obj_type_to == OBJ_TYPE_TANK) {
+					$sum = DB::table ( 'TANK_DATA_VALUE AS a' )->join ( 'TANK AS b', 'a.TANK_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $arrto )->select ( DB::raw ( 'sum(TANK_' . $theor_attr . ') AS total_to' ) )->get ();
 
-				$sSQL_alloc = DB::table ( 'TANK_DATA_VALUE AS a' )->join ( 'TANK AS b', 'a.TANK_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $arrto )->get ( [
-						'a.TANK_ID AS OBJECT_ID',
-						'b.NAME AS OBJECT_NAME',
-						'a.OCCUR_DATE',
-						'a.OCCUR_DATE AS OCCUR_DATE_STR',
-						'a.TANK_DATA_' . $theor_attr . ' AS ALLOC_THEOR'
-				] );
+					$sSQL_alloc = DB::table ( 'TANK_DATA_VALUE AS a' )->join ( 'TANK AS b', 'a.TANK_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $arrto )->get ( [
+							'a.TANK_ID AS OBJECT_ID',
+							'b.NAME AS OBJECT_NAME',
+							'a.OCCUR_DATE',
+							'a.OCCUR_DATE AS OCCUR_DATE_STR',
+							'a.TANK_DATA_' . $theor_attr . ' AS ALLOC_THEOR'
+					] );
 
-				$sSQL_alloc_to = DB::table ( 'TANK_DATA_VALUE AS a' )->join ( 'TANK AS b', 'a.TANK_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $arrto )->get ( [
-						'a.TANK_ID AS OBJECT_ID',
-						'b.NAME AS OBJECT_NAME',
-						'a.OCCUR_DATE',
-						'a.OCCUR_DATE AS OCCUR_DATE_STR',
-						'a.TANK_' . $theor_attr . ' AS ALLOC_VALUE'
-				] );
-			} else if ($obj_type_to == OBJ_TYPE_STORAGE) {
-				$sum = DB::table ( 'STORAGE_DATA_VALUE AS a' )->join ( 'STORAGE AS b', 'a.STORAGE_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $arrto )->select ( DB::raw ( 'sum(STORAGE_' . $theor_attr . ') AS total_to' ) )->get ();
+					$sSQL_alloc_to = DB::table ( 'TANK_DATA_VALUE AS a' )->join ( 'TANK AS b', 'a.TANK_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $arrto )->get ( [
+							'a.TANK_ID AS OBJECT_ID',
+							'b.NAME AS OBJECT_NAME',
+							'a.OCCUR_DATE',
+							'a.OCCUR_DATE AS OCCUR_DATE_STR',
+							'a.TANK_' . $theor_attr . ' AS ALLOC_VALUE'
+					] );
+				} else if ($obj_type_to == OBJ_TYPE_STORAGE) {
+					$sum = DB::table ( 'STORAGE_DATA_VALUE AS a' )->join ( 'STORAGE AS b', 'a.STORAGE_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $arrto )->select ( DB::raw ( 'sum(STORAGE_' . $theor_attr . ') AS total_to' ) )->get ();
 
-				$sSQL_alloc = DB::table ( 'STORAGE_DATA_VALUE AS a' )->join ( 'STORAGE AS b', 'a.STORAGE_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $arrto )->get ( [
-						'a.STORAGE_ID AS OBJECT_ID',
-						'b.NAME AS OBJECT_NAME',
-						'a.OCCUR_DATE',
-						'a.OCCUR_DATE AS OCCUR_DATE_STR',
-						'a.STORAGE_' . $theor_attr . ' AS ALLOC_THEOR'
-				] );
+					$sSQL_alloc = DB::table ( 'STORAGE_DATA_VALUE AS a' )->join ( 'STORAGE AS b', 'a.STORAGE_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $arrto )->get ( [
+							'a.STORAGE_ID AS OBJECT_ID',
+							'b.NAME AS OBJECT_NAME',
+							'a.OCCUR_DATE',
+							'a.OCCUR_DATE AS OCCUR_DATE_STR',
+							'a.STORAGE_' . $theor_attr . ' AS ALLOC_THEOR'
+					] );
 
-				$sSQL_alloc_to = DB::table ( 'STORAGE_DATA_ALLOC AS a' )->join ( 'STORAGE AS b', 'a.STORAGE_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $arrto )->get ( [
-						'a.STORAGE_ID AS OBJECT_ID',
-						'b.NAME AS OBJECT_NAME',
-						'a.OCCUR_DATE',
-						'a.OCCUR_DATE AS OCCUR_DATE_STR',
-						'a.STORAGE_' . $theor_attr . ' AS ALLOC_VALUE'
-				] );
+					$sSQL_alloc_to = DB::table ( 'STORAGE_DATA_ALLOC AS a' )->join ( 'STORAGE AS b', 'a.STORAGE_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $arrto )->get ( [
+							'a.STORAGE_ID AS OBJECT_ID',
+							'b.NAME AS OBJECT_NAME',
+							'a.OCCUR_DATE',
+							'a.OCCUR_DATE AS OCCUR_DATE_STR',
+							'a.STORAGE_' . $theor_attr . ' AS ALLOC_VALUE'
+					] );
+				}				
+				$total_to += $sum [0]->total_to;
+				$sSQL_alloc_all[$obj_type_to] = $sSQL_alloc;
+				$sSQL_alloc_to_all[$obj_type_to] = $sSQL_alloc_to;
 			}
-			$total_to = $sum [0]->total_to;
 			// _log("command: $sSQL");
 			$this->_log ( "total_to (theor): $total_to", 2 );
 			if($total_from == 0)
@@ -807,47 +816,186 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 				return false;
 		}
 
-		if ($ids_fixed) {
-			$rows = [ ];
-			$arrfixed = explode ( ',', $ids_fixed );
-			if ($obj_type_to == OBJ_TYPE_FLOW) {
-				//\DB::enableQueryLog ();
-				$rows = DB::table ( 'FLOW_DATA_VALUE AS a' )->leftjoin ( 'FLOW_DATA_THEOR AS t', function ($join) {
-					$join->on ( 't.FLOW_ID', '=', 'a.FLOW_ID' );
-					$join->on ( 't.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
-				} )->join ( 'FLOW AS b', 'a.FLOW_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->where ( [
-						'b.PHASE_ID' => $alloc_phase
-				] )->whereIn ( 'a.FLOW_ID', $arrfixed )->SELECT ( DB::raw ( 'IF(IFNULL(a.FL_DATA_' . $alloc_attr . ',0)>0,a.FL_DATA_' . $alloc_attr . ',t.FL_DATA_' . $alloc_attr . ') AS FIXED_VALUE', 'a.FLOW_ID AS OBJECT_ID', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR' ) )->get ();
-				//\Log::info ( \DB::getQueryLog () );
-			} else if ($obj_type_to == OBJ_TYPE_EU) {
-				//\DB::enableQueryLog ();
-				$rows = DB::table ( 'ENERGY_UNIT_DATA_VALUE AS a' )->leftjoin ( 'ENERGY_UNIT_DATA_THEOR AS t', function ($join) {
-					$join->on ( 't.EU_ID', '=', 'a.EU_ID' );
-					$join->on ( 't.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
-					$join->on ( 't.FLOW_PHASE', '=', 'a.FLOW_PHASE' );
-					$join->on ( 't.EVENT_TYPE', '=', 'a.EVENT_TYPE' );
-				} )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.EU_ID', $arrfixed )->where ( [
-						'a.FLOW_PHASE' => $alloc_phase,
-						'a.EVENT_TYPE' => $event_type
-				] )->
+		if (count($ids_fixed)>0) {
+			$rows_all = [ ];
+			//$arrfixed = explode ( ',', $ids_fixed );
+			foreach($ids_fixed as $obj_type_to => $arrfixed){
+				if ($obj_type_to == OBJ_TYPE_FLOW) {
+					//\DB::enableQueryLog ();
+					$rows = DB::table ( 'FLOW_DATA_VALUE AS a' )->leftjoin ( 'FLOW_DATA_THEOR AS t', function ($join) {
+						$join->on ( 't.FLOW_ID', '=', 'a.FLOW_ID' );
+						$join->on ( 't.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
+					} )->join ( 'FLOW AS b', 'a.FLOW_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->where ( [
+							'b.PHASE_ID' => $alloc_phase
+					] )->whereIn ( 'a.FLOW_ID', $arrfixed )->SELECT ( DB::raw ( 'IF(IFNULL(a.FL_DATA_' . $alloc_attr . ',0)>0,a.FL_DATA_' . $alloc_attr . ',t.FL_DATA_' . $alloc_attr . ') AS FIXED_VALUE', 'a.FLOW_ID AS OBJECT_ID', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR' ) )->get ();
+					//\Log::info ( \DB::getQueryLog () );
+				} else if ($obj_type_to == OBJ_TYPE_EU) {
+					//\DB::enableQueryLog ();
+					$rows = DB::table ( 'ENERGY_UNIT_DATA_VALUE AS a' )->leftjoin ( 'ENERGY_UNIT_DATA_THEOR AS t', function ($join) {
+						$join->on ( 't.EU_ID', '=', 'a.EU_ID' );
+						$join->on ( 't.OCCUR_DATE', '=', 'a.OCCUR_DATE' );
+						$join->on ( 't.FLOW_PHASE', '=', 'a.FLOW_PHASE' );
+						$join->on ( 't.EVENT_TYPE', '=', 'a.EVENT_TYPE' );
+					} )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.EU_ID', $arrfixed )->where ( [
+							'a.FLOW_PHASE' => $alloc_phase,
+							'a.EVENT_TYPE' => $event_type
+					] )->
 
-				SELECT ( DB::raw ( 'IF(IFNULL(a.EU_DATA_' . $alloc_attr . ',0)>0,a.EU_DATA_' . $alloc_attr . ',t.EU_DATA_' . $alloc_attr . ') AS FIXED_VALUE', 'a.EU_ID AS OBJECT_ID', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR' ) )->get ();
-				//\Log::info ( \DB::getQueryLog () );
-			} else if ($obj_type_to == OBJ_TYPE_TANK) {
-				//\DB::enableQueryLog ();
-				$rows = DB::table ( 'TANK_DATA_VALUE AS a' )->join ( 'TANK AS b', 'a.TANK_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $arrfixed )->SELECT ( 'a.TANK_ID AS OBJECT_ID', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR', 'TANK_' . $alloc_attr . ' AS FIXED_VALUE' )->get ();
-				//\Log::info ( \DB::getQueryLog () );
-			} else if ($obj_type_to == OBJ_TYPE_STORAGE) {
-				//\DB::enableQueryLog ();
-				$rows = DB::table ( 'STORAGE_DATA_VALUE AS a' )->join ( 'STORAGE AS b', 'a.STORAGE_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $arrfixed )->SELECT ( 'a.STORAGE_ID AS OBJECT_ID', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR', 'STORAGE_' . $alloc_attr . ' AS FIXED_VALUE' )->get ();
-				//\Log::info ( \DB::getQueryLog () );
+					SELECT ( DB::raw ( 'IF(IFNULL(a.EU_DATA_' . $alloc_attr . ',0)>0,a.EU_DATA_' . $alloc_attr . ',t.EU_DATA_' . $alloc_attr . ') AS FIXED_VALUE', 'a.EU_ID AS OBJECT_ID', 'a.ACTIVE_HRS', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR' ) )->get ();
+					//\Log::info ( \DB::getQueryLog () );
+				} else if ($obj_type_to == OBJ_TYPE_TANK) {
+					//\DB::enableQueryLog ();
+					$rows = DB::table ( 'TANK_DATA_VALUE AS a' )->join ( 'TANK AS b', 'a.TANK_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.TANK_ID', $arrfixed )->SELECT ( 'a.TANK_ID AS OBJECT_ID', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR', 'TANK_' . $alloc_attr . ' AS FIXED_VALUE' )->get ();
+					//\Log::info ( \DB::getQueryLog () );
+				} else if ($obj_type_to == OBJ_TYPE_STORAGE) {
+					//\DB::enableQueryLog ();
+					$rows = DB::table ( 'STORAGE_DATA_VALUE AS a' )->join ( 'STORAGE AS b', 'a.STORAGE_ID', '=', 'b.ID' )->whereDate ( 'a.OCCUR_DATE', '>=', $from_date )->whereDate ( 'a.OCCUR_DATE', '<=', $to_date )->whereIn ( 'a.STORAGE_ID', $arrfixed )->SELECT ( 'a.STORAGE_ID AS OBJECT_ID', 'a.OCCUR_DATE', 'a.OCCUR_DATE AS OCCUR_DATE_STR', 'STORAGE_' . $alloc_attr . ' AS FIXED_VALUE' )->get ();
+					//\Log::info ( \DB::getQueryLog () );
+				}
+				$rows_all[$obj_type_to] = $rows;
 			}
-			$this->_log ( "Create allocation data from fixed objects (id: $ids_fixed):", 2 );
+			$this->_log ( "Create allocation data from fixed objects:", 2 );
 			$total_fixed = 0;
+			foreach($rows_all as $obj_type_to => $rows){
+				foreach ( $rows as $row ) {
+					$v_to = $row->FIXED_VALUE;
+					$total_fixed += $v_to;
+					if ($obj_type_to == OBJ_TYPE_FLOW) {
+						$ro = FlowDataAlloc::where ( [
+								'FLOW_ID' => $row->OBJECT_ID
+						] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->select ( 'ID' )->first ();
 
-			foreach ( $rows as $row ) {
-				$v_to = $row->FIXED_VALUE;
-				$total_fixed += $v_to;
+						if (count ( $ro ) > 0) {
+							if ($this->alloc_act == "run") {
+								FlowDataAlloc::where ( [
+										'ID' => $ro->ID
+								] )->update ( [
+										'FL_DATA_' . $alloc_attr => $v_to
+								] );
+							}
+							$sSQL = "update FLOW_DATA_ALLOC set FL_DATA_" . $alloc_attr . "='" . $v_to . "' where ID=" . $ro->ID;
+						} else {
+							if ($this->alloc_act == "run") {
+								FlowDataAlloc::insert ( [
+										'FLOW_ID' => $row->OBJECT_ID,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'FL_DATA_' . $alloc_attr => $v_to
+								] );
+							}
+							$sSQL = "insert into FLOW_DATA_ALLOC(`FLOW_ID`,`OCCUR_DATE`,FL_DATA_" . $alloc_attr . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "'," . $v_to . ")";
+						}
+
+						$this->_log ( $sSQL, 2 );
+					}
+					else if ($obj_type_to == OBJ_TYPE_EU) {
+						$ro = EnergyUnitDataAlloc::where ( [
+								'EU_ID' => $row->OBJECT_ID,
+								'FLOW_PHASE' => $alloc_phase,
+								'EVENT_TYPE' => $event_type,
+								'ALLOC_TYPE' => $alloc_type
+						] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->select ( 'ID' )->first ();
+						if (count ( $ro ) > 0) {
+							if ($this->alloc_act == "run") {
+								EnergyUnitDataAlloc::where ( [
+										'ID' => $ro->ID
+								] )->update ( [
+										'EU_DATA_' . $alloc_attr_eu => $v_to
+								] );
+							}
+							$sSQL = "update ENERGY_UNIT_DATA_ALLOC set EU_DATA_" . $alloc_attr_eu . "='" . $v_to . "' where ID=" . $ro->ID;
+						} else {
+							if ($this->alloc_act == "run") {
+								$EnergyUnitDataAlloc = EnergyUnitDataAlloc::insert ( [
+										'EU_ID' => $row->OBJECT_ID,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'FLOW_PHASE' => $alloc_phase,
+										'EVENT_TYPE' => $event_type,
+										'ALLOC_TYPE' => $alloc_type,
+										'EU_DATA_' . $alloc_attr_eu => $v_to
+								] );
+							}
+							$sSQL = "insert into ENERGY_UNIT_DATA_ALLOC(`EU_ID`,`OCCUR_DATE`,FLOW_PHASE,EVENT_TYPE,ALLOC_TYPE,EU_DATA_" . $alloc_attr_eu . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "'," . $alloc_phase . "," . $event_type . "," . $alloc_type . "," . $v_to . ")";
+						}
+
+						$this->_log ( $sSQL, 2 );
+					} else if ($obj_type_to == OBJ_TYPE_TANK) {
+						$ro = TankDataAlloc::where ( [
+								'TANK_ID' => $row->OBJECT_ID
+						] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->select ( 'ID' )->first ();
+
+						if (count ( $ro ) > 0) {
+							if ($this->alloc_act == "run") {
+								TankDataAlloc::where ( [
+										'ID' => $ro->ID
+								] )->update ( [
+										'TANK_' . $alloc_attr => $v_to
+								] );
+							}
+							$sSQL = "update TANK_DATA_ALLOC set TANK_DATA_" . $alloc_attr . "='" . $v_to . "' where ID=" . $ro->ID;
+						} else {
+							if ($this->alloc_act == "run") {
+								TankDataAlloc::insert ( [
+										'TANK_ID' => $row->OBJECT_ID,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'TANK_' . $alloc_attr =>$v_to
+								] );
+							}
+							$sSQL = "insert into TANK_DATA_ALLOC(`TANK_ID`,`OCCUR_DATE`,TANK_" . $alloc_attr . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "'," . $v_to . ")";
+						}
+
+						$this->_log ( $sSQL, 2 );
+					} else if ($obj_type_to == OBJ_TYPE_STORAGE) {
+						$ro = StorageDataAlloc::where ( [
+								'STORAGE_ID' => $row->OBJECT_ID
+						] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->select ( 'ID' )->first ();
+
+						if (count ( $ro ) > 0) {
+							if ($this->alloc_act == "run") {
+								StorageDataAlloc::where ( [
+										'ID' => $ro->ID
+								] )->update ( [
+										'STORAGE_' . $alloc_attr => $v_to
+								] );
+							}
+							$sSQL = "update STORAGE_DATA_ALLOC set STORAGE_" . $alloc_attr . "='" . $v_to . "' where ID=" . $ro->ID;
+						} else {
+							if ($this->alloc_act == "run") {
+								StorageDataAlloc::insert ( [
+										'STORAGE_ID' => $row->OBJECT_ID,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'STORAGE_' . $alloc_attr=>$v_to
+								] );
+							}
+							$sSQL = "insert into STORAGE_DATA_ALLOC(`STORAGE_ID`,`OCCUR_DATE`,STORAGE_" . $alloc_attr . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "'," . $v_to . ")";
+						}
+
+						$this->_log ( $sSQL, 2 );
+					}
+				}				
+			}
+
+			$this->_log ( "total_fixed (std value ~ theor): $total_fixed", 2 );
+			$total_from -= $total_fixed;
+			$this->_log ( "total_from (minus total_fixed): $total_from", 2 );
+		}
+
+		// Alloc
+		if ($total_to == 0 && $total_from !=0) {
+			$ret = $this->_log ( "total_to is zero (total_from<>0), can not calculate", 1 );
+			if ($ret === false)
+				return false;
+		}
+		foreach($sSQL_alloc_all as $obj_type_to => $sSQL_alloc){
+			foreach ( $sSQL_alloc as $row ) {
+				if ($row->ALLOC_THEOR === '' || $row->ALLOC_THEOR == null) {
+					$row->ALLOC_THEOR = 0;
+				}
+				if ($total_to == 0 && $total_from ==0)
+					$v_to = 0;
+				else
+					$v_to = $total_from * $row->ALLOC_THEOR / $total_to;
+				//$this->_log ("v_to = $total_from * {$row->ALLOC_THEOR} / $total_to = ".$v_to, 2 );
+
 				if ($obj_type_to == OBJ_TYPE_FLOW) {
 					$ro = FlowDataAlloc::where ( [
 							'FLOW_ID' => $row->OBJECT_ID
@@ -874,8 +1022,56 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 					}
 
 					$this->_log ( $sSQL, 2 );
-				}
-				else if ($obj_type_to == OBJ_TYPE_EU) {
+
+					// ////// Flow COST_INT_CTR allocation
+	/*
+					if ($this->alloc_act == "run") {
+						FlowCoEntDataAlloc::where ( [
+								'FLOW_ID' => $row->OBJECT_ID
+						] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->delete ();
+						$sSQL = "delete from FLOW_CO_ENT_DATA_ALLOC where FLOW_ID=" . $row->OBJECT_ID . " and OCCUR_DATE='".$row->OCCUR_DATE."'";
+						$this->_log ( $sSQL, 2 );
+					}
+	*/
+					$re_co = DB::table ( 'FLOW AS a' )->join ( 'COST_INT_CTR_DETAIL AS b', 'a.COST_INT_CTR_ID', '=', 'b.COST_INT_CTR_ID' )->where ( [
+							'a.ID' => $row->OBJECT_ID,
+							'b.FLOW_PHASE' => $alloc_phase
+					] )->get ( [
+							'a.COST_INT_CTR_ID',
+							'b.BA_ID',
+							'b.INTEREST_PCT AS ALLOC_PERCENT'
+					] );
+
+					foreach ( $re_co as $ro_co ) {
+						$v_co = $v_to * $ro_co->ALLOC_PERCENT / 100;
+						$ro = FlowCoEntDataAlloc::where ( [
+								'FLOW_ID' => $row->OBJECT_ID,
+								'COST_INT_CTR_ID' => $ro_co->COST_INT_CTR_ID,
+								'BA_ID' => $ro_co->BA_ID
+						] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->select ( 'ID' )->first ();
+						if (count ( $ro ) > 0) {
+							FlowCoEntDataAlloc::where ( [
+									'ID' => $ro->ID
+							] )->update ( [
+									'FL_DATA_' . $alloc_attr => $v_co
+							] );
+							$sSQL = "update FLOW_CO_ENT_DATA_ALLOC set FL_DATA_" . $alloc_attr . "=" . $v_co . " where ID=".$ro->ID;
+						} else {
+							if ($this->alloc_act == "run") {
+								FlowCoEntDataAlloc::insert ( [
+										'FLOW_ID' => $row->OBJECT_ID,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'COST_INT_CTR_ID' => $ro_co->COST_INT_CTR_ID,
+										'BA_ID' => $ro_co->BA_ID,
+										'FL_DATA_' . $alloc_attr => $v_co
+								] );
+							}
+							$sSQL = "insert into FLOW_CO_ENT_DATA_ALLOC(`FLOW_ID`,`OCCUR_DATE`,COST_INT_CTR_ID,BA_ID,FL_DATA_" . $alloc_attr . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "','" . $ro_co->COST_INT_CTR_ID . "','" . $ro_co->BA_ID . "'," . $v_co . ")";
+						}
+						$this->_log ( $sSQL, 2 );
+					}
+					// /////// END of Flow COST_INT_CTR allocation
+				} else if ($obj_type_to == OBJ_TYPE_EU) {
 					$ro = EnergyUnitDataAlloc::where ( [
 							'EU_ID' => $row->OBJECT_ID,
 							'FLOW_PHASE' => $alloc_phase,
@@ -893,7 +1089,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 						$sSQL = "update ENERGY_UNIT_DATA_ALLOC set EU_DATA_" . $alloc_attr_eu . "='" . $v_to . "' where ID=" . $ro->ID;
 					} else {
 						if ($this->alloc_act == "run") {
-							$EnergyUnitDataAlloc = EnergyUnitDataAlloc::insert ( [
+							EnergyUnitDataAlloc::insert ( [
 									'EU_ID' => $row->OBJECT_ID,
 									'OCCUR_DATE' => $row->OCCUR_DATE,
 									'FLOW_PHASE' => $alloc_phase,
@@ -902,10 +1098,73 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 									'EU_DATA_' . $alloc_attr_eu => $v_to
 							] );
 						}
-						$sSQL = "insert into ENERGY_UNIT_DATA_ALLOC(`EU_ID`,`OCCUR_DATE`,FLOW_PHASE,EVENT_TYPE,ALLOC_TYPE,EU_DATA_" . $alloc_attr_eu . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "'," . $alloc_phase . "," . $event_type . "," . $alloc_type . "," . $v_to . ")";
+						$sSQL = "insert into ENERGY_UNIT_DATA_ALLOC(`EU_ID`,`OCCUR_DATE`,FLOW_PHASE,EVENT_TYPE,ALLOC_TYPE,EU_DATA_" . $alloc_attr_eu . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "'," . $alloc_phase . "," . $event_type . ",'" . $alloc_type . "'," . $v_to . ")";
 					}
 
 					$this->_log ( $sSQL, 2 );
+	/*
+					if ($this->alloc_act == "run") {
+						EnergyUnitCoEntDataAlloc::where ( [
+								'EU_ID' => $row->OBJECT_ID,
+								'FLOW_PHASE' => $alloc_phase,
+								'EVENT_TYPE' => $event_type,
+								'ALLOC_TYPE' => $alloc_type
+						] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->delete ();
+						$sSQL = "delete from ENERGY_UNIT_CO_ENT_DATA_ALLOC where EU_ID=" . $row->OBJECT_ID." and OCCUR_DATE='".$row->OCCUR_DATE."' and FLOW_PHASE=$alloc_phase and EVENT_TYPE=$event_type and ALLOC_TYPE=$alloc_type";
+						$this->_log ( $sSQL, 2 );
+					}
+	*/
+					// ////// Well COST_INT_CTR allocation
+					$re_co = DB::table ( 'ENERGY_UNIT AS a' )->join ( 'COST_INT_CTR_DETAIL AS b', 'a.COST_INT_CTR_ID', '=', 'b.COST_INT_CTR_ID' )->where ( [
+							'a.ID' => $row->OBJECT_ID,
+							'b.FLOW_PHASE' => $alloc_phase
+					] )->get ( [
+							'a.COST_INT_CTR_ID',
+							'b.BA_ID',
+							'b.INTEREST_PCT AS ALLOC_PERCENT'
+					] );
+					foreach ( $re_co as $ro_co ) {
+						$v_co = $v_to * $ro_co->ALLOC_PERCENT / 100;
+						$ro = EnergyUnitCoEntDataAlloc::where ( [
+										'EU_ID' => $row->OBJECT_ID,
+										'FLOW_PHASE' => $alloc_phase,
+										'EVENT_TYPE' => $event_type,
+										'ALLOC_TYPE' => $alloc_type,
+										'COST_INT_CTR_ID' => $ro_co->COST_INT_CTR_ID,
+										'BA_ID' => $ro_co->BA_ID
+						] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->select ( 'ID' )->first ();
+						if (count ( $ro ) > 0) {
+							if ($this->alloc_act == "run") {
+								EnergyUnitCoEntDataAlloc::where ( [
+										'ID' => $ro->ID
+								] )->update ( [
+										'EU_DATA_' . $alloc_attr_eu => $v_co
+								] );
+							}
+							$sSQL = "update ENERGY_UNIT_CO_ENT_DATA_ALLOC set EU_DATA_" . $alloc_attr_eu . "='" . $v_co . "' where ID=" . $ro->ID;
+						} else {
+							if ($this->alloc_act == "run") {
+								EnergyUnitCoEntDataAlloc::insert ( [
+										'EU_ID' => $row->OBJECT_ID,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'FLOW_PHASE' => $alloc_phase,
+										'EVENT_TYPE' => $event_type,
+										'ALLOC_TYPE' => $alloc_type,
+										'COST_INT_CTR_ID' => $ro_co->COST_INT_CTR_ID,
+										'BA_ID' => $ro_co->BA_ID,
+										'EU_DATA_' . $alloc_attr_eu => $v_co
+								] );
+							}
+							$sSQL = "insert into ENERGY_UNIT_CO_ENT_DATA_ALLOC(`EU_ID`,`OCCUR_DATE`,FLOW_PHASE,EVENT_TYPE,ALLOC_TYPE,COST_INT_CTR_ID,BA_ID,EU_DATA_" . $alloc_attr_eu . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "'," . $alloc_phase . "," . $event_type . ",'" . $alloc_type . "','" . $ro_co->COST_INT_CTR_ID . "','" . $ro_co->BA_ID . "'," . $v_co . ")";
+						}
+						$this->_log ( $sSQL, 2 );
+					}
+					// /////// END of Well COST_INT_CTR allocation
+
+					// completion, interval
+					if ($alloc_attr == "GRS_VOL" || $alloc_attr == "GRS_MASS") {
+						$this->allocWellCompletion ( $row->OBJECT_ID, $row->OCCUR_DATE, $alloc_phase, $event_type, $alloc_attr, $v_to );
+					}
 				} else if ($obj_type_to == OBJ_TYPE_TANK) {
 					$ro = TankDataAlloc::where ( [
 							'TANK_ID' => $row->OBJECT_ID
@@ -919,13 +1178,13 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 									'TANK_' . $alloc_attr => $v_to
 							] );
 						}
-						$sSQL = "update TANK_DATA_ALLOC set TANK_DATA_" . $alloc_attr . "='" . $v_to . "' where ID=" . $ro->ID;
+						$sSQL = "update TANK_DATA_ALLOC set TANK_" . $alloc_attr . "='" . $v_to . "' where ID=" . $ro->ID;
 					} else {
 						if ($this->alloc_act == "run") {
 							TankDataAlloc::insert ( [
 									'TANK_ID' => $row->OBJECT_ID,
 									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'TANK_' . $alloc_attr =>$v_to
+									'TANK_' . $alloc_attr => $v_to
 							] );
 						}
 						$sSQL = "insert into TANK_DATA_ALLOC(`TANK_ID`,`OCCUR_DATE`,TANK_" . $alloc_attr . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "'," . $v_to . ")";
@@ -951,7 +1210,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 							StorageDataAlloc::insert ( [
 									'STORAGE_ID' => $row->OBJECT_ID,
 									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'STORAGE_' . $alloc_attr=>$v_to
+									'STORAGE_' . $alloc_attr => $v_to
 							] );
 						}
 						$sSQL = "insert into STORAGE_DATA_ALLOC(`STORAGE_ID`,`OCCUR_DATE`,STORAGE_" . $alloc_attr . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "'," . $v_to . ")";
@@ -959,251 +1218,6 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 
 					$this->_log ( $sSQL, 2 );
 				}
-			}
-
-			$this->_log ( "total_fixed (std value ~ theor): $total_fixed", 2 );
-			$total_from -= $total_fixed;
-			$this->_log ( "total_from (minus total_fixed): $total_from", 2 );
-		}
-
-		// Alloc
-		if ($total_to == 0 && $total_from !=0) {
-			$ret = $this->_log ( "total_to is zero (total_from<>0), can not calculate", 1 );
-			if ($ret === false)
-				return false;
-		}
-
-		foreach ( $sSQL_alloc as $row ) {
-			if ($row->ALLOC_THEOR === '' || $row->ALLOC_THEOR == null) {
-				$row->ALLOC_THEOR = 0;
-			}
-			if ($total_to == 0 && $total_from ==0)
-				$v_to = 0;
-			else
-				$v_to = $total_from * $row->ALLOC_THEOR / $total_to;
-			//$this->_log ("v_to = $total_from * {$row->ALLOC_THEOR} / $total_to = ".$v_to, 2 );
-
-			if ($obj_type_to == OBJ_TYPE_FLOW) {
-				$ro = FlowDataAlloc::where ( [
-						'FLOW_ID' => $row->OBJECT_ID
-				] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->select ( 'ID' )->first ();
-
-				if (count ( $ro ) > 0) {
-					if ($this->alloc_act == "run") {
-						FlowDataAlloc::where ( [
-								'ID' => $ro->ID
-						] )->update ( [
-								'FL_DATA_' . $alloc_attr => $v_to
-						] );
-					}
-					$sSQL = "update FLOW_DATA_ALLOC set FL_DATA_" . $alloc_attr . "='" . $v_to . "' where ID=" . $ro->ID;
-				} else {
-					if ($this->alloc_act == "run") {
-						FlowDataAlloc::insert ( [
-								'FLOW_ID' => $row->OBJECT_ID,
-								'OCCUR_DATE' => $row->OCCUR_DATE,
-								'FL_DATA_' . $alloc_attr => $v_to
-						] );
-					}
-					$sSQL = "insert into FLOW_DATA_ALLOC(`FLOW_ID`,`OCCUR_DATE`,FL_DATA_" . $alloc_attr . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "'," . $v_to . ")";
-				}
-
-				$this->_log ( $sSQL, 2 );
-
-				// ////// Flow COST_INT_CTR allocation
-/*
-				if ($this->alloc_act == "run") {
-					FlowCoEntDataAlloc::where ( [
-							'FLOW_ID' => $row->OBJECT_ID
-					] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->delete ();
-					$sSQL = "delete from FLOW_CO_ENT_DATA_ALLOC where FLOW_ID=" . $row->OBJECT_ID . " and OCCUR_DATE='".$row->OCCUR_DATE."'";
-					$this->_log ( $sSQL, 2 );
-				}
-*/
-				$re_co = DB::table ( 'FLOW AS a' )->join ( 'COST_INT_CTR_DETAIL AS b', 'a.COST_INT_CTR_ID', '=', 'b.COST_INT_CTR_ID' )->where ( [
-						'a.ID' => $row->OBJECT_ID,
-						'b.FLOW_PHASE' => $alloc_phase
-				] )->get ( [
-						'a.COST_INT_CTR_ID',
-						'b.BA_ID',
-						'b.INTEREST_PCT AS ALLOC_PERCENT'
-				] );
-
-				foreach ( $re_co as $ro_co ) {
-					$v_co = $v_to * $ro_co->ALLOC_PERCENT / 100;
-					$ro = FlowCoEntDataAlloc::where ( [
-							'FLOW_ID' => $row->OBJECT_ID,
-							'COST_INT_CTR_ID' => $ro_co->COST_INT_CTR_ID,
-							'BA_ID' => $ro_co->BA_ID
-					] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->select ( 'ID' )->first ();
-					if (count ( $ro ) > 0) {
-						FlowCoEntDataAlloc::where ( [
-								'ID' => $ro->ID
-						] )->update ( [
-								'FL_DATA_' . $alloc_attr => $v_co
-						] );
-						$sSQL = "update FLOW_CO_ENT_DATA_ALLOC set FL_DATA_" . $alloc_attr . "=" . $v_co . " where ID=".$ro->ID;
-					} else {
-						if ($this->alloc_act == "run") {
-							FlowCoEntDataAlloc::insert ( [
-									'FLOW_ID' => $row->OBJECT_ID,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'COST_INT_CTR_ID' => $ro_co->COST_INT_CTR_ID,
-									'BA_ID' => $ro_co->BA_ID,
-									'FL_DATA_' . $alloc_attr => $v_co
-							] );
-						}
-						$sSQL = "insert into FLOW_CO_ENT_DATA_ALLOC(`FLOW_ID`,`OCCUR_DATE`,COST_INT_CTR_ID,BA_ID,FL_DATA_" . $alloc_attr . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "','" . $ro_co->COST_INT_CTR_ID . "','" . $ro_co->BA_ID . "'," . $v_co . ")";
-					}
-					$this->_log ( $sSQL, 2 );
-				}
-				// /////// END of Flow COST_INT_CTR allocation
-			} else if ($obj_type_to == OBJ_TYPE_EU) {
-				$ro = EnergyUnitDataAlloc::where ( [
-						'EU_ID' => $row->OBJECT_ID,
-						'FLOW_PHASE' => $alloc_phase,
-						'EVENT_TYPE' => $event_type,
-						'ALLOC_TYPE' => $alloc_type
-				] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->select ( 'ID' )->first ();
-				if (count ( $ro ) > 0) {
-					if ($this->alloc_act == "run") {
-						EnergyUnitDataAlloc::where ( [
-								'ID' => $ro->ID
-						] )->update ( [
-								'EU_DATA_' . $alloc_attr_eu => $v_to
-						] );
-					}
-					$sSQL = "update ENERGY_UNIT_DATA_ALLOC set EU_DATA_" . $alloc_attr_eu . "='" . $v_to . "' where ID=" . $ro->ID;
-				} else {
-					if ($this->alloc_act == "run") {
-						EnergyUnitDataAlloc::insert ( [
-								'EU_ID' => $row->OBJECT_ID,
-								'OCCUR_DATE' => $row->OCCUR_DATE,
-								'FLOW_PHASE' => $alloc_phase,
-								'EVENT_TYPE' => $event_type,
-								'ALLOC_TYPE' => $alloc_type,
-								'EU_DATA_' . $alloc_attr_eu => $v_to
-						] );
-					}
-					$sSQL = "insert into ENERGY_UNIT_DATA_ALLOC(`EU_ID`,`OCCUR_DATE`,FLOW_PHASE,EVENT_TYPE,ALLOC_TYPE,EU_DATA_" . $alloc_attr_eu . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "'," . $alloc_phase . "," . $event_type . ",'" . $alloc_type . "'," . $v_to . ")";
-				}
-
-				$this->_log ( $sSQL, 2 );
-/*
-				if ($this->alloc_act == "run") {
-					EnergyUnitCoEntDataAlloc::where ( [
-							'EU_ID' => $row->OBJECT_ID,
-							'FLOW_PHASE' => $alloc_phase,
-							'EVENT_TYPE' => $event_type,
-							'ALLOC_TYPE' => $alloc_type
-					] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->delete ();
-					$sSQL = "delete from ENERGY_UNIT_CO_ENT_DATA_ALLOC where EU_ID=" . $row->OBJECT_ID." and OCCUR_DATE='".$row->OCCUR_DATE."' and FLOW_PHASE=$alloc_phase and EVENT_TYPE=$event_type and ALLOC_TYPE=$alloc_type";
-					$this->_log ( $sSQL, 2 );
-				}
-*/
-				// ////// Well COST_INT_CTR allocation
-				$re_co = DB::table ( 'ENERGY_UNIT AS a' )->join ( 'COST_INT_CTR_DETAIL AS b', 'a.COST_INT_CTR_ID', '=', 'b.COST_INT_CTR_ID' )->where ( [
-						'a.ID' => $row->OBJECT_ID,
-						'b.FLOW_PHASE' => $alloc_phase
-				] )->get ( [
-						'a.COST_INT_CTR_ID',
-						'b.BA_ID',
-						'b.INTEREST_PCT AS ALLOC_PERCENT'
-				] );
-				foreach ( $re_co as $ro_co ) {
-					$v_co = $v_to * $ro_co->ALLOC_PERCENT / 100;
-					$ro = EnergyUnitCoEntDataAlloc::where ( [
-									'EU_ID' => $row->OBJECT_ID,
-									'FLOW_PHASE' => $alloc_phase,
-									'EVENT_TYPE' => $event_type,
-									'ALLOC_TYPE' => $alloc_type,
-									'COST_INT_CTR_ID' => $ro_co->COST_INT_CTR_ID,
-									'BA_ID' => $ro_co->BA_ID
-					] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->select ( 'ID' )->first ();
-					if (count ( $ro ) > 0) {
-						if ($this->alloc_act == "run") {
-							EnergyUnitCoEntDataAlloc::where ( [
-									'ID' => $ro->ID
-							] )->update ( [
-									'EU_DATA_' . $alloc_attr_eu => $v_co
-							] );
-						}
-						$sSQL = "update ENERGY_UNIT_CO_ENT_DATA_ALLOC set EU_DATA_" . $alloc_attr_eu . "='" . $v_co . "' where ID=" . $ro->ID;
-					} else {
-						if ($this->alloc_act == "run") {
-							EnergyUnitCoEntDataAlloc::insert ( [
-									'EU_ID' => $row->OBJECT_ID,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'FLOW_PHASE' => $alloc_phase,
-									'EVENT_TYPE' => $event_type,
-									'ALLOC_TYPE' => $alloc_type,
-									'COST_INT_CTR_ID' => $ro_co->COST_INT_CTR_ID,
-									'BA_ID' => $ro_co->BA_ID,
-									'EU_DATA_' . $alloc_attr_eu => $v_co
-							] );
-						}
-						$sSQL = "insert into ENERGY_UNIT_CO_ENT_DATA_ALLOC(`EU_ID`,`OCCUR_DATE`,FLOW_PHASE,EVENT_TYPE,ALLOC_TYPE,COST_INT_CTR_ID,BA_ID,EU_DATA_" . $alloc_attr_eu . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "'," . $alloc_phase . "," . $event_type . ",'" . $alloc_type . "','" . $ro_co->COST_INT_CTR_ID . "','" . $ro_co->BA_ID . "'," . $v_co . ")";
-					}
-					$this->_log ( $sSQL, 2 );
-				}
-				// /////// END of Well COST_INT_CTR allocation
-
-				// completion, interval
-				if ($alloc_attr == "GRS_VOL" || $alloc_attr == "GRS_MASS") {
-					$this->allocWellCompletion ( $row->OBJECT_ID, $row->OCCUR_DATE, $alloc_phase, $event_type, $alloc_attr, $v_to );
-				}
-			} else if ($obj_type_to == OBJ_TYPE_TANK) {
-				$ro = TankDataAlloc::where ( [
-						'TANK_ID' => $row->OBJECT_ID
-				] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->select ( 'ID' )->first ();
-
-				if (count ( $ro ) > 0) {
-					if ($this->alloc_act == "run") {
-						TankDataAlloc::where ( [
-								'ID' => $ro->ID
-						] )->update ( [
-								'TANK_' . $alloc_attr => $v_to
-						] );
-					}
-					$sSQL = "update TANK_DATA_ALLOC set TANK_" . $alloc_attr . "='" . $v_to . "' where ID=" . $ro->ID;
-				} else {
-					if ($this->alloc_act == "run") {
-						TankDataAlloc::insert ( [
-								'TANK_ID' => $row->OBJECT_ID,
-								'OCCUR_DATE' => $row->OCCUR_DATE,
-								'TANK_' . $alloc_attr => $v_to
-						] );
-					}
-					$sSQL = "insert into TANK_DATA_ALLOC(`TANK_ID`,`OCCUR_DATE`,TANK_" . $alloc_attr . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "'," . $v_to . ")";
-				}
-
-				$this->_log ( $sSQL, 2 );
-			} else if ($obj_type_to == OBJ_TYPE_STORAGE) {
-				$ro = StorageDataAlloc::where ( [
-						'STORAGE_ID' => $row->OBJECT_ID
-				] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->select ( 'ID' )->first ();
-
-				if (count ( $ro ) > 0) {
-					if ($this->alloc_act == "run") {
-						StorageDataAlloc::where ( [
-								'ID' => $ro->ID
-						] )->update ( [
-								'STORAGE_' . $alloc_attr => $v_to
-						] );
-					}
-					$sSQL = "update STORAGE_DATA_ALLOC set STORAGE_" . $alloc_attr . "='" . $v_to . "' where ID=" . $ro->ID;
-				} else {
-					if ($this->alloc_act == "run") {
-						StorageDataAlloc::insert ( [
-								'STORAGE_ID' => $row->OBJECT_ID,
-								'OCCUR_DATE' => $row->OCCUR_DATE,
-								'STORAGE_' . $alloc_attr => $v_to
-						] );
-					}
-					$sSQL = "insert into STORAGE_DATA_ALLOC(`STORAGE_ID`,`OCCUR_DATE`,STORAGE_" . $alloc_attr . ") values('" . $row->OBJECT_ID . "','" . $row->OCCUR_DATE . "'," . $v_to . ")";
-				}
-
-				$this->_log ( $sSQL, 2 );
 			}
 		}
 
@@ -1256,338 +1270,331 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 			);
 
 			// step 1: calculate composition for all "from" object
-			foreach ( $alloc_from as $row ) {
-				$this->_log ( "Calculate composition _FROM, object_name: " . $row->OBJECT_NAME . ",date" . $row->OCCUR_DATE_STR . ",2" );
-				$object_id = $row->OBJECT_ID;
-				$occur_date = $row->OCCUR_DATE_STR;
-				$quality_from = $this->getQualityGas ( $object_id, $obj_type_code, $occur_date, $F );
-				if ($quality_from) {
-					foreach ( $comp_total_from as $x => $x_value ) {
-						$comp_total_from [$x] += $row->ALLOC_VALUE * $quality_from [$x];
-					}
-					if ($obj_type_from == OBJ_TYPE_FLOW) {
-						if ($success && $this->alloc_act == "run") {
-							FlowCompDataAlloc::where ( [
-									'FLOW_ID' => $object_id
-							] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->delete ();
-							$sSQL = "delete from FLOW_COMP_DATA_ALLOC where FLOW_ID=$object_id and OCCUR_DATE='$row[OCCUR_DATE]'";
-							$this->_log ( $sSQL, 2 );
+			foreach($alloc_from_all as $obj_type_from => $alloc_from){
+				foreach ( $alloc_from as $row ) {
+					$this->_log ( "Calculate composition _FROM, object_name: " . $row->OBJECT_NAME . ",date" . $row->OCCUR_DATE_STR . ",2" );
+					$object_id = $row->OBJECT_ID;
+					$occur_date = $row->OCCUR_DATE_STR;
+					$quality_from = $this->getQualityGas ( $object_id, $obj_type_code, $occur_date, $F );
+					if ($quality_from) {
+						foreach ( $comp_total_from as $x => $x_value ) {
+							$comp_total_from [$x] += $row->ALLOC_VALUE * $quality_from [$x];
+						}
+						if ($obj_type_from == OBJ_TYPE_FLOW) {
+							if ($success && $this->alloc_act == "run") {
+								FlowCompDataAlloc::where ( [
+										'FLOW_ID' => $object_id
+								] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->delete ();
+								$sSQL = "delete from FLOW_COMP_DATA_ALLOC where FLOW_ID=$object_id and OCCUR_DATE='$row[OCCUR_DATE]'";
+								$this->_log ( $sSQL, 2 );
 
-							$param = [ ];
-							array_push ( $param, [
-									'FLOW_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'COMPOSITION' => $quality_from->ID_C1,
-									'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->C1
-							] );
-							array_push ( $param, [
-									'FLOW_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'COMPOSITION' => $quality_from->ID_C2,
-									'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->C2
-							] );
-							array_push ( $param, [
-									'FLOW_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'COMPOSITION' => $quality_from->ID_C3,
-									'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->C3
-							] );
-							array_push ( $param, [
-									'FLOW_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'COMPOSITION' => $quality_from->ID_C4I,
-									'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->C4I
-							] );
-							array_push ( $param, [
-									'FLOW_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'COMPOSITION' => $quality_from->ID_C4N,
-									'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->C4N
-							] );
-							array_push ( $param, [
-									'FLOW_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'COMPOSITION' => $quality_from->ID_C5I,
-									'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->C5I
-							] );
-							array_push ( $param, [
-									'FLOW_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'COMPOSITION' => $quality_from->ID_C5N,
-									'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->C5N
-							] );
-							array_push ( $param, [
-									'FLOW_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'COMPOSITION' => $quality_from->ID_C6,
-									'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->C6
-							] );
-							array_push ( $param, [
-									'FLOW_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'COMPOSITION' => $quality_from->ID_C7,
-									'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->C7
-							] );
-							array_push ( $param, [
-									'FLOW_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'COMPOSITION' => $quality_from->ID_H2S,
-									'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->H2S
-							] );
-							array_push ( $param, [
-									'FLOW_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'COMPOSITION' => $quality_from->ID_CO2,
-									'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->CO2
-							] );
-							array_push ( $param, [
-									'FLOW_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'COMPOSITION' => $quality_from->ID_N2,
-									'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->N2
-							] );
+								$param = [ ];
+								array_push ( $param, [
+										'FLOW_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'COMPOSITION' => $quality_from->ID_C1,
+										'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->C1
+								] );
+								array_push ( $param, [
+										'FLOW_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'COMPOSITION' => $quality_from->ID_C2,
+										'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->C2
+								] );
+								array_push ( $param, [
+										'FLOW_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'COMPOSITION' => $quality_from->ID_C3,
+										'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->C3
+								] );
+								array_push ( $param, [
+										'FLOW_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'COMPOSITION' => $quality_from->ID_C4I,
+										'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->C4I
+								] );
+								array_push ( $param, [
+										'FLOW_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'COMPOSITION' => $quality_from->ID_C4N,
+										'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->C4N
+								] );
+								array_push ( $param, [
+										'FLOW_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'COMPOSITION' => $quality_from->ID_C5I,
+										'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->C5I
+								] );
+								array_push ( $param, [
+										'FLOW_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'COMPOSITION' => $quality_from->ID_C5N,
+										'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->C5N
+								] );
+								array_push ( $param, [
+										'FLOW_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'COMPOSITION' => $quality_from->ID_C6,
+										'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->C6
+								] );
+								array_push ( $param, [
+										'FLOW_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'COMPOSITION' => $quality_from->ID_C7,
+										'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->C7
+								] );
+								array_push ( $param, [
+										'FLOW_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'COMPOSITION' => $quality_from->ID_H2S,
+										'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->H2S
+								] );
+								array_push ( $param, [
+										'FLOW_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'COMPOSITION' => $quality_from->ID_CO2,
+										'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->CO2
+								] );
+								array_push ( $param, [
+										'FLOW_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'COMPOSITION' => $quality_from->ID_N2,
+										'FL_DATA_' . $alloc_attr => $row->ALLOC_VALUE * $quality_from->N2
+								] );
 
-							$sSQL = "insert into FLOW_COMP_DATA_ALLOC(FLOW_ID,OCCUR_DATE,COMPOSITION,FL_DATA_$alloc_attr) VALUES ";
-							foreach ( $param as $pa ) {
-								FlowCompDataAlloc::insert ( $pa );
-								$sSQL .= $pa ['FLOW_ID'] . "," . $pa ['OCCUR_DATE'] . "," . $pa ['COMPOSITION'] . "," . $pa ['FL_DATA_' . $alloc_attr] . "\n";
+								$sSQL = "insert into FLOW_COMP_DATA_ALLOC(FLOW_ID,OCCUR_DATE,COMPOSITION,FL_DATA_$alloc_attr) VALUES ";
+								foreach ( $param as $pa ) {
+									FlowCompDataAlloc::insert ( $pa );
+									$sSQL .= $pa ['FLOW_ID'] . "," . $pa ['OCCUR_DATE'] . "," . $pa ['COMPOSITION'] . "," . $pa ['FL_DATA_' . $alloc_attr] . "\n";
+								}
+								$sSQL .= ")";
+
+								$this->_log ( $sSQL, 2 );
 							}
-							$sSQL .= ")";
+						} else {
+							if ($success && $this->alloc_act == "run") {
+								EnergyUnitCompDataAlloc::where ( [
+										'EU_ID' => $object_id,
+										'FLOW_PHASE' => 2
+								] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->delete ();
+								$sSQL = "delete from ENERGY_UNIT_COMP_DATA_ALLOC where EU_ID=$object_id and FLOW_PHASE=2 and OCCUR_DATE='".$row->OCCUR_DATE."'";
+								$this->_log ( $sSQL, 2 );
 
-							$this->_log ( $sSQL, 2 );
+								$param = [ ];
+								array_push ( $param, [
+										'EU_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'FLOW_PHASE' => 2,
+										'ALLOC_TYPE' => $alloc_type,
+										'COMPOSITION' => $quality_from->ID_C1,
+										'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->C1
+								] );
+								array_push ( $param, [
+										'EU_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'FLOW_PHASE' => 2,
+										'ALLOC_TYPE' => $alloc_type,
+										'COMPOSITION' => $quality_from->ID_C2,
+										'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->C2
+								] );
+								array_push ( $param, [
+										'EU_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'FLOW_PHASE' => 2,
+										'ALLOC_TYPE' => $alloc_type,
+										'COMPOSITION' => $quality_from->ID_C3,
+										'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->C3
+								] );
+								array_push ( $param, [
+										'EU_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'FLOW_PHASE' => 2,
+										'ALLOC_TYPE' => $alloc_type,
+										'COMPOSITION' => $quality_from->ID_C4I,
+										'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->C4I
+								] );
+								array_push ( $param, [
+										'EU_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'FLOW_PHASE' => 2,
+										'ALLOC_TYPE' => $alloc_type,
+										'COMPOSITION' => $quality_from->ID_C4N,
+										'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->C4N
+								] );
+								array_push ( $param, [
+										'EU_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'FLOW_PHASE' => 2,
+										'ALLOC_TYPE' => $alloc_type,
+										'COMPOSITION' => $quality_from->ID_C5I,
+										'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->C5I
+								] );
+								array_push ( $param, [
+										'EU_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'FLOW_PHASE' => 2,
+										'ALLOC_TYPE' => $alloc_type,
+										'COMPOSITION' => $quality_from->ID_C5N,
+										'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->C5N
+								] );
+								array_push ( $param, [
+										'EU_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'FLOW_PHASE' => 2,
+										'ALLOC_TYPE' => $alloc_type,
+										'COMPOSITION' => $quality_from->ID_C6,
+										'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->C6
+								] );
+								array_push ( $param, [
+										'EU_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'FLOW_PHASE' => 2,
+										'ALLOC_TYPE' => $alloc_type,
+										'COMPOSITION' => $quality_from->ID_C7,
+										'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->C7
+								] );
+								array_push ( $param, [
+										'EU_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'FLOW_PHASE' => 2,
+										'ALLOC_TYPE' => $alloc_type,
+										'COMPOSITION' => $quality_from->ID_H2S,
+										'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->H2S
+								] );
+								array_push ( $param, [
+										'EU_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'FLOW_PHASE' => 2,
+										'ALLOC_TYPE' => $alloc_type,
+										'COMPOSITION' => $quality_from->ID_CO2,
+										'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->CO2
+								] );
+								array_push ( $param, [
+										'EU_ID' => $object_id,
+										'OCCUR_DATE' => $row->OCCUR_DATE,
+										'FLOW_PHASE' => 2,
+										'ALLOC_TYPE' => $alloc_type,
+										'COMPOSITION' => $quality_from->ID_N2,
+										'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->N2
+								] );
+
+								$sSQL = "insert into ENERGY_UNIT_COMP_DATA_ALLOC(EU_ID,OCCUR_DATE,FLOW_PHASE,ALLOC_TYPE,COMPOSITION,EU_DATA_$alloc_attr_eu) VALUES ";
+								foreach ( $param as $pa ) {
+									EnergyUnitCompDataAlloc::insert ( $pa );
+									$sSQL .= $pa ['EU_ID'] . "," . $pa ['OCCUR_DATE'] . "," . $pa ['FLOW_PHASE'] . "," . $pa ['ALLOC_TYPE'] . "," . $pa ['COMPOSITION'] . "," . $pa ['EU_DATA_' . $alloc_attr_eu] . "\n";
+								}
+								$sSQL .= ")";
+
+								$this->_log ( $sSQL, 2 );
+							}
 						}
 					} else {
-						if ($success && $this->alloc_act == "run") {
-							EnergyUnitCompDataAlloc::where ( [
-									'EU_ID' => $object_id,
-									'FLOW_PHASE' => 2
-							] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->delete ();
-							$sSQL = "delete from ENERGY_UNIT_COMP_DATA_ALLOC where EU_ID=$object_id and FLOW_PHASE=2 and OCCUR_DATE='".$row->OCCUR_DATE."'";
-							$this->_log ( $sSQL, 2 );
-
-							$param = [ ];
-							array_push ( $param, [
-									'EU_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'FLOW_PHASE' => 2,
-									'ALLOC_TYPE' => $alloc_type,
-									'COMPOSITION' => $quality_from->ID_C1,
-									'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->C1
-							] );
-							array_push ( $param, [
-									'EU_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'FLOW_PHASE' => 2,
-									'ALLOC_TYPE' => $alloc_type,
-									'COMPOSITION' => $quality_from->ID_C2,
-									'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->C2
-							] );
-							array_push ( $param, [
-									'EU_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'FLOW_PHASE' => 2,
-									'ALLOC_TYPE' => $alloc_type,
-									'COMPOSITION' => $quality_from->ID_C3,
-									'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->C3
-							] );
-							array_push ( $param, [
-									'EU_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'FLOW_PHASE' => 2,
-									'ALLOC_TYPE' => $alloc_type,
-									'COMPOSITION' => $quality_from->ID_C4I,
-									'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->C4I
-							] );
-							array_push ( $param, [
-									'EU_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'FLOW_PHASE' => 2,
-									'ALLOC_TYPE' => $alloc_type,
-									'COMPOSITION' => $quality_from->ID_C4N,
-									'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->C4N
-							] );
-							array_push ( $param, [
-									'EU_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'FLOW_PHASE' => 2,
-									'ALLOC_TYPE' => $alloc_type,
-									'COMPOSITION' => $quality_from->ID_C5I,
-									'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->C5I
-							] );
-							array_push ( $param, [
-									'EU_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'FLOW_PHASE' => 2,
-									'ALLOC_TYPE' => $alloc_type,
-									'COMPOSITION' => $quality_from->ID_C5N,
-									'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->C5N
-							] );
-							array_push ( $param, [
-									'EU_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'FLOW_PHASE' => 2,
-									'ALLOC_TYPE' => $alloc_type,
-									'COMPOSITION' => $quality_from->ID_C6,
-									'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->C6
-							] );
-							array_push ( $param, [
-									'EU_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'FLOW_PHASE' => 2,
-									'ALLOC_TYPE' => $alloc_type,
-									'COMPOSITION' => $quality_from->ID_C7,
-									'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->C7
-							] );
-							array_push ( $param, [
-									'EU_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'FLOW_PHASE' => 2,
-									'ALLOC_TYPE' => $alloc_type,
-									'COMPOSITION' => $quality_from->ID_H2S,
-									'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->H2S
-							] );
-							array_push ( $param, [
-									'EU_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'FLOW_PHASE' => 2,
-									'ALLOC_TYPE' => $alloc_type,
-									'COMPOSITION' => $quality_from->ID_CO2,
-									'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->CO2
-							] );
-							array_push ( $param, [
-									'EU_ID' => $object_id,
-									'OCCUR_DATE' => $row->OCCUR_DATE,
-									'FLOW_PHASE' => 2,
-									'ALLOC_TYPE' => $alloc_type,
-									'COMPOSITION' => $quality_from->ID_N2,
-									'EU_DATA_' . $alloc_attr_eu => $row->ALLOC_VALUE * $quality_from->N2
-							] );
-
-							$sSQL = "insert into ENERGY_UNIT_COMP_DATA_ALLOC(EU_ID,OCCUR_DATE,FLOW_PHASE,ALLOC_TYPE,COMPOSITION,EU_DATA_$alloc_attr_eu) VALUES ";
-							foreach ( $param as $pa ) {
-								EnergyUnitCompDataAlloc::insert ( $pa );
-								$sSQL .= $pa ['EU_ID'] . "," . $pa ['OCCUR_DATE'] . "," . $pa ['FLOW_PHASE'] . "," . $pa ['ALLOC_TYPE'] . "," . $pa ['COMPOSITION'] . "," . $pa ['EU_DATA_' . $alloc_attr_eu] . "\n";
-							}
-							$sSQL .= ")";
-
-							$this->_log ( $sSQL, 2 );
-						}
+						$ret = $this->_log ( "Quality data not found (_FROM object_id: $object_id, object_name: $row->OBJECT_NAME, date $row->OCCUR_DATE_STR)", 1 );
+						if ($ret === false)
+							return false;
 					}
-				} else {
-					$ret = $this->_log ( "Quality data not found (_FROM object_id: $object_id, object_name: $row->OBJECT_NAME, date $row->OCCUR_DATE_STR)", 1 );
-					if ($ret === false)
-						return false;
 				}
 			}
 
 			// step2:
 			$this->_log ( "Calculate composition allocation rates", 2 );
-			$obj_type_code = ($obj_type_to == 1 ? "FLOW" : "WELL");
+			foreach($sSQL_alloc_to_all as $obj_type_to => $sSQL_alloc_to){
+				if($obj_type_to != OBJ_TYPE_FLOW && $obj_type_to != OBJ_TYPE_EU)
+					continue;
+				$obj_type_code = ($obj_type_to == OBJ_TYPE_FLOW ? "FLOW" : "WELL");
 
-			foreach ( $sSQL_alloc_to as $row ) {
-				$object_id = $row->OBJECT_ID;
-				$occur_date = $row->OCCUR_DATE_STR;
-				$quality_to = getQualityGas ( $object_id, $obj_type_code, $occur_date, $F );
-				if ($quality_to) {
-					foreach ( $comp_total_to as $x => $x_value ) {
-						$comp_total_to [$x] += $row->ALLOC_VALUE * $quality_to [$x];
-					}
-				} else {
-					$ret = $this->_log ( "Quality data not found (_TO object_id: $object_id, object_name: $row->OBJECT_NAME, date $row->OCCUR_DATE_STR)", 1 );
-					if ($ret === false)
-						return false;
-				}
-			}
-			if ($success) {
-				foreach ( $comp_total_to as $x => $x_value ) {
-					if ($comp_total_to [$x] == 0) {
-						$comp_total_rate [$x] = - 1;
-					} else {
-						$comp_total_rate [$x] = $comp_total_from [$x] / $comp_total_to [$x];
-					}
-					$this->_log ( "[$x] comp_total_from = $comp_total_from[$x], comp_total_to = $comp_total_to[$x], rate = $comp_total_rate[$x]", 2 );
-				}
-
-				$result = AllocRunnerObjects::where ( [
-						'RUNNER_ID' => $runner_id
-				] )->get ();
-				foreach ( $result as $row ) {
-					$this->_log ( "Calculate composition allocation _TO, object_name: $row->OBJECT_NAME, date $row->OCCUR_DATE_STR", 2 );
+				foreach ( $sSQL_alloc_to as $row ) {
 					$object_id = $row->OBJECT_ID;
 					$occur_date = $row->OCCUR_DATE_STR;
-					$quality_from = $this->getQualityGas ( $object_id, $obj_type_code, $occur_date, $F );
-
-					if ($quality_from && $this->alloc_act == "run") {
-						if ($obj_type_to == OBJ_TYPE_FLOW) {
-							FlowCompDataAlloc::where ( [
-									'FLOW_ID' => $object_id
-							] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->delete ();
-							$sSQL = "delete from FLOW_COMP_DATA_ALLOC where FLOW_ID=$object_id and OCCUR_DATE='$row[OCCUR_DATE]'";
-							$this->_log ( $sSQL, 2 );
-
-							$sSQL = "insert into FLOW_COMP_DATA_ALLOC(FLOW_ID,OCCUR_DATE,COMPOSITION,FL_DATA_$alloc_attr) VALUES (";
-							foreach ( $comp_total_rate as $x => $x_value ) {
-								if ($x_value > 0 && $row->ALLOC_VALUE > 0 && $quality_from [$x] > 0) {
-									$_v = $x_value * $row->ALLOC_VALUE * $quality_from [$x];
-								} else {
-									$_v = 0;
-								}
-								FlowCompDataAlloc::insert ( [
-										'FLOW_ID' => $object_id,
-										'OCCUR_DATE' => $row->OCCUR_DATE,
-										'COMPOSITION' => $quality_from ["ID_$x"],
-										'FL_DATA_' . $alloc_attr => $_v
-								] );
-								$sSQL .= $object_id . "," . $row->OCCUR_DATE . "," . $quality_from ["ID_$x"] . "," . $_v . "\n";
-							}
-							$sSQL .= ")";
-
-							$this->_log ( $sSQL, 2 );
-						} else {
-							EnergyUnitCompDataAlloc::where ( [
-									'EU_ID' => $object_id,
-									'FLOW_PHASE' => 2
-							] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->delete ();
-							$sSQL = "delete from ENERGY_UNIT_COMP_DATA_ALLOC where EU_ID=$object_id and FLOW_PHASE=2 and OCCUR_DATE='$row[OCCUR_DATE]'";
-							$this->_log ( $sSQL, 2 );
-
-							$sSQL = "insert into ENERGY_UNIT_COMP_DATA_ALLOC(EU_ID,OCCUR_DATE,FLOW_PHASE,ALLOC_TYPE,COMPOSITION,EU_DATA_$alloc_attr_eu) VALUES (";
-							foreach ( $comp_total_rate as $x => $x_value ) {
-								if ($x_value > 0 && $row->ALLOC_VALUE > 0 && $quality_from [$x] > 0) {
-									$_v = $x_value * $row->ALLOC_VALUE * $quality_from [$x];
-								} else {
-									$_v = 0;
-								}
-
-								EnergyUnitCompDataAlloc::insert ( [
-										'EU_ID' => $object_id,
-										'OCCUR_DATE' => $row->OCCUR_DATE,
-										'FLOW_PHASE' => $alloc_phase,
-										'ALLOC_TYPE' => $alloc_type,
-										'COMPOSITION' => $quality_from ["ID_$x"],
-										'EU_DATA_' . $alloc_attr_eu => $_v
-								] );
-								$sSQL .= $object_id . "," . $row->OCCUR_DATE . "," . $alloc_phase . "," . "," . $alloc_type . "," . $quality_from ["ID_$x"] . "," . $_v . "\n";
-							}
-							$sSQL .= ")";
-
-							$this->_log ( $sSQL, 2 );
+					$quality_to = getQualityGas ( $object_id, $obj_type_code, $occur_date, $F );
+					if ($quality_to) {
+						foreach ( $comp_total_to as $x => $x_value ) {
+							$comp_total_to [$x] += $row->ALLOC_VALUE * $quality_to [$x];
 						}
 					} else {
-						$ret = $this->_log ( "Quality data not found (_TO object_id: $object_id, object_name: $row[OBJECT_NAME], date $row[OCCUR_DATE_STR])", 1 );
+						$ret = $this->_log ( "Quality data not found (_TO object_id: $object_id, object_name: $row->OBJECT_NAME, date $row->OCCUR_DATE_STR)", 1 );
 						if ($ret === false)
 							return false;
 					}
 				}
 				if ($success) {
-					$this->_log ( "Execute SQL composition allocation commands", 2 );
-					/*
-					 * foreach($comp_sqls as $sSQL)
-						* {
-						* if($_REQUEST["act"]=="run") mysql_query($sSQL) or die("fail: ".$sSQL."-> error:".mysql_error());
-						* _log($sSQL);
-						* }
-					 */
+					foreach ( $comp_total_to as $x => $x_value ) {
+						if ($comp_total_to [$x] == 0) {
+							$comp_total_rate [$x] = - 1;
+						} else {
+							$comp_total_rate [$x] = $comp_total_from [$x] / $comp_total_to [$x];
+						}
+						$this->_log ( "[$x] comp_total_from = $comp_total_from[$x], comp_total_to = $comp_total_to[$x], rate = $comp_total_rate[$x]", 2 );
+					}
+
+					foreach ( $sSQL_alloc_to as $row ) {
+						$this->_log ( "Calculate composition allocation _TO, object_name: $row->OBJECT_NAME, date $row->OCCUR_DATE_STR", 2 );
+						$object_id = $row->OBJECT_ID;
+						$occur_date = $row->OCCUR_DATE_STR;
+						$quality_from = $this->getQualityGas ( $object_id, $obj_type_code, $occur_date, $F );
+
+						if ($quality_from && $this->alloc_act == "run") {
+							if ($obj_type_to == OBJ_TYPE_FLOW) {
+								FlowCompDataAlloc::where ( [
+										'FLOW_ID' => $object_id
+								] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->delete ();
+								$sSQL = "delete from FLOW_COMP_DATA_ALLOC where FLOW_ID=$object_id and OCCUR_DATE='$row[OCCUR_DATE]'";
+								$this->_log ( $sSQL, 2 );
+
+								$sSQL = "insert into FLOW_COMP_DATA_ALLOC(FLOW_ID,OCCUR_DATE,COMPOSITION,FL_DATA_$alloc_attr) VALUES (";
+								foreach ( $comp_total_rate as $x => $x_value ) {
+									if ($x_value > 0 && $row->ALLOC_VALUE > 0 && $quality_from [$x] > 0) {
+										$_v = $x_value * $row->ALLOC_VALUE * $quality_from [$x];
+									} else {
+										$_v = 0;
+									}
+									FlowCompDataAlloc::insert ( [
+											'FLOW_ID' => $object_id,
+											'OCCUR_DATE' => $row->OCCUR_DATE,
+											'COMPOSITION' => $quality_from ["ID_$x"],
+											'FL_DATA_' . $alloc_attr => $_v
+									] );
+									$sSQL .= $object_id . "," . $row->OCCUR_DATE . "," . $quality_from ["ID_$x"] . "," . $_v . "\n";
+								}
+								$sSQL .= ")";
+
+								$this->_log ( $sSQL, 2 );
+							} else {
+								EnergyUnitCompDataAlloc::where ( [
+										'EU_ID' => $object_id,
+										'FLOW_PHASE' => 2
+								] )->whereDate ( 'OCCUR_DATE', '=', $row->OCCUR_DATE )->delete ();
+								$sSQL = "delete from ENERGY_UNIT_COMP_DATA_ALLOC where EU_ID=$object_id and FLOW_PHASE=2 and OCCUR_DATE='$row[OCCUR_DATE]'";
+								$this->_log ( $sSQL, 2 );
+
+								$sSQL = "insert into ENERGY_UNIT_COMP_DATA_ALLOC(EU_ID,OCCUR_DATE,FLOW_PHASE,ALLOC_TYPE,COMPOSITION,EU_DATA_$alloc_attr_eu) VALUES (";
+								foreach ( $comp_total_rate as $x => $x_value ) {
+									if ($x_value > 0 && $row->ALLOC_VALUE > 0 && $quality_from [$x] > 0) {
+										$_v = $x_value * $row->ALLOC_VALUE * $quality_from [$x];
+									} else {
+										$_v = 0;
+									}
+
+									EnergyUnitCompDataAlloc::insert ( [
+											'EU_ID' => $object_id,
+											'OCCUR_DATE' => $row->OCCUR_DATE,
+											'FLOW_PHASE' => $alloc_phase,
+											'ALLOC_TYPE' => $alloc_type,
+											'COMPOSITION' => $quality_from ["ID_$x"],
+											'EU_DATA_' . $alloc_attr_eu => $_v
+									] );
+									$sSQL .= $object_id . "," . $row->OCCUR_DATE . "," . $alloc_phase . "," . "," . $alloc_type . "," . $quality_from ["ID_$x"] . "," . $_v . "\n";
+								}
+								$sSQL .= ")";
+
+								$this->_log ( $sSQL, 2 );
+							}
+						} else {
+							$ret = $this->_log ( "Quality data not found (_TO object_id: $object_id, object_name: $row[OBJECT_NAME], date $row[OCCUR_DATE_STR])", 1 );
+							if ($ret === false)
+								return false;
+						}
+					}
 				}
 			}
 		}
