@@ -1247,7 +1247,7 @@ var actions = {
 //  				vlp['className']= 'headcol';
 					marginLeft = vlp['width'];
 				}
-				var iw = (vlp['width']>1?vlp['width']:100);
+				var iw = (vlp['width']>1?parseFloat(vlp['width']):100);
 				tblWdth+=iw;
 				vlp['width']= iw+"px";
 				
@@ -1385,7 +1385,7 @@ var actions = {
 		          destroy: true,
 		          "columnDefs": uoms,
 		          "scrollX": true,
-		         "autoWidth": false,
+		         "autoWidth": autoWidth,
 //		         "autoWidth": autoWidth,
 //		       	"scrollY":        "37vh",
 //		         "scrollY":        "250px",
