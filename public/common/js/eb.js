@@ -21,6 +21,15 @@ $.ajaxSetup({
 	}
 });
 
+function sleep(milliseconds) {
+	  var start = new Date().getTime();
+	  for (var i = 0; i < 1e7; i++) {
+	    if ((new Date().getTime() - start) > milliseconds){
+	      break;
+	    }
+	  }
+	}
+
 function arrayUnique(array,equalFunction) {
     var a = array.concat();
     for(var i=0; i<a.length; ++i) {
@@ -385,6 +394,7 @@ var actions = {
 							return !isNoChange;
 						},
 	doSave 				: function (reLoadParams,edittedData){
+							if(typeof actions.preDoSave == "function") actions.preDoSave(reLoadParams,edittedData);
 							if (this.saveUrl) {
 								validated = actions.validating(reLoadParams);
 					//			actions.readyToLoad = true;
@@ -666,6 +676,7 @@ var actions = {
 	    };
 		$(td).editable(editable);
     	$(td).on("shown", function(e, editable) {
+    		  if(typeof actions.preEditableShow == "function") actions.preEditableShow();
 //    		  var val = editable.input.$input.val();
 //    		  if(val.trim()=="")editable.input.$input.val('');
     		  if(type=="timepicker") $(".table-condensed thead").css("visibility","hidden");
@@ -702,6 +713,7 @@ var actions = {
     	});
     	
     	$(td).on('hidden', function(e, reason) {
+  		  	if(typeof actions.preEditableHiden == "function") actions.preEditableHiden();
 			var hid ='eb_' +tab+"_"+rowData.DT_RowId+"_"+columnName;
     		$("#" +hid).remove();
     		if(reason === 'save' || reason === 'cancel') {
