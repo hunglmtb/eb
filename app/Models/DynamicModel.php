@@ -21,6 +21,10 @@ class DynamicModel extends Model {
 			$this->primaryKey = strtolower($this->primaryKey);
 		}
 	}
+	public function setTable($tableName){
+		$this->table = $tableName;
+	}
+	
 	
 	public function __get($key)
 	{

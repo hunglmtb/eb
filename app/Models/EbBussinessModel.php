@@ -25,6 +25,11 @@ class EbBussinessModel extends DynamicModel {
 		return [static::$idField => $newData[static::$idField]];
 	}
 	
+	public static function getObjectTypeCode()
+	{
+		return static::$idField;
+	}
+	
 	public static function findManyWithConfig($updatedIds) {
 		return parent::findMany ( $updatedIds );
 	}

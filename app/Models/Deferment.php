@@ -38,6 +38,13 @@ use App\Models\EbBussinessModel;
 // 	public  static  $unguarded = true;
 	public  static  $dateField = 'BEGIN_TIME';
 	
+	public static function getObjectTypeCode() {
+		return "DEFER_TARGET";
+	}
+	public static function addExtraQueryCondition(&$where,$object,$objectType){
+		$where['DEFER_GROUP_TYPE'] = $objectType;
+	}
+	
 	public function afterSaving($postData) {
 		//Tinh toan lai cac gia tri THEOR, GAS
 		$shouldSave = false;

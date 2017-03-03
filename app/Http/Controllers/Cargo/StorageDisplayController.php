@@ -7,6 +7,7 @@ use App\Models\PlotViewConfig;
 use App\Models\StorageDisplayChart;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use App\Models\DynamicModel;
 
 class StorageDisplayController extends ChokeController {
     
@@ -97,14 +98,16 @@ class StorageDisplayController extends ChokeController {
 					$tableView		= $object["ObjectDataSource"];
 					$tableName		= $tableView;
 					if (strpos($tableView, "V_")===0) {
-						$modelName		= \DB::table($tableName);
-						$datefield		= null;
+// 						$modelName		= \DB::table($tableName);
+						$modelName		= new DynamicModel;
+						$modelName->setTable($tableView);
+						$datefield		= "OCCUR_DATE";
 						$objectIdField	= $objectType."_ID";
 					}
 					else{
 						$modelName		= \Helper::getModelName($tableName);
 						$datefield		= property_exists($modelName, "dateField")?$modelName::$dateField:null;
-						$objectIdField	= $modelName::$idField;
+						$objectIdField	= $modelName::getObjectTypeCode($objectType);
 					}
 					
 					$objectId		= $object["ObjectName"];
@@ -124,15 +127,20 @@ class StorageDisplayController extends ChokeController {
 						$is_defer	= true;
 					}
 					
-					
 					$where			= [$objectIdField	=> $objectId];
+					if(method_exists($modelName,"addExtraQueryCondition")) $modelName::addExtraQueryCondition($where,$object,$objectType);
+					
 					if ($objectType=="ENERGY_UNIT" && !$is_eutest && !$is_defer && $flowPhase>0)  $where['FLOW_PHASE']	= $flowPhase;
 					
 					$lineQuery		= null;
 					$query			= null;
 					if ($datefield) {
-						$query			= $modelName::where($objectIdField,$objectId)
-													->whereDate("$datefield", '>=', $beginDate)
+						if (is_string($modelName))
+							$query			= $modelName::where($objectIdField,$objectId);
+						else
+							$query			= $modelName->where($objectIdField,$objectId);
+						
+						$query				= $query->whereDate("$datefield", '>=', $beginDate)
 													->whereDate("$datefield", '<=', $endDate)
 													->select(\DB::raw("$minus($queryField$calculation) as $sumField"),
 															"$datefield as D"
@@ -177,7 +185,8 @@ class StorageDisplayController extends ChokeController {
 					}
 				}
 				if ($rLineQuery) {
-					$binding = $rLineQuery instanceof  Illuminate\Database\Eloquent\Builder ? $rLineQuery->getQuery():$rLineQuery;
+// 					$binding = $rLineQuery instanceof  Illuminate\Database\Eloquent\Builder ? $rLineQuery->getQuery():$rLineQuery;
+					$binding = $rLineQuery->getQuery();
 					$rDataSet	= \DB::table( \DB::raw("({$rLineQuery->toSql()}) as sub") )
 										->mergeBindings($binding) // you need to get underlying Query Builder
 										->selectRaw("sum($sumField) as $sumField")
