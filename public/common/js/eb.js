@@ -51,6 +51,17 @@ function getJsDate(dateString){
     return date;
 }
 
+function getJsDateTime(dateString){
+	date = moment.utc(dateString,configuration.time.DATETIME_FORMAT_UTC);
+	y = date.year();
+	m = date.month();
+	d = date.date();
+	hour = date.hours();
+	minute = date.minutes();
+	date = Date.UTC(y,m,d,hour,minute);
+    return date;
+}
+
 function isInt(n){
     return Number(n) === n && n % 1 === 0;
 }
