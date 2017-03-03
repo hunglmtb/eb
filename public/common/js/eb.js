@@ -214,18 +214,25 @@ var getActiveTabID = function() {
 var typetoclass = function (data){
 	switch(data){
 		case 1:
-		return "text";
+		case "1":
+			return "text";
 		case 2:
+		case "2":
 			return "number";
 		case 3:
+		case "3":
 			return "date";
 		case 4:
+		case "4":
 			return "datetimepicker";
 		case 5:
+		case "5":
 			return "checkbox";
 		case 6:
+		case "6":
 			return "timepicker";
 		case 7:
+		case "7":
 			return "EVENT";
 		default:
 			return data;
