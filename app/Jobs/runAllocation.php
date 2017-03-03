@@ -571,11 +571,11 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 				case 0: //default: alloc >> std >> theor
 					$type = "ALLOC";
 					$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus_str, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
-					if(!$sum){
+					if($sum == 0){
 						$type = "VALUE";
 						$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus_str, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
 					}
-					if(!$sum){
+					if($sum == 0){
 						$type = "THEOR";
 						$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus_str, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
 					}
@@ -583,7 +583,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 				case 1: //std >> theor
 					$type = "VALUE";
 					$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus_str, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
-					if(!$sum){
+					if($sum == 0){
 						$type = "THEOR";
 						$sum = $this->getTotalFrom($type, $obj_type_from, $arrfrom, $ids_minus_str, $from_date, $to_date, $alloc_phase, $event_type, $alloc_attr, $alloc_attr_eu);
 					}
