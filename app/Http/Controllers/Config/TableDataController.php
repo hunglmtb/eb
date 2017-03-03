@@ -11,6 +11,7 @@ class TableDataController extends CodeController {
     	$tablename 	= \Input::get('table');
     	$action 	= \Input::get('action');
     	$dbh 		= \DB::connection()->getPdo();
+    	$dbh->setAttribute (\PDO::ATTR_EMULATE_PREPARES, false);
     	$lm 		= new lazy_mofo($dbh);
     	$lm->setModelName($tablename);
     	
