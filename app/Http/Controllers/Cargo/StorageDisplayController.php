@@ -8,6 +8,7 @@ use App\Models\StorageDisplayChart;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use App\Models\DynamicModel;
+use Carbon\Carbon;
 
 class StorageDisplayController extends ChokeController {
     
@@ -49,6 +50,8 @@ class StorageDisplayController extends ChokeController {
 //     	$midleDate 		= \Helper::parseDate($midleDate);
 		$summaryData	= [];
 		$sumField		= "V";
+		$Configuration	= auth()->user()->getConfiguration();
+		$dateFormat		= $Configuration["time"]["DATE_FORMAT_UTC"];
 		if (count($constraints['CONFIG'])>0){
 			$categories	= [];
 			$minY 		= null;
@@ -143,7 +146,8 @@ class StorageDisplayController extends ChokeController {
 						$query				= $query->whereDate("$datefield", '>=', $beginDate)
 													->whereDate("$datefield", '<=', $endDate)
 													->select(\DB::raw("$minus($queryField$calculation) as $sumField"),
-															"$datefield as D"
+															\DB::raw("DATE($datefield) as D")
+// 															"$datefield as D"
 															)
 													->take(300);
 						if ($rquery&&$query) $rquery->union($query);
@@ -176,12 +180,21 @@ class StorageDisplayController extends ChokeController {
 					];
 					foreach($dataSet as $index => $data ){
 						$dataValue		= $data->V;
-						if (array_key_exists($data->D, $summaryLine))
-							$summaryLine[$data->D]->V	+= $dataValue;
+						
+ 						/* $fieldD			= Carbon::parse($data->D)->format($dateFormat);
+						$fieldD			= substr($data->D, 0, strlen("2016-01-09"));
+						$data->D		=  $fieldD; */
+ 						$fieldD			=  $data->D;
+						if (array_key_exists($fieldD, $summaryLine))
+							$summaryLine[$fieldD]->V	+= $dataValue;
 						else
-							$summaryLine[$data->D]	= (object) array('D' => $data->D,'V' => $dataValue);
+							$summaryLine[$fieldD]	= (object) array('D' => $fieldD,'V' => $dataValue);
+						$compareValue = $summaryLine[$fieldD]->V;
 						if ((!$minY||$minY>$dataValue)&&$dataValue) $minY = $dataValue;
 						if ((!$maxY||$maxY<$dataValue)&&$dataValue) $maxY = $dataValue;
+						
+						if ((!$minY||$minY>$compareValue)&&$compareValue) $minY = $compareValue;
+						if ((!$maxY||$maxY<$compareValue)&&$compareValue) $maxY = $compareValue;
 					}
 				}
 				if ($rLineQuery) {
@@ -200,7 +213,7 @@ class StorageDisplayController extends ChokeController {
 										"value"		=> $rValue,
 									];
 						if ((!$minY||$minY>$rValue)&&$rValue) $minY 	= $rValue;
-						if ((!$maxY||$maxY<$rValue)&&$rValue) $maxY	= $rValue;
+						if ((!$maxY||$maxY<$rValue)&&$rValue) $maxY		= $rValue;
 					}
 				}
 			}
