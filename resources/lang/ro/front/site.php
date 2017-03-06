@@ -152,7 +152,7 @@ return [
 		'Defer root cause' => 'Cauza de bazapierdere',
 		'DEFERMENT' => 'AMÂNARE',
 		'Deferment group' => 'Gruppierdere',
-		'DEFERMENT &MMR DATA CAPTURE' => 'AMÂNARE& MMR DATE CAPTURE',
+		'DEFERMENT & MMR DATA CAPTURE' => 'AMÂNARE & MMR DATE CAPTURE',
 		
 		'Deferment' => 'Amânare',
 		'Deferred oil' => 'Pierdereulei',
@@ -223,7 +223,7 @@ return [
 		'Flow' => 'Flux',
 		'Forecast' => 'Previziune',
 		'Forecast Type' => 'PreviziuneTip',
-		'FORECAST &PLANNING' => 'PREVIZIUNE &PLANIFICARE',
+		'FORECAST & PLANNING' => 'PREVIZIUNE & PLANIFICARE',
 		
 		'Format' => 'Formatare',
 		'Formation Gas' => 'Formaregaz',
@@ -424,7 +424,7 @@ return [
 		'Property' => 'Proprietate',
 		'FDC Value' => 'FDC Valoare',
 		
-		'PASSWORD &PREFERENCES' => 'PAROLA & PREFERINȚE',
+		'PASSWORD & PREFERENCES' => 'PAROLA & PREFERINȚE',
 		
 		'Quality Data' => 'Datele de calitate',
 		'QUALITY DATA' => 'DATELE DE CALITATE',
@@ -536,7 +536,7 @@ return [
 		
 		'Tag column' => 'EtichetaColoan',
 		
-		'Tank &Storage' => 'Rezervorsistocare',
+		'Tank & Storage' => 'Rezervorsistocare',
 		'Tank FDC' => 'Rezervor FDC',
 		'TANK FDC' => 'REZERVOR',
 		'Tank Forecast' => 'PreviziuneRezervor',
