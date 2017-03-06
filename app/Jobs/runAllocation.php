@@ -508,7 +508,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     	return null;
     }
 
-	private function joinDataTable(&$query, $subfix, $alias, $obj_type, $alloc_phase, $event_type){
+	private function joinDataTable(&$query, $subfix, $alias, $obj_type, $flow_phase, $event_type){
 		switch($obj_type){
 			case OBJ_TYPE_FLOW:
 				$join_func = function($join) use ($alias){
@@ -520,8 +520,8 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 				$join_func = function($join) use ($alias, $flow_phase, $event_type){
 					$join->on ( "$alias.EU_ID", '=', 'o.ID' );
 					$join->on ( "$alias.OCCUR_DATE", '=', 'td.DB_DATE' );
-					$join->on ( "$alias.FLOW_PHASE", '=', $flow_phase );
-					$join->on ( "$alias.EVENT_TYPE", '=', $event_type );
+					$join->where ( "$alias.FLOW_PHASE", '=', "$flow_phase" );
+					$join->where ( "$alias.EVENT_TYPE", '=', "$event_type" );
 				};
 				break;
 			case OBJ_TYPE_TANK:
@@ -545,7 +545,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 			$from_option = 0;
 		$sum_all = null;
 		$alloc_comp_query = [];
-		//\DB::enableQueryLog ();
+		\DB::enableQueryLog ();
 		foreach($ids_from as $obj_type_from => $arrfrom){
 			$ids_minus_str = "-999";
 			if(array_key_exists($obj_type_from,$ids_minus)){
@@ -592,7 +592,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 			if($value_empty_check){
 				$query->whereDate ( 'td.DB_DATE', '>=', $from_date )->whereDate ( 'td.DB_DATE', '<=', $to_date );
 				$sum = $query->SELECT ( DB::raw ( "sum($id_minus_check*$value_empty_check) AS total_from" ) )->get ();
-				//\Log::info ( \DB::getQueryLog () );
+				\Log::info ( \DB::getQueryLog () );
 				$alloc_comp_from = $query->SELECT ( DB::raw ( "$value_empty_check AS ALLOC_VALUE", 'o.ID AS OBJECT_ID', 'o.NAME AS OBJECT_NAME', '$hrs_empty_check AS ACTIVE_HRS', 'td.DB_DATE as OCCUR_DATE' ) );
 
 				$sum_all += $sum [0]->total_from;
