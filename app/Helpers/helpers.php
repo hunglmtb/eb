@@ -276,6 +276,10 @@ class Helper {
 		return $value==null||$value==''||$value==false;
 	}
 	
+	public static function translateText($lang,$text){
+		return Lang::has("front/site.$text", $lang)?trans("front/site.$text"):$text;
+	}
+	
 	public static function getCommonGroupFilter($options = []){
 		$codeFlowPhase	= ["name"		=>	"CodeFlowPhase",
 							"source"	=>	"ObjectName" ];

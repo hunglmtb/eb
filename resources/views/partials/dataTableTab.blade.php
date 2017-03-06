@@ -1,3 +1,14 @@
+<?php
+	$lang			= session()->get('locale', "en");
+	if (isset($tables)) {
+		foreach($tables as $index => $table ){
+			if (Lang::has("front/site.".$table["name"], $lang)) {
+				$table["name"] = trans("front/site.".$table["name"]);
+			}
+			$tables[$index] = $table;
+		}
+	}
+?>
 @if(isset($tables))
 	<div id="tabs">
 		<ul id="ebTabHeader">

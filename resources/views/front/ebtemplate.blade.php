@@ -1,5 +1,93 @@
 <?php
-// include_once('../lib/db.php');
+$xmenu	= [];
+$xmenu["production"]=[
+["menutext"  =>"Flow Stream","desc" => "","url" => "/dc/flow"],
+["menutext"  =>"Energy Unit","desc" => "","url" => "/dc/eu"],
+["menutext"  =>"Tank & Storage","desc" => "","url" => "/dc/storage"],
+["menutext"  =>"Ticket","desc" => "","url" => "/dc/ticket"],
+["menutext"  =>"Well Test","desc" => "","url" => "/dc/eutest"],
+["menutext"  =>"Deferment & MMR","desc" => "","url" => "/dc/deferment"],
+["menutext"  =>"Quality","desc" => "","url" => "/dc/quality"]
+];
+$xmenu["operation"]=[
+["menutext"  =>"Safety","desc" => "","url" => "/fo/safety"],
+["menutext"  =>"Comments","desc" => "","url" => "/fo/comment"],
+["menutext"  =>"Equipment","desc" => "","url" => "/fo/equipment"],
+["menutext"  =>"Chemical","desc" => "","url" => "/fo/chemical"],
+["menutext"  =>"Personnel","desc" => "","url" => "/fo/personnel"]
+];
+$xmenu["visual"]=[
+["menutext"  =>"Network Model","desc" => "","url" => "/diagram"],
+["menutext"  =>"Data View","desc" => "","url" => "/dataview"],
+["menutext"  =>"Report","desc" => "","url" => "/workreport"],
+["menutext"  =>"Advanced Graph","desc" => "","url" => "/graph"],
+["menutext"  =>"Workflow","desc" => "","url" => "/workflow"],
+["menutext"  =>"Choke Model","desc" => "","url" => "/fp/choke"],
+["menutext"  =>'Dashboard',"desc"=>"","url" => "/dashboard"],
+["menutext"  =>"Task Manager","desc" => "","url" => "/dv/taskman"],
+];
+$xmenu["allocation"]=[
+["menutext"  =>"Run Allocation","desc" => "","url" => "/allocrun"],
+["menutext"  =>"Config Allocation","desc" => "","url" => "/allocset"]
+];
+$xmenu["forecast"]=[
+["menutext"  =>"WELL FORECAST","desc" => "","url" => "/fp/forecast"],
+["menutext"  =>"PREoS","desc" => "","url" => "../fp/preos"],
+["menutext"  =>"MANUAL ALLOCATE<br>PLAN","desc" => "","url" => "/fp/allocateplan"],
+["menutext"  =>"MANUAL ALLOCATE<br>FORECAST","desc" => "","url" => "/fp/allocateforecast"],
+["menutext"  =>"LOAD<br>PLAN/FORECAST","desc" => "","url" => "/fp/loadplanforecast"],
+];
+$xmenu["delivery"]=[
+["menutext"  =>"CONTRACT ADMIN","desc" => "","url" => "/pd/contractdata"],
+["menutext"  =>"CARGO ADMIN","desc" => "","url" => "/pd/cargoentry"],
+["menutext"  =>"CARGO ACTION","desc" => "","url" => "/pd/cargovoyage"],
+["menutext"  =>"CARGO MANAGEMENT","desc" => "","url" => "/pd/demurrageebo"],
+["menutext"  =>"CARGO<br>MONITORING","desc" => "","url" => "/pd/liftaccdailybalance"],
+];
+$xmenu["greenhouse"]=[
+["menutext"  =>"EMISSION<br>SOURCES","desc" => "","url" => "../ghg/index.php/emission"],
+["menutext"  =>"EMISSION<br>ENTRY","desc" => "","url" => "../ghg/index.php/emissionEntry"],
+["menutext"  =>"EMISSION<br>RELEASED","desc" => "","url" => "../ghg/index.php/emissionReleased"],
+["menutext"  =>"EMISSION<br>ALLOCATION","desc" => "","url" => "../ghg/index.php/emissionAllocation"],
+["menutext"  =>"EMISSION<br>REPORT","desc" => "","url" => "../ghg/index.php/emissionReport"]
+	];
+$xmenu["admin"]=[
+["menutext"  =>"VALIDATE DATA","desc" => "","url" => "	/am/validatedata"],
+["menutext"  =>"APPROVE DATA","desc" => "","url" => "/am/approvedata"],
+["menutext"  =>"LOCK DATA","desc" => "","url" => "/am/lockdata"],
+["menutext"  =>"ROLES","desc" => "","url" => "/am/roles"],
+["menutext"  =>"USERS","desc" => "","url" => "/am/users"],
+["menutext"  =>"Audit Trail","desc" => "","url" => "/am/audittrail"],
+["menutext"  =>"USERS LOG","desc" => "","url" => "/am/userlog"],
+["menutext"  =>"HELP EDITOR","desc" => "","url" => "/am/helpeditor"]
+	];
+$xmenu["config"]=[
+["menutext"  =>"Fields Config","desc" => "","url" => "/fieldsconfig"],
+["menutext"  =>"Tables Data","desc" => "","url" => "/loadtabledata"],
+["menutext"  =>"Tags Mapping","desc" => "","url" => "/tagsMapping"],
+["menutext"  =>"Formula Editor","desc" => "","url" => "/formula"],
+["menutext"  =>"View Config","desc" => "","url" => "/viewconfig"],
+["menutext"  =>"Dashboard Config","desc" => "","url" => "/config/dashboard"],
+	];
+$xmenu["interface"]=[
+["menutext"  =>"IMPORT DATA","desc" => "Import Tags Spreadsheet","url" => "/importdata"],
+["menutext"  =>"SOURCE CONFIG","desc" => "","url" => "/sourceconfig"],
+["menutext"  =>"DATA LOADER","desc" => "","url" => "/dataloader"]
+];
+	
+
+$lang			= session()->get('locale', "en");
+foreach($xmenu as $index => $smenu ){
+	foreach($smenu as  $cindex => $menuContent ){
+		$menuContent["menutext"]	= Lang::has("front/site.".$menuContent["menutext"], $lang)?
+									trans("front/site.".$menuContent["menutext"]):$menuContent["menutext"];
+		$menuContent["desc"]		= Lang::has("front/site.".$menuContent["desc"], $lang)?
+									trans("front/site.".$menuContent["desc"]):$menuContent["desc"];
+		$smenu[$cindex]	= $menuContent;
+	}
+	$xmenu[$index]	= $smenu;
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -254,7 +342,11 @@
 <div class="hex_container" style="display:none" id="boxFunctions">
 	<div class="hex hex-1 hex-gap" id="func1" code="production">		
 		<div class="inner">
-				<h4>PRODUCTION<br>MANAGEMENT </h4>
+				<h4>
+				<?php
+				echo \Helper::translateText($lang,"PRODUCTION<br>MANAGEMENT");
+				?>
+				</h4>
 		</div>		
 		<a id="pm" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -263,7 +355,11 @@
 	
 	<div class="hex hex-2" id="func2" code="operation">		
 		<div class="inner">
-				<h4>FIELD<br>OPERATIONS</h4>
+				<h4>
+				<?php
+				echo \Helper::translateText($lang,"FIELD<br>OPERATIONS");
+				?>
+				</h4>
 		</div>		
 		<a id="fo" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -273,11 +369,11 @@
 
 	<div class="hex hex-3" id="func3" code="visual">		
 		<div class="inner">
-				<h4>DATA<br>VISUALIZATION</h4>
-<!--				
-				<hr>
-				<p>We Open Everyday</p>
--->				
+				<h4>
+				<?php
+				echo \Helper::translateText($lang,"DATA<br>VISUALIZATION");
+				?>
+				</h4>
 		</div>		
 		<a id="dv" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -286,7 +382,11 @@
 	
 	<div class="hex hex-2" id="func4" code="allocation">		
 		<div class="inner">
-		<h4>ALLOCATION</h4>
+		<h4>
+				<?php
+				echo \Helper::translateText($lang,"ALLOCATION");
+				?>
+		</h4>		
 		</div>		
 		<a id="allocation" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -295,7 +395,11 @@
 	
 	<div class="hex hex-3" id="func5" code="forecast">		
 		<div class="inner">
-		<h4>FORECAST & PLANNING </h4>
+		<h4>
+				<?php
+				echo \Helper::translateText($lang,"FORECAST & PLANNING");
+				?>
+		</h4>
 		</div>		
 		<a id="fp" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -306,7 +410,11 @@ if(true){
 ?>
 	<div class="hex hex-1" id="func6" code="delivery">		
 		<div class="inner">
-		<h4>PRODUCT<br>DELIVERY</h4>
+		<h4>
+				<?php
+				echo \Helper::translateText($lang,"PRODUCT<br>DELIVERY");
+				?>
+		</h4>
 		</div>		
 		<a id="pd" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -314,7 +422,11 @@ if(true){
 	</div>
 	<div class="hex hex-2" id="func7" code="greenhouse">		
 		<div class="inner">
-		<h4>GREENHOUSE<br>GAS</h4>
+		<h4>
+				<?php
+				echo \Helper::translateText($lang,"GREENHOUSE<br>GAS");
+				?>
+		</h4>
 		</div>		
 		<a id="gg"href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -327,7 +439,11 @@ else
 ?>
 	<div class="hex hex-1" id="func6" code="delivery">		
 		<div class="inner">
-		<h4>PRODUCT<br>DELIVERY</a></h4>
+		<h4>
+				<?php
+				echo \Helper::translateText($lang,"PRODUCT<br>DELIVERY");
+				?>
+		</h4>
 		</div>		
 		<a href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -335,7 +451,11 @@ else
 	</div>	
 	<div class="hex hex-2" id="func7" code="greenhouse">		
 		<div class="inner">
-		<h4>GREENHOUSE<br>GAS</h4>
+		<h4>
+				<?php
+				echo \Helper::translateText($lang,"GREENHOUSE<br>GAS");
+				?>
+		</h4>
 		</div>		
 		<a href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -347,7 +467,11 @@ else
 	
 	<div class="hex hex-1 hex-gap" id="func8" code="admin">		
 		<div class="inner">
-		<h4>ADMINISTRATOR</h4>
+		<h4>
+				<?php
+				echo \Helper::translateText($lang,"ADMINISTRATOR");
+				?>
+		</h4>
 		</div>		
 		<a id="administrator" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -356,7 +480,11 @@ else
 	
 	<div class="hex hex-2" code="config">		
 		<div class="inner">
-		<h4>SYSTEM<br>CONFIGURATION</h4>
+		<h4>
+				<?php
+				echo \Helper::translateText($lang,"SYSTEM<br>CONFIGURATION");
+				?>
+		</h4>
 		</div>		
 		<a id="sc" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -365,7 +493,9 @@ else
 	
 	<div class="hex hex-3" code="interface">		
 		<div class="inner">
-				<h4>INTERFACES</h4>
+			<h4>
+				<?php echo \Helper::translateText($lang,"INTERFACES"); ?>
+			</h4>
 		</div>		
 		<a id="interfaces" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -458,91 +588,8 @@ function layoutUserLoggedOut()
 	$("#bee").css({top: 443, left: 470,rotation:0});
 }
 var menuBox;
-var menu={};
-menu["production"]=[
-		{menutext:"Flow Stream",desc:"",url:"/dc/flow"},
-		{menutext:"Energy Unit",desc:"",url:"/dc/eu"},
-		{menutext:"Tank & Storage",desc:"",url:"/dc/storage"},
-		{menutext:"Ticket",desc:"",url:"/dc/ticket"},
-		{menutext:"Well Test",desc:"",url:"/dc/eutest"},
-		{menutext:"Deferment & MMR",desc:"",url:"/dc/deferment"},
-		{menutext:"Quality",desc:"",url:"/dc/quality"}
-	];
-menu["operation"]=[
-		{menutext:"Safety",desc:"",url:"/fo/safety"},
-		{menutext:"Comments",desc:"",url:"/fo/comment"},
-		{menutext:"Equipment",desc:"",url:"/fo/equipment"},
-		{menutext:"Chemical",desc:"",url:"/fo/chemical"},
-		{menutext:"Personnel",desc:"",url:"/fo/personnel"}
-	];
-menu["visual"]=[
-		{menutext:"Network Model",desc:"",url:"/diagram"},
-		{menutext:"Data View",desc:"",url:"/dataview"},
-		{menutext:"Report",desc:"",url:"/workreport"},
-		{menutext:"Advanced Graph",desc:"",url:"/graph"},
-		{menutext:"Workflow",desc:"",url:"/workflow"},
-		{menutext:"Choke Model",desc:"",url:"/fp/choke"},
-		{menutext:'{{ trans("front/site.Dashboard") }}',desc:"",url:"/dashboard"},
-		{menutext:"Task Manager",desc:"",url:"/dv/taskman"},
-	];
-menu["allocation"]=[
-		{menutext:"Run Allocation",desc:"",url:"/allocrun"},
-		{menutext:"Config Allocation",desc:"",url:"/allocset"}
-	];
-menu["forecast"]=[
-		{menutext:"WELL FORECAST",desc:"",url:"/fp/forecast"},
-		{menutext:"PREoS",desc:"",url:"../fp/preos"},
-		{menutext:"MANUAL ALLOCATE<br>PLAN",desc:"",url:"/fp/allocateplan"},
-		{menutext:"MANUAL ALLOCATE<br>FORECAST",desc:"",url:"/fp/allocateforecast"},
-		{menutext:"LOAD<br>PLAN/FORECAST",desc:"",url:"/fp/loadplanforecast"},
-	];
-<?php
-// if($current_username=="CP_User"){}
-// else{
-?>
-menu["delivery"]=[
-		{menutext:"CONTRACT ADMIN",desc:"",url:"/pd/contractdata"},
-		{menutext:"CARGO ADMIN",desc:"",url:"/pd/cargoentry"},
-		{menutext:"CARGO ACTION",desc:"",url:"/pd/cargovoyage"},
-		{menutext:"CARGO MANAGEMENT",desc:"",url:"/pd/demurrageebo"},
-		{menutext:"CARGO<br>MONITORING",desc:"",url:"/pd/liftaccdailybalance"},
-//		{menutext:"VOYAGE GROUND",desc:"",url:"../pd/?func=voyageground"},
-//		{menutext:"VOYAGE PIPELINE",desc:"",url:"../pd/?func=voyagepipeline"}
-	];
-menu["greenhouse"]=[
-		{menutext:"EMISSION<br>SOURCES",desc:"",url:"../ghg/index.php/emission"},
-		{menutext:"EMISSION<br>ENTRY",desc:"",url:"../ghg/index.php/emissionEntry"},
-		{menutext:"EMISSION<br>RELEASED",desc:"",url:"../ghg/index.php/emissionReleased"},
-		{menutext:"EMISSION<br>ALLOCATION",desc:"",url:"../ghg/index.php/emissionAllocation"},
-		{menutext:"EMISSION<br>REPORT",desc:"",url:"../ghg/index.php/emissionReport"}
-	];
-<?php
-// }
-?>
-menu["admin"]=[
-		{menutext:"VALIDATE DATA",desc:"",url:"	/am/validatedata"},
-		{menutext:"APPROVE DATA",desc:"",url:"/am/approvedata"},
-		{menutext:"LOCK DATA",desc:"",url:"/am/lockdata"},
-		{menutext:"ROLES",desc:"",url:"/am/roles"},
-		{menutext:"USERS",desc:"",url:"/am/users"},
-		{menutext:"Audit Trail",desc:"",url:"/am/audittrail"},
-		{menutext:"USERS LOG",desc:"",url:"/am/userlog"},
-		{menutext:"HELP EDITOR",desc:"",url:"/am/helpeditor"}
-	];
-menu["config"]=[
-		{menutext:"Fields Config",desc:"",url:"/fieldsconfig"},
-		{menutext:"Tables Data",desc:"",url:"/loadtabledata"},
-// 		{menutext:"PD Tables",desc:"",url:"/pdtabledata"},
-		{menutext:"Tags Mapping",desc:"",url:"/tagsMapping"},
-		{menutext:"Formula Editor",desc:"",url:"/formula"},
-		{menutext:"View Config",desc:"",url:"/viewconfig"},
-		{menutext:"Dashboard Config",desc:"",url:"/config/dashboard"},
-	];
-menu["interface"]=[
-		{menutext:"IMPORT DATA",desc:"Import Tags Spreadsheet",url:"/importdata"},
-		{menutext:"SOURCE CONFIG",desc:"",url:"/sourceconfig"},
-		{menutext:"DATA LOADER",desc:"",url:"/dataloader"}
-	];
+var menu = <?php echo json_encode($xmenu); ?>;
+
 function func(o)
 {
 	var menuID=$(o).parent().attr("code");

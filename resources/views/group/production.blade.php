@@ -1,4 +1,6 @@
 <?php
+$lang			= session()->get('locale', "en");
+
 if (!isset($filters['extra'])) {
 	$filters['extra'] = [];
 }
@@ -84,10 +86,10 @@ $( document ).ready(function() {
 	@if($enableButton)
 		<div class="action_filter floatLeft">
 			@if(!auth()->user()->hasRight('DATA_READONLY')&&$enableSaveButton)
-				<input type="button" value="Save" name="B3" id = "buttonSave" onClick="actions.doSave(true)" style="width: 85px;float:left; height: 26px">
+				<input type="button" value="<?php echo \Helper::translateText($lang,"Save"); ?>" name="B3" id = "buttonSave" onClick="actions.doSave(true)" style="width: 85px;float:left; height: 26px">
 				<br>
 			@endif
-			<input type="button" value="Load data" id="buttonLoadData" name="B33"
+			<input type="button" value="<?php echo \Helper::translateText($lang,"Load data"); ?>" id="buttonLoadData" name="B33"
 				onClick="actions.doLoad(true)" style="width: 85px; height: 26px;float:left;margin-top:7px">
 		</div>
 	@endif
