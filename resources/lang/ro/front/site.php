@@ -15,24 +15,24 @@ return [
 		'Adjust volume' => 'Reglareavolumului',
 		'Adjusted' => 'Ajustată',
 		'Advanced graph' => 'Graficavansat',
-		'ADMINISTRATOR' => 'ADMINISTRATOR',
-		'ANVANCED GRAPH' => 'GRAFIC AVANSAT',
+		'Administrator' => 'ADMINISTRATOR',
+		'Anvanced Graph' => 'GRAFIC AVANSAT',
 		'All' => 'Toate',
 		'Allocate' => 'Alocați',
 		'Allocation type' => 'Tipul de alocare',
 		'Allocation' => 'Alocarea',
 		'ALLOCATION' => 'ALOCAREA',
-		'ALLOCATION CONFIG' => 'CONFIGURARE ALOCAREA',
+		'Allocation Config' => 'CONFIGURARE ALOCAREA',
 		
 		'Amount' => 'Sumă',
 		'Apply' => 'Aplică',
 		'Approve' => 'Aprobați',
-		'APPROVE DATA' => 'APROBARE DE DATE',
+		'Approve Data' => 'APROBARE DE DATE',
 		
 		'Area' => 'Zona',
 		'Arrival' => 'Sosire',
 		'Audit trail' => 'Pista de audit',
-		'AUDIT TRAIL' => 'PISTA DE AUDIT',
+		'Audit Trail' => 'PISTA DE AUDIT',
 		'Available rights' => 'Drepturidisponibile',
 		'Avgpress' => 'Duratamedie de presă',
 		'Balance energy' => 'Energie Balance',
@@ -126,21 +126,21 @@ return [
 		'Crude' => 'Brut',
 		'Current location' => 'Locatieactuala',
 		'Dashboard' => ' Tabloul de bord',
-		'DASHBOARD CONFIG' => 'CONFIGURARE BORD',
+		'Dashboard Config' => 'CONFIGURARE BORD',
 		
 		'Data format' => 'Formatuldatelor',
 		'Date format' => 'Formatuldatei',
 		
 		'Data method' => 'Metoda de date',
-		'DATA LOADER' => 'DATE LOADER',
+		'Data Loader' => 'DATE LOADER',
 		'Data source' => 'Sursa de date',
 		'Data table' => 'Tabel de date',
 		
 		'Data view' => 'Vizualizare Date',
 		'Data visualization' => 'VizualizareaDatelor',
 		'Data' => 'Date contract',
-		'DATA TABLE' => ' TABEL DE DATE',
-		'DATA VIEWS' => 'DATE DE VEDERE',
+		'Data Table' => ' TABEL DE DATE',
+		'Data Views' => 'DATE DE VEDERE',
 		
 		'Date' => 'Data',
 		'Day value' => 'Valoarezi',
@@ -152,7 +152,8 @@ return [
 		'Defer root cause' => 'Cauza de bazapierdere',
 		'DEFERMENT' => 'AMÂNARE',
 		'Deferment group' => 'Gruppierdere',
-		'DEFERMENT & MMR DATA CAPTURE' => 'AMÂNARE & MMR DATE CAPTURE',
+		'Deferment & MMR Data Capture' => 'AMÂNARE & MMR DATE CAPTURE',
+		'Deferment & MMR' => 'AMÂNARE & MMR',
 		
 		'Deferment' => 'Amânare',
 		'Deferred oil' => 'Pierdereulei',
@@ -206,16 +207,16 @@ return [
 		'FDC Value' => 'FDC valoare',
 		'FDC VALUE' => 'FDC VALOARE',
 		'Field config' => 'configurațicoloana',
-		'FIELDS CONFIG' => 'ConfigurațiColoana',
+		'Fields Config' => 'ConfigurațiColoana',
 		
 		'Field data capture' => 'Captare de date Câmp',
-		'FIELD OPERATIONS' => 'Operațiuni de Câmp',
+		'Field Operations' => 'Operațiuni de Câmp',
 		
 		'Filled vol' => 'Volumumplut',
 		'Finish' => 'Terminare',
 		'Fit' => 'Potriveste',
 		'Flare' => 'Bordurare',
-		'FLOW DATA CAPTURE' => 'FLUXUL DE DATE CAPTURE',
+		'Flow Data Capture' => 'FLUXUL DE DATE CAPTURE',
 		
 		'Flow phase' => 'Faza de curgere',
 		'Flow quantity' => 'Cantitatea de flux',
@@ -223,12 +224,12 @@ return [
 		'Flow' => 'Flux',
 		'Forecast' => 'Previziune',
 		'Forecast Type' => 'PreviziuneTip',
-		'FORECAST & PLANNING' => 'PREVIZIUNE & PLANIFICARE',
+		'Forecast & Planning' => 'PREVIZIUNE & PLANIFICARE',
 		
 		'Format' => 'Formatare',
 		'Formation Gas' => 'Formaregaz',
 		'Formula' => 'Formula',
-		'FORMULA EDITOR' => 'Editați | × FORMULĂ',
+		'Formula Editor' => 'Editați | × FORMULĂ',
 		
 		'Formula name' => 'FormulăNume',
 		
@@ -262,12 +263,12 @@ return [
 		'Gross' => 'Gross',
 		'Group' => 'Grup',
 		'Help editor' => 'Editor Help',
-		'HELP EDITOR' => 'EDITOR AJUTOR',
+		'Help Editor' => 'EDITOR AJUTOR',
 		
 		'hour' => 'Oră',
 		'Icons' => 'Icoane',
 		'Import' => 'Import',
-		'IMPORT DATA' => 'IMPORT DE DETA',
+		'Import Data' => 'IMPORT DE DETA',
 		'Import data using' => 'Import de date folosind',
 		
 		'In' => 'In',
@@ -276,7 +277,7 @@ return [
 		'Injection' => 'Injectarea',
 		'Input type' => 'Tip intrare',
 		'Insert' => 'Insert',
-		'INTERFACE' => 'INTERFAȚĂ',
+		'Interface' => 'INTERFAȚĂ',
 		
 		'IP address' => 'Adresa IP',
 		'Is load' => 'Este de sarcină',
@@ -302,10 +303,10 @@ return [
 		'Load' => 'Incarcare',
 		'Load data' => 'Date de Sarcină',
 		
-		'LOAD PLAN/FORECAST' => 'PLAN DE SARCINA/PREVIZIUNI',
+		'Load Plan/Forecast' => 'PLAN DE SARCINA/PREVIZIUNI',
 		
 		'Lock' => 'Blocare',
-		'LOCK DATA' => 'DATE BLOCARE',
+		'Lock Data' => 'DATE BLOCARE',
 		'Login time' => 'Timpconectare',
 		'Login from date' => 'Conectare de la Data',
 		
@@ -317,9 +318,9 @@ return [
 		'Mandatory' => 'Obligatoriu',
 		'Manual' => 'Manual',
 		
-		'MANUAL ALLOCATE PLAN' => 'ALOCAREA MANUALĂ A PLANULUI',
+		'Manual Allocate Plan' => 'ALOCAREA MANUALĂ A PLANULUI',
 		
-		'MANUAL ALLOCATE FORECAST' => 'ALOCAREA MANUALĂ A PREVIZIUNI',
+		'Load Plan/Forecast"' => 'ALOCAREA MANUALĂ A PREVIZIUNI',
 		
 		'Mapping' => 'Cartografiere',
 		'Master name' => 'Numele master',
@@ -327,7 +328,7 @@ return [
 		'Mecury' => 'Mecury',
 		'Memo' => 'Memo',
 		'Meter factor' => 'Factor Meter',
-		'MENU CONFIG' => 'MENIU CONFIGURARE',
+		'Menu Config' => 'MENIU CONFIGURARE',
 		
 		'MIS-MEASUREMENT' => 'MĂSURAREA INCORECT',
 		
@@ -340,7 +341,7 @@ return [
 		'Net' => 'Net',
 		'Net Mass (Kg)' => 'Net Mesa (Kg)',
 		'Network model' => 'Model de retea',
-		'NETWORK MODELS' => 'MODEL DE RETEA',
+		'Network Models' => 'MODEL DE RETEA',
 		'Network' => 'Rețea',
 		'New role' => 'Rolnou',
 		'New value' => 'Valoarenouă',
@@ -387,7 +388,7 @@ return [
 		'Override deferwtr' => 'DepasirepierdereAPĂ',
 		
 		'Override' => 'Depasire',
-		'PD TABLE' => 'PD TABEL',
+		'PD Table' => 'PD TABEL',
 		'Parcel' => 'Parcela',
 		'Personnel' => 'Personal',
 		'Phase Type' => 'Tip Faza',
@@ -409,7 +410,7 @@ return [
 		'Pressure' => 'Presiune',
 		'Print' => 'Imprimare',
 		'Priority' => 'Prioritate',
-		'PRODUCTION' => 'PRODUCȚIE',
+		'Production' => 'PRODUCȚIE',
 		
 		'Production Day' => 'zi de Producție',
 		
@@ -424,7 +425,7 @@ return [
 		'Property' => 'Proprietate',
 		'FDC Value' => 'FDC Valoare',
 		
-		'PASSWORD & PREFERENCES' => 'PAROLA & PREFERINȚE',
+		'Password & Preferences' => 'PAROLA & PREFERINȚE',
 		
 		'Quality Data' => 'Datele de calitate',
 		'QUALITY DATA' => 'DATELE DE CALITATE',
@@ -456,7 +457,7 @@ return [
 		
 		'Run frequency' => 'FrecvențăRulare',
 		'Runner' => 'Sina(curier)',
-		'RUN ALLOCATION' => 'EXECUTA ALOCAREA',
+		'Run Allocation' => 'EXECUTA ALOCAREA',
 		
 		'Run Task' => 'Executăsarcina',
 		
@@ -492,7 +493,7 @@ return [
 		'Simulate' => 'Simuleaza',
 		'Size' => 'Marime',
 		'Source type' => 'Tip sursa',
-		'SOURCE CONFIG' => 'SURSĂ CONFIGURARE',
+		'Source Config' => 'SURSĂ CONFIGURARE',
 		
 		'SQL list' => 'SQL Lista',
 		
@@ -504,13 +505,13 @@ return [
 		'STD VALUE' => 'STD VALOARE',
 		'Steam' => 'Abur',
 		'Storage display' => 'Afișarestocare',
-		'STORAGE DISPLAY' => 'AFISARE STOCARE',
+		'Storage Display' => 'AFISARE STOCARE',
 		'Storage Forecast' => 'Previziunestocare',
 		'STORAGE FORECAST' => 'PREVIZIUNE STOCARE',
 		'Storage Plan' => 'Plan de stocare',
+		'STORAGE PLAN' => 'PLAN DE STOCARE',
 		'Storage Value' => 'Valoarestocare',
 		'STORAGE VALUE' => 'VALOARE STCARE',
-		'STORAGE PLAN' => 'PLAN DE STOCARE',
 		'Storage' => 'Stocare',
 		'Stream' => 'Stream',
 		'Styles' => 'Stiluri',
@@ -523,12 +524,12 @@ return [
 		'Surveyor' => 'Supraveghetor',
 		'Swimlanes' => 'Culoareinot',
 		'System' => 'Sistem',
-		'SYSTEM CONFIGURATION' => 'CONFIGURAREA SISTEMULUI',
+		'System Configuration' => 'CONFIGURAREA SISTEMULUI',
 		
 		'Table' => 'Tabel',
 		'Tab' => 'Fila',
 		
-		'TABLE DATA' => 'DATE TABEL',
+		'Table Data' => 'DATE TABEL',
 		
 		'Table name' => 'NumeleTabelului',
 		
@@ -543,14 +544,14 @@ return [
 		'TANK FORECAST' => 'PREVIZIUNE REZERVOR',
 		'Tank Plan' => 'Plan rezervor',
 		'TANK PLAN' => 'PLAN REZERVOR',
-		'TANK TICKET' => 'TANK BILET',
+		'Tank Ticket' => 'TANK BILET',
 		
-		'TASK MANAGER' => 'PLANIFICATOR DE SARCINI',
+		'Task Manager' => 'PLANIFICATOR DE SARCINI',
 		
-		'TAGS MAPPING' => 'ETICHETĂ CARTOGRAFIERE',
+		'Tags Mapping' => 'ETICHETĂ CARTOGRAFIERE',
 		
 		'tank Value' => 'Valoarerezervor',
-		'TANK VALUE' => 'VALOARE REZERVOR',
+		'Tank Value' => 'VALOARE REZERVOR',
 		'Tank' => 'Rezervor',
 		'Target' => 'Tinta',
 		'Task' => 'Sarcină',
@@ -583,7 +584,7 @@ return [
 		'Train' => 'Tren',
 		'Transit type' => 'Tip de tranzit',
 		'Transit' => 'Tranzit',
-		'TRANSACTION DATA' => 'DATE TRANZACȚIE',
+		'Transaction DatA' => 'DATE TRANZACȚIE',
 		
 		'Truck' => 'Camion',
 		'Ultrasonic' => 'Ultrasonic',
@@ -597,13 +598,13 @@ return [
 		'Username' => 'Utilizator',
 		'User' => 'Utilizator',
 		
-		'USER INFORMATION' => 'INFORMAȚII PENTRU UTILIZATOR',
+		'User Information' => 'INFORMAȚII PENTRU UTILIZATOR',
 		
 		'Users' => 'Utilizatori',
 		'Validate' => 'Valida',
 		'validate ALL' => 'validațitoate',
 		
-		'VALIDATE DATA' => 'DATE VALIDAȚI',
+		'Validate Data' => 'DATE VALIDAȚI',
 		
 		'Value' => 'Valoare',
 		'value' => 'valoare',
@@ -613,7 +614,7 @@ return [
 		'Voyage marine' => 'Marin Voyage',
 		'Voyage number' => 'Numărul Voyage',
 		'Voyage pipeline' => 'Conductă Voyage',
-		'VIEW CONFIG' => 'VEZI CONFIGURARE',
+		'View Config' => 'VEZI CONFIGURARE',
 		
 		'View list' => 'Vizualizarelistă',
 		
@@ -630,7 +631,7 @@ return [
 		'Water Vol. (Sm3)' => 'Apă Vol. (Sm3)',
 		'Week' => 'Săptămâna',
 		'Well forecast' => 'Prognozasonda',
-		'WELL FORECAST' => 'BINE PREVIZIUNI',
+		'Well Forecast' => 'BINE PREVIZIUNI',
 		
 		'Well Test' => 'Test sonda',
 		'Wellpad' => 'Careulsondei',

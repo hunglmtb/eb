@@ -1,13 +1,12 @@
 <?php
 	$currentSubmenu ='/dc/eu';
-	$lang			= session()->get('locale', "en");
 	$tables = ['EnergyUnitDataFdcValue'	=> ['name'=>'FDC Value'],
 			'EnergyUnitDataValue'		=> ['name'=>'STD Value'],
-			'EnergyUnitDataTheor'		=> ['name'=>Lang::has("front/site.Theoretical", $lang)?trans("front/site.Theoretical"):"Theoretical"],       
-			'EnergyUnitDataAlloc'		=> ['name'=>Lang::has("front/site.Allocation", $lang)?trans("front/site.Allocation"):"Allocation"],          
-			'EnergyUnitCompDataAlloc'	=> ['name'=>Lang::has("front/site.Composition", $lang)?trans("front/site.Composition"):"Composition Alloc"], 
-			'EnergyUnitDataPlan'		=> ['name'=>Lang::has("front/site.Plan", $lang)?trans("front/site.Plan"):"Plan"],                            
-			'EnergyUnitDataForecast'	=> ['name'=>Lang::has("front/site.Forecast", $lang)?trans("front/site.Forecast"):"Forecast"],                
+			'EnergyUnitDataTheor'		=> ['name'=>"Theoretical"],       
+			'EnergyUnitDataAlloc'		=> ['name'=>"Allocation"],          
+			'EnergyUnitCompDataAlloc'	=> ['name'=>"Composition Alloc"], 
+			'EnergyUnitDataPlan'		=> ['name'=>"Plan"],                            
+			'EnergyUnitDataForecast'	=> ['name'=>"Forecast"],                
 	];
  	$active = 1;
 ?>

@@ -186,8 +186,8 @@
 								[
 										["code"	=>	"","name"	=>	"Transaction Data","title"	=>	"","link"	=>	"/home/administrator","menus"	=>
 												[
-														["name"	=>	"Validate Data","title"	=>	"VALIDATE DATA","link"	=>	"/am/validatedata"],
-														["name"	=>	"Approve Data","title"	=>	"APPROVE DATA","link"	=>	"/am/approvedata"],
+														["name"	=>	"Validate Data","title"	=>	"Validate Data","link"	=>	"/am/validatedata"],
+														["name"	=>	"Approve Data","title"	=>	"Approve Data","link"	=>	"/am/approvedata"],
 														["name"	=>	"Lock Data","title"	=>	"DATA LOCKING","link"	=>	"/am/lockdata"],
 												]
 										],
@@ -199,11 +199,11 @@
 												[
 														["name"	=>	"Users","title"	=>	"Users Management","link"	=>	"/am/users"],
 														["name"	=>	"Roles","title"	=>	"Roles Settings","link"	=>	"/am/roles"],
-														["name"	=>	"User Logs","title"	=>	"USERS LOG","link"	=>	"/am/userlog"],
+														["name"	=>	"User Logs","title"	=>	"User Logs","link"	=>	"/am/userlog"],
 														["name"	=>	"Audit Trail","title"	=>	"Audit Trail","link"	=>	"/am/audittrail"],
 														// 							["name"	=>	"User Settings","title"	=>	"","link"	=>	"#"],
 														["name"	=>	"Password & Preferences","title"	=>	"Password & Preferences","link"	=>	"/me/setting"],
-														["name"	=>	"Help Editor","title"	=>	"HELP EDITOR","link"	=>	"/am/helpeditor"],
+														["name"	=>	"Help Editor","title"	=>	"Help Editor","link"	=>	"/am/helpeditor"],
 												]
 										],
 								]
@@ -239,7 +239,7 @@
 										],
 										["code"	=>	"","name"	=>	"Allocation","title"	=>	"","link"	=>	"/home/allocation","menus"	=>
 												[
-														["name"	=>	"Allocation Config","title"	=>	"CONFIG ALLOCATION","link"	=>	"/allocset"],
+														["name"	=>	"Allocation Config","title"	=>	"Allocation Config","link"	=>	"/allocset"],
 												]
 										],
 								]
@@ -252,11 +252,11 @@
 								[
 										["code"	=>	"","name"	=>	"Forecast & Planning","title"	=>	"","link"	=>	"/home/fp","menus"	=>
 												[
-														["name"	=>	"Well Forecast","title"	=>	"WELL FORECAST","link"	=>	"/fp/forecast"],
+														["name"	=>	"Well Forecast","title"	=>	"Well Forecast","link"	=>	"/fp/forecast"],
 														["name"	=>	"PREoS","title"	=>	"PENG-ROBINSON EQUATION OF STATE","link"	=>	"/fp/preos"],
-														["name"	=>	"Manual Allocate Plan","title"	=>	"MANUAL ALLOCATE PLAN","link"	=>	"/fp/allocateplan"],
-														["name"	=>	"Manual Allocate Forecast","title"	=>	"MANUAL ALLOCATE FORECAST","link"	=>	"/fp/allocateforecast"],
-														["name"	=>	"Load Plan/Forecast","title"	=>	"LOAD PLAN/FORECAST DATA","link"	=>	"/fp/loadplanforecast"],
+														["name"	=>	"Manual Allocate Plan","title"	=>	"Manual Allocate Plan","link"	=>	"/fp/allocateplan"],
+														["name"	=>	"Manual Allocate Forecast","title"	=>	"Manual Allocate Forecast","link"	=>	"/fp/allocateforecast"],
+														["name"	=>	"Load Plan/Forecast","title"	=>	"Load Plan/Forecast","link"	=>	"/fp/loadplanforecast"],
 												]
 										],
 								]
@@ -330,7 +330,7 @@ for(var i = 0; i < xmenu.length; i++) {
 							}
 							html_menu+=is_menu_active?'<li class="activex" ><a href="#">'+menu.name+'</a></li>':
 								'<li><a href="'+menu.link+'">'+menu.name+'</a></li>';
-							activeTitle = is_menu_active?menu.title:activeTitle;
+							activeTitle = is_menu_active? menu.title : activeTitle;
 						}
 					}
 					html_block+='<div class="nav-cell'+(is_block_active?' activex':'')+'"><a href="'+block.link+'"><h3>'+block.name+'</h3></a><ul>'+html_menu+'</ul></div>';
