@@ -17,10 +17,10 @@
 												"menus"	=>
 														[
 																["name"	=>	"Flow Stream","title"	=>	"Flow Data Capture","link"	=>	"/dc/flow"],
-																["name"	=>	"Energy Unit","title"	=>	"Energy Unit Data Capture","link"	=>	"/dc/eu"],
+																["name"	=>	"Energy Unit","title"	=>	"Energy Unit","link"	=>	"/dc/eu"],
 																["name"	=>	"Tank & Storage","title"	=>	"Tank & Storage","link"	=>	"/dc/storage"],
-																["name"	=>	"Tank Ticket","title"	=>	"Tank Ticket Data Capture","link"	=>	"/dc/ticket"],
-																["name"	=>	"Well Test","title"	=>	"Well Test Data Capture","link"	=>	"/dc/eutest"],
+																["name"	=>	"Tank Ticket","title"	=>	"Tank Ticket","link"	=>	"/dc/ticket"],
+																["name"	=>	"Well Test","title"	=>	"Well Test","link"	=>	"/dc/eutest"],
 																["name"	=>	"Deferment & MMR","title"	=>	"Deferment & MMR Data Capture","link"	=>	"/dc/deferment"],
 																["name"	=>	"Quality Data","title"	=>	"Quality Data","link"	=>	"/dc/quality"],
 														]
@@ -61,7 +61,7 @@
 												["code"	=>	"",
 												"name"	=>	"Data Visualization","title"	=>	"","link"	=>	"/home/dv","menus"	=>
 														[
-																["name"	=>	"Network Models","title"	=>	"Network Models","link"	=>	"/diagram"],
+																["name"	=>	"Network Model","title"	=>	"Network Models","link"	=>	"/diagram"],
 																["name"	=>	"Data Views","title"	=>	"Data Views","link"	=>	"/dataview"],
 																["name"	=>	"Reports","title"	=>	"Reports","link"	=>	"/workreport"],
 																["name"	=>	"Advanced Graph","title"	=>	"Advanced Graph","link"	=>	"/graph"],
@@ -237,9 +237,13 @@
 														["name"	=>	"Dashboard Config","title"	=>	"Dashboard Config","link"	=>	"/config/dashboard"],
 												]
 										],
+								]
+						],
+						["blocks"	=>
+								[
 										["code"	=>	"","name"	=>	"Allocation","title"	=>	"","link"	=>	"/home/allocation","menus"	=>
 												[
-														["name"	=>	"Allocation Config","title"	=>	"Allocation Config","link"	=>	"/allocset"],
+														["name"	=>	"Config Allocation","title"	=>	"Config Allocation","link"	=>	"/allocset"],
 												]
 										],
 								]

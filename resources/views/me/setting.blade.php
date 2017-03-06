@@ -8,7 +8,8 @@ $dateformatSource			=	$df->getFormat('DATE_FORMAT');
 $timeformatSource			=	$df->getFormat('TIME_FORMAT');
 $decimalMarkFormatSource	=	$df->getFormat('DECIMAL_MARK');
 
-$currentSubmenu ='/me/setting';
+$currentSubmenu 			='/me/setting';
+$lang						= session()->get('locale', "en");
 
 ?>
 @extends('core.bstemplate',['subMenus' => array('pairs' => $subMenus, 'currentSubMenu' => $currentSubmenu)])
@@ -18,70 +19,70 @@ $currentSubmenu ='/me/setting';
 	<div style="margin-left:10px;">
 		<table style="float:left">
 			<tr>
-				<td colspan="2"><p class="function_title">USER INFORMATION</p>	</td>
+				<td colspan="2"><p class="function_title"><?php echo \Helper::translateText($lang,"USER INFORMATION"); ?></p>	</td>
 			</tr>
 			<tr>
-				<td><font color="gray">Fullname</font></td>
+				<td><font color="gray"><?php echo \Helper::translateText($lang,"Full Name"); ?></font></td>
 				<td><b>{{$user->FIRST_NAME}} {{$user->MIDDLE_NAME}} {{$user->LAST_NAME}}</b></td>
 			</tr>
 			<tr>
-				<td><font color="gray">Title</font></td>
+				<td><font color="gray"><?php echo \Helper::translateText($lang,"Title"); ?></font></td>
 				<td><b>{{$user->NAME}}</b></td>
 			</tr>
 			<tr>
-				<td><font color="gray">Email</font></td>
+				<td><font color="gray"><?php echo \Helper::translateText($lang,"Email"); ?></font></td>
 				<td><b>{{$user->EMAIL}}</b></td>
 			</tr>
 			<tr>
-				<td colspan="2"><p class="function_title">Change password</p></td>
+				<td colspan="2"><p class="function_title"><?php echo \Helper::translateText($lang,"Change password"); ?></p></td>
 			</tr>
 			<tr>
-				<td>Old password</td>
+				<td><?php echo \Helper::translateText($lang,"Old password"); ?></td>
 				<td><input type="password" name="txt_old_password" id="txt_old_password" style="width:200px"></td>
 			</tr>
 			<tr>
-			<td>New password</td>
+			<td><?php echo \Helper::translateText($lang,"New password"); ?></td>
 			<td><input type="password" name="txt_new_password" id="txt_new_password" style="width:200px"></td>
 			</tr>
 			<tr>
-			<td>Confim password</td>
+			<td><?php echo \Helper::translateText($lang,"Confirm password"); ?></td>
 			<td><input type="password" name="txt_confirm_password" id="txt_confirm_password" style="width:200px"></td>
 			</tr>
 			<tr>
 			<td></td>
-			<td><input type="button" style="width:120px;margin-top:5px" value="Apply" onclick="submit()"></td>
+			<td><input type="button" style="width:120px;margin-top:5px" value="<?php echo \Helper::translateText($lang,"Apply"); ?>" onclick="submit()"></td>
 			</tr>
 			<tr>
-				<td colspan="2"><p class="function_title">Change Date/Time Format</p></td>
+				<td colspan="2"><p class="function_title"><?php echo \Helper::translateText($lang,"Change Date/Time Format"); ?></p></td>
 			</tr>			
 			<tr>
-				<td>Date format</td>
+				<td><?php echo \Helper::translateText($lang,"Date format"); ?></td>
 				<td><a href="#" id="dateformat">{{$configuration["sample"]["DATE_FORMAT"]}}</a></td>
 			</tr>
 			<tr>
-				<td width="120">Time format</td>
+				<td width="120"><?php echo \Helper::translateText($lang,"Time format"); ?></td>
 				<td><a href="#" id="timeformat">{{$configuration["sample"]["TIME_FORMAT"]}}</a></td>
 			</tr>
 			<tr>
 				<td></td>
-				<td><input type="button" style="width:120px;margin-top:5px" value="Apply" onclick="submitDateTimeFormat()"></td>
+				<td><input type="button" style="width:120px;margin-top:5px" value="<?php echo \Helper::translateText($lang,"Apply"); ?>" onclick="submitDateTimeFormat()"></td>
 			</tr>
 			
 			<tr>
-				<td colspan="2"><p class="function_title">Change Decimal Mark</p></td>
+				<td colspan="2"><p class="function_title"><?php echo \Helper::translateText($lang,"Change Decimal Mark"); ?></p></td>
 			</tr>
 			
 			<tr>
-				<td >Decimal mark</td>
+				<td ><?php echo \Helper::translateText($lang,"Decimal mark"); ?></td>
 				<td><a href="#" id="decimalMark">{{$configuration["sample"]["DECIMAL_MARK"]}}</a></td>
 			</tr>
 			<tr>
 				<td></td>
-				<td><input type="button" style="width:120px;margin-top:5px" value="Apply" onclick="submitDecimalMarkConfiguration()"></td>
+				<td><input type="button" style="width:120px;margin-top:5px" value="<?php echo \Helper::translateText($lang,"Apply"); ?>" onclick="submitDecimalMarkConfiguration()"></td>
 			</tr>
 		</table>
 		<div style="float:left">
-			<p class="function_title">Change language</p>
+			<p class="function_title"><?php echo \Helper::translateText($lang,"Change Language"); ?></p>
 			<div class="dropdown">
 				<a data-toggle="dropdown" class="dropdown-toggle" href="#">
 					<img width="32" height="32" alt="{{ session('locale') }}"  src="{!! asset('img/' . session('locale') . '-flag.png') !!}" />

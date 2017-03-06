@@ -342,7 +342,11 @@ foreach($xmenu as $index => $smenu ){
 <div class="hex_container" style="display:none" id="boxFunctions">
 	<div class="hex hex-1 hex-gap" id="func1" code="production">		
 		<div class="inner">
-				<h4>PRODUCTION<br>MANAGEMENT </h4>
+				<h4>
+				<?php
+				echo \Helper::translateText($lang,"PRODUCTION<br>MANAGEMENT");
+				?>
+				</h4>
 		</div>		
 		<a id="pm" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -351,7 +355,11 @@ foreach($xmenu as $index => $smenu ){
 	
 	<div class="hex hex-2" id="func2" code="operation">		
 		<div class="inner">
-				<h4>FIELD<br>OPERATIONS</h4>
+				<h4>
+				<?php
+				echo \Helper::translateText($lang,"FIELD<br>OPERATIONS");
+				?>
+				</h4>
 		</div>		
 		<a id="fo" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -361,11 +369,11 @@ foreach($xmenu as $index => $smenu ){
 
 	<div class="hex hex-3" id="func3" code="visual">		
 		<div class="inner">
-				<h4>DATA<br>VISUALIZATION</h4>
-<!--				
-				<hr>
-				<p>We Open Everyday</p>
--->				
+				<h4>
+				<?php
+				echo \Helper::translateText($lang,"DATA<br>VISUALIZATION");
+				?>
+				</h4>
 		</div>		
 		<a id="dv" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -374,7 +382,11 @@ foreach($xmenu as $index => $smenu ){
 	
 	<div class="hex hex-2" id="func4" code="allocation">		
 		<div class="inner">
-		<h4>ALLOCATION</h4>
+		<h4>
+				<?php
+				echo \Helper::translateText($lang,"ALLOCATION");
+				?>
+		</h4>		
 		</div>		
 		<a id="allocation" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -383,7 +395,11 @@ foreach($xmenu as $index => $smenu ){
 	
 	<div class="hex hex-3" id="func5" code="forecast">		
 		<div class="inner">
-		<h4>FORECAST & PLANNING </h4>
+		<h4>
+				<?php
+				echo \Helper::translateText($lang,"FORECAST & PLANNING");
+				?>
+		</h4>
 		</div>		
 		<a id="fp" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -394,7 +410,11 @@ if(true){
 ?>
 	<div class="hex hex-1" id="func6" code="delivery">		
 		<div class="inner">
-		<h4>PRODUCT<br>DELIVERY</h4>
+		<h4>
+				<?php
+				echo \Helper::translateText($lang,"PRODUCT<br>DELIVERY");
+				?>
+		</h4>
 		</div>		
 		<a id="pd" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -402,7 +422,11 @@ if(true){
 	</div>
 	<div class="hex hex-2" id="func7" code="greenhouse">		
 		<div class="inner">
-		<h4>GREENHOUSE<br>GAS</h4>
+		<h4>
+				<?php
+				echo \Helper::translateText($lang,"GREENHOUSE<br>GAS");
+				?>
+		</h4>
 		</div>		
 		<a id="gg"href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -415,7 +439,11 @@ else
 ?>
 	<div class="hex hex-1" id="func6" code="delivery">		
 		<div class="inner">
-		<h4>PRODUCT<br>DELIVERY</a></h4>
+		<h4>
+				<?php
+				echo \Helper::translateText($lang,"PRODUCT<br>DELIVERY");
+				?>
+		</h4>
 		</div>		
 		<a href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -423,7 +451,11 @@ else
 	</div>	
 	<div class="hex hex-2" id="func7" code="greenhouse">		
 		<div class="inner">
-		<h4>GREENHOUSE<br>GAS</h4>
+		<h4>
+				<?php
+				echo \Helper::translateText($lang,"GREENHOUSE<br>GAS");
+				?>
+		</h4>
 		</div>		
 		<a href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -435,7 +467,11 @@ else
 	
 	<div class="hex hex-1 hex-gap" id="func8" code="admin">		
 		<div class="inner">
-		<h4>ADMINISTRATOR</h4>
+		<h4>
+				<?php
+				echo \Helper::translateText($lang,"ADMINISTRATOR");
+				?>
+		</h4>
 		</div>		
 		<a id="administrator" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -444,7 +480,11 @@ else
 	
 	<div class="hex hex-2" code="config">		
 		<div class="inner">
-		<h4>SYSTEM<br>CONFIGURATION</h4>
+		<h4>
+				<?php
+				echo \Helper::translateText($lang,"SYSTEM<br>CONFIGURATION");
+				?>
+		</h4>
 		</div>		
 		<a id="sc" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
@@ -453,7 +493,9 @@ else
 	
 	<div class="hex hex-3" code="interface">		
 		<div class="inner">
-				<h4>INTERFACES</h4>
+			<h4>
+				<?php echo \Helper::translateText($lang,"INTERFACES"); ?>
+			</h4>
 		</div>		
 		<a id="interfaces" href="#" onclick="func(this)"></a>
 		<div class="corner-1"></div>
