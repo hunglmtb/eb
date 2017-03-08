@@ -21,7 +21,7 @@ CARGO ENTRY
 				return 'ID';
 				},
 			};
-	addingOptions.keepColumns = ['STORAGE_ID','REQUEST_UOM','PRIORITY','QUANTITY_TYPE','LIFTING_ACCT','CONTRACT_ID'];
+	addingOptions.keepColumns = ['STORAGE_ID','PRIORITY','REQUEST_DATE',/* 'REQUEST_UOM','QUANTITY_TYPE','LIFTING_ACCT','CONTRACT_ID' */];
 
 	var renderFirsColumn = actions.renderFirsColumn;
 	actions.renderFirsColumn  = function ( data, type, rowData ) {
