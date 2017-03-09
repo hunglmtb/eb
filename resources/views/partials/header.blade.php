@@ -285,6 +285,16 @@
 		}
 		$xmenu[$index]	= $menu;
 	}
+	
+	/* $h3 = array_merge($h1,$new);
+	echo "<br><br>----------------------------------------";
+	echo "<br><br>----------h1------------------------------".count($h1);
+	echo "<br><br>----------new------------------------------".count($new);
+	ksort($h3);
+	dd($h3); 
+	echo "<br><br>----------------------------------------";
+	*/
+	
 ?>
 <link href="/common/css/header_menu.css" rel="stylesheet"/>
 

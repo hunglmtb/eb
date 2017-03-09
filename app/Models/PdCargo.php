@@ -5,7 +5,6 @@ use App\Models\EbBussinessModel;
  class PdCargo extends EbBussinessModel 
 { 
 	protected $table = 'PD_CARGO';
-	protected $primaryKey = 'ID';
 	protected $dates = ['REQUEST_DATE'];
 	protected $fillable  = ['CODE', 
 							'NAME', 
