@@ -56,8 +56,8 @@ class CargoNominationController extends CargoAdminController {
     	$data = null;
     	switch ($sourceColumn) {
     		case 'TRANSIT_TYPE':
-		    	$targetModel = $extraDataSetColumn['model'];
-		    	$targetEloquent = "App\Models\\$targetModel";
+// 		    	$targetModel = $extraDataSetColumn['model'];
+		    	$targetEloquent = "App\Models\PdTransitCarrier";
 		    	$data = $targetEloquent::where('TRANSIT_TYPE','=',$sourceColumnValue)
 		    							->select("ID as value",
 									    		"NAME as text",
