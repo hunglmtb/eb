@@ -36,6 +36,7 @@ CARGO PLANNING
 </style>
 <script>
 $(document).ready(function(){
+	$("#date_begin, #date_end").off('change');
 	$('.addButton').trigger("click");
 	$("#diagramTableAction").hide();
 	//loadOpenningBalanceConfig();
@@ -150,6 +151,8 @@ $(document).ready(function(){
 			formData += (formData==""?"":"&")+"dateFrom="+dateFrom+"&dateTo="+dateTo+"&cboFacility="+$("#Facility").val()+"&cboStorage="+storage_id+"&dateformat="+jsFormat;
 			balanceData = {};
 			if(currentRowData!=null){
+				currentRowData.TO_DATE = dateTo;
+				currentRowData.FROM_DATE = dateFrom;
 				$('#genChartBtn').trigger("click");
 			}
 			else
