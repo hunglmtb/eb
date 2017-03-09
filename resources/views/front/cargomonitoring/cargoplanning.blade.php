@@ -4,7 +4,7 @@
 	$isAction = false;
 ?>
 
-@extends('core.pd')
+@extends('datavisualization.storagedisplay')
 @section('funtionName')
 CARGO PLANNING
 @stop
@@ -35,6 +35,14 @@ CARGO PLANNING
 #confirm_cargo td{padding-right:30px}
 </style>
 <script>
+$(document).ready(function(){
+	$('.addButton').trigger("click");
+	$("#diagramTableAction").hide();
+	//loadOpenningBalanceConfig();
+});
+
+	var last_storage_id = 0;
+	var formData="", balanceData={};
 	function genCargoEntry(obj){
 		var values = [];
 		if(obj == undefined){
@@ -126,43 +134,102 @@ CARGO PLANNING
             month1 = $("#date_end").datepicker('getDate').getMonth() + 1;             
             year1 = $("#date_end").datepicker('getDate').getFullYear();
             var dateTo = year1 + "-" + month1 + "-" + day1;
-		if($("#txt_balance").val()===""){
+			var storage_id = $("#Storage").val();
+		if($("#txt_balance").val()==="" && storage_id==last_storage_id){
 			$("#txt_balance").focus();
 			alert("Please enter balance");
 			return;
 		}
+		last_storage_id = storage_id;
 		$("#buttonLoadData").hide();
 		//if($('#dateFrom').val()!="" && $('#dateTo').val()!="" && $("#cboFacility").val()>0)
 		{
-			var formData = $("#form_fdc").serialize();
+			formData = $("#form_fdc").serialize();
 			if(!formData)
 				formData = "";
-			formData += (formData==""?"":"&")+"dateFrom="+dateFrom+"&dateTo="+dateTo+"&cboFacility="+$("#Facility").val()+"&cboStorage="+$("#Storage").val()+"&dateformat="+jsFormat;
-			/*
-			formData['dateFrom'] = $("#date_begin").val();
-			formData['dateTo'] = $("#date_end").val();
-			formData['cboFacility'] = $("#Facility").val();
-			formData['cboStorage'] = $("#Storage").val();
-			formData['dateformat'] = '--';
-			*/
-			console.log(formData);
-			$.post("/pd/cargoplanning_load.php",
-				formData,
-				function(data, status){
-						$("#table_quality").html(data);
-						$("#buttonLoadData").show();
-						if($("#txt_balance").val()==="")
-							$("#txt_balance").focus();
-				});
-			/*
-			postRequest("cargoplanning_load.php", formData,
-				   function(data, status){
-						$("#table_quality").html(data);
-						$("#buttonLoadData").show();
-				   });
-			*/
+			formData += (formData==""?"":"&")+"dateFrom="+dateFrom+"&dateTo="+dateTo+"&cboFacility="+$("#Facility").val()+"&cboStorage="+storage_id+"&dateformat="+jsFormat;
+			balanceData = {};
+			if(currentRowData!=null){
+				$('#genChartBtn').trigger("click");
+			}
+			else
+				loadData();
 		}
+	}
+	function loadData(){
+		$.post("/pd/cargoplanning_load.php?"+formData,
+			balanceData,
+			function(data, status){
+					$("#table_quality").html(data);
+					$("#buttonLoadData").show();
+					if($("#txt_balance").val()==="")
+						$("#txt_balance").focus();
+			});
+	}
+	var PlotViewConfigID=-1;
+	function loadOpenningBalanceConfig(){
+		$.get("/pd/cargoplanning_load_ob_config.php",
+			null,
+			function(data, status){
+				PlotViewConfigID = Number(data);
+			});
+	}
+	function saveOpenningBalanceConfig(config){
+		$.get("/pd/cargoplanning_save_ob_config.php",
+			config,
+			function(data, status){
+				alert("Save configuration successfully!");
+			});
 	}
 </script>
 @stop
+@section('endDdaptData')
+@parent
+<script>
+var currentRowData;
+ editBox.updateMoreObject = function (rowData){
+  rowData.viewName = $("#viewName").val();
+  //rowData.FROM_DATE = "";
+  //rowData.TO_DATE = "";
+  //saveOpenningBalanceConfig(rowData.OBJECTS);
+  console.log(rowData);
+  currentRowData = rowData;
+  //alert("keek");
+ }
+ 
+editBox.genDiagram = function (diagram,view){
+  if(typeof diagram == "undefined") return;
+  console.log(diagram.series[0].data);
+  balanceData={'balanceData':diagram.series[0].data};
+  loadData();
+/*
+	var series   = diagram.series;
+	console.log(series);
+	$.each(series, function( index, value ) {
+	$.each(value.data, function( index, data ) {
+    day = getJsDate(data.D);
+    pvalue = parseFloat(data.V);
+    pvalue = isNaN(pvalue)?null:pvalue;
+    value.data[index] = [day,pvalue];
+          });
+}); 
+*/
+}
 
+oEditObjectMoreHandle = editBox.editObjectMoreHandle;
+editBox.editObjectMoreHandle = function (table,rowData,td,tab) {
+	rowData.PlotViewConfig = PlotViewConfigID;
+ //rowData.OBJECTS = JSON.parse(viewConfig);
+ oEditObjectMoreHandle(table,rowData,td,tab);
+};
+
+ function showConfig(){
+/* 	 if(!(PlotViewConfigID>0))
+	 {
+		 alert("Openning Balance configuration not ready");
+		 return;
+	 } */
+	 $('a[id^="item_edit_"]').trigger("click");	 
+ }
+</script>
+@stop
