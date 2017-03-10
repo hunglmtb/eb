@@ -6,7 +6,6 @@ use App\Models\FeatureEuModel;
 class EnergyUnitDataFdcValue extends FeatureEuModel
 {
 	protected $table = 'ENERGY_UNIT_DATA_FDC_VALUE';
-	protected $primaryKey = 'ID';
 	
 	protected $fillable  = ['OCCUR_DATE', 
 							'EU_ID', 
