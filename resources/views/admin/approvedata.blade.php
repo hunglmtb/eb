@@ -141,6 +141,7 @@ var _approve = {
 
 			sendAjax('/am/approveData', param, function(data){
 				_approve.listData(data.result)
+				alert("Complete");
 			});
 		},
 
@@ -170,6 +171,7 @@ var _approve = {
 
 			sendAjax('/am/approveData', param, function(data){
 				_approve.listData(data.result)
+				alert("Complete");
 			});
 		}
 }

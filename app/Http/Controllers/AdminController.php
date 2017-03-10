@@ -933,35 +933,21 @@ class AdminController extends Controller {
 		$mtableRecord	= IntMapTable::where("TABLE_NAME",$table)->select("MASTER_TABLE")->first();
 		if($mtableRecord){
 			$mtable			= $mtableRecord->MASTER_TABLE;
-// 			\DB::enableQueryLog();
 			$mdl			= \Helper::getModelName($table);
 			$dbtable		= $mdl::getTableName();
-			/* $mdl::join($mtable,function ($query) use ($mtable,$table,$facility_id,$mdl,$dbtable) {
- 				$query->on("$table.".$mtable."_ID",'=',"$mtable.ID");
-// 				$query->on("$table".$mdl::$idField,'=',"$mtable.ID");
-				$query->where("$mtable.FACILITY_ID",'=',$facility_id) ;
-			})
-			->where("$table.RECORD_STATUS",$value)
-			->whereDate("$table.OCCUR_DATE" ,"<", $dateFrom)
-			->orWhereDate("$table.OCCUR_DATE" ,">", $dateTo)
-			->update([	"$table.RECORD_STATUS" 	=> null,
-						"$table.STATUS_BY" 		=> $current_username,
-						"$table.STATUS_DATE" 	=> Carbon::now(),
-			]); */
-			\DB::enableQueryLog();
+
+			//\DB::enableQueryLog();
 			$mdl::join($mtable,function ($query) use ($mtable,$dbtable,$facility_id,$mdl) {
-// 				$query->on("$mtable.ID",'=',"$dbtable.".$mtable."_ID");
 				$query->on("$mtable.ID",'=',"$dbtable.".$mdl::$idField);
 				$query->on("$mtable.FACILITY_ID",'=',\DB::raw("$facility_id")) ;
-// 				$query->where("$mtable.FACILITY_ID",'=',$facility_id) ;
 			})
-			->whereDate("$table.OCCUR_DATE" ,">=", $dateFrom)
-			->whereDate("$table.OCCUR_DATE" ,"<=", $dateTo)
+			->whereDate("$table.{$mdl::$dateField}" ,">=", $dateFrom)
+			->whereDate("$table.{$mdl::$dateField}" ,"<=", $dateTo)
 			->update([	"$table.RECORD_STATUS" 	=> $value,
 						"$table.STATUS_BY" 		=> $current_username,
 						"$table.STATUS_DATE" 	=> Carbon::now(),
 			]);
- 			\Log::info(\DB::getQueryLog());
+ 			//\Log::info(\DB::getQueryLog());
 		}
 	}
 	

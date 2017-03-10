@@ -7,6 +7,10 @@ use App\Models\EbBussinessModel;
 	protected $table 	= 'EQUIPMENT_DATA_VALUE';
 	protected $primaryKey 	= 'ID';
 	protected $dates 		= ['OCCUR_DATE'];
+
+	public  static  $idField = 'EQUIPMENT_ID';
+	public  static  $typeName = 'EQUIPMENT';
+	public  static  $dateField = 'OCCUR_DATE';
 	
 	protected $fillable  	= ['EQUIPMENT_ID', 
 								'OCCUR_DATE', 

@@ -133,6 +133,7 @@ var _lock = {
 
 			sendAjax('/am/lockData', param, function(data){
 				_lock.listData(data.result);
+				alert("Complete");
 			});
 		},
 
@@ -161,6 +162,7 @@ var _lock = {
 
 			sendAjax('/am/lockData', param, function(data){
 				_lock.listData(data.result);
+				alert("Complete");
 			});
 		}
 }

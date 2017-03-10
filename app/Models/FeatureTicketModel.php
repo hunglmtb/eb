@@ -5,7 +5,8 @@ use App\Models\EbBussinessModel;
 
 class FeatureTicketModel extends EbBussinessModel
 {
-	public  static  $idField = 'ID';
+	public  static  $idField = 'TANK_ID';
+	public  static  $dateField = 'OCCUR_DATE';
 	
 	public static function getKeyColumns(&$newData,$occur_date,$postData){
 		$attributes = parent:: getKeyColumns($newData,$occur_date,$postData);

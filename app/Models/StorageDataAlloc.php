@@ -2,7 +2,7 @@
 namespace App\Models; 
 use App\Models\DynamicModel; 
 
- class StorageDataAlloc extends DynamicModel 
+ class StorageDataAlloc extends FeatureStorageModel 
 { 
 	protected $table = 'STORAGE_DATA_ALLOC'; 
 	protected $dates = ['LAST_DATA_READ'];
