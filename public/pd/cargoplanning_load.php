@@ -1,4 +1,5 @@
 <?php
+include_once('../common/db.php');
 function toDateString($d)
 {
 	if(!$d) return $d;
@@ -10,18 +11,6 @@ function toDateString($d)
 		return "$v2[2]-$v2[0]-$v2[1]".($v1[1]?" $v1[1]":"");
 }
 
-error_reporting(E_ERROR);
-
-$db_server_name="localhost";
-$db_user="nhneu_tung";
-$db_pass="tung#3";
-$db_schema="energy_builder";
-
-$db_survey_conn = @mysql_connect($db_server_name, $db_user, $db_pass) or die ("Could not connect");
-mysql_select_db($db_schema,$db_survey_conn);
-
-//include_once('../lib/utils.php');
-
 $DateFrom = ($_REQUEST['dateFrom']);
 $DateTo = ($_REQUEST['dateTo']);
 $facility_id = $_REQUEST['cboFacility'];
@@ -29,6 +18,18 @@ $storage_id = $_REQUEST['cboStorage'];
 $dateformat = $_REQUEST['dateformat'];
 $balance = isset($_REQUEST['txt_balance'])?$_REQUEST['txt_balance']:"";
 $cargoSize = isset($_REQUEST['cargoSize'])?$_REQUEST['cargoSize']:0;
+
+$balanceData = $_POST['balanceData'];
+$bal_data = null;
+if(count($balanceData)>0){
+	//var_dump($balanceData);
+	$bal_data = [];
+	foreach($balanceData as $bData){
+		$bal_data[$bData["D"]] = (float)$bData["V"];
+	}
+	//var_dump($bal_data);
+	//exit;
+}
 
 //echo "aaa: ".$DateFrom; exit;
 
@@ -82,6 +83,7 @@ if(!$lifting_acc_ids){
 
 $sSQL="select la.id LA_ID, ps.ID SHIPPER_ID, ps.name SHIPPER_NAME, ps.CARGO_SIZE
 from pd_lifting_account la, PD_SHIPPER ps, PD_CARGO_SHIPPER cs where la.storage_id = $storage_id and cs.LIFTING_ACCOUNT_ID = la.id and cs.SHIPPER_ID=ps.ID";
+echo $sSQL;
 $result=mysql_query($sSQL) or die("fail: ".$sSQL."-> error:".mysql_error());
 $shipper_id = [];
 $shipper_r1 = [];
@@ -130,7 +132,7 @@ foreach($ent_r1 as $id => $name){
 }
 echo '</tr><tr>
 	<td rowspan="2" style="background:#dddddd"><b>Date</b></td>
-	<td rowspan="2" style="background:#dddddd"><b>Openning balance</b></td>
+	<td rowspan="2" style="background:#dddddd"><b><span style="color:#378de5;cursor:pointer" onclick="showConfig()">Openning balance</span></b></td>
 	<td rowspan="2" style="background:#dddddd"><b>Plan cargo</b></td>
 ';
 foreach($ent_r2 as $id => $name){
@@ -175,21 +177,36 @@ while (strtotime($d1) <= strtotime($d2)) {
 	//$row["OCCUR_DATE"]=$d1;
 	$d1 = date ("Y-m-d", strtotime("+1 day", strtotime($d1)));
 */
-$sSQL="select a.OCCUR_DATE SQL_OCCUR_DATE, DATE_FORMAT(a.OCCUR_DATE,'$mysql_dateformat') OCCUR_DATE, max(a.AVAIL_SHIPPING_VOL) OPENING_BALANCE from storage_data_value a
-where a.OCCUR_DATE between '$date_from' and '$date_to' and a.storage_id=$storage_id group by a.OCCUR_DATE order by a.OCCUR_DATE 
-";	
-$result=mysql_query($sSQL) or die("fail: ".$sSQL."-> error:".mysql_error());
-$rowx=mysql_fetch_assoc($result);
+if($bal_data == null){
+	$sSQL="select a.OCCUR_DATE SQL_OCCUR_DATE, DATE_FORMAT(a.OCCUR_DATE,'$mysql_dateformat') OCCUR_DATE, max(a.AVAIL_SHIPPING_VOL) OPENING_BALANCE from storage_data_value a
+	where a.OCCUR_DATE between '$date_from' and '$date_to' and a.storage_id=$storage_id group by a.OCCUR_DATE order by a.OCCUR_DATE 
+	";	
+	$result=mysql_query($sSQL) or die("fail: ".$sSQL."-> error:".mysql_error());
+	while($rowx=mysql_fetch_assoc($result)){
+		if($bal_data == null)
+			$bal_data = [];
+		$bal_data[$rowx["SQL_OCCUR_DATE"]] = $rowx["OPENING_BALANCE"];
+	}
+}
 $log="";
 while(strtotime($d1) <= strtotime($d2)){
+	$row = [];
+	$row["OCCUR_DATE"] = date ($dateformat, strtotime($d1));
+/*
 	if($rowx["SQL_OCCUR_DATE"] > $d1 || !$rowx){
-		$row["OCCUR_DATE"] = date ($dateformat, strtotime($d1));
 		$row["OPENING_BALANCE"] = "";
 	}
 	else if($rowx["SQL_OCCUR_DATE"] == $d1){
 		$row["OCCUR_DATE"] = $rowx["OCCUR_DATE"];
 		$row["OPENING_BALANCE"] = $rowx["OPENING_BALANCE"];
 		$rowx=mysql_fetch_assoc($result);
+	}
+*/
+	if(isset($bal_data[$d1])){
+		$row["OPENING_BALANCE"] = $bal_data[$d1];
+	}
+	else{
+		$row["OPENING_BALANCE"] = "";
 	}
 	
 	$v = $row["OPENING_BALANCE"];
@@ -207,11 +224,11 @@ while(strtotime($d1) <= strtotime($d2)){
 	foreach($interest_percents as $id => $val){
 		$add_val = 0;
 		if(count($la_data)==0){
-			if(!isset($vals["ENT_LA_$id"]))
+/* 			if(!isset($vals["ENT_LA_$id"]))
 				$vals["ENT_LA_$id"] = $val;
 			$vals["ENT_LA_$id"] += 200;
 			$v = $vals["ENT_LA_$id"];
-			$add_val = 200;
+			$add_val = 200; */
 		}
 		else{
 			$vals["ENT_LA_$id"] += $la_data["$row[OCCUR_DATE]"]["$id"];
