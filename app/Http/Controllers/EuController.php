@@ -62,7 +62,18 @@ class EuController extends CodeController {
     	if ($record_freq>0) $euWheres["$eu.DATA_FREQ"]= $record_freq;
      	if ($eu_group_id>0) $euWheres["$eu.EU_GROUP_ID"]= $eu_group_id;
 //     	else $euWheres["$eu.EU_GROUP_ID"]= null;
-    	
+    	$columns	= $this->extractRespondColumns($dcTable,$properties);
+    	if (!$columns) $columns = [];
+    	array_push($columns,"$eu.name as $dcTable",
+							"$euPhaseConfig.ID as DT_RowId",
+	 						"$codeFlowPhase.name as PHASE_NAME",
+	 						"$codeEventType.name as TYPE_NAME",
+							"$euPhaseConfig.EVENT_TYPE as ".config("constants.eventType"),
+							"$eu.ID as ".config("constants.euId"),
+	   						"$euPhaseConfig.FLOW_PHASE as EU_FLOW_PHASE",
+	  						"$codeStatus.NAME as STATUS_NAME",
+							"$codeFlowPhase.CODE as PHASE_CODE",
+							"$codeEventType.CODE as TYPE_CODE");
 //      	\DB::enableQueryLog();
     	$dataSet = EnergyUnit::join($codeStatus,'STATUS', '=', "$codeStatus.ID")
 				    	->join($euPhaseConfig,function ($query) use ($eu,$euPhaseConfig,$phase_type,$event_type) {
@@ -93,22 +104,11 @@ class EuController extends CodeController {
 								    				else if (($forecastType > 0 &&  ($dcTable == EnergyUnitDataForecast::getTableName() )))
 								    					$join->where("$dcTable.FORECAST_TYPE",'=',$forecastType);
 				    	})
-				    	->select(
-				    			"$dcTable.*",
-				    			"$eu.name as $dcTable",
-				    			"$euPhaseConfig.ID as DT_RowId",
- 				    			"$codeFlowPhase.name as PHASE_NAME",
- 				    			"$codeEventType.name as TYPE_NAME",
-				    			"$euPhaseConfig.EVENT_TYPE as ".config("constants.eventType"),
-				    			"$eu.ID as ".config("constants.euId"),
-   				    			"$euPhaseConfig.FLOW_PHASE as EU_FLOW_PHASE",
-  				    			"$codeStatus.NAME as STATUS_NAME",
-				    			"$codeFlowPhase.CODE as PHASE_CODE",
-				    			"$codeEventType.CODE as TYPE_CODE"
-				    			) 
+				    	->select($columns) 
  		    			->orderBy($dcTable)
   		    			->orderBy('EU_FLOW_PHASE')
   		    			->get();
+				    	
 //   		\Log::info(\DB::getQueryLog());
  		    			
     	return ['dataSet'=>$dataSet,

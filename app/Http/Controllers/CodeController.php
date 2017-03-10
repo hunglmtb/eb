@@ -181,6 +181,17 @@ class CodeController extends EBController {
     	return $results;
     }
     
+    public function extractRespondColumns($dcTable,$oProperties){
+    	$columns = [];
+    	$properties	= $oProperties['properties'];
+    	if ($properties &&count($properties)>0) {
+    		foreach($properties as $property){
+    			if ($property instanceof CfgFieldProps) $columns[] = "$dcTable.".$property->data;
+    		};
+    	}
+    	return $columns;
+    }
+    
     public function getObjectIds($dataSet,$postData){
     	/* $dswk 	= $dataSet->keyBy('DT_RowId');
     	$objectIds = $dswk->keys();

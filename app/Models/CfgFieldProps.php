@@ -39,7 +39,8 @@ class CfgFieldProps extends DynamicModel
     	->orderBy('FIELD_ORDER')
     	->select('COLUMN_NAME as data',
     			'COLUMN_NAME as name',
-     			'FDC_WIDTH as width',
+    			'COLUMN_NAME',
+    			'FDC_WIDTH as width',
     			'LABEL as title',
     			"DATA_METHOD",
     			"INPUT_ENABLE",
