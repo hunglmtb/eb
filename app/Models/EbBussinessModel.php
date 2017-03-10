@@ -219,6 +219,11 @@ class EbBussinessModel extends DynamicModel {
 		$keyColumns			= array_keys($attributes);
 		$action 			= $this->wasRecentlyCreated?"New record":"Update value";
 		$occurDate 			= isset(static::$dateField)?$this->{static::$dateField}:(isset($this->OCCUR_DATE)?$this->OCCUR_DATE:null);
+
+		if ($this->wasRecentlyCreated && \Schema::hasColumn($this->getTable(), "RECORD_STATUS")) {
+			$this->RECORD_STATUS = "P";
+			$this->save();
+		}
 		
 		foreach ( $columns as $column => $columnValue ) {
 			$newValue 		= $this->$column;
