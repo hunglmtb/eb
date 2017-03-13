@@ -33,7 +33,7 @@ $listControls = [
 		),
 		
 		'loadData' => array(
-				'label' => 'load Data',
+				'label' => 'Load Data',
 				'ID' => 'loadData',
 				'TYPE' => 'BUTTON',
 				'onclick' => '_validatedata.loadData()'
@@ -54,7 +54,7 @@ $listControls = [
 		) ,
 		
 		'validateData' => array(
-				'label' => 'validate All',
+				'label' => 'Validate All',
 				'ID' => 'validate All',
 				'TYPE' => 'BUTTON',
 				'onclick' => '_validatedata.validateAll()'
@@ -141,6 +141,7 @@ var _validatedata = {
 
 			sendAjax('/am/validateData', param, function(data){
 				_validatedata.listData(data.result);
+				alert("Complete");
 			});
 		},
 
@@ -170,6 +171,7 @@ var _validatedata = {
 
 			sendAjax('/am/validateData', param, function(data){
 				_validatedata.listData(data.result);
+				alert("Complete");
 			});
 		}
 }

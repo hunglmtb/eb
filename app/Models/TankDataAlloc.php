@@ -2,8 +2,9 @@
 namespace App\Models; 
 use App\Models\DynamicModel; 
 use App\Trail\LinkingTankModel;
+use App\Models\FeatureTankModel; 
 
- class TankDataAlloc extends DynamicModel 
+class TankDataAlloc extends FeatureTankModel 
 { 
 	use LinkingTankModel;
 	protected $table = 'TANK_DATA_ALLOC';

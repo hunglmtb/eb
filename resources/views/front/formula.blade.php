@@ -149,9 +149,11 @@ var _formula = {
 			});
 		},
 		loadObjectsName : function(data){
+			console.log(data);
+			console.log(_formula.objName);
 			var cbo = '';
 			$('#cboObjName').html(cbo);
-			cbo += ' <option value="" selected>(None)</option>';
+			cbo += ' <option>(None)</option>';
 			for(var v = 0; v < data.length; v++){			
 				cbo += ' 		<option value="' + data[v].ID + '" '+ _formula.setSelected(data[v].ID) +'>' + data[v].NAME + '</option>';
 			}
@@ -458,6 +460,7 @@ var _formula = {
 				$("#trBeginDate").show();
 				$("#trEndDate").show();
 			}
+
 			if(formula_id>0)
 			{	
 				_formula.curObjectID = $("#"+pre+"ObjID_"+formula_id).html();
@@ -488,11 +491,12 @@ var _formula = {
 				
 				$("#cboUserPU").val(_formula.curPUID);
 				$("#cboUserPU").change();
-
+/*
 				setTimeout(function () {
 					$("#cboUserArea").val(_formula.curAreaID);
 					$("#cboUserArea").change();
 				}, 3000);	
+				*/
 			}
 			else
 			{
