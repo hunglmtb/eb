@@ -173,7 +173,7 @@
 		/* actions.editedData = {};
 		actions.deleteData = {}; */
 // 		alert(JSON.stringify(data.updatedData));
-		msg = 'done\n';
+		msg = 'Complete\n';
 		if(data.hasOwnProperty('lockeds')){
 			msg+=JSON.stringify(data.lockeds);
 // 			alert();
