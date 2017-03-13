@@ -5,7 +5,6 @@ use App\Models\FeatureTicketModel;
  class RunTicketFdcValue extends FeatureTicketModel 
 { 
 	protected $table = 'RUN_TICKET_FDC_VALUE';
-	protected $primaryKey = 'ID';
 	protected $dates = ['OCCUR_DATE','REPORT_DATE'];
 	protected $fillable  = ['NAME', 
 							'TICKET_NO', 

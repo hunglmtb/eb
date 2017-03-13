@@ -95,11 +95,8 @@ use Carbon\Carbon;
 			$fdcValues = static::getFdcValues ( $attributes );
 			if ($fdcValues) {
 				$newValues = $fdcValues->toArray();
-				foreach ( $newValues as $column => $vl ) {
-					if (!$vl) {
-						unset($newValues[$column]);
-					}
-				}
+				foreach ( $newValues 	as $column => $vl ) if (!$vl) unset($newValues[$column]);
+				foreach ( $values 		as $column => $vl ) if (!$vl) unset($values[$column]);
 				$values = array_merge($newValues, $values);
 				
 			}
