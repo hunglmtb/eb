@@ -59,7 +59,12 @@ class DynamicModel extends Model {
 	public static function getDateFields(){
 		return with(new static)->getDates();
 	}
+	
 	public static function getAll(){
+		/* $instance = new static;  
+		if (method_exists($instance, "loadActive")) 
+			$entries = $instance->loadActive();
+		else */
 		$entries = static ::all();
 		return $entries;
 	}
@@ -68,5 +73,9 @@ class DynamicModel extends Model {
 		$aOption 		= ["modelName"	=> $modelName];
 		if (static::$isAddAllAsDefault) $aOption['default']	= ['ID'=>0,'NAME'=>'All'];
 		return $aOption;
+	}
+	
+	public static function loadActive(){
+		return static :: where("ACTIVE","=",1)->orderBy("ORDER")->get();
 	}
 }

@@ -33,7 +33,7 @@ class FOController extends EBController {
 				'dateFilterGroup'=> array(['id'=>'date_begin','name'=>'Date']),
 				'frequenceFilterGroup'		=> [ array("name"		=>"CodeInjectPoint",
 														"id"		=> "CodeInjectPoint",
-														'getMethod'=> "all",
+														'getMethod'=> "loadActive",
 														'filterData'=> ["CODE as ID", "NAME"],
 														"modelName"	=> "CodeInjectPoint")]
 		);

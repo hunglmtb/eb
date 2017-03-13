@@ -284,7 +284,8 @@ class Helper {
 		$codeFlowPhase	= ["name"		=>	"CodeFlowPhase",
 							"source"	=>	"ObjectName" ];
 		$filterGroups = array(	'productionFilterGroup'	=> [['name'			=>'CodeProductType',
-															'independent'	=>true,
+															'independent'	=> true,
+															"getMethod"		=> "loadActive",
 															'extra'			=> ["Facility","CodeProductType","IntObjectType","ObjectDataSource"],
 															'dependences'	=>["ObjectName",
 																				$codeFlowPhase]],
@@ -317,11 +318,14 @@ class Helper {
 																"getMethod"		=> "loadBy",
 																"source"		=>  ['frequenceFilterGroup'=>["ObjectName"]]],
 																["name"			=>	"CodeAllocType",
+																"getMethod"		=> "loadActive",
 																"filterName"	=>	"Alloc type",],
 																["name"			=>	"CodePlanType",
+																"getMethod"		=> "loadActive",
 																"filterName"	=>	"Plan type",],
 																["name"			=>	"CodeForecastType",
-																"filterName"	=>	"Forecast type",]
+																"getMethod"		=> "loadActive",
+																"filterName"	=> "Forecast type",]
 														],
 								'dateFilterGroup'		=> array(	['id'=>'date_begin','name'=>'From date'],
 																	['id'=>'date_end',	'name'=>'To date']),

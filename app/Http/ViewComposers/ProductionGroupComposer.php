@@ -224,7 +224,12 @@ class ProductionGroupComposer
 	    		$getMethod = array_key_exists('getMethod', $options)?$options['getMethod']:'getAll';
 	    		$collection = $mdl::$getMethod($sourceData);
     		}
-    		else $collection = $mdl::getAll();
+    		else if (array_key_exists('getMethod', $options)) {
+	    		$getMethod 	= $options['getMethod'];
+	    		$collection = $mdl::$getMethod($options);
+    		}
+    		else
+    			$collection = $mdl::getAll();
     	}
     	return $collection;
     }

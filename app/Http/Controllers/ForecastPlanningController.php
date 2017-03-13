@@ -6,22 +6,22 @@ use App\Models\IntImportSetting;
 class ForecastPlanningController extends EBController {
 	
 	public static $filterGroups = array(	'productionFilterGroup'	=>[
-			['name'			=>'IntObjectType',
-					'independent'	=>true,
-					'extra' 		=> 	["Facility",'ExtensionPhaseType'],
-					'getMethod'=>'getPreosObjectType'],
-			['name'			=>'ExtensionPhaseType',
-					'independent'=>true,
-					'getMethod'=>'getPreosPhaseType'],
-	],
-			'frequenceFilterGroup'	=> [["name"			=> "ObjectName",
-					"getMethod"		=> "loadBy",
-					"source"		=> ['productionFilterGroup'=>["Facility","IntObjectType","ExtensionPhaseType"]]],
-			],
-			'dateFilterGroup'		=> array(['id'=>'date_begin','name'=>'From date'],
-					['id'=>'date_end','name'=>'To date']),
-			'extra' 				=> 	["Facility",'IntObjectType','ExtensionPhaseType'],
-			'FacilityDependentMore'	=> ["ObjectName"],
+																		['name'			=>'IntObjectType',
+																				'independent'	=>true,
+																				'extra' 		=> 	["Facility",'ExtensionPhaseType'],
+																				'getMethod'=>'getPreosObjectType'],
+																		['name'			=>'ExtensionPhaseType',
+																				'independent'=>true,
+																				'getMethod'=>'getPreosPhaseType'],
+																		],
+											'frequenceFilterGroup'	=> [["name"			=> "ObjectName",
+																		"getMethod"		=> "loadBy",
+																		"source"		=> ['productionFilterGroup'=>["Facility","IntObjectType","ExtensionPhaseType"]]],
+																		],
+											'dateFilterGroup'		=> array(	['id'=>'date_begin',	'name'=>'From date'],
+																				['id'=>'date_end',		'name'=>'To date']),
+											'extra' 				=> 	["Facility",'IntObjectType','ExtensionPhaseType'],
+											'FacilityDependentMore'	=> ["ObjectName"],
 	);
 	
 	public function forecast(){

@@ -62,6 +62,7 @@ class EnergyUnit extends EbBussinessModel
 							function ($query) use($EuPhaseConfig,$eu_id) {
 								$query->where("$EuPhaseConfig.EU_ID",$eu_id);
 							})
+							->where("$code_flow_phase.ACTIVE","=",1)->orderBy("$code_flow_phase.ORDER")
 							->get(["$code_flow_phase.ID", "$code_flow_phase.NAME"] );
 		return $result;
 	}

@@ -3,6 +3,7 @@
 namespace App\Models;
 use App\Models\DynamicModel;
 use App\Trail\ObjectNameLoad;
+
 class IntObjectType extends DynamicModel
 {
 	use ObjectNameLoad;

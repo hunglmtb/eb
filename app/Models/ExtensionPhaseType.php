@@ -19,7 +19,7 @@ class ExtensionPhaseType extends CodeFlowPhase
 	
 	public static function getPreosPhaseType(){
 		$codes = ['OIL','GAS','COND','CC'];
-		$entries = static::whereIn('CODE',$codes)->get();
+		$entries = static::whereIn('CODE',$codes)->where("ACTIVE","=",1)->orderBy("ORDER")->get();
 		return $entries;
 	}
 }
