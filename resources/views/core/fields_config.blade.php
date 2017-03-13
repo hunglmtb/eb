@@ -148,6 +148,7 @@ var _fieldconfig = {
 			$('#caption').text(data[0].COLUMN_NAME);
 			$('#friendly_name').val(data[0].LABEL);
 			$('#data_method').val(data[0].DATA_METHOD);
+			$('#VALUE_FORMAT').val(data[0].VALUE_FORMAT);
 			if(data[0].IS_MANDATORY == "1"){
 				$('#is_mandatory').prop('checked', true);
 			}else{
@@ -162,7 +163,7 @@ var _fieldconfig = {
 			$('#VALUE_WARNING_MAX').val(data[0].VALUE_WARNING_MAX);
 			$('#VALUE_WARNING_MIN').val(data[0].VALUE_WARNING_MIN);
 			$('#RANGE_PERCENT').val(data[0].RANGE_PERCENT);
-			
+
 			if(data[0].USE_FDC == "1"){
 				$('#us_data').prop('checked', true);
 			}else{
@@ -296,7 +297,7 @@ var _fieldconfig = {
 				'table' 				: table,
 				'field' 				: field,
 				'data_method' 			: $("#data_method").val(),
-				'data_format' 			: $("#data_format").val(),
+				'VALUE_FORMAT' 			: $("#VALUE_FORMAT").val(),
 				'INPUT_TYPE' 			: $("#INPUT_TYPE").val(),
 				'FORMULA' 				: $("#FORMULA").val(),
 				'VALUE_MAX' 			: $("#VALUE_MAX").val(),
@@ -375,7 +376,7 @@ var _fieldconfig = {
                 </tr>
                 <tr>
                   <td class="field">Data format</td>
-                  <td><input type="text" name="data_format" id="data_format" size="50"></td>
+                  <td><input type="text" name="VALUE_FORMAT" id="VALUE_FORMAT" size="50"></td>
                 </tr>
                 <tr>
                   <td class="field">Error Max Value</td>

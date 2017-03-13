@@ -7,7 +7,6 @@ use App\Models\DynamicModel;
 class CfgFieldProps extends DynamicModel
 {
     protected $table = 'cfg_field_props';
-    protected $primaryKey = 'ID';
     
     public function LockTable(){
     	return $this->hasMany('App\Models\LockTable', 'TABLE_NAME', 'TABLE_NAME');
@@ -47,6 +46,7 @@ class CfgFieldProps extends DynamicModel
     			'INPUT_TYPE',
     			'VALUE_MAX',
     			'VALUE_MIN',
+    			'DATA_FORMAT',
     			'VALUE_WARNING_MAX',
     			'VALUE_WARNING_MIN',
     			'RANGE_PERCENT',

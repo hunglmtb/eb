@@ -177,6 +177,9 @@ class FieldsConfigController extends Controller {
 			$param ['DATA_METHOD'] = $data ['data_method'];
 			$param ['INPUT_ENABLE'] = $data ['data_method'];
 		}
+		if (isset ( $data ['VALUE_FORMAT'] )) {
+			$param ['VALUE_FORMAT'] = $data ['VALUE_FORMAT'];
+		}
 		$this->putValue($param,$data,'FORMULA');
 		$this->putValue($param,$data,'INPUT_TYPE');
 		$this->putValue($param,$data,'VALUE_FORMAT');
