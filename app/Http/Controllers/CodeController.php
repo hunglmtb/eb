@@ -707,69 +707,69 @@ class CodeController extends EBController {
 													(object)['ID' =>	0	,'NAME' => 'Offline'   ],
 												]);
 				*/
-    				$selectData['data'] = CodeStatus::all();
+    				$selectData['data'] = CodeStatus::loadActive();
     				$rs[] = $selectData;
     				break;
 	    			
     			case 'ALLOC_TYPE' :
 	    				$selectData = ['id'=>'CodeAllocType','targets'=>$i,'COLUMN_NAME'=>$columnName];
-	    				$selectData['data'] = CodeAllocType::all();
+	    				$selectData['data'] = CodeAllocType::loadActive();
 	    				$rs[] = $selectData;
 	    				break;
     			case 'TEST_METHOD' :
     					$selectData = ['id'=>'CodeTestingMethod','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    					$selectData['data'] = CodeTestingMethod::all();
+    					$selectData['data'] = CodeTestingMethod::loadActive();
     					$rs[] = $selectData;
     					break;
     			case 'TEST_USAGE' :
     					$selectData = ['id'=>'CodeTestingUsage','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    					$selectData['data'] = CodeTestingUsage::all();
+    					$selectData['data'] = CodeTestingUsage::loadActive();
     					$rs[] = $selectData;
     					break;
 	    		case 'EVENT_TYPE' :
 		    			$selectData = ['id'=>'CodeEventType','targets'=>$i,'COLUMN_NAME'=>$columnName];
-		    			$selectData['data'] = CodeEventType::all();
+		    			$selectData['data'] = CodeEventType::loadActive();
 		    			$rs[] = $selectData;
 		    			break;
     			case 'SRC_TYPE' :
 	    				$selectData = ['id'=>'CodeQltySrcType','targets'=>$i,'COLUMN_NAME'=>$columnName];
-	    				$selectData['data'] = CodeQltySrcType::all();
+	    				$selectData['data'] = CodeQltySrcType::loadActive();
 	    				$rs[] = $selectData;
 	    				break;
 		    	case 'PRODUCT_TYPE' :
 		    	case 'PHASE_TYPE' :
 		    		$selectData = ['id'=>'CodeProductType','targets'=>$i,'COLUMN_NAME'=>$columnName];
-		    		$selectData['data'] = CodeProductType::all();
+		    		$selectData['data'] = CodeProductType::loadActive();
 		    		$rs[] = $selectData;
 		    		break;
 	    		case 'DEFER_REASON' :
 	    			$selectData = ['id'=>'CodeDeferReason','targets'=>$i,'COLUMN_NAME'=>$columnName];
-	    			$selectData['data'] = CodeDeferReason::all();
+	    			$selectData['data'] = CodeDeferReason::loadActive();
 	    			$rs[] = $selectData;
 		    		break;
 	    		case 'DEFER_STATUS' :
 	    			$selectData = ['id'=>'CodeDeferStatus','targets'=>$i,'COLUMN_NAME'=>$columnName];
-	    			$selectData['data'] = CodeDeferStatus::all();
+	    			$selectData['data'] = CodeDeferStatus::loadActive();
 	    			$rs[] = $selectData;
 	    			break;
     			case 'CODE1' :
     				$selectData = ['id'=>'CodeDeferCode1','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				$selectData['data'] = CodeDeferCode1::all();
+    				$selectData['data'] = CodeDeferCode1::loadActive();
     				$rs[] = $selectData;
     				break;
     			case 'DEFER_CATEGORY' :
     				$selectData = ['id'=>'CodeDeferCategory','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				$selectData['data'] = CodeDeferCategory::all();
+    				$selectData['data'] = CodeDeferCategory::loadActive();
     				$rs[] = $selectData;
     				break;
     			case 'DEFER_GROUP_TYPE' :
     				$selectData = ['id'=>'CodeDeferGroupType','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				$selectData['data'] = CodeDeferGroupType::all();
+    				$selectData['data'] = CodeDeferGroupType::loadActive();
     				$rs[] = $selectData;
     				break;
     			case 'TICKET_TYPE' :
 	    			$selectData = ['id'=>'CodeTicketType','targets'=>$i,'COLUMN_NAME'=>$columnName];
-	    			$selectData['data'] = CodeTicketType::all();
+	    			$selectData['data'] = CodeTicketType::loadActive();
 	    			$rs[] = $selectData;
 	    			break;
     			/* case 'TARGET_TANK' :
@@ -826,17 +826,17 @@ class CodeController extends EBController {
     			case 'EQP_GHG_UOM' :
     			case 'EQP_CONS_UOM' :
     				$selectData = ['id'=>'CodeVolUom','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				$selectData['data'] = CodeVolUom::all();
+    				$selectData['data'] = CodeVolUom::loadActive();
     				$rs[] = $selectData;
     				break;
     			case 'TYPE' :
     				$selectData = ['id'=>'CodePersonnelType','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				$selectData['data'] = CodePersonnelType::all();
+    				$selectData['data'] = CodePersonnelType::loadActive();
     				$rs[] = $selectData;
     				break;
 		    	case 'TITLE' :
 		    		$selectData = ['id'=>'CodePersonnelTitle','targets'=>$i,'COLUMN_NAME'=>$columnName];
-		    		$selectData['data'] = CodePersonnelTitle::all();
+		    		$selectData['data'] = CodePersonnelTitle::loadActive();
 		    		$rs[] = $selectData;
 		    		break;
 	    		case 'SYSTEM_ID' :
@@ -846,17 +846,17 @@ class CodeController extends EBController {
 	    			break;
     			case 'FREQUENCY' :
     				$selectData = ['id'=>'CodeReadingFrequency','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				$selectData['data'] = CodeReadingFrequency::all();
+    				$selectData['data'] = CodeReadingFrequency::loadActive();
     				$rs[] = $selectData;
     				break;
     			case 'ALLOW_OVERRIDE' :
     				$selectData = ['id'=>'CodeBoolean','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				$selectData['data'] = CodeBoolean::all();
+    				$selectData['data'] = CodeBoolean::loadActive();
     				$rs[] = $selectData;
     				break;
 	    		case 'FLOW_PHASE' :
 	    			$selectData = ['id'=>'CodeFlowPhase','targets'=>$i,'COLUMN_NAME'=>$columnName];
-	    			$selectData['data'] = CodeFlowPhase::all();
+	    			$selectData['data'] = CodeFlowPhase::loadActive();
 	    			$rs[] = $selectData;
 	    			break;
     			case 'REQUEST_UOM' 		:
@@ -868,17 +868,17 @@ class CodeController extends EBController {
     			case 'QTY_UOM' 			:
     			case 'ITEM_UOM' 		:
     				$selectData = ['id'=>'PdCodeMeasUom','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				$selectData['data'] = \App\Models\PdCodeMeasUom::all();
+    				$selectData['data'] = \App\Models\PdCodeMeasUom::loadActive();
     				$rs[] = $selectData;
     				break;
 	    		case 'PRIORITY' :
 	    			$selectData = ['id'=>'PdCodeCargoPriority','targets'=>$i,'COLUMN_NAME'=>$columnName];
-	    			$selectData['data'] = \App\Models\PdCodeCargoPriority::all();
+	    			$selectData['data'] = \App\Models\PdCodeCargoPriority::loadActive();
 	    			$rs[] = $selectData;
 	    			break;
     			case 'QUANTITY_TYPE' :
     				$selectData = ['id'=>'PdCodeCargoQtyType','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				$selectData['data'] = \App\Models\PdCodeCargoQtyType::all();
+    				$selectData['data'] = \App\Models\PdCodeCargoQtyType::loadActive();
     				$rs[] = $selectData;
     				break;
 	    		case 'LIFTING_ACCT' :
@@ -899,23 +899,23 @@ class CodeController extends EBController {
 	    			break;
     			case 'REQUEST_TOLERANCE' :
     				$selectData = ['id'=>'PdCodeQtyAdj','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				$selectData['data'] = \App\Models\PdCodeQtyAdj::all();
+    				$selectData['data'] = \App\Models\PdCodeQtyAdj::loadActive();
     				$rs[] = $selectData;
     				break;
     			case 'ADJUSTABLE_TIME' :
     			case 'NOMINATION_ADJ_TIME' :
     				$selectData = ['id'=>'PdCodeTimeAdj','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				$selectData['data'] = \App\Models\PdCodeTimeAdj::all();
+    				$selectData['data'] = \App\Models\PdCodeTimeAdj::loadActive();
     				$rs[] = $selectData;
     				break;
 		    	case 'INCOTERM' :
 		    		$selectData = ['id'=>'PdCodeIncoterm','targets'=>$i,'COLUMN_NAME'=>$columnName];
-		    		$selectData['data'] = \App\Models\PdCodeIncoterm::all();
+		    		$selectData['data'] = \App\Models\PdCodeIncoterm::loadActive();
 		    		$rs[] = $selectData;
 		    		break;
 	    		case 'TRANSIT_TYPE' :
 	    			$selectData = ['id'=>'PdCodeTransitType','targets'=>$i,'COLUMN_NAME'=>$columnName];
-	    			$selectData['data'] = \App\Models\PdCodeTransitType::all();
+	    			$selectData['data'] = \App\Models\PdCodeTransitType::loadActive();
 	    			$rs[] = $selectData;
 	    			break;
     			/* case 'ACTIVITY_NAME' :
@@ -941,23 +941,23 @@ class CodeController extends EBController {
 	    			break;
     			case 'CARGO_STATUS' :
     				$selectData = ['id'=>'PdCodeCargoStatus','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				$selectData['data'] = \App\Models\PdCodeCargoStatus::all();
+    				$selectData['data'] = \App\Models\PdCodeCargoStatus::loadActive();
     				$rs[] = $selectData;
     				break;
 	    		case 'CONTRACT_TYPE' :
 	    		case 'CONTACT_TYPE' :
 	    			$selectData = ['id'=>'PdCodeContractType','targets'=>$i,'COLUMN_NAME'=>$columnName];
-	    			$selectData['data'] = \App\Models\PdCodeContractType::all();
+	    			$selectData['data'] = \App\Models\PdCodeContractType::loadActive();
 	    			$rs[] = $selectData;
 	    			break;
     			case 'CONTRACT_PERIOD' :
     				$selectData = ['id'=>'PdCodeContractPeriod','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				$selectData['data'] = \App\Models\PdCodeContractPeriod::all();
+    				$selectData['data'] = \App\Models\PdCodeContractPeriod::loadActive();
     				$rs[] = $selectData;
     				break;
 	    		case 'CONTRACT_EXPENDITURE' :
 	    			$selectData = ['id'=>'PdContractExpenditure','targets'=>$i,'COLUMN_NAME'=>$columnName];
-	    			$selectData['data'] = \App\Models\PdContractExpenditure::all();
+	    			$selectData['data'] = \App\Models\PdContractExpenditure::loadActive();
 	    			$rs[] = $selectData;
 	    			break;
     			case 'CONTRACT_TEMPLATE' :
@@ -967,7 +967,7 @@ class CodeController extends EBController {
     				break;
 	    		case 'DEMURRAGE_EBO' :
 	    			$selectData = ['id'=>'PdCodeDemurrageEbo','targets'=>$i,'COLUMN_NAME'=>$columnName];
-	    			$selectData['data'] = \App\Models\PdCodeDemurrageEbo::all();
+	    			$selectData['data'] = \App\Models\PdCodeDemurrageEbo::loadActive();
 	    			$rs[] = $selectData;
 	    			break;
     			case 'SURVEYOR_BA_ID' :
@@ -984,7 +984,7 @@ class CodeController extends EBController {
     			case 'ACTIVITY_ID' :
     			case 'ACTIVITY_NAME' :
     				$selectData = ['id'=>'PdCodeLoadActivity','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				$selectData['data'] = \App\Models\PdCodeLoadActivity::all();
+    				$selectData['data'] = \App\Models\PdCodeLoadActivity::loadActive();
     				$rs[] = $selectData;
     				break;
 		    	case 'VOYAGE_ID' :
@@ -1009,7 +1009,7 @@ class CodeController extends EBController {
     				break;
 	    		case 'MEASURED_ITEM' :
 	    			$selectData = ['id'=>'PdCodeMeasItem','targets'=>$i,'COLUMN_NAME'=>$columnName];
-	    			$selectData['data'] = \App\Models\PdCodeMeasItem::all();
+	    			$selectData['data'] = \App\Models\PdCodeMeasItem::loadActive();
 	    			$rs[] = $selectData;
 	    			break;
     			case 'FORMULA_ID' :
@@ -1019,17 +1019,17 @@ class CodeController extends EBController {
     				break;
 	    		case 'PROGRAM_TYPE' :
 	    			$selectData = ['id'=>'PdCodeProgramType','targets'=>$i,'COLUMN_NAME'=>$columnName];
-	    			$selectData['data'] = \App\Models\PdCodeProgramType::all();
+	    			$selectData['data'] = \App\Models\PdCodeProgramType::loadActive();
 	    			$rs[] = $selectData;
 	    			break;
     			case 'RUN_FREQUENCY' :
     				$selectData = ['id'=>'PdCodeRunFrequency','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				$selectData['data'] = \App\Models\PdCodeRunFrequency::all();
+    				$selectData['data'] = \App\Models\PdCodeRunFrequency::loadActive();
     				$rs[] = $selectData;
     				break;
 	    		case 'ADJUST_CODE' :
 	    			$selectData = ['id'=>'PdCodeLiftAcctAdj','targets'=>$i,'COLUMN_NAME'=>$columnName];
-	    			$selectData['data'] = \App\Models\PdCodeLiftAcctAdj::all();
+	    			$selectData['data'] = \App\Models\PdCodeLiftAcctAdj::loadActive();
 	    			$rs[] = $selectData;
 	    			break;
 	    		case 'OBJECT_TYPE' :
@@ -1039,32 +1039,32 @@ class CodeController extends EBController {
 	    			break;
 	    		case 'MMR_STATUS' :
 	    			$selectData = ['id'=>'CodeMmrStatus','targets'=>$i,'COLUMN_NAME'=>$columnName];
-	    			$selectData['data'] = \App\Models\CodeMmrStatus::all();
+	    			$selectData['data'] = \App\Models\CodeMmrStatus::loadActive();
 	    			$rs[] = $selectData;
 	    			break;
 	    		case 'MMR_CLASS' :
 	    			$selectData = ['id'=>'CodeMmrClass','targets'=>$i,'COLUMN_NAME'=>$columnName];
-	    			$selectData['data'] = \App\Models\CodeMmrClass::all();
+	    			$selectData['data'] = \App\Models\CodeMmrClass::loadActive();
 	    			$rs[] = $selectData;
 	    			break;
 	    		case 'MMR_REASON' :
 	    			$selectData = ['id'=>'CodeMmrReason','targets'=>$i,'COLUMN_NAME'=>$columnName];
-	    			$selectData['data'] = \App\Models\CodeMmrReason::all();
+	    			$selectData['data'] = \App\Models\CodeMmrReason::loadActive();
 	    			$rs[] = $selectData;
 	    			break;
 	    		case 'MMR_ROOT_CAUSE' :
 	    			$selectData = ['id'=>'CodeMmrRootCause','targets'=>$i,'COLUMN_NAME'=>$columnName];
-	    			$selectData['data'] = \App\Models\CodeMmrRootCause::all();
+	    			$selectData['data'] = \App\Models\CodeMmrRootCause::loadActive();
 	    			$rs[] = $selectData;
 	    			break;
 	    		case 'MMR_CALC_METHOD_FORMULA':
 	    			$selectData = ['id'=>'CodeMmrCalcMethod','targets'=>$i,'COLUMN_NAME'=>$columnName];
-	    			$selectData['data'] = \App\Models\CodeMmrCalcMethod::all();
+	    			$selectData['data'] = \App\Models\CodeMmrCalcMethod::loadActive();
 	    			$rs[] = $selectData;
 	    			break;
     			case 'WO_ACTION' :
 	    			$selectData = ['id'=>'CodeMmrWOAction','targets'=>$i,'COLUMN_NAME'=>$columnName];
-	    			$selectData['data'] = \App\Models\CodeMmrWOAction::all();
+	    			$selectData['data'] = \App\Models\CodeMmrWOAction::loadActive();
 	    			$rs[] = $selectData;
 	    			break;
     			case 'COMPOSITION' :
