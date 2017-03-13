@@ -60,6 +60,41 @@ ENERGY UNIT DATA CAPTURE
 		pr['CodeForecastType']	= $('#CodeForecastType').val();
 		return pr;
 	}
+
+	actions.similarCells	= ['ACTIVE_HRS',
+							   'CHOKE_SETTING',
+							   'OBS_TEMP',
+							   'OBS_PRESS',
+							   'EU_DATA_AVG_WHT',
+							   'EU_DATA_AVG_WHP',
+							   'EU_DATA_AVG_BHT',
+							   'EU_DATA_AVG_BHP',
+							   'EU_DATA_AVG_FTP',
+							   'EU_DATA_AVG_SITP'
+							   ];
+	actions.getSimilarCells = function(property,tab, td, rowData, columnName,collection,type) {
+		var similarCells = [];
+		if(jQuery.inArray( columnName, actions.similarCells ) >= 0 ){
+			var table 		= $('#table_'+tab).DataTable();
+			var tableData 	= table.data();
+			var result = 	$.grep(tableData, function(item){ 
+			              		return item.X_EU_ID == rowData.X_EU_ID
+			              		&& item.EU_CONFIG_EVENT_TYPE == rowData.EU_CONFIG_EVENT_TYPE;
+			            	});
+			if (result.length > 0) {
+				$.each(result, function( index, value ) {
+					similarCells.push({
+										td			: td,
+										rowData		: value,
+										collection	: collection,
+						});
+	             });
+			}
+		}
+			
+		return similarCells;
+	}
+	
 	
 </script>
 @stop

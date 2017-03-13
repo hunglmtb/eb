@@ -838,24 +838,38 @@ var actions = {
 	getEditSuccessfn  : function(property,tab, td, rowData, columnName,collection,type) {
 		var originColor		= $(td).css('background-color');
 		return function(response, newValue) {
-        	rowData = actions.putModifiedData(tab,columnName,newValue,rowData,type);
-        	rowData[columnName] = newValue;
-        	var table = $('#table_'+tab).DataTable();
-        	$(td).css('color', 'black');
-        	if(type=='number'){
-        		var objectRules		= actions.getObjectRules(property,rowData);
-        		var basicRules		= actions.getBasicRules(property,objectRules);
-        		actions.addCellNumberRules(td,basicRules,newValue,rowData,originColor,"manual");
-        	}
-			table.row( '#'+rowData['DT_RowId'] ).data(rowData);
-			table.columns().footer().draw(); 
-//        	table.draw(false);
-        	//dependence columns
-        	actions.dominoColumns(columnName,newValue,tab,rowData,collection,table,td);
-        	 /* var tabindex = $(this).attr('tabindex');
-            $('[tabindex=' + (tabindex +1)+ ']').focus(); */
+			actions.saveNewValue(newValue,property,tab,td,rowData,columnName,collection,type);
+			if(typeof actions.getSimilarCells == "function"){
+				var similarCells =  actions.getSimilarCells(property,tab, td, rowData, columnName,collection,type);
+				$.each(similarCells, function( index, cell ) {
+					var std 		= cell.td;
+					var sRowData 	= cell.rowData;
+					var sCollection = cell.collection;
+					actions.saveNewValue(newValue,property,tab,std,sRowData,columnName,sCollection,type,originColor);
+			   	});
+			}
 	    };
 	},
+	
+	saveNewValue			:	function(newValue,property,tab,td,rowData,columnName,collection,type,originColor){
+		rowData = actions.putModifiedData(tab,columnName,newValue,rowData,type);
+		rowData[columnName] = newValue;
+		var table = $('#table_'+tab).DataTable();
+		$(td).css('color', 'black');
+		if(type=='number'){
+			var objectRules		= actions.getObjectRules(property,rowData);
+			var basicRules		= actions.getBasicRules(property,objectRules);
+			actions.addCellNumberRules(td,basicRules,newValue,rowData,originColor,"manual");
+		}
+		table.row( '#'+rowData['DT_RowId'] ).data(rowData);
+		table.columns().footer().draw(); 
+//        	table.draw(false);
+		//dependence columns
+		actions.dominoColumns(columnName,newValue,tab,rowData,collection,table,td);
+		/* var tabindex = $(this).attr('tabindex');
+            $('[tabindex=' + (tabindex +1)+ ']').focus(); */
+	},
+	
 	extensionHandle			:	function(tab,columnName,rowData,limit,successFunction){
 	},
 	deleteRowFunction		:	function(table,rowData,tab){
