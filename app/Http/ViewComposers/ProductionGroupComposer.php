@@ -125,24 +125,47 @@ class ProductionGroupComposer
     		$DATA_SCOPE_FACILITY	=null;
     	}
     	
-    	if($DATA_SCOPE_PU&&$DATA_SCOPE_PU>0)
-    		$productionUnits = LoProductionUnit::where('ID',$DATA_SCOPE_PU)->get();
-    	else 
-    		$productionUnits = LoProductionUnit::all(['ID', 'NAME']);
-
-    	$currentProductUnit = ProductionGroupComposer::getCurrentSelect($productionUnits,$pid);
-    	
-    	if($currentProductUnit) $areas = $currentProductUnit->LoArea()->getResults();
-    	else if($DATA_SCOPE_AREA&&$DATA_SCOPE_AREA>0) $areas = LoArea::where('ID',$DATA_SCOPE_AREA)->get();
-	    else  $areas 	=	null;
-    			
-    	$currentArea = ProductionGroupComposer::getCurrentSelect($areas,$aid);
-    	
-    	if($currentArea) $facilities = $currentArea->Facility()->getResults();
-    	else if($DATA_SCOPE_FACILITY&&$DATA_SCOPE_FACILITY>0) $areas = Facility::where('ID',$DATA_SCOPE_FACILITY)->get();
-    	else  $facilities 	=	null;
-    	
-    	$currentFacility = ProductionGroupComposer::getCurrentSelect($facilities,$fid);
+    	if($DATA_SCOPE_FACILITY&&$DATA_SCOPE_FACILITY>0){
+    		$facilities 		= Facility::where('ID',$DATA_SCOPE_FACILITY)->get();
+    		$currentFacility 	= $facilities->first();
+    		$areas				= LoArea::where("ID",$currentFacility->AREA_ID)->get();
+    		$currentArea 		= $areas->first();
+    		$productionUnits	= LoProductionUnit::where("ID",$currentArea->PRODUCTION_UNIT_ID)->get();
+    		$currentProductUnit = $productionUnits->first();
+    	}
+    	else if($DATA_SCOPE_AREA&&$DATA_SCOPE_AREA>0){
+    		$areas 				= LoArea::where('ID',$DATA_SCOPE_AREA)->get();
+    		$currentArea 		= $areas->first();
+    		$productionUnits	= LoProductionUnit::where("ID",$currentArea->PRODUCTION_UNIT_ID)->get();
+    		$currentProductUnit = $productionUnits->first();
+    		if($currentArea) 
+    			$facilities 	= $currentArea->Facility()->getResults();
+    		else
+    			$facilities 	=	null;
+    		$currentFacility 	= ProductionGroupComposer::getCurrentSelect($facilities,$fid);
+    	}
+    	else {
+	    	if($DATA_SCOPE_PU&&$DATA_SCOPE_PU>0)
+	    		$productionUnits = LoProductionUnit::where('ID',$DATA_SCOPE_PU)->get();
+	    	else 
+	    		$productionUnits = LoProductionUnit::all(['ID', 'NAME']);
+	
+	    	$currentProductUnit = ProductionGroupComposer::getCurrentSelect($productionUnits,$pid);
+	    	
+	    	if($currentProductUnit) 
+	    		$areas = $currentProductUnit->LoArea()->getResults();
+		    else  
+		    	$areas 	=	null;
+	    			
+	    	$currentArea = ProductionGroupComposer::getCurrentSelect($areas,$aid);
+	    	
+	    	if($currentArea) 
+	    		$facilities = $currentArea->Facility()->getResults();
+	    	else  
+	    		$facilities 	=	null;
+	    	
+	    	$currentFacility = ProductionGroupComposer::getCurrentSelect($facilities,$fid);
+    	}
 	    $productionFilterGroup =['LoProductionUnit'	=>	$this->getFilterArray('LoProductionUnit',$productionUnits,$currentProductUnit),
 					    		'LoArea'			=>	$this->getFilterArray('LoArea',$areas,$currentArea),
 					    		'Facility'			=>	$this->getFilterArray('Facility',$facilities,$currentFacility)
@@ -161,6 +184,15 @@ class ProductionGroupComposer
 	    	$productionFilterGroup [$modelName] = $this->getFilterArray ($modelName, $eCollection, $extraFilter,$model );
 	    }
 	    return $productionFilterGroup;
+    }
+    
+    public function loadEntryBy($model, $entryId,$sourceModel) {
+    	$modelName	= \Helper::getModelName($sourceModel);
+    	$table	= $modelName::getTableName(); 
+    	return $modelName::whereHas($model , function ($query) use($entryId,$table) {
+    						$query->where("$table.ID",$entryId );
+    				})
+			    	->get();
     }
     
 	public function getExtraOptions($productionFilterGroup, $model, $source = null) {
