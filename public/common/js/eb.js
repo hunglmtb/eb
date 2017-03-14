@@ -1268,8 +1268,9 @@ var actions = {
 		return true;
 	},
 	getTableWidth: function(data,autoWidth,tab){
-		var  marginLeft = 0;
-		var  tblWdth = 0;
+		var  	marginLeft = 0;
+		var 	padding = 18;
+		var  	tblWdth = 0;
 		$.each(data.properties, function( ip, vlp ) {
 			if(autoWidth){
 				delete vlp['width'];
@@ -1279,16 +1280,17 @@ var actions = {
 //  				vlp['className']= 'headcol';
 					marginLeft = vlp['width'];
 				}
-				var iw = (vlp['width']>1?parseFloat(vlp['width']):100);
-				tblWdth+=iw;
-				vlp['width']= iw+"px";
-				
+				var iw = (typeof vlp['width'] == "string" ?parseFloat(vlp['width']):vlp['width']);
+				iw = isNaN(iw)||iw<=0?100:iw;
 				if(ip!=0&&(vlp.title==null||vlp.title=='')) {
+//					iw = iw*1.5;
 					vlp.title=vlp.data;
-					vlp['width']= (iw*1.5)+"px";
 				}
+				tblWdth+=iw+2*padding;
+				vlp['width']= iw+"px";
 			}
         });
+		tblWdth+=2*padding;
 		extendWidth = actions.getExtendWidth(data,autoWidth,tab);
 		return tblWdth+extendWidth;
 	},
@@ -1407,9 +1409,21 @@ var actions = {
 //			$('#table_'+tab).css('width',(tblWdth+20)+'px');
 //			$('#table_'+tab).css('min-width',(tblWdth+20)+'px');
 //			$('#container_'+tab).css('min-width',(tblWdth+20)+'px');
-			autoWidth = tblWdth < $(window).width()-30;
+//			autoWidth = tblWdth < $(window).width()-30;
 		}
-//		if(!autoWidth && tblWdth>0) $('#table_'+tab).css('width',(tblWdth)+'px');
+		
+//		autoWidth = getActiveTabID()==tab;
+		$('#container_'+tab).css('min-width',tblWdth < ($(window).width()-10)? (tblWdth)+'px':($(window).width()-10)+'px');
+		if(!autoWidth && tblWdth>600) {
+//			$('#container_'+tab).css('width',tblWdth < ($(window).width()-20)? (tblWdth)+'px':($(window).width()-20)+'px');
+//			$('#table_'+tab).css('width',(tblWdth)+'px');
+		}
+		
+		if($( window ).width()-50>$('#table_'+tab).width()){
+	 		$('#container_'+tab).css('width',($('#table_'+tab).width()+100)+"px");
+		}
+		
+//		if(tblWdth>200) $('#table_'+tab).css('width',(tblWdth)+'px');
 
 		tHeight = actions.getTableHeight(tab);
 		option = {data: data.dataSet,
@@ -1417,7 +1431,7 @@ var actions = {
 		          destroy: true,
 		          "columnDefs": uoms,
 		          "scrollX": true,
-		         "autoWidth": autoWidth,
+		         "autoWidth": false,
 //		         "autoWidth": autoWidth,
 //		       	"scrollY":        "37vh",
 //		         "scrollY":        "250px",
@@ -1481,6 +1495,7 @@ var actions = {
 	    }*/
 
 		var tbl = $('#table_'+tab).DataTable(option);
+		
 		return tbl;
 	},
 	getExistRowId		: function(value,key){
