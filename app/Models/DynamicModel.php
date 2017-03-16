@@ -7,7 +7,8 @@ class DynamicModel extends Model {
 	protected $primaryKey = 'ID';
 	protected $isOracleModel = false;
 	protected $isReservedName = false;
-	public $timestamps = false;
+	public 		$timestamps = false;
+	protected $autoFillableColumns = false;
 	protected static $isAddAllAsDefault	= false;
 	
 	public function __construct() {
@@ -20,11 +21,19 @@ class DynamicModel extends Model {
 		if ($this->isOracleModel){
 			$this->primaryKey = strtolower($this->primaryKey);
 		}
+		
+		if ($this->autoFillableColumns) {
+			$this->fillable = $this->getTableColumns();
+		}
 	}
+	
 	public function setTable($tableName){
 		$this->table = $tableName;
 	}
 	
+	public function getTableColumns() {
+		return $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
+	}
 	
 	public function __get($key)
 	{

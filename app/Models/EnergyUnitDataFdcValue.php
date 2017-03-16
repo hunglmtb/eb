@@ -58,7 +58,10 @@ class EnergyUnitDataFdcValue extends FeatureEuModel
 							'STATUS_BY', 
 							'STATUS_DATE', 
 							'RECORD_STATUS',
-							'EU_DATA_NET_MASS'
+							'EU_DATA_NET_MASS',
+							/* 'ANNULUS_PRESS',
+							'SALINITY',
+							'PH_WATER', */
 	];
 	
 }

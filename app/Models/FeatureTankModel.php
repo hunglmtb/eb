@@ -12,6 +12,7 @@ class FeatureTankModel extends EbBussinessModel
 	protected $objectModel = 'Tank';
 	protected $excludeColumns = ['TANK_ID','OCCUR_DATE'];
 	protected $disableUpdateAudit = false;
+	protected $autoFillableColumns 	= true;
 	
 	public function getStorageId(){
 		return null;

@@ -7,6 +7,7 @@ class FeatureTicketModel extends EbBussinessModel
 {
 	public  static  $idField = 'TANK_ID';
 	public  static  $dateField = 'OCCUR_DATE';
+	protected $autoFillableColumns 	= true;
 	
 	public static function getKeyColumns(&$newData,$occur_date,$postData){
 		$attributes = parent:: getKeyColumns($newData,$occur_date,$postData);

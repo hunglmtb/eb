@@ -5,6 +5,7 @@ namespace App\Models;
 	protected static $objectModelName 	= null;
 	public static $foreignKeystore 		= null;
 	protected $dates 					= ['OCCUR_DATE'];
+	protected $autoFillableColumns 	= true;
 	
 	public static function getEntries($facility_id=null,$product_type = 0){
 		$oModel = static::$objectModelName;
