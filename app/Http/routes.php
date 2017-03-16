@@ -445,6 +445,10 @@ Route::post('chckChange', 'FieldsConfigController@chckChange');
 Route::post('getprop', 'FieldsConfigController@getprop');
 Route::post('saveprop', 'FieldsConfigController@saveprop');
 
+Route::get('objectsmanager',['uses' =>'ObjectsManagerController@_index','middleware' => 'checkRight:CONFIG_FIELDS']);
+Route::post('objectsmanager/getobjectsinfo', 'ObjectsManagerController@getObjectsInfo');
+Route::post('objectsmanager/savemapinfo', 'ObjectsManagerController@saveMapInfo');
+
 Route::get('loadtabledata',['uses' =>'DataViewController@tabledata','middleware' => 'checkRight:CONFIG_TABLE_DATA']);
 Route::get('loadtabledata/edittable',['uses' =>'Config\TableDataController@edittable','middleware' => 'checkRight:CONFIG_TABLE_DATA']);
 Route::post('loadtabledata/edittable',['uses' =>'Config\TableDataController@edittable','middleware' => 'checkRight:CONFIG_TABLE_DATA']);
