@@ -111,7 +111,7 @@ class EbBussinessModel extends DynamicModel {
 			$instance = new static((array) $values);
 	        $instance->exists = false;
 	        foreach ( $values as $column => $value ) {
-	        	if (!$instance->isFillable($column)) {
+	        	if ($column=="ID"||!$instance->isFillable($column)) {
 	        		unset($values[$column]);
 	        	}
 	        }
@@ -131,7 +131,7 @@ class EbBussinessModel extends DynamicModel {
 			$oldValues = [];
 			foreach ( $values as $column => $value ) {
 				$oldValues[$column]= $instance->$column;
-				if (!$instance->isFillable($column)) {
+				if ($column=="ID"||!$instance->isFillable($column)) {
 					unset($values[$column]);
 				}
 			}
