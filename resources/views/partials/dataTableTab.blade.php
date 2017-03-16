@@ -73,9 +73,6 @@
 		actions.afterDataTable(tbl,tab);
 		if(actions.enableUpdateView(tab,postData)) actions.updateView(postData);
 
-		if($( window ).width()>$('#table_'+tab).width()){
-	 		$('#container_'+tab).css('width',$('#table_'+tab).width());
-		}
 		var disableLeftFixer = typeof(options["tableOption"]) !== "undefined" && 
 								typeof(options["tableOption"]["disableLeftFixer"]) !== "undefined" &&
 								options["tableOption"]["disableLeftFixer"] == true;

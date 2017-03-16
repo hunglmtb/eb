@@ -207,6 +207,10 @@ Editableform is linked with one of input types, e.g. 'text', 'select' etc.
             //get new value from input
             var newValue = this.input.input2value(); 
 
+            if(newValue==null|| $.trim(newValue)=="") {
+            	this.$div.triggerHandler('nochange');            
+            	return;
+            }
             //validation: if validate returns string or truthy value - means error
             //if returns object like {newValue: '...'} => submitted value is reassigned to it
             var error = this.validate(newValue);
