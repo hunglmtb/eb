@@ -325,7 +325,7 @@ var polyOptions = {
 					strokeWeight: 2,
 					fillOpacity: 0.35,
                     //editable: true,
-                    //draggable: true
+                    draggable: true
                 };
                 // Creates a drawing manager attached to the map that allows the user to draw
                 // markers, lines, and shapes.
@@ -336,7 +336,7 @@ var polyOptions = {
                     },
                     polylineOptions: {
                         //editable: true,
-                        //draggable: true
+                        draggable: true
                     },
                     rectangleOptions: polyOptions,
                     circleOptions: polyOptions,
