@@ -223,6 +223,7 @@
 														["name"	=>	"View Config","title"	=>	"View Config","link"	=>	"/viewconfig"],
 														["name"	=>	"Formula Editor","title"	=>	"Formula Editor","link"	=>	"/formula"],
 														["name"	=>	"Menu Config","title"	=>	"Menu Config","link"	=>	"#"],
+														["name"	=>	"Objects Manager","title"	=>	"Objects Manager","link"	=>	"/objectsmanager"],
 												]
 										],
 								]

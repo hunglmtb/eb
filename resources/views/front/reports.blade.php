@@ -14,6 +14,7 @@ $host = ENV('DB_HOST');
 </style>
 <script type="text/javascript">
 function getDefaultDate(month){
+	return "";
 	var d = new Date();
 	var m=(1+d.getMonth());
 	if(m<10)m="0"+m;
@@ -21,6 +22,15 @@ function getDefaultDate(month){
 	var day=d.getDate();
 	if(day<10)day="0"+day;
 	return d.getFullYear()+"-"+m+"-"+day;
+}
+function getStandardDateString(date, isMonthFirstDay){
+	var m=(1+date.getMonth());
+	if(m<10)m="0"+m;
+	if(isMonthFirstDay === true)
+		return date.getFullYear()+"-"+m+"-01";
+	var day=date.getDate();
+	if(day<10)day="0"+day;
+	return date.getFullYear()+"-"+m+"-"+day;
 }
 var _report = {
 	loadReportUrl: "/report/loadreports",
@@ -86,22 +96,43 @@ var _report = {
 						html += '<input class="param" type="text" data-type="2" name="param_'+item.CODE+'">';
 					}
 					else if(item.VALUE_TYPE==3){
-						html += '<input class="param" type="date" data-type="3" name="param_'+item.CODE+'" value="'+getDefaultDate()+'">';
+						html += '<input class="param datepicker" type="text" data-type="3" name="param_'+item.CODE+'" value="'+getDefaultDate()+'">';
 					}
 					else if(item.VALUE_TYPE==4){
-						html += '<input class="param" type="date" data-type="3" name="param_'+item.CODE+'_from" value="'+getDefaultDate()+'"> To <input class="param" type="date" data-type="3" name="param_'+item.CODE+'_to" value="'+getDefaultDate()+'">';
+						html += '<input class="param datepicker daterange_from" code="'+item.CODE+'" type="text" data-type="3" name="param_'+item.CODE+'_from" value="'+getDefaultDate()+'"> To <input class="param datepicker daterange_to" code="'+item.CODE+'" type="text" data-type="3" name="param_'+item.CODE+'_to" value="'+getDefaultDate()+'">';
 					}
 					else if(item.VALUE_TYPE==5){
-						html += '<input class="param" type="month" data-type="5" name="param_'+item.CODE+'" value="'+getDefaultDate(true)+'">';
+						html += '<input class="param datepicker" type="text" data-type="5" name="param_'+item.CODE+'" value="'+getDefaultDate(true)+'">';
 					}
 					html += '</td></tr>';
 				});
 				if(html != "")
 					html = '<table>' + html + '</table><hr>';
 				$("#box_conditions").html(html);
+				$("#box_conditions .datepicker").datepicker({
+					changeMonth	:	true,
+					changeYear	:	true,
+					dateFormat	:	jsFormat,
+					onSelect: function() {
+						var date = $(this).datepicker('getDate');
+						if($(this).hasClass("daterange_from")){
+							var code = $(this).attr("code");
+							$(".param[name='param_"+code+"_to']").datepicker("change",{ minDate: date});
+						}
+						else if($(this).hasClass("daterange_to")){
+							var code = $(this).attr("code");
+							$(".param[name='param_"+code+"_from']").datepicker("change",{ maxDate: date});
+						}
+					}
+				});
+				//set default date
+				$(".datepicker").each(function(){
+					$(this).datepicker("setDate", new Date());
+				});
 			},
 			error: function(data) {
 				console.log ( "load params error");
+				console.log (data);
 				hideWaiting();
 			}
 		});
@@ -128,13 +159,27 @@ var _report = {
 		var pexport = $('input[name=reportType]:checked').val();
 		var file = $('#cboReports option:selected').data('file');
 		var params = "";
+		var error = false;
 		$(".param[name^='param_']").each(function(){
 			var data_type = $(this).data("type");
-			if(data_type == "5")
-				params += '&'+$(this).attr("name").substr(6)+'__T_3='+$(this).val()+"-01";
+			if($(this).hasClass("datepicker")){
+				var date = $(this).datepicker('getDate');
+				if($(this).hasClass("daterange_from")){
+					var code = $(this).attr("code");
+					var date_to = $(".param[name='param_"+code+"_to']").datepicker("getDate");
+					if(date > date_to){
+						alert("Date range is not valid");
+						error = true;
+						return;
+					}
+				}
+				params += '&'+$(this).attr("name").substr(6)+'__T_3='+getStandardDateString(date, (data_type == "5"));
+			}
 			else
 				params += '&'+$(this).attr("name").substr(6)+'__T_'+data_type+'='+$(this).val();
 		});
+		if(error)
+			return;
 		var url = _report.host+'/report/viewreport.php?export='+pexport+'&file='+file+params;
 		//console.log(url);
 		window.open(url, '_blank');
