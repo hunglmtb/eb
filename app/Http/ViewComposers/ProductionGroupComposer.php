@@ -200,17 +200,19 @@ class ProductionGroupComposer
 			$extraSource = $productionFilterGroup [$source];
 			// $currentId = $extraSource['currentId'];
 			$entry = ProductionGroupComposer::getCurrentSelect($extraSource ['collection']);
-			$eModel = $entry->CODE;
-			$tableName = strtolower ( $eModel );
-			$mdlName = \Helper::camelize ( $tableName, '_' );
-// 			$mdl = 'App\Models\\' . $mdlName;
-// 			$eCollection = $mdl::getEntries ( $currentFacility->ID );
-			return [
-					$source =>[	'name'		=>$mdlName,
-								'id'		=>$entry->ID,
-								'object'	=>$entry
-					]
-			];
+			if ($entry) {
+				$eModel = $entry->CODE;
+				$tableName = strtolower ( $eModel );
+				$mdlName = \Helper::camelize ( $tableName, '_' );
+	// 			$mdl = 'App\Models\\' . $mdlName;
+	// 			$eCollection = $mdl::getEntries ( $currentFacility->ID );
+				return [
+						$source =>[	'name'		=>$mdlName,
+									'id'		=>$entry->ID,
+									'object'	=>$entry
+						]
+				];
+			}
 		}
 		return null;
 	}
