@@ -356,11 +356,17 @@ var polyOptions = {
                 google.maps.event.addListener(drawingManager, 'drawingmode_changed', clearSelection);
                 google.maps.event.addListener(map, 'click', clearSelection);
                 google.maps.event.addDomListener(document.getElementById('delete-button'), 'click', deleteSelectedShape);
+				google.maps.event.addListener(map, 'bounds_changed', function() {
+					if(!isMapReady){
+						isMapReady = true;
+						if(currentItem == null)
+							itemClick($("#pu-0"), true);
+					}
+				});
 
                 buildColorPalette();
-				itemClick($("#pu-0"), true);
 }
-
+var isMapReady = false;
 var selected_ids = {};
 function selectAll(category){
 	$("#sel_"+category).html("( All )");

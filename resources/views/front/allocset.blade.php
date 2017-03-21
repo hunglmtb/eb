@@ -420,10 +420,8 @@ var _configallocation = {
 
 					<table id="table55" cellspacing="0" style="width:100%;margin-top:10px">
 						<tr style="background: #e0e0e0;">
-							<td width="50%"><font color="black"><span class="fixed"> Minus</span><b>From
-										objects</b></font></td>
-							<td width="50%"><font color="black"><span class="fixed"> Fixed</span><b>To
-										objects</b></font></td>
+							<td width="50%"><font color="black"><span class="fixed"> Minus</span><b>From objects</b></font></td>
+							<td width="50%"><font color="black"><span class="fixed"> Fixed</span><b>To objects</b></font></td>
 						</tr>
 						<tr style="background: #f8f8f8;">
 							<td valign="top"><div style="overflow:auto;width:100%;height:200px"><span id="objsFrom">...</span></div></td>

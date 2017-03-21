@@ -57,5 +57,9 @@ FLOW DATA CAPTURE
 		pr['CodeForecastType']	= $('#CodeForecastType').val();
 		return pr;
 	}
+$( document ).ready(function() {
+    //$("#FlowDataValue").css( "pointer-events", "none" );
+    //$("#FlowDataValue").css( "display", "none" );
+});
 </script>
 @stop
