@@ -957,7 +957,7 @@ class CodeController extends EBController {
     				break;
 	    		case 'CONTRACT_EXPENDITURE' :
 	    			$selectData = ['id'=>'PdContractExpenditure','targets'=>$i,'COLUMN_NAME'=>$columnName];
-	    			$selectData['data'] = \App\Models\PdContractExpenditure::loadActive();
+	    			$selectData['data'] = \App\Models\PdContractExpenditure::all();
 	    			$rs[] = $selectData;
 	    			break;
     			case 'CONTRACT_TEMPLATE' :
