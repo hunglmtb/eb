@@ -56,7 +56,6 @@ $(function(){
 
 @section('content')
 <link href="/common/css/style_field_config.css" rel="stylesheet">
-<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
 <body style="margin:0; overflow-x:hidden">
 <div id="wraper">
 	<table bgcolor="#E6E6E6" width="531px">

@@ -94,7 +94,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     		exit();
     	}
 
-    	\Log::info ("date: $from_date, $to_date");
+    	//\Log::info ("date: $from_date, $to_date");
     	if ($runner_id > 0) {
     		$tmp = DB::table ( 'alloc_runner AS b' )->join ( 'alloc_job AS a', 'a.id', '=', 'b.job_id' )->where ( [
     				'b.id' => $runner_id
@@ -154,7 +154,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 		    			}
     				}catch (\Exception $e)
     				{
-    					\Log::info($e->getMessage());
+    					\Log::error($e->getMessage());
     				}
     			}
     		}
@@ -545,7 +545,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 			$from_option = 0;
 		$sum_all = null;
 		$alloc_comp_query = [];
-		\DB::enableQueryLog ();
+		//\DB::enableQueryLog ();
 		foreach($ids_from as $obj_type_from => $arrfrom){
 			$ids_minus_str = "-999";
 			if(array_key_exists($obj_type_from,$ids_minus)){
@@ -556,6 +556,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 			$id_minus_check = "(case when o.ID in ($ids_minus_str) then -1 else 1 end)";
 			//$value_empty_check = "IF(IFNULL(a.FL_DATA_{$alloc_attr},0)>0,a.FL_DATA_{$alloc_attr},IF(IFNULL(v.FL_DATA_{$alloc_attr},0)>0,v.FL_DATA_{$alloc_attr},t.FL_DATA_{$alloc_attr}))";
 			//$join_func = $this->getDataJoinFunc($obj_type_from);
+			$DATA = ($obj_type_from == OBJ_TYPE_TANK || $obj_type_from == OBJ_TYPE_STORAGE?"_":"_DATA_");
 			$object_table = $this->object_table_name[$obj_type_from];
 			$object_prefix = $this->data_field_prefix[$obj_type_from];
 			$query = DB::table ( 'TIME_DIMENSION AS td' )->join ( "$object_table AS o", function($join) use ($arrfrom) {$join->whereIn ( 'o.ID', $arrfrom );} );
@@ -564,35 +565,35 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 					$this->joinDataTable($query, $subfix = "ALLOC", $alias = "a", $obj_type_from, $alloc_phase, $event_type);
 					$this->joinDataTable($query, $subfix = "VALUE", $alias = "v", $obj_type_from, $alloc_phase, $event_type);
 					$this->joinDataTable($query, $subfix = "THEOR", $alias = "t", $obj_type_from, $alloc_phase, $event_type);
-					$value_empty_check = "IFNULL(a.{$object_prefix}_DATA_{$alloc_attr}, IFNULL(v.{$object_prefix}_DATA_{$alloc_attr}, t.{$object_prefix}_DATA_{$alloc_attr}))";
-					$hrs_empty_check = "IF(a.{$object_prefix}_DATA_{$alloc_attr} is null, IF(v.{$object_prefix}_DATA_{$alloc_attr} is null, t.ACTIVE_HRS, v.ACTIVE_HRS), a.ACTIVE_HRS)";
+					$value_empty_check = "IFNULL(a.{$object_prefix}{$DATA}{$alloc_attr}, IFNULL(v.{$object_prefix}{$DATA}{$alloc_attr}, t.{$object_prefix}{$DATA}{$alloc_attr}))";
+					$hrs_empty_check = "IF(a.{$object_prefix}{$DATA}{$alloc_attr} is null, IF(v.{$object_prefix}{$DATA}{$alloc_attr} is null, t.ACTIVE_HRS, v.ACTIVE_HRS), a.ACTIVE_HRS)";
 					break;
 				case 1: //std >> theor
 					$this->joinDataTable($query, $subfix = "VALUE", $alias = "v", $obj_type_from, $alloc_phase, $event_type);
 					$this->joinDataTable($query, $subfix = "THEOR", $alias = "t", $obj_type_from, $alloc_phase, $event_type);
-					$value_empty_check = "IFNULL(v.{$object_prefix}_DATA_{$alloc_attr}, t.{$object_prefix}_DATA_{$alloc_attr})";
-					$hrs_empty_check = "IF(v.{$object_prefix}_DATA_{$alloc_attr} is null, t.ACTIVE_HRS, v.ACTIVE_HRS)";
+					$value_empty_check = "IFNULL(v.{$object_prefix}{$DATA}{$alloc_attr}, t.{$object_prefix}{$DATA}{$alloc_attr})";
+					$hrs_empty_check = "IF(v.{$object_prefix}{$DATA}{$alloc_attr} is null, t.ACTIVE_HRS, v.ACTIVE_HRS)";
 					break;
 				case 2: //std
 					$this->joinDataTable($query, $subfix = "VALUE", $alias = "v", $obj_type_from, $alloc_phase, $event_type);
-					$value_empty_check = "v.{$object_prefix}_DATA_{$alloc_attr}";
+					$value_empty_check = "v.{$object_prefix}{$DATA}{$alloc_attr}";
 					$hrs_empty_check = "v.ACTIVE_HRS";
 					break;
 				case 3: //theor
 					$this->joinDataTable($query, $subfix = "THEOR", $alias = "t", $obj_type_from, $alloc_phase, $event_type);
-					$value_empty_check = "t.{$object_prefix}_DATA_{$alloc_attr}";
+					$value_empty_check = "t.{$object_prefix}{$DATA}{$alloc_attr}";
 					$hrs_empty_check = "t.ACTIVE_HRS";
 					break;
 				case 4: //alloc
 					$this->joinDataTable($query, $subfix = "ALLOC", $alias = "a", $obj_type_from, $alloc_phase, $event_type);
-					$value_empty_check = "a.{$object_prefix}_DATA_{$alloc_attr}";
+					$value_empty_check = "a.{$object_prefix}{$DATA}{$alloc_attr}";
 					$hrs_empty_check = "a.ACTIVE_HRS";
 					break;
 			}
 			if($value_empty_check){
 				$query->whereDate ( 'td.DB_DATE', '>=', $from_date )->whereDate ( 'td.DB_DATE', '<=', $to_date );
 				$sum = $query->SELECT ( DB::raw ( "sum($id_minus_check*$value_empty_check) AS total_from" ) )->get ();
-				\Log::info ( \DB::getQueryLog () );
+				//\Log::info ( \DB::getQueryLog () );
 				$alloc_comp_from = $query->SELECT ( DB::raw ( "$value_empty_check AS ALLOC_VALUE", 'o.ID AS OBJECT_ID', 'o.NAME AS OBJECT_NAME', '$hrs_empty_check AS ACTIVE_HRS', 'td.DB_DATE as OCCUR_DATE' ) );
 
 				$sum_all += $sum [0]->total_from;

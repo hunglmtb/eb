@@ -214,6 +214,7 @@ function scopeChange(c){
 		s=
 "<option value='USER'>USER</option>"+
 "<option value='USER_RIGHT'>USER_RIGHT</option>"+
+"<option>USER_RIGHT_GUI</option>"+
 "<option value='USER_ROLE'>USER_ROLE</option>"+
 "<option value='USER_ROLE_RIGHT'>USER_ROLE_RIGHT</option>"+
 "<option value='USER_USER_ROLE'>USER_USER_ROLE</option>"+

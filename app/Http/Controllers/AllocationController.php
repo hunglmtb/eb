@@ -13,6 +13,8 @@ use App\Models\AllocRunner;
 use App\Models\AllocRunnerObjects;
 use App\Models\Flow;
 use App\Models\EnergyUnit;
+use App\Models\Tank;
+use App\Models\Storage;
 use App\Models\AllocCondOut;
 use App\Models\AllocCondition;
 use App\Models\JobDiagram;
@@ -205,6 +207,12 @@ class AllocationController extends Controller {
 						 $vname = $f->NAME;
 					 }elseif($ro->OBJECT_TYPE == 2){
 						 $f = EnergyUnit::where(['ID'=>$ro->OBJECT_ID])->select('NAME')->first();
+						 $vname = $f->NAME;
+					 }elseif($ro->OBJECT_TYPE == 3){
+						 $f = Tank::where(['ID'=>$ro->OBJECT_ID])->select('NAME')->first();
+						 $vname = $f->NAME;
+					 }elseif($ro->OBJECT_TYPE == 4){
+						 $f = Storage::where(['ID'=>$ro->OBJECT_ID])->select('NAME')->first();
 						 $vname = $f->NAME;
 					 }
 					 	

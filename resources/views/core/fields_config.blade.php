@@ -2,7 +2,6 @@
 	$code_data_method 	= App\Models\CodeDataMethod::where(['ACTIVE'=>1])->orderBy('ORDER')->get(['ID', 'NAME']);
 	$cfg_input_type 	= App\Models\CfgInputType::all('ID', 'NAME');
 ?>
-<script src="/common/js/js.js"></script>
 <script type="text/javascript">
 
 var _fieldconfig = {
@@ -325,9 +324,6 @@ var _fieldconfig = {
 		}
 }
 </script>
-
-<link href="/common/css/style_field_config.css" rel="stylesheet">
-<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
             <form name="cfg_field_prop" action="saveconfig.php" method="post" id="cfg_field_prop">
               <table border="0" id="tbl_detail" style="padding:4px;width:500px;">
                 <tr>
@@ -401,12 +397,12 @@ var _fieldconfig = {
                 <tr style="height:30px">
                   <td class="field">Use for:</td>
                   <td>
-	                  <div class="floatLeft" style="width: 25%;">
+	                  <div class="floatLeft" style="width: 27%;">
 	                  	<input type="checkbox" name="us_data" id="us_data">Data capture<br>
 	                    <input type="checkbox" name="us_gr" id="us_gr">Graph<br>
 	                    <input type="checkbox" name="us_sr" id="us_sr">Surveillance
 	                  </div>
-	                  <div class="floatLeft" id ="extensionView" style="width: 75%;">
+	                  <div class="floatLeft" id ="extensionView" style="width: 73%;">
 		                  <ul id="objectExtension" style="list-style-type: none;margin: 0;padding-left: 7px;">
 		                  </ul>
 	                  </div>
