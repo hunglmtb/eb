@@ -164,7 +164,7 @@ foreach($xmenu as $index => $object ){
 
 		<script type="text/javascript" src="../common/utils.js"></script>
 </head>
-    <body style="background:#222222">
+    <body style="background-image:url('/img/bg2.png')">
 	<script>var func_code="ROOT";</script>
 	<style>#boxUserInfo{display:none}</style>
 	@include('partials.user')
