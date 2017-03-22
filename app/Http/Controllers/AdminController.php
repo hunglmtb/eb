@@ -394,6 +394,7 @@ class AdminController extends Controller {
 	public function deleteUser(Request $request){
 		
 		$id = $request->input('ID');
+		$error	 = false;
 		DB::beginTransaction();
 		try {
 			UserDataScope::where(['USER_ID'=>$id])->delete();
@@ -404,8 +405,18 @@ class AdminController extends Controller {
 			
 		} catch(\Exception $e){
 			DB::rollback();
+			$error = true;
+			if($e){
+				$error = $e->getMessage();
+				\Log::info($error);
+				\Log::info($e->getTraceAsString());
+			}
 		}			
 		DB::commit();
+		
+		if ($error) return response ()->json ( array (
+				'Message' => "Delete error: $error"
+		) );
 		
 		return response ()->json ( array (
 				'Message' => 'Delete successfully'

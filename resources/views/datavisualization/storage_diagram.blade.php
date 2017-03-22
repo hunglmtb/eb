@@ -12,8 +12,16 @@
 				day	= getJsDate(data.D);
 				pvalue = parseFloat(data.V);
 				pvalue	= isNaN(pvalue)?null:pvalue;
-				value.data[index]	= [day,pvalue];
+				value.data[index]	= {
+										x				: day,
+										y				: pvalue,
+										extraTooltip	: data.E
+									};
 	         });
+	         if(typeof value.extraTooltip == "object" && value.extraTooltip.length>0)
+		         value.extraTooltip = value.extraTooltip.join("<br>");
+	         else 
+		         value.extraTooltip = "";
          });
 
 // 		var minRange	= 0;
@@ -55,10 +63,25 @@
 		        subtitle: {
 		            text: null
 		        },
-		        tooltip: {
-		            headerFormat: '<b>{series.name}</b><br>',
+		         tooltip: {
+		            formatter: function () {
+		            	var extraTooltip = (this.point.extraTooltip!="-1"&&this.point.extraTooltip!=-1)?this.point.extraTooltip:this.series.userOptions.extraTooltip;
+		            	extraTooltip = typeof extraTooltip == "undefined"?"":extraTooltip;
+		            	var point = "<br>"+Highcharts.dateFormat('%b %e', this.x) +': '+this.y;
+		                return '<b>' + this.series.name + '</b><br>' + extraTooltip+point;
+		                
+		            },
+	        	}, 
+	        
+		       /* tooltip: {
+		            headerFormat: function () {
+	// 		            '<b>{series.name}</b><br>{series.userOptions.extraTooltip}<br>';
+						var extraTooltip = (point.extraTooltip!="-1"&&point.extraTooltip!=-1)?this.series.userOptions.extraTooltip:point.extraTooltip;
+		                return '<b>' + this.series.name + '</b>' + extraTooltip;
+		            },
+// 	            '<b>{series.name}</b><br>{point.extraTooltip}<br>',
 		            pointFormat: '{point.x:%e. %b}: {point.y:.2f}'
-		        },
+		        }, */
 		        exporting: {
 		            sourceWidth: view.width(),
 		            sourceHeight:view.height(),

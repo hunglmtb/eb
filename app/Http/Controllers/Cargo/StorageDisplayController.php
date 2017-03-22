@@ -3,27 +3,17 @@ namespace App\Http\Controllers\Cargo;
 
 use App\Http\Controllers\Forecast\ChokeController;
 use App\Http\Controllers\ProductDeliveryController;
+use App\Models\DynamicModel;
+use App\Models\IntObjectType;
 use App\Models\PlotViewConfig;
 use App\Models\StorageDisplayChart;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
-use App\Models\DynamicModel;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class StorageDisplayController extends ChokeController {
     
 	public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
 		$dataSet = StorageDisplayChart::orderBy("TITLE")->get();
-		/* $dataSet->each(function ($item, $key) {
-			if ($item&&$item instanceof Model) {
-				$item->CONFIG	= $item->CONFIG;
-				if ($item->CONFIG) {
-					foreach($item->CONFIG as $index => $objectRow ){
-						$objectRow["PlotViewConfig"] = $objectRow["PlotViewConfig"];
-					}
-				}
-			}
-		}); */
 		return ['dataSet'=>$dataSet];
 	}
 	
@@ -81,45 +71,41 @@ class StorageDisplayController extends ChokeController {
 						
 				$beginDate			= array_key_exists("FROM_DATE", $constraint)?$constraint['FROM_DATE']	:$beginDate;
 				$endDate			= array_key_exists("TO_DATE", $constraint)	?$constraint['TO_DATE']		:$endDate;
-				/* $timeline			= $plotViewConfig->TIMELINE;
-				$date_from			= $beginDate;
-				$date_to			= $endDate;
-				if($timeline==2){
-					$date_from		= $beginDate;
-					$date_to		= $midleDate;
-				}
-				else if($timeline==5){
-					$date_from		= $midleDate;
-					$date_to		= $endDate;
-				} */
-				
 				$categories[] 		= $category;
 				$serie				= [];
 				$lineSeries			= [];
+				$objectNames		= [];
 				foreach($objects as $index => $object ){
+					$objectId		= $object["ObjectName"];
+					$queryField		= $object["ObjectTypeProperty"];
 					$objectType		= $object["IntObjectType"];
+					$flowPhase		= array_key_exists("CodeFlowPhase", $object)?$object["CodeFlowPhase"]:0;
+					$calculation	= array_key_exists("Calculation", $object)?$object["Calculation"]:
+									 (array_key_exists("cboOperation", $object)&&array_key_exists("txtConstant", $object)
+									 		&&$object["cboOperation"]!=""&&$object["txtConstant"]!=""?
+									 			$object["cboOperation"].$object["txtConstant"]:"");
 					$tableView		= $object["ObjectDataSource"];
 					$tableName		= $tableView;
+					$extraSelect	= \DB::raw("-1 as E");
 					if (strpos($tableView, "V_")===0) {
 // 						$modelName		= \DB::table($tableName);
 						$modelName		= new DynamicModel;
 						$modelName->setTable($tableView);
 						$datefield		= "OCCUR_DATE";
 						$objectIdField	= $objectType."_ID";
+						$extraSelect	= \Helper::getExtraSelects($tableView,$objectType,$objectId,$extraSelect);
 					}
 					else{
 						$modelName		= \Helper::getModelName($tableName);
 						$datefield		= property_exists($modelName, "dateField")?$modelName::$dateField:null;
 						$objectIdField	= $modelName::getObjectTypeCode($objectType);
+						$objectTypeModel= \Helper::getModelName($objectType);
+						$objectName 	= $objectTypeModel::find($objectId);
+						if ($objectName) {
+							$objectName 	= $objectName->NAME;
+							$objectNames[]	= "$objectName($tableName.$queryField)$calculation";
+						}
 					}
-					
-					$objectId		= $object["ObjectName"];
-					$flowPhase		= array_key_exists("CodeFlowPhase", $object)?$object["CodeFlowPhase"]:0;
-					$queryField		= $object["ObjectTypeProperty"];
-					$calculation	= array_key_exists("Calculation", $object)?$object["Calculation"]:
-									 (array_key_exists("cboOperation", $object)&&array_key_exists("txtConstant", $object)
-									 		&&$object["cboOperation"]!=""&&$object["txtConstant"]!=""?
-									 			$object["cboOperation"].$object["txtConstant"]:"");
 					
 					$is_eutest		= false;
 					$is_defer		= false;
@@ -146,7 +132,8 @@ class StorageDisplayController extends ChokeController {
 						$query				= $query->whereDate("$datefield", '>=', $beginDate)
 													->whereDate("$datefield", '<=', $endDate)
 													->select(\DB::raw("$minus($queryField$calculation) as $sumField"),
-															\DB::raw("DATE($datefield) as D")
+															\DB::raw("DATE($datefield) as D"),
+															$extraSelect
 // 															"$datefield as D"
 															)
 													->take(300);
@@ -170,13 +157,14 @@ class StorageDisplayController extends ChokeController {
 										->mergeBindings($rquery->getQuery()) // you need to get underlying Query Builder
 										->groupBy("D")
 										->orderBy("D")
-										->selectRaw("sum($sumField) as $sumField, D")
+										->selectRaw("sum($sumField) as $sumField, D, E")
 										->get();
 					$series[]       = [
-							"type"  => $chartType,
-							"name"  => $category,
-							"color" => "#$color",
-							"data"  => $dataSet,
+							"type"  		=> $chartType,
+							"name"  		=> $category,
+							"color" 		=> "#$color",
+							"data"  		=> $dataSet,
+							"extraTooltip"  => $objectNames,
 					];
 					foreach($dataSet as $index => $data ){
 						$dataValue		= $data->V;
