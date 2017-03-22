@@ -1,93 +1,147 @@
 <?php
+/* $main_menu = [
+	["text"  =>"Production Management",	"code" => "production",	"display" => 1],
+	["text"  =>"Field Operations",		"code" => "operation",	"display" => 1],
+	["text"  =>"Data Visualization",	"code" => "visual",		"display" => 1],
+	["text"  =>"Allocation",			"code" => "allocation",	"display" => 1],
+	["text"  =>"Forecast & Planning",	"code" => "forecast",	"display" => 1],
+	["text"  =>"Product Delivery",		"code" => "delivery",	"display" => 1],
+	["text"  =>"Greenhouse Gas",		"code" => "greenhouse",	"display" => 1],
+	["text"  =>"Administrator",			"code" => "admin",		"display" => 1],
+	["text"  =>"System Configuration",	"code" => "config",		"display" => 1],
+	["text"  =>"Interfaces",			"code" => "interface",	"display" => 1]
+];
+ */
 $xmenu	= [];
 $xmenu["production"]=[
-["menutext"  =>"Flow Stream","desc" => "","url" => "/dc/flow"],
-["menutext"  =>"Energy Unit","desc" => "","url" => "/dc/eu"],
-["menutext"  =>"Tank & Storage","desc" => "","url" => "/dc/storage"],
-["menutext"  =>"Ticket","desc" => "","url" => "/dc/ticket"],
-["menutext"  =>"Well Test","desc" => "","url" => "/dc/eutest"],
-["menutext"  =>"Deferment & MMR","desc" => "","url" => "/dc/deferment"],
-["menutext"  =>"Quality","desc" => "","url" => "/dc/quality"]
+	"text"  =>"Production Management",
+	"display" => 1,
+	"sub" =>[
+		["text"  =>"Flow Stream","desc" => "","url" => "/dc/flow"],
+		["text"  =>"Energy Unit","desc" => "","url" => "/dc/eu"],
+		["text"  =>"Tank & Storage","desc" => "","url" => "/dc/storage"],
+		["text"  =>"Ticket","desc" => "","url" => "/dc/ticket"],
+		["text"  =>"Well Test","desc" => "","url" => "/dc/eutest"],
+		["text"  =>"Deferment & MMR","desc" => "","url" => "/dc/deferment"],
+		["text"  =>"Quality","desc" => "","url" => "/dc/quality"]
+	]
 ];
 $xmenu["operation"]=[
-["menutext"  =>"Safety","desc" => "","url" => "/fo/safety"],
-["menutext"  =>"Comments","desc" => "","url" => "/fo/comment"],
-["menutext"  =>"Equipment","desc" => "","url" => "/fo/equipment"],
-["menutext"  =>"Chemical","desc" => "","url" => "/fo/chemical"],
-["menutext"  =>"Personnel","desc" => "","url" => "/fo/personnel"]
+	"text"  =>"Field Operations",
+	"display" => 1,
+	"sub" =>[
+		["text"  =>"Safety","desc" => "","url" => "/fo/safety"],
+		["text"  =>"Comments","desc" => "","url" => "/fo/comment"],
+		["text"  =>"Equipment","desc" => "","url" => "/fo/equipment"],
+		["text"  =>"Chemical","desc" => "","url" => "/fo/chemical"],
+		["text"  =>"Personnel","desc" => "","url" => "/fo/personnel"]
+	]
 ];
 $xmenu["visual"]=[
-["menutext"  =>"Network Model","desc" => "","url" => "/diagram"],
-["menutext"  =>"Data View","desc" => "","url" => "/dataview"],
-["menutext"  =>"Report","desc" => "","url" => "/workreport"],
-["menutext"  =>"Advanced Graph","desc" => "","url" => "/graph"],
-["menutext"  =>"Workflow","desc" => "","url" => "/workflow"],
-["menutext"  =>"Choke Model","desc" => "","url" => "/fp/choke"],
-["menutext"  =>'Dashboard',"desc"=>"","url" => "/dashboard"],
-["menutext"  =>"Task Manager","desc" => "","url" => "/dv/taskman"],
+	"text"  =>"Data Visualization",
+	"display" => 1,
+	"sub" =>[
+		["text"  =>"Network Model","desc" => "","url" => "/diagram"],
+		["text"  =>"Data View","desc" => "","url" => "/dataview"],
+		["text"  =>"Report","desc" => "","url" => "/workreport"],
+		["text"  =>"Advanced Graph","desc" => "","url" => "/graph"],
+		["text"  =>"Workflow","desc" => "","url" => "/workflow"],
+		["text"  =>"Choke Model","desc" => "","url" => "/fp/choke"],
+		["text"  =>'Dashboard',"desc"=>"","url" => "/dashboard"],
+		["text"  =>"Task Manager","desc" => "","url" => "/dv/taskman"],
+	]
 ];
 $xmenu["allocation"]=[
-["menutext"  =>"Run Allocation","desc" => "","url" => "/allocrun"],
-["menutext"  =>"Config Allocation","desc" => "","url" => "/allocset"]
+	"text"  =>"Allocation",
+	"display" => 1,
+	"sub" =>[
+		["text"  =>"Run Allocation","desc" => "","url" => "/allocrun"],
+		["text"  =>"Config Allocation","desc" => "","url" => "/allocset"]
+	]
 ];
 $xmenu["forecast"]=[
-["menutext"  =>"WELL FORECAST","desc" => "","url" => "/fp/forecast"],
-["menutext"  =>"PREoS","desc" => "","url" => "../fp/preos"],
-["menutext"  =>"MANUAL ALLOCATE<br>PLAN","desc" => "","url" => "/fp/allocateplan"],
-["menutext"  =>"MANUAL ALLOCATE<br>FORECAST","desc" => "","url" => "/fp/allocateforecast"],
-["menutext"  =>"LOAD<br>PLAN/FORECAST","desc" => "","url" => "/fp/loadplanforecast"],
+	"text"  =>"Forecast & Planning",
+	"display" => 1,
+	"sub" =>[
+		["text"  =>"WELL FORECAST","desc" => "","url" => "/fp/forecast"],
+		["text"  =>"PREoS","desc" => "","url" => "../fp/preos"],
+		["text"  =>"MANUAL ALLOCATE PLAN","desc" => "","url" => "/fp/allocateplan"],
+		["text"  =>"MANUAL ALLOCATE FORECAST","desc" => "","url" => "/fp/allocateforecast"],
+		["text"  =>"LOAD PLAN/FORECAST","desc" => "","url" => "/fp/loadplanforecast"],
+	]
 ];
 $xmenu["delivery"]=[
-["menutext"  =>"CONTRACT ADMIN","desc" => "","url" => "/pd/contractdata"],
-["menutext"  =>"CARGO ADMIN","desc" => "","url" => "/pd/cargoentry"],
-["menutext"  =>"CARGO ACTION","desc" => "","url" => "/pd/cargovoyage"],
-["menutext"  =>"CARGO MANAGEMENT","desc" => "","url" => "/pd/demurrageebo"],
-["menutext"  =>"CARGO<br>MONITORING","desc" => "","url" => "/pd/liftaccdailybalance"],
+	"text"  =>"Product Delivery",
+	"display" => 1,
+	"sub" =>[
+		["text"  =>"CONTRACT ADMIN","desc" => "","url" => "/pd/contractdata"],
+		["text"  =>"CARGO ADMIN","desc" => "","url" => "/pd/cargoentry"],
+		["text"  =>"CARGO ACTION","desc" => "","url" => "/pd/cargovoyage"],
+		["text"  =>"CARGO MANAGEMENT","desc" => "","url" => "/pd/demurrageebo"],
+		["text"  =>"CARGO MONITORING","desc" => "","url" => "/pd/liftaccdailybalance"],
+	]
 ];
 $xmenu["greenhouse"]=[
-["menutext"  =>"EMISSION<br>SOURCES","desc" => "","url" => "../ghg/index.php/emission"],
-["menutext"  =>"EMISSION<br>ENTRY","desc" => "","url" => "../ghg/index.php/emissionEntry"],
-["menutext"  =>"EMISSION<br>RELEASED","desc" => "","url" => "../ghg/index.php/emissionReleased"],
-["menutext"  =>"EMISSION<br>ALLOCATION","desc" => "","url" => "../ghg/index.php/emissionAllocation"],
-["menutext"  =>"EMISSION<br>REPORT","desc" => "","url" => "../ghg/index.php/emissionReport"]
-	];
+	"text"  =>"Greenhouse Gas",
+	"display" => 1,
+	"sub" =>[
+		["text"  =>"EMISSION SOURCES","desc" => "","url" => "../ghg/index.php/emission"],
+		["text"  =>"EMISSION ENTRY","desc" => "","url" => "../ghg/index.php/emissionEntry"],
+		["text"  =>"EMISSION RELEASED","desc" => "","url" => "../ghg/index.php/emissionReleased"],
+		["text"  =>"EMISSION ALLOCATION","desc" => "","url" => "../ghg/index.php/emissionAllocation"],
+		["text"  =>"EMISSION REPORT","desc" => "","url" => "../ghg/index.php/emissionReport"]
+	]
+];
 $xmenu["admin"]=[
-["menutext"  =>"VALIDATE DATA","desc" => "","url" => "	/am/validatedata"],
-["menutext"  =>"APPROVE DATA","desc" => "","url" => "/am/approvedata"],
-["menutext"  =>"LOCK DATA","desc" => "","url" => "/am/lockdata"],
-["menutext"  =>"ROLES","desc" => "","url" => "/am/roles"],
-["menutext"  =>"USERS","desc" => "","url" => "/am/users"],
-["menutext"  =>"Audit Trail","desc" => "","url" => "/am/audittrail"],
-["menutext"  =>"USERS LOG","desc" => "","url" => "/am/userlog"],
-["menutext"  =>"HELP EDITOR","desc" => "","url" => "/am/helpeditor"]
-	];
+	"text"  =>"Administrator",
+	"display" => 1,
+	"sub" =>[
+		["text"  =>"VALIDATE DATA","desc" => "","url" => "/am/validatedata"],
+		["text"  =>"APPROVE DATA","desc" => "","url" => "/am/approvedata"],
+		["text"  =>"LOCK DATA","desc" => "","url" => "/am/lockdata"],
+		["text"  =>"ROLES","desc" => "","url" => "/am/roles"],
+		["text"  =>"USERS","desc" => "","url" => "/am/users"],
+		["text"  =>"Audit Trail","desc" => "","url" => "/am/audittrail"],
+		["text"  =>"USERS LOG","desc" => "","url" => "/am/userlog"],
+		["text"  =>"HELP EDITOR","desc" => "","url" => "/am/helpeditor"]
+	]
+];
 $xmenu["config"]=[
-["menutext"  =>"Fields Config","desc" => "","url" => "/fieldsconfig"],
-["menutext"  =>"Tables Data","desc" => "","url" => "/loadtabledata"],
-["menutext"  =>"Tags Mapping","desc" => "","url" => "/tagsMapping"],
-["menutext"  =>"Formula Editor","desc" => "","url" => "/formula"],
-["menutext"  =>"View Config","desc" => "","url" => "/viewconfig"],
-["menutext"  =>"Dashboard Config","desc" => "","url" => "/config/dashboard"],
-	];
+	"text"  =>"System Configuration",
+	"display" => 1,
+	"sub" =>[
+		["text"  =>"Fields Config","desc" => "","url" => "/fieldsconfig"],
+		["text"  =>"Tables Data","desc" => "","url" => "/loadtabledata"],
+		["text"  =>"Tags Mapping","desc" => "","url" => "/tagsMapping"],
+		["text"  =>"Formula Editor","desc" => "","url" => "/formula"],
+		["text"  =>"View Config","desc" => "","url" => "/viewconfig"],
+		["text"  =>"Dashboard Config","desc" => "","url" => "/config/dashboard"],
+	]
+];
 $xmenu["interface"]=[
-["menutext"  =>"IMPORT DATA","desc" => "Import Tags Spreadsheet","url" => "/importdata"],
-["menutext"  =>"SOURCE CONFIG","desc" => "","url" => "/sourceconfig"],
-["menutext"  =>"DATA LOADER","desc" => "","url" => "/dataloader"]
+	"text"  =>"Interface",
+	"display" => 1,
+	"sub" =>[
+		["text"  =>"IMPORT DATA","desc" => "Import Tags Spreadsheet","url" => "/importdata"],
+		["text"  =>"SOURCE CONFIG","desc" => "","url" => "/sourceconfig"],
+		["text"  =>"DATA LOADER","desc" => "","url" => "/dataloader"]
+	]
 ];
 	
 
-$lang			= session()->get('locale', "en");
-foreach($xmenu as $index => $smenu ){
-	foreach($smenu as  $cindex => $menuContent ){
-		$menuContent["menutext"]	= Lang::has("front/site.".$menuContent["menutext"], $lang)?
-									trans("front/site.".$menuContent["menutext"]):$menuContent["menutext"];
-		$menuContent["desc"]		= Lang::has("front/site.".$menuContent["desc"], $lang)?
-									trans("front/site.".$menuContent["desc"]):$menuContent["desc"];
-		$smenu[$cindex]	= $menuContent;
+$lang = session()->get('locale', "en");
+foreach($xmenu as $index => $object ){
+	$smenu = $object["sub"];
+	foreach($smenu as  $cindex => $menuItem ){
+		$menuItem["text"]	= Lang::has("front/site.".$menuItem["text"], $lang)?
+									trans("front/site.".$menuItem["text"]):$menuItem["text"];
+		$menuItem["desc"]		= Lang::has("front/site.".$menuItem["desc"], $lang)?
+									trans("front/site.".$menuItem["desc"]):$menuItem["desc"];
+		$smenu[$cindex]	= $menuItem;
 	}
-	$xmenu[$index]	= $smenu;
+	$xmenu[$index]["sub"] = $smenu;
+	$xmenu[$index]["text"] = \Helper::translateText($lang,$xmenu[$index]["text"]);
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -96,412 +150,163 @@ foreach($xmenu as $index => $smenu ){
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
         <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-        <meta name="description" content="Creative CSS3 Animation Menus" />
-        <meta name="keywords" content="menu, navigation, animation, transition, transform, rotate, css3, web design, component, icon, slide" />
-        <meta name="author" content="Codrops" />
+        <meta name="keywords" content="oil,gas,energy,production" />
+        <meta name="author" content="edataviz" />
 		<meta name="_token" content="{{ app('Illuminate\Encryption\Encrypter')->encrypt(csrf_token()) }}" />
 		<link rel="shortcut icon" href="../favicon.ico"> 
         <link rel="stylesheet" type="text/css" href="../css/style8.css" />
-		<link rel="stylesheet" href="../css/hexagon.css?r=2">
-		<link rel="stylesheet" href="../index.htm_files/css3menu0/style.css" type="text/css" />
+		<link rel="stylesheet" href="../css/hexagon.css?3">
 		<link rel="stylesheet" href="../common/css/jquery-ui.css">
 		<link rel="stylesheet" href="../common/css/style.css">
 
 	    <script src="../common/js/jquery-1.9.1.js"></script> 
 		<script src="../common/js/jquery-ui.js"></script>
 
-		<script type="text/javascript" src="../common/js/jquery.reveal.js"></script>
 		<script type="text/javascript" src="../common/utils.js"></script>
 </head>
     <body style="background:#222222">
 	<script>var func_code="ROOT";</script>
+	<style>#boxUserInfo{display:none}</style>
 	@include('partials.user')
 
-<table border="0" cellpadding="0" cellspacing="0" width="100%" id="table2" height="100%">
-	<tr>
-		<td height="120" valign="top">
-		<div id="pageheader">
-			<div id="hex_logo">
-<div style="display:none;position: absolute; width: 56px; height: 54px; z-index: 1; left:470px;top:443px" id="bee">
-					<img border="0" src="../img/bee.png"></div>						
-				<img border="0" src="../img/eb2.png?1" >
-				<div style="display:none;position: absolute; width: 78px; height: 26px; z-index: 1; left: 76px; top: 187px" id="menu_holder">
-<ul id="css3menu0" class="topmenu">
-	<li class="topmenu"><a href="#" style="width:30px;height:10px;line-height:10px;"><p align=center>...</p></a>
-	</li>
-</ul>
-			</div>
-			</div>
-			<p></div>
-		</td>
-	</tr>
-	<tr>
-		<td valign="top">
-<!-- 		<a href='http://www.centralpetroleum.com.au' target='_blank'>
-			<img src='../img/cplogo.png' style='position: absolute;top: 50%;left:50%;transform: translate(390px,-120px);width:180px'>
-		</a> -->
-		<div id="poweredBy">	
+<div id="hex_logo">
+	<img border="0" src="../img/eb2.png?1" >
+</div>
 
-	<div class="hex" style="background:#ffffff">		
-		<div class="inner" style="color:#333">
-		Powered by<br>
-		<img width="110" src="../img/edataviz_logo.png" style="margin:5px 0px" alt="eDataViz"><br>
-		<font size="1">Copyright &copy; 2016 eDataViz LLC</font>
-		</div>		
-		<a target="_blank" href="http://www.edataviz.com"></a>
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
+<img id="bee" style="z-index:1000;display:;position: absolute; width: 56px; height: 54px; left:50%;margin-left:1px;top:490px" border="0" src="../img/bee.png">
+
+<div id="poweredBy">	
+	<div class="hex" style="background:#ffffff">
+	<div class="inner" style="color:#333">
+	Powered by
+	<img width="110" src="../img/edataviz_logo.png" style="margin:5px 0px" alt="eDataViz">
+	<font size="1">Copyright &copy; 2016 eDataViz LLC</font>
+	</div>
+	<a target="_blank" href="http://www.edataviz.com"></a>
+	<div class="corner-1"></div>
+	<div class="corner-2"></div>
 	</div>	
-			<p>&nbsp;</div>
-&nbsp;</td>
-	</tr>
-</table>
+</div>
+
 <div class="hex_container" style="z-index:100" id="boxLogin">
-	<div class="hex_disabled hex-gap" id="cell1">		
+	<div class="hex hex_disabled hex-gap" id="cell1">
 		<div class="inner">
-		</div>		
+		</div>
 		<a href="#"></a>
 		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
+		<div class="corner-2"></div>
 	</div>
 	
-	<div class="hex_disabled" id="cell2">		
+	<div class="hex hex_disabled" id="cell2">
 		<div class="inner">
-		</div>		
+		</div>
 		<a href="#"></a>
 		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
+		<div class="corner-2"></div>
 	</div>
 
 
-	<div class="hex_disabled" id="cell3">		
+	<div class="hex hex_disabled" id="cell3">
 		<div class="inner">
-		</div>		
+		</div>
 		<a href="../diagram/index.htm"></a>
 		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
+		<div class="corner-2"></div>
 	</div>	
 	
-	<div class="hex_disabled" id="cell7">		
+	<div class="hex hex_disabled" id="cell7">
 		<div class="inner">
-		</div>		
+		</div>
 		<a href="#"></a>
 		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
+		<div class="corner-2"></div>
 	</div>	
 	
-	<div class="hex_disabled" style="background:#666">		
+	<div class="hex hex_disabled" style="background:#666">
 		<div class="inner">
 		<h4>Username</h4>
 		<input class="r_textbox" type="text" style="width:120px;" id="username" name="username" value="" />
 		<div style="margin-left:13px;width:120px;height:3px;border:1px solid #d08924;border-top:none"></div>
-		</div>		
+		</div>
 		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
+		<div class="corner-2"></div>
 	</div>	
 	
-	<div class="hex_disabled" style="background:#666">		
+	<div class="hex hex_disabled" style="background:#666">
 		<div class="inner">
 		<h4>Password</h4>
 		<input class="r_textbox" type="password" style="width:120px;" value="" id="password" name="password" />
 		<div style="margin-left:13px;width:120px;height:3px;border:1px solid #d08924;border-top:none"></div>
-		</div>		
+		</div>
 		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
+		<div class="corner-2"></div>
 	</div>
 	
-	<div class="hex_disabled" id="cell4">		
+	<div class="hex hex_disabled" id="cell4">
 		<div class="v_top">
-		</div>		
+		</div>
 		<a href="#"></a>
 		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
+		<div class="corner-2"></div>
 	</div>	
 	
-	<div class="hex_disabled hex-gap" id="cell6">		
+	<div class="hex hex_disabled hex-gap" id="cell6">
 		<div class="inner">
-		</div>		
+		</div>
 		<a href="#"></a>
 		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
+		<div class="corner-2"></div>
 	</div>	
 	
 	
-	<div class="hex hex-login">		
+	<div class="hex hex-login">
 		<div class="inner">
-		<div style="position: absolute; width: 100px; height: 100px; z-index: 200; left:57px;top:61px">
-					<img border="0" src="../img/bee.png"></div>		
-				<h4>LOG IN</h4>
-		</div>		
+			<img style="display:none;position: absolute; z-index: 200;top:80px;left:85px;" width="47" border="0" src="../img/bee.png">
+			<h4>LOG IN</h4>
+		</div>
 		<a href="javascript:logineb()"></a>
 		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
+		<div class="corner-2"></div>
 	</div>
 
 	
-	<div class="hex_disabled" id="cell5">		
+	<div class="hex hex_disabled" id="cell5">
 		<div class="inner">
-		</div>		
-		<a href="#"></a>
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>	
-	
-</div>
-<div class="hex_container" style="display:none" id="boxMenu">
-	<div class="hex_disabled hex-gap" id="menuName">		
-		<div class="inner">
-		<h4>MENU NAME</h4>
-		</div>		
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>
-	
-	<div class="hex hex-1" id="menu4">		
-		<div class="inner">
-		<h4>MENU 6</h4>
 		</div>
 		<a href="#"></a>
 		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>
+		<div class="corner-2"></div>
+	</div>	
+	
+</div>
 
-	<div class="hex hex-1" id="menu3">		
-		<div class="inner">
-		<h4>MENU 5</h4>
-		</div>
-		<a href="#"></a>
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>	
-	
-	<div class="hex hex-1" id="menu7">		
-		<div class="inner">
-		<h4>MENU 7</h4>
-		</div>
-		<a href="#"></a>
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>	
-	
-	<div class="hex hex-1" id="menu0">		
-		<div class="inner">
-		<h4>MENU 0</h4>
-		</div>		
-		<a href="#"></a>
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>	
-	
-	<div class="hex hex-1" id="menu1">		
-		<div class="inner">
-		<h4>MENU 1</h4>
-		</div>		
-		<a href="#"></a>
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>
-	
-	<div class="hex hex-1" id="menu2">		
-		<div class="inner">
-		<h4>MENU 2</h4>
-		</div>		
-		<a href="#"></a>
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>	
-	
-	<div class="hex hex-3 hex-gap" id="menuBack" code="back">		
-		<div class="inner">
-		<h4><img src='../img/back.png' style="vertical-align:middle"> &nbsp;&nbsp;HOME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h4>
-		</div>		
-		<a href="#" onclick="func(this)"></a>
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>	
-	
-	<div class="hex hex-1" id="menu6">		
-		<div class="inner">
-		<h4>MENU 4</h4>
-		</div>		
-		<a href="#"></a>
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>	
-	
-	<div class="hex hex-1" id="menu5">		
-		<div class="inner">
-		<h4>MENU 3</h4>
-		</div>		
-		<a href="#"></a>
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>
-	
-</div>
 <div class="hex_container" style="display:none" id="boxFunctions">
-	<div class="hex hex-1 hex-gap" id="func1" code="production">		
-		<div class="inner">
-				<h4>
-				<?php
-				echo \Helper::translateText($lang,"PRODUCTION<br>MANAGEMENT");
-				?>
-				</h4>
-		</div>		
-		<a id="pm" href="#" onclick="func(this)"></a>
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>
-	
-	<div class="hex hex-2" id="func2" code="operation">		
-		<div class="inner">
-				<h4>
-				<?php
-				echo \Helper::translateText($lang,"FIELD<br>OPERATIONS");
-				?>
-				</h4>
-		</div>		
-		<a id="fo" href="#" onclick="func(this)"></a>
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>
-
-
-	<div class="hex hex-3" id="func3" code="visual">		
-		<div class="inner">
-				<h4>
-				<?php
-				echo \Helper::translateText($lang,"DATA<br>VISUALIZATION");
-				?>
-				</h4>
-		</div>		
-		<a id="dv" href="#" onclick="func(this)"></a>
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>	
-	
-	<div class="hex hex-2" id="func4" code="allocation">		
-		<div class="inner">
-		<h4>
-				<?php
-				echo \Helper::translateText($lang,"ALLOCATION");
-				?>
-		</h4>		
-		</div>		
-		<a id="allocation" href="#" onclick="func(this)"></a>
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>	
-	
-	<div class="hex hex-3" id="func5" code="forecast">		
-		<div class="inner">
-		<h4>
-				<?php
-				echo \Helper::translateText($lang,"FORECAST & PLANNING");
-				?>
-		</h4>
-		</div>		
-		<a id="fp" href="#" onclick="func(this)"></a>
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>	
 <?php
-if(true){
+$i = 0;
+foreach($xmenu as $code => $object ){
+	$i++;
+	$text = $object["text"];
+	$enabled = $object["display"] == 1;
+	$class = "hex";
+	if($i == 1 || $i == 6 || $i == 8)
+		$class .= " hex-1";
+	else if($i == 2 || $i == 4 || $i == 7 || $i == 9)
+		$class .= " hex-2";
+	else
+		$class .= " hex-3";
+	if($i == 1 || $i == 8)
+		$class .= " hex-gap";
 ?>
-	<div class="hex hex-1" id="func6" code="delivery">		
+	<div class="menu {{$class}}" base_class="{{$class}}" base_text="{{$text}}" url="" id="func_{{$i}}" index="{{$i}}" code="{{$code}}" onclick="func(this)">
 		<div class="inner">
-		<h4>
-				<?php
-				echo \Helper::translateText($lang,"PRODUCT<br>DELIVERY");
-				?>
-		</h4>
-		</div>		
-		<a id="pd" href="#" onclick="func(this)"></a>
+			<h4><span id="menu_text">{{$text}}</span><span id="menu_back"></span></h4>
+		</div>
 		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
+		<div class="corner-2"></div>
 	</div>
-	<div class="hex hex-2" id="func7" code="greenhouse">		
-		<div class="inner">
-		<h4>
-				<?php
-				echo \Helper::translateText($lang,"GREENHOUSE<br>GAS");
-				?>
-		</h4>
-		</div>		
-		<a id="gg"href="#" onclick="func(this)"></a>
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>	
-<?php
-}
-else
-{
-?>
-	<div class="hex hex-1" id="func6" code="delivery">		
-		<div class="inner">
-		<h4>
-				<?php
-				echo \Helper::translateText($lang,"PRODUCT<br>DELIVERY");
-				?>
-		</h4>
-		</div>		
-		<a href="#" onclick="func(this)"></a>
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>	
-	<div class="hex hex-2" id="func7" code="greenhouse">		
-		<div class="inner">
-		<h4>
-				<?php
-				echo \Helper::translateText($lang,"GREENHOUSE<br>GAS");
-				?>
-		</h4>
-		</div>		
-		<a href="#" onclick="func(this)"></a>
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>	
 <?php
 }
 ?>
-	
-	<div class="hex hex-1 hex-gap" id="func8" code="admin">		
-		<div class="inner">
-		<h4>
-				<?php
-				echo \Helper::translateText($lang,"ADMINISTRATOR");
-				?>
-		</h4>
-		</div>		
-		<a id="administrator" href="#" onclick="func(this)"></a>
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>	
-	
-	<div class="hex hex-2" code="config">		
-		<div class="inner">
-		<h4>
-				<?php
-				echo \Helper::translateText($lang,"SYSTEM<br>CONFIGURATION");
-				?>
-		</h4>
-		</div>		
-		<a id="sc" href="#" onclick="func(this)"></a>
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>	
-	
-	<div class="hex hex-3" code="interface">		
-		<div class="inner">
-			<h4>
-				<?php echo \Helper::translateText($lang,"INTERFACES"); ?>
-			</h4>
-		</div>		
-		<a id="interfaces" href="#" onclick="func(this)"></a>
-		<div class="corner-1"></div>
-		<div class="corner-2"></div>		
-	</div>
-	
 </div>
 <script>
 $.ajaxSetup({
@@ -574,97 +379,74 @@ function layoutUserLoggedIn(ani)
 				);					
 			});
 	}
-	else
-		$( "#bee" ).hide();
-	//	$( "#bee" ).css({"top": 3, "left": 55,"transform":"rotate(90deg)" });
+	else $( "#bee" ).hide();
 }
 function layoutUserLoggedOut()
 {
 	window.location.reload();
-	return;
-	$("#boxLogin").show();
-	$("#menu_holder").hide();
-	$("#bee").hide();
-	$("#bee").css({top: 443, left: 470,rotation:0});
 }
 var menuBox;
 var menu = <?php echo json_encode($xmenu); ?>;
-
-function func(o)
+function showMainMenu(){
+/* 	$( "#boxFunctions" ).fadeIn( 500, function() {
+	});
+	$( "#boxMenu" ).fadeOut( 500, function() {
+	});
+ */
+	$(".menu").each(function(){
+		$(this).attr("class","menu "+$(this).attr("base_class"));
+		$(this).find("#menu_text").html($(this).attr("base_text"));
+		//$(this).find("a").attr("href","#");
+		$(this).attr("url","");
+	});
+}
+function func(menu_item)
 {
-	var menuID=$(o).parent().attr("code");
-	if(menuID=='back')
+	var menu_item = $(menu_item);
+	if(menu_item.hasClass("hex_dim"))
+		return;
+	if(menu_item.attr("back")=='1')
 	{
-		$( "#boxFunctions" ).fadeIn( 500, function() {
-			//$( "span" ).fadeIn( 100 );
-		});
-		$( "#boxMenu" ).fadeOut( 500, function() {
-			//$( "span" ).fadeIn( 100 );
-		});
-		//$("#boxMenu").hide();
-		//$("#boxFunctions").show();
+		menu_item.attr("back","");
+		menu_item.find("#menu_back").html("");
+		showMainMenu();
 		return;
 	}
-	var a=menu[menuID];
-	if(typeof(a) == "undefined") return ;
 	
-	if(a.length==0)
-	{
-		//alert("This function is not available");
-		//$('#myModal').foundation('reveal', 'open');
+	var url = menu_item.attr("url");
+	if(url.length > 0){
+		window.location = url;
+		return;
 	}
-	//else if(a.length==1)
-	//	document.location.href=a[0]["url"];
-	else
-	{
-		$("#menuName h4").html($(o).parent().find("h4").html());
-		var i;
-		for(i=0;i<a.length;i++)
-		{
- 			$("#menu"+i+" h4").html(a[i]["menutext"].toUpperCase());
-// 			$("#menu"+i+" h4").html(a[i]["menutext"]);
-			$("#menu"+i+" a").attr("href",a[i]["url"]);
-			$("#menu"+i).attr("class",$("#menu"+i).attr("old_class"));
-			$("#menu"+i).css("opacity","none");
-		}
-		for(i=a.length;i<8;i++)
-		{
-			//$("#menu"+i).hide();
-			$("#menu"+i+" h4").html("");
-			$("#menu"+i+" a").attr("href","#");
-			$("#menu"+i).attr("class","hex_dim");
-			//$("#menu"+i).css("opacity",0.5);
-		}
+
+	var menuCode=menu_item.attr("code");
+	if(menu[menuCode] == undefined) return ;
+	if(menu[menuCode].sub == undefined) return ;
+	var a=menu[menuCode].sub;
+	
+	if(a.length > 0){
+		var menu_item_index=menu_item.attr("index");
+		menu_item.attr("back","1");
+		menu_item.find("#menu_back").html("<hr>HOME");
 		
-		$( "#boxFunctions" ).fadeOut( 500, function() {
-			//$( "span" ).fadeIn( 100 );
+		var i= 0;
+		$(".menu").each(function(){
+			var index = $(this).attr("index");
+			if(index != menu_item_index){
+				if(i < a.length){
+					$(this).removeClass("hex-1").removeClass("hex-2").removeClass("hex-3").addClass("hex-m");
+					$(this).find("#menu_text").html(a[i]["text"]);
+					//$(this).find("a").attr("href",a[i]["url"]);
+					$(this).attr("url",a[i]["url"]);
+				}
+				else{
+					$(this).removeClass("hex-1").removeClass("hex-2").removeClass("hex-3").addClass("hex_dim");
+				}
+				i++;
+			}
 		});
-		$( "#boxMenu" ).fadeIn( 500, function() {
-			//$( "span" ).fadeIn( 100 );
-		});
-		//$("#boxMenu").show();
-		//$("#boxFunctions").hide();
 	}
 }
-$("#boxMenu").children().each(function(){
-	$(this).attr("old_class",$(this).attr("class"));
-	//alert($(this).attr("old_class"));
-});
-
-
-
-<?php
-/* $is_logged_in = false;
-if($is_logged_in)
-{
-	echo "layoutUserLoggedIn();";
-}
-else
-	echo "$('#boxUserInfo').hide();"; */
-
-// echo "\r\nvar _redirect='".($_REQUEST['redirect']?base64_decode($_REQUEST['redirect']):"")."';";
-?>
-
 
 function logineb(){
 
