@@ -103,7 +103,8 @@ class StorageDisplayController extends ChokeController {
 						$objectName 	= $objectTypeModel::find($objectId);
 						if ($objectName) {
 							$objectName 	= $objectName->NAME;
-							$objectNames[]	= "$objectName($tableName.$queryField)$calculation";
+// 							$objectNames[]	= "$objectName($tableName.$queryField)$calculation";
+							$objectNames[]	= $objectName;
 						}
 					}
 					

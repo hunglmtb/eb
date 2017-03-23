@@ -49,6 +49,7 @@ $xmenu["visual"]=[
 		["text"  =>"Choke Model","desc" => "","url" => "/fp/choke"],
 		["text"  =>'Dashboard',"desc"=>"","url" => "/dashboard"],
 		["text"  =>"Task Manager","desc" => "","url" => "/dv/taskman"],
+		["text"  =>"Storage Display","desc" => "","url" => "/pd/storagedisplay"],
 	]
 ];
 $xmenu["allocation"]=[
