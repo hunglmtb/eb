@@ -299,7 +299,7 @@ foreach($xmenu as $code => $object ){
 	if($i == 1 || $i == 8)
 		$class .= " hex-gap";
 ?>
-	<div class="menu {{$class}}" base_class="{{$class}}" base_text="{{$text}}" url="" id="func_{{$code}}" index="{{$i}}" code="{{$code}}" onclick="func(this)">
+	<div class="menu {{$class}}" base_class="{{$class}}" base_text="{{$text}}" url="" id="func_{{$i}}" index="{{$i}}" code="{{$code}}" onclick="func(this)">
 		<div class="inner" id="{{$code}}">
 			<h4><span id="menu_text">{{$text}}</span><span id="menu_back"></span></h4>
 		</div>
@@ -444,7 +444,6 @@ function func(menu_item)
 		var menu_item_index=menu_item.attr("index");
 		menu_item.attr("back","1");
 		menu_item.find("#menu_back").html("<hr>HOME");
-		
 		for(var i=0;i<submenu_idx[menu_item_index].length;i++){
 			var m = $("#func_"+submenu_idx[menu_item_index][i]);
 			if(i < a.length){
