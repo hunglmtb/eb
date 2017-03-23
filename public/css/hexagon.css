@@ -31,8 +31,6 @@ a:hover {
 	top:392px;
 }
 
-
-
 /* HEXAGON STARTS HERE */
 .hex {
 	width:150px;
@@ -48,15 +46,21 @@ a:hover {
 	display: table;
 	transition: all 200ms linear;
 	cursor: pointer;
+	//opacity:0.8;
 }
 
 .hex:hover {
     transform: scale(1.2);
     z-index:999;
+
+}
+
+.hex:hover hr {
+	width:100%;
 }
 
 .hex.hex-m:hover {
-	background-color: #bbbbbb;
+	//background-color: #aaaaaa;
 }
 
 .hex_disabled, .hex_dim{
@@ -84,7 +88,7 @@ a:hover {
 		left:0;
 		width:100%;
 		height:100%;
-		background: inherit;								
+		background: inherit;
 		z-index:-2;						
 		overflow:hidden;		
 	}
@@ -164,6 +168,7 @@ a:hover {
 		border:0;
 		border-top:1px solid #eee;
 		width:60%;
+		transition: width 200ms linear;
 	}
 	
 	.hex p {
@@ -190,17 +195,24 @@ a:hover {
 	}
 	
 	.hex.hex-3 {
+<<<<<<< HEAD
+		background: #3271b2;
+=======
 		background: #52aaab;
+>>>>>>> d6b1706f240cbc15578b73531c42e33e7fda6958
 	}
 
 	.hex.hex-m {
-		background: #999999;
+		background: #888888;
 	}
 
 	.hex_disabled {
 		background: #888;
 	}
-	.hex_dim {background: #444;cursor:default}
+	.hex_dim {
+		background: #444;
+		cursor:default;
+	}
 	.hex_dim  .inner{display:none}
 	.v_center {		
 		color:#fff;
