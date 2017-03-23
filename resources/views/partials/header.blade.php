@@ -301,7 +301,7 @@
 
 <div id="menu-wrapper">
 	 <a href="/"><img src="/img/eb2.png" height="40" style="position:absolute;z-index:2;top:10px;left:20px"></a>
-	<ul class="nav" id = "menu_nav"></ul>
+	<ul class="navi" id = "menu_navi"></ul>
 </div>
 
 	 <div id="user_box" style="position:absolute;top:8px;right:10px;text-align:right">
@@ -348,21 +348,21 @@ for(var i = 0; i < xmenu.length; i++) {
 							activeTitle = is_menu_active? menu.title : activeTitle;
 						}
 					}
-					html_block+='<div class="nav-cell'+(is_block_active?' activex':'')+'"><a href="'+block.link+'"><h3>'+block.name+'</h3></a><ul>'+html_menu+'</ul></div>';
+					html_block+='<div class="navi-cell'+(is_block_active?' activex':'')+'"><h3>'+block.name+'</h3><ul>'+html_menu+'</ul></div>';
 				}
-				html_col+='<div class="nav-column">'+html_block+'</div>';
+				html_col+='<div class="navi-column">'+html_block+'</div>';
 			}
 		}
 	}
 	if(group.link==active_link) is_group_active=true;
-	html_group+='<li'+(is_group_active?' class="activex"':'')+'><a href="'+group.link+'">'+group.name+'</a>';
+	html_group+='<li'+(is_group_active?' class="activex"':'')+'><a href="#">'+group.name+'</a>';
 	if(group.columns!==null)
 		html_group+='<div'+(group.background_img!==""?' style="background-image:url(/img/'+group.background_img+');background-repeat: no-repeat;background-position: right bottom;"':'')+'>'+html_col+'</div>';
 	html_group+='</li>';
 }
 menuHtml ='<li class="active_item">'+activeTitle+'</li>'+html_group;
 
-var element = document.getElementById("menu_nav");
+var element = document.getElementById("menu_navi");
 element.innerHTML += menuHtml; 
 </script>
 

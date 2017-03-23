@@ -1,17 +1,4 @@
 <?php
-/* $main_menu = [
-	["text"  =>"Production Management",	"code" => "production",	"display" => 1],
-	["text"  =>"Field Operations",		"code" => "operation",	"display" => 1],
-	["text"  =>"Data Visualization",	"code" => "visual",		"display" => 1],
-	["text"  =>"Allocation",			"code" => "allocation",	"display" => 1],
-	["text"  =>"Forecast & Planning",	"code" => "forecast",	"display" => 1],
-	["text"  =>"Product Delivery",		"code" => "delivery",	"display" => 1],
-	["text"  =>"Greenhouse Gas",		"code" => "greenhouse",	"display" => 1],
-	["text"  =>"Administrator",			"code" => "admin",		"display" => 1],
-	["text"  =>"System Configuration",	"code" => "config",		"display" => 1],
-	["text"  =>"Interfaces",			"code" => "interface",	"display" => 1]
-];
- */
 $xmenu	= [];
 $xmenu["production"]=[
 	"text"  =>"Production Management",
@@ -49,6 +36,7 @@ $xmenu["visual"]=[
 		["text"  =>"Choke Model","desc" => "","url" => "/fp/choke"],
 		["text"  =>'Dashboard',"desc"=>"","url" => "/dashboard"],
 		["text"  =>"Task Manager","desc" => "","url" => "/dv/taskman"],
+		["text"  =>"Storage Display","desc" => "","url" => "/pd/storagedisplay"],
 	]
 ];
 $xmenu["allocation"]=[
@@ -116,6 +104,7 @@ $xmenu["config"]=[
 		["text"  =>"Formula Editor","desc" => "","url" => "/formula"],
 		["text"  =>"View Config","desc" => "","url" => "/viewconfig"],
 		["text"  =>"Dashboard Config","desc" => "","url" => "/config/dashboard"],
+		["text"  =>"Objects Manager","desc" => "","url" => "/objectsmanager"],
 	]
 ];
 $xmenu["interface"]=[
@@ -164,16 +153,29 @@ foreach($xmenu as $index => $object ){
 
 		<script type="text/javascript" src="../common/utils.js"></script>
 </head>
-    <body style="background-image:url('/img/bg2.png')">
-	<script>var func_code="ROOT";</script>
-	<style>#boxUserInfo{display:none}</style>
-	@include('partials.user')
+<body style="background-image:url('/img/bg2.png')">
+<script>var func_code="ROOT";</script>
+<style>
+#boxUserInfo{display:none}
+#bee{
+	z-index:1000;
+	display:block;
+	position: absolute;
+	width: 56px;
+	height: 54px;
+	left:50%;
+	margin-left:1px;
+	top:490px;
+	transition: left 1500ms ease-in, top 1500ms ease-out;
+}
+</style>
+@include('partials.user')
 
 <div id="hex_logo">
 	<img border="0" src="../img/eb2.png?1" >
 </div>
 
-<img id="bee" style="z-index:1000;display:;position: absolute; width: 56px; height: 54px; left:50%;margin-left:1px;top:490px" border="0" src="../img/bee.png">
+<img id="bee" border="0" src="../img/bee.png">
 
 <div id="poweredBy">	
 	<div class="hex" style="background:#ffffff">
@@ -364,7 +366,8 @@ function layoutUserLoggedIn(ani)
 	$("#bee").show();
 	if(ani)
 	{
-		$( "#bee" ).stop().animate({
+		$("#bee").css({left:-100, top: -100});
+/* 		$( "#bee" ).stop().animate({
 				left: "-=875",
 				top: "-=900"
 			}, 2000, function() { //animation complete, then rotate
@@ -378,7 +381,7 @@ function layoutUserLoggedIn(ani)
 				  }
 				);					
 			});
-	}
+ */	}
 	else $( "#bee" ).hide();
 }
 function layoutUserLoggedOut()
@@ -386,6 +389,17 @@ function layoutUserLoggedOut()
 	window.location.reload();
 }
 var menuBox;
+var submenu_idx={};
+submenu_idx["1"] = [4,5,2,6,8,9,3,10,7];
+submenu_idx["2"] = [5,6,1,3,9,4,7,8,10];
+submenu_idx["3"] = [6,7,2,5,10,9,1,4,8];
+submenu_idx["4"] = [5,8,1,6,9,2,7,10,3];
+submenu_idx["5"] = [4,1,8,6,2,9,7,3,10];
+submenu_idx["6"] = [5,2,9,7,3,10,1,8,4];
+submenu_idx["7"] = [6,10,3,2,9,5,1,8,4];
+submenu_idx["8"] = [4,5,9,6,1,2,10,7,3];
+submenu_idx["9"] = [5,6,8,10,2,4,7,1,3];
+submenu_idx["10"] = [6,7,9,5,3,2,8,1,4];
 var menu = <?php echo json_encode($xmenu); ?>;
 function showMainMenu(){
 /* 	$( "#boxFunctions" ).fadeIn( 500, function() {
@@ -398,8 +412,10 @@ function showMainMenu(){
 		$(this).find("#menu_text").html($(this).attr("base_text"));
 		//$(this).find("a").attr("href","#");
 		$(this).attr("url","");
+		//$(this).css("opacity","1");
 	});
 }
+
 function func(menu_item)
 {
 	var menu_item = $(menu_item);
@@ -429,22 +445,18 @@ function func(menu_item)
 		menu_item.attr("back","1");
 		menu_item.find("#menu_back").html("<hr>HOME");
 		
-		var i= 0;
-		$(".menu").each(function(){
-			var index = $(this).attr("index");
-			if(index != menu_item_index){
-				if(i < a.length){
-					$(this).removeClass("hex-1").removeClass("hex-2").removeClass("hex-3").addClass("hex-m");
-					$(this).find("#menu_text").html(a[i]["text"]);
-					//$(this).find("a").attr("href",a[i]["url"]);
-					$(this).attr("url",a[i]["url"]);
-				}
-				else{
-					$(this).removeClass("hex-1").removeClass("hex-2").removeClass("hex-3").addClass("hex_dim");
-				}
-				i++;
+		for(var i=0;i<submenu_idx[menu_item_index].length;i++){
+			var m = $("#func_"+submenu_idx[menu_item_index][i]);
+			if(i < a.length){
+				m.removeClass("hex-1").removeClass("hex-2").removeClass("hex-3").addClass("hex-m");
+				m.find("#menu_text").html(a[i]["text"]);
+				m.attr("url",a[i]["url"]);
 			}
-		});
+			else{
+				m.removeClass("hex-1").removeClass("hex-2").removeClass("hex-3").addClass("hex_dim");
+			}
+			//menu.css("opacity","1");
+		}
 	}
 }
 
@@ -499,6 +511,33 @@ function logineb(){
     }
   });    
 }
+function shadeBlendConvert(p, from, to) {
+    if(typeof(p)!="number"||p<-1||p>1||typeof(from)!="string"||(from[0]!='r'&&from[0]!='#')||(typeof(to)!="string"&&typeof(to)!="undefined"))return null; //ErrorCheck
+    if(!this.sbcRip)this.sbcRip=function(d){
+        var l=d.length,RGB=new Object();
+        if(l>9){
+            d=d.split(",");
+            if(d.length<3||d.length>4)return null;//ErrorCheck
+            RGB[0]=i(d[0].slice(4)),RGB[1]=i(d[1]),RGB[2]=i(d[2]),RGB[3]=d[3]?parseFloat(d[3]):-1;
+        }else{
+            if(l==8||l==6||l<4)return null; //ErrorCheck
+            if(l<6)d="#"+d[1]+d[1]+d[2]+d[2]+d[3]+d[3]+(l>4?d[4]+""+d[4]:""); //3 digit
+            d=i(d.slice(1),16),RGB[0]=d>>16&255,RGB[1]=d>>8&255,RGB[2]=d&255,RGB[3]=l==9||l==5?r(((d>>24&255)/255)*10000)/10000:-1;
+        }
+        return RGB;}
+    var i=parseInt,r=Math.round,h=from.length>9,h=typeof(to)=="string"?to.length>9?true:to=="c"?!h:false:h,b=p<0,p=b?p*-1:p,to=to&&to!="c"?to:b?"#000000":"#FFFFFF",f=sbcRip(from),t=sbcRip(to);
+    if(!f||!t)return null; //ErrorCheck
+    if(h)return "rgb("+r((t[0]-f[0])*p+f[0])+","+r((t[1]-f[1])*p+f[1])+","+r((t[2]-f[2])*p+f[2])+(f[3]<0&&t[3]<0?")":","+(f[3]>-1&&t[3]>-1?r(((t[3]-f[3])*p+f[3])*10000)/10000:t[3]<0?f[3]:t[3])+")");
+    else return "#"+(0x100000000+(f[3]>-1&&t[3]>-1?r(((t[3]-f[3])*p+f[3])*255):t[3]>-1?r(t[3]*255):f[3]>-1?r(f[3]*255):255)*0x1000000+r((t[0]-f[0])*p+f[0])*0x10000+r((t[1]-f[1])*p+f[1])*0x100+r((t[2]-f[2])*p+f[2])).toString(16).slice(f[3]>-1||t[3]>-1?1:3);
+}
+$(".menu").each(function(){
+	$(this).hover(function(){
+			if($(this).hasClass("hex_dim")) return;
+			$(this).css("background-color", shadeBlendConvert(0.25,$(this).css("background-color")));
+		}, function(){
+			$(this).css("background-color", "");
+	});
+});
 	</script>
 
 	@if((session('statut') != null) && (session('statut') != '') && session('statut') != 'visitor')

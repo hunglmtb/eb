@@ -13,6 +13,8 @@ var _fieldconfig = {
 			
 			sendAjaxNotMessage('/getColumn', param, function(data){
 				_fieldconfig.listField(data);
+				console.log(data.dcEnable);
+				$("#chk_dc").prop('checked', data.dcEnable == 1);
 			});
 		},
 
@@ -323,6 +325,27 @@ var _fieldconfig = {
 			});
 		}
 }
+$("#chk_dc").on("click", function (e) {
+    var checkbox = $(this);
+    if (confirm("Do you really want to change this setting?")){
+		var table 	= $("#data_source").val();
+		if(table == undefined || table == null || table == ""){
+			alert("Unknown table");
+			return;
+		}
+		param = {'table' : table, 'enable_dc' : checkbox.is(":checked")?1:0}
+		sendAjax('/saveEnableDC', param, function(data){
+			if(data == "OK"){
+				alert('Complete');
+			}else{
+				alert(data);
+			}
+		});
+	} else {
+        e.preventDefault();
+        return false;
+    }
+});
 </script>
             <form name="cfg_field_prop" action="saveconfig.php" method="post" id="cfg_field_prop">
               <table border="0" id="tbl_detail" style="padding:4px;width:500px;">

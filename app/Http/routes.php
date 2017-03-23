@@ -440,6 +440,7 @@ Route::post('saveEditRunner', 'AllocationController@saveEditRunner');
 
 Route::get('fieldsconfig',['uses' =>'FieldsConfigController@_index','middleware' => 'checkRight:CONFIG_FIELDS']);
 Route::post('getColumn', 'FieldsConfigController@getColumn');
+Route::post('saveEnableDC', 'FieldsConfigController@saveEnableDC');
 Route::post('saveconfig', 'FieldsConfigController@saveconfig');
 Route::post('chckChange', 'FieldsConfigController@chckChange');
 Route::post('getprop', 'FieldsConfigController@getprop');

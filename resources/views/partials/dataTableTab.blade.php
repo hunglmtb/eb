@@ -1,7 +1,21 @@
 <?php
+use App\Models\CfgDataSource;
+
 	$lang			= session()->get('locale', "en");
 	if (isset($tables)) {
 		foreach($tables as $index => $table ){
+			$model = 'App\\Models\\' .$index;
+			$tableName = $model::getTableName();
+			$dcEnable = 0;
+			$tmp = CfgDataSource::where(['NAME'=>$tableName])->select(['ENABLE_DC'])->first();
+			if($tmp){
+				$dcEnable = $tmp["ENABLE_DC"];
+			}
+			if($dcEnable != 1){
+				unset($tables[$index]);
+				continue;
+			}
+
 			if (Lang::has("front/site.".$table["name"], $lang)) {
 				$table["name"] = trans("front/site.".$table["name"]);
 			}
