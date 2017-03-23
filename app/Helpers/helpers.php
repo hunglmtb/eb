@@ -280,6 +280,12 @@ class Helper {
 		return Lang::has("front/site.$text", $lang)?trans("front/site.$text"):$text;
 	}
 	
+	public static function getExtraSelects($tableView,$objectType,$objectId,$extraSelect){
+		if($tableView=="v_cargo_nomination"||$tableView=="V_CARGO_NOMINATION") return "CARGO_NAME as E";
+		return $extraSelect;
+	}
+	
+	
 	public static function getCommonGroupFilter($options = []){
 		$codeFlowPhase	= ["name"		=>	"CodeFlowPhase",
 							"source"	=>	"ObjectName" ];
