@@ -119,7 +119,7 @@ $xmenu["config"]=[
 		["text"  =>"Dashboard Config","desc" => "","url" => "/config/dashboard"],
 	]
 ];
-$xmenu["interface"]=[
+$xmenu["interfaces"]=[
 	"text"  =>"Interface",
 	"display" => 1,
 	"sub" =>[
@@ -298,8 +298,8 @@ foreach($xmenu as $code => $object ){
 	if($i == 1 || $i == 8)
 		$class .= " hex-gap";
 ?>
-	<div class="menu {{$class}}" base_class="{{$class}}" base_text="{{$text}}" url="" id="func_{{$i}}" index="{{$i}}" code="{{$code}}" onclick="func(this)">
-		<div class="inner">
+	<div class="menu {{$class}}" base_class="{{$class}}" base_text="{{$text}}" url="" id="func_{{$code}}" index="{{$i}}" code="{{$code}}" onclick="func(this)">
+		<div class="inner" id="{{$code}}">
 			<h4><span id="menu_text">{{$text}}</span><span id="menu_back"></span></h4>
 		</div>
 		<div class="corner-1"></div>
@@ -319,7 +319,7 @@ $.ajaxSetup({
 $(document).ready(function () {
 	var submenu = '{{$menu}}';
 	if(typeof(submenu) !== "undefined" && submenu!=''){
-		func($("#"+submenu));
+		func("#func_"+submenu);
 	};
 });
 
@@ -415,7 +415,7 @@ function func(menu_item)
 	}
 	
 	var url = menu_item.attr("url");
-	if(url.length > 0){
+	if(typeof url == "string" && url.length > 0){
 		window.location = url;
 		return;
 	}

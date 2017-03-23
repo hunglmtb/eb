@@ -5,7 +5,7 @@
 		$xmenu=
 		[
 				["name"	=>	"PRODUCTION",
-				"link"	=>	"/home/pm","background_img"	=>	"oilgas.png",
+				"link"	=>	"/home/production","background_img"	=>	"oilgas.png",
 				"columns"	=>
 						[
 								["blocks"	=>
@@ -13,7 +13,7 @@
 												["code"	=>	"",
 												"name"	=>	"Production management",
 												"title"	=>	"",
-												"link"	=>	"/home/pm",
+												"link"	=>	"/home/production",
 												"menus"	=>
 														[
 																["name"	=>	"Flow Stream","title"	=>	"Flow Data Capture","link"	=>	"/dc/flow"],
@@ -29,7 +29,7 @@
 								],
 								["blocks"	=>
 										[
-												["code"	=>	"","name"	=>	"Field Operations","title"	=>	"","link"	=>	"/home/fo","menus"	=>
+												["code"	=>	"","name"	=>	"Field Operations","title"	=>	"","link"	=>	"/home/operation","menus"	=>
 														[
 																["name"	=>	"Safety","title"	=>	"Safety","link"	=>	"/fo/safety"],
 																["name"	=>	"Comments","title"	=>	"Comments","link"	=>	"/fo/comment"],
@@ -52,14 +52,14 @@
 						]
 				],
 				["name"	=>	"Data Visualization",
-						"link"	=>	"/home/dv",
+						"link"	=>	"/home/visual",
 						"background_img"	=>	"oilgas.png",
 						"columns"	=>
 						[
 								["blocks"	=>
 										[
 												["code"	=>	"",
-												"name"	=>	"Data Visualization","title"	=>	"","link"	=>	"/home/dv","menus"	=>
+												"name"	=>	"Data Visualization","title"	=>	"","link"	=>	"/home/visual","menus"	=>
 														[
 																["name"	=>	"Network Model","title"	=>	"Network Models","link"	=>	"/diagram"],
 																["name"	=>	"Data Views","title"	=>	"Data Views","link"	=>	"/dataview"],
@@ -77,13 +77,13 @@
 						]
 				],
 				["name"	=>	"PRODUCT DELIVERY",
-						"link"	=>	"/home/pd",
+						"link"	=>	"/home/delivery",
 						"background_img"	=>	"delivery2.png",
 	"columns"	=>
 		[
 			["blocks"	=>
 				[
-					["code"	=>	"","name"	=>	"Contract Admin","title"	=>	"","link"	=>	"/home/pd","menus"	=>
+					["code"	=>	"","name"	=>	"Contract Admin","title"	=>	"","link"	=>	"/home/delivery","menus"	=>
 						[
 							["name"	=>	"Contract Data","title"	=>	"Contract Data","link"	=>	"/pd/contractdata"],
 							["name"	=>	"Contract Calculation","title"	=>	"Contract Calculation","link"	=>	"/pd/contractcalculate"],
@@ -95,7 +95,7 @@
 			],
 			["blocks"	=>
 				[
-					["code"	=>	"","name"	=>	"Cargo Admin","title"	=>	"","link"	=>	"/home/pd","menus"	=>
+					["code"	=>	"","name"	=>	"Cargo Admin","title"	=>	"","link"	=>	"/home/delivery","menus"	=>
 						[
 							["name"	=>	"Cargo Entry","title"	=>	"Cargo Entry","link"	=>	"/pd/cargoentry"],
 							["name"	=>	"Cargo Nomination","title"	=>	"Cargo Nomination","link"	=>	"/pd/cargonomination"],
@@ -106,7 +106,7 @@
 			],
 			["blocks"	=>
 				[
-					["code"	=>	"","name"	=>	"Cargo Action","title"	=>	"","link"	=>	"/home/pd","menus"	=>
+					["code"	=>	"","name"	=>	"Cargo Action","title"	=>	"","link"	=>	"/home/delivery","menus"	=>
 						[
 							["name"	=>	"Cargo Voyage","title"	=>	"Cargo Voyage","link"	=>	"/pd/cargovoyage"],
 							["name"	=>	"Cargo Load","title"	=>	"Cargo Load","link"	=>	"/pd/cargoload"],
@@ -121,7 +121,7 @@
 			],
 			["blocks"	=>
 				[
-					["code"	=>	"","name"	=>	"Cargo Management","title"	=>	"","link"	=>	"/home/pd","menus"	=>
+					["code"	=>	"","name"	=>	"Cargo Management","title"	=>	"","link"	=>	"/home/delivery","menus"	=>
 						[
 							["name"	=>	"Demurrage/EBO","title"	=>	"Demurrage/EBO","link"	=>	"/pd/demurrageebo"],
 							["name"	=>	"Cargo Documents","title"	=>	"Cargo Documents","link"	=>	"/pd/cargodocuments"],
@@ -132,7 +132,7 @@
 			],
 			["blocks"	=>
 				[
-					["code"	=>	"","name"	=>	"Cargo Monitoring","title"	=>	"","link"	=>	"/home/pd","menus"	=>
+					["code"	=>	"","name"	=>	"Cargo Monitoring","title"	=>	"","link"	=>	"/home/delivery","menus"	=>
 						[
 							["name"	=>	"LIFTING ACCT DAILY BALANCE","title"	=>	"LIFTING ACCT DAILY BALANCE","link"	=>	"/pd/liftaccdailybalance"],
 							["name"	=>	"LIFTING ACCT MONTHLY DATA","title"	=>	"LIFTING ACCT MONTHLY DATA","link"	=>	"/pd/liftaccmonthlyadjust"],
@@ -143,11 +143,11 @@
 			],
 		]
 	],
-	["name"	=>	"GHG","link"	=>	"/home/gg","background_img"	=>	"ghg2.png","columns"	=>
+	["name"	=>	"GHG","link"	=>	"/home/greenhouse","background_img"	=>	"ghg2.png","columns"	=>
 		[
 			["blocks"	=>
 				[
-					["code"	=>	"","name"	=>	"Emission Sources","title"	=>	"","link"	=>	"/home/gg","menus"	=>
+					["code"	=>	"","name"	=>	"Emission Sources","title"	=>	"","link"	=>	"/home/greenhouse","menus"	=>
 						[
 							["name"	=>	"Combustion","title"	=>	"","link"	=>	"#"],
 						["name"	=>	"Indirect","title"	=>	"","link"	=>	"#"],
@@ -158,7 +158,7 @@
 		],
 		["blocks"	=>
 				[
-						["code"	=>	"","name"	=>	"Emission Entry","title"	=>	"","link"	=>	"/home/gg","menus"	=>
+						["code"	=>	"","name"	=>	"Emission Entry","title"	=>	"","link"	=>	"/home/greenhouse","menus"	=>
 								[
 										["name"	=>	"Combustion","title"	=>	"","link"	=>	"#"],
 										["name"	=>	"Indirect","title"	=>	"","link"	=>	"#"],
@@ -169,7 +169,7 @@
 		],
 		["blocks"	=>
 				[
-						["code"	=>	"","name"	=>	"Emission Release","title"	=>	"","link"	=>	"/home/gg","menus"	=>
+						["code"	=>	"","name"	=>	"Emission Release","title"	=>	"","link"	=>	"/home/greenhouse","menus"	=>
 								[
 										["name"	=>	"Combustion","title"	=>	"","link"	=>	"#"],
 										["name"	=>	"Indirect","title"	=>	"","link"	=>	"#"],
@@ -180,11 +180,11 @@
 		],
 		]
 		],
-		["name"	=>	"ADMIN","link"	=>	"/home/administrator","background_img"	=>	"config.png","columns"	=>
+		["name"	=>	"ADMIN","link"	=>	"/home/admin","background_img"	=>	"config.png","columns"	=>
 				[
 						["blocks"	=>
 								[
-										["code"	=>	"","name"	=>	"Transaction Data","title"	=>	"","link"	=>	"/home/administrator","menus"	=>
+										["code"	=>	"","name"	=>	"Transaction Data","title"	=>	"","link"	=>	"/home/admin","menus"	=>
 												[
 														["name"	=>	"Validate Data","title"	=>	"Validate Data","link"	=>	"/am/validatedata"],
 														["name"	=>	"Approve Data","title"	=>	"Approve Data","link"	=>	"/am/approvedata"],
@@ -195,7 +195,7 @@
 						],
 						["blocks"	=>
 								[
-										["code"	=>	"","name"	=>	"Administrator","title"	=>	"","link"	=>	"/home/administrator","menus"	=>
+										["code"	=>	"","name"	=>	"Administrator","title"	=>	"","link"	=>	"/home/admin","menus"	=>
 												[
 														["name"	=>	"Users","title"	=>	"Users Management","link"	=>	"/am/users"],
 														["name"	=>	"Roles","title"	=>	"Roles Settings","link"	=>	"/am/roles"],
@@ -210,11 +210,11 @@
 						],
 				]
 		],
-		["name"	=>	"CONFIG","link"	=>	"/home/sc","background_img"	=>	"config.png","columns"	=>
+		["name"	=>	"CONFIG","link"	=>	"/home/config","background_img"	=>	"config.png","columns"	=>
 				[
 						["blocks"	=>
 								[
-										["code"	=>	"","name"	=>	"System Configuration","title"	=>	"","link"	=>	"/home/sc","menus"	=>
+										["code"	=>	"","name"	=>	"System Configuration","title"	=>	"","link"	=>	"/home/config","menus"	=>
 												[
 														["name"	=>	"Fields Config","title"	=>	"Fields Config","link"	=>	"/fieldsconfig"],
 														["name"	=>	"Table Data","title"	=>	"Table Data","link"	=>	"/loadtabledata"],
@@ -251,11 +251,11 @@
 						]
 				]
 		],
-		["name"	=>	"Forecast & Planning","link"	=>	"/home/fp","background_img"	=>	"oilgas.png","columns"	=>
+		["name"	=>	"Forecast & Planning","link"	=>	"/home/forecast","background_img"	=>	"oilgas.png","columns"	=>
 				[
 						["blocks"	=>
 								[
-										["code"	=>	"","name"	=>	"Forecast & Planning","title"	=>	"","link"	=>	"/home/fp","menus"	=>
+										["code"	=>	"","name"	=>	"Forecast & Planning","title"	=>	"","link"	=>	"/home/forecast","menus"	=>
 												[
 														["name"	=>	"Well Forecast","title"	=>	"Well Forecast","link"	=>	"/fp/forecast"],
 														["name"	=>	"PREoS","title"	=>	"PENG-ROBINSON EQUATION OF STATE","link"	=>	"/fp/preos"],

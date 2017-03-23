@@ -521,7 +521,7 @@ table.dataTable thead .BAL_POWER,table.dataTable thead .ADJUST_POWER {
 	max-width: 120px;
 }
 
-.weekDayLabel{
+.weekDayLabel {
 	margin-right: 5px;
 }
 
@@ -534,4 +534,8 @@ input.datePickerInput{
 }
 .eventTaskInput{
     min-width: 200px;
+}
+
+.xclose{
+	margin-left: 7px;
 }
