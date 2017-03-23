@@ -297,7 +297,7 @@
 	*/
 	
 ?>
-<link href="/common/css/header_menu.css" rel="stylesheet"/>
+<link href="/common/css/header_menu.css?1" rel="stylesheet"/>
 
 <div id="menu-wrapper">
 	 <a href="/"><img src="/img/eb2.png" height="40" style="position:absolute;z-index:2;top:10px;left:20px"></a>
