@@ -46,9 +46,17 @@ actions.extensionHandle	 = function(tab,columnName,rowData,limit,successFunction
 																			};
 		currentHistory.tab				= tab;
 		currentHistory.columnName		= columnName;
-		currentHistory.rowData			= rowData;
+		currentHistory.rowData			= jQuery.extend({},rowData);
 		currentHistory.successFunction	= successFunction;
 		currentHistory.notLocked		= notLocked;
+
+
+		if(typeof currentHistory.rowData.OCCUR_DATE == "undefined" 
+			|| currentHistory.rowData.OCCUR_DATE == null) 
+			 currentHistory.rowData.OCCUR_DATE = $("#date_begin").val();
+		else 
+			currentHistory.rowData.OCCUR_DATE = moment.utc(currentHistory.rowData.OCCUR_DATE,configuration.time.DATE_FORMAT_UTC).format(configuration.time.DATE_FORMAT);
+
 		$("#boxHistory").dialog({
 			height: 350,
 			width: 900,
@@ -69,7 +77,7 @@ actions.extensionHandle	 = function(tab,columnName,rowData,limit,successFunction
 			data: {
 					tabTable	: tab,	
 					field		: columnName,	
-					rowData		: rowData, 
+					rowData		: currentHistory.rowData, 
 					limit		: limit
 				},
 			success:function(data){
