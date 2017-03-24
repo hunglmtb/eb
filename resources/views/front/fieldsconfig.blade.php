@@ -67,7 +67,7 @@ $(function(){
             </select> 
             <input type="checkbox" checked id="chk_tbl" value="1">Tables
             <input type="checkbox" checked id="chk_vie" value="0">Views
-            <label><input type="checkbox" style="margin-left:20px" id="chk_dc" value="0">Enable in Data Capture</label>
+            <label><input type="checkbox" style="margin-left:20px" id="chk_dc" value="0">Disable in Data Capture</label>
         </td></tr>
     </table><br>
     <table bgcolor="#E6E6E6" style="border:0px; border-collapse:collapse">

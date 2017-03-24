@@ -60,7 +60,7 @@ $xmenu["forecast"]=[
 ];
 $xmenu["delivery"]=[
 	"text"  =>"Product Delivery",
-	"display" => 1,
+	"display" => 0,
 	"sub" =>[
 		["text"  =>"CONTRACT ADMIN","desc" => "","url" => "/pd/contractdata"],
 		["text"  =>"CARGO ADMIN","desc" => "","url" => "/pd/cargoentry"],
@@ -71,7 +71,7 @@ $xmenu["delivery"]=[
 ];
 $xmenu["greenhouse"]=[
 	"text"  =>"Greenhouse Gas",
-	"display" => 1,
+	"display" => 0,
 	"sub" =>[
 		["text"  =>"EMISSION SOURCES","desc" => "","url" => "../ghg/index.php/emission"],
 		["text"  =>"EMISSION ENTRY","desc" => "","url" => "../ghg/index.php/emissionEntry"],
@@ -189,7 +189,7 @@ foreach($xmenu as $index => $object ){
 	<div class="corner-2"></div>
 	</div>	
 </div>
-
+<div id="shadow_box"><img src="../img/shadow.png"></div>
 <div class="hex_container" style="z-index:100" id="boxLogin">
 	<div class="hex hex_disabled hex-gap" id="cell1">
 		<div class="inner">
@@ -290,12 +290,17 @@ foreach($xmenu as $code => $object ){
 	$text = $object["text"];
 	$enabled = $object["display"] == 1;
 	$class = "hex";
-	if($i == 1 || $i == 6 || $i == 8)
-		$class .= " hex-1";
-	else if($i == 2 || $i == 4 || $i == 7 || $i == 9)
-		$class .= " hex-2";
-	else
-		$class .= " hex-3";
+	if($enabled){
+		if($i == 1 || $i == 6 || $i == 8)
+			$class .= " hex-1";
+		else if($i == 2 || $i == 4 || $i == 7 || $i == 9)
+			$class .= " hex-2";
+		else
+			$class .= " hex-3";
+	}
+	else{
+		$class .= " hex_disabled";
+	}
 	if($i == 1 || $i == 8)
 		$class .= " hex-gap";
 ?>
@@ -419,7 +424,7 @@ function showMainMenu(){
 function func(menu_item)
 {
 	var menu_item = $(menu_item);
-	if(menu_item.hasClass("hex_dim"))
+	if(menu_item.hasClass("hex_dim") || menu_item.hasClass("hex_disabled"))
 		return;
 	if(menu_item.attr("back")=='1')
 	{
@@ -444,15 +449,16 @@ function func(menu_item)
 		var menu_item_index=menu_item.attr("index");
 		menu_item.attr("back","1");
 		menu_item.find("#menu_back").html("<hr>HOME");
+		
 		for(var i=0;i<submenu_idx[menu_item_index].length;i++){
 			var m = $("#func_"+submenu_idx[menu_item_index][i]);
 			if(i < a.length){
-				m.removeClass("hex-1").removeClass("hex-2").removeClass("hex-3").addClass("hex-m");
+				m.removeClass("hex-1").removeClass("hex-2").removeClass("hex-3").removeClass("hex_disabled").addClass("hex-m");
 				m.find("#menu_text").html(a[i]["text"]);
 				m.attr("url",a[i]["url"]);
 			}
 			else{
-				m.removeClass("hex-1").removeClass("hex-2").removeClass("hex-3").addClass("hex_dim");
+				m.removeClass("hex-1").removeClass("hex-2").removeClass("hex-3").removeClass("hex_disabled").addClass("hex_dim");
 			}
 			//menu.css("opacity","1");
 		}
@@ -531,7 +537,7 @@ function shadeBlendConvert(p, from, to) {
 }
 $(".menu").each(function(){
 	$(this).hover(function(){
-			if($(this).hasClass("hex_dim")) return;
+			if($(this).hasClass("hex_dim") || $(this).hasClass("hex_disabled")) return;
 			$(this).css("background-color", shadeBlendConvert(0.25,$(this).css("background-color")));
 		}, function(){
 			$(this).css("background-color", "");

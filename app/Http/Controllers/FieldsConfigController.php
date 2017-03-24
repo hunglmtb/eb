@@ -26,18 +26,18 @@ class FieldsConfigController extends Controller {
 		
 		$getFields = $this->getFields($data['table']);
 		$getFieldsEffected = $this->getFieldsEffected($data['table']);
-		$dcEnable = 0;
-		$tmp = CfgDataSource::where(['NAME'=>$data['table']])->select(['ENABLE_DC'])->first();
+		$dcDisable = 0;
+		$tmp = CfgDataSource::where(['NAME'=>$data['table']])->select(['DISABLE_DC'])->first();
 		if($tmp){
-			$dcEnable = $tmp["ENABLE_DC"];
+			$dcDisable = $tmp["DISABLE_DC"];
 		}
 		
-		return response ()->json ( ['getFields' => $getFields, 'getFieldsEffected'=>$getFieldsEffected, 'dcEnable' => $dcEnable] );
+		return response ()->json ( ['getFields' => $getFields, 'getFieldsEffected'=>$getFieldsEffected, 'dcDisable' => $dcDisable] );
 	}
 	
-	public function saveEnableDC(Request $request){
+	public function saveDisableDC(Request $request){
 		$data = $request->all ();	
-		CfgDataSource::where(['NAME'=>$data['table']])->update(['ENABLE_DC'=>$data['enable_dc']]);
+		CfgDataSource::where(['NAME'=>$data['table']])->update(['DISABLE_DC'=>$data['disable_dc']]);
 		return response ()->json ('OK');
 	}
 	

@@ -6,12 +6,12 @@ use App\Models\CfgDataSource;
 		foreach($tables as $index => $table ){
 			$model = 'App\\Models\\' .$index;
 			$tableName = $model::getTableName();
-			$dcEnable = 0;
-			$tmp = CfgDataSource::where(['NAME'=>$tableName])->select(['ENABLE_DC'])->first();
+			$dcDisable = 0;
+			$tmp = CfgDataSource::where(['NAME'=>$tableName])->select(['DISABLE_DC'])->first();
 			if($tmp){
-				$dcEnable = $tmp["ENABLE_DC"];
+				$dcDisable = $tmp["DISABLE_DC"];
 			}
-			if($dcEnable != 1){
+			if($dcDisable == 1){
 				unset($tables[$index]);
 				continue;
 			}

@@ -13,8 +13,8 @@ var _fieldconfig = {
 			
 			sendAjaxNotMessage('/getColumn', param, function(data){
 				_fieldconfig.listField(data);
-				console.log(data.dcEnable);
-				$("#chk_dc").prop('checked', data.dcEnable == 1);
+				console.log(data.dcDisable);
+				$("#chk_dc").prop('checked', data.dcDisable == 1);
 			});
 		},
 
@@ -333,8 +333,8 @@ $("#chk_dc").on("click", function (e) {
 			alert("Unknown table");
 			return;
 		}
-		param = {'table' : table, 'enable_dc' : checkbox.is(":checked")?1:0}
-		sendAjax('/saveEnableDC', param, function(data){
+		param = {'table' : table, 'disable_dc' : checkbox.is(":checked")?1:0}
+		sendAjax('/saveDisableDC', param, function(data){
 			if(data == "OK"){
 				alert('Complete');
 			}else{
