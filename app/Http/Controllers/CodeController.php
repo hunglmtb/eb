@@ -279,7 +279,7 @@ class CodeController extends EBController {
 		$dcTable		= $mdl::getTableName();
 		$obj_name		= $this->getFieldTitle($dcTable,$field,$rowData);
 		
-		$row_id			= $rowData['ID'];
+		$row_id			= array_key_exists("ID", $rowData)?$rowData['ID']:null;
 		$fieldName		= $this->getFieldLabel($field,$dcTable);
 		
 		$where			= $this->getHistoryConditions($dcTable,$rowData,$row_id);
@@ -297,8 +297,15 @@ class CodeController extends EBController {
 	}
 	
 	public function getHistoryData($mdl, $field,$rowData,$where, $limit){
-		$row_id			= $rowData['ID'];
-		$occur_date		= $row_id>0?$rowData['OCCUR_DATE']:Carbon::now();
+// 		$row_id			= array_key_exists("ID", $rowData)?$rowData['ID']:-1;
+// 		$occur_date		= $row_id>0?$rowData['OCCUR_DATE']:Carbon::now();
+		
+		$occur_date		= array_key_exists("OCCUR_DATE", $rowData)?$rowData['OCCUR_DATE']:null;
+		if ($occur_date&&count_chars($occur_date)>5) 
+			$occur_date 		= \Helper::parseDate($rowData['OCCUR_DATE']);
+		else 
+			$occur_date = Carbon::now();
+		
 		$history 		= $mdl::where($where)
 								->whereDate('OCCUR_DATE', '<', $occur_date)
 								->whereNotNull($field)

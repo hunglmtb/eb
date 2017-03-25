@@ -41,6 +41,7 @@ class CfgFieldProps extends DynamicModel
     			'COLUMN_NAME',
     			'FDC_WIDTH as width',
     			'LABEL as title',
+    			'TABLE_NAME',
     			"DATA_METHOD",
     			"INPUT_ENABLE",
     			'INPUT_TYPE',

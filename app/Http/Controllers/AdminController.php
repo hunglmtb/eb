@@ -429,11 +429,20 @@ class AdminController extends Controller {
 		$obj = new CommonController();
 	
 		DB::beginTransaction();
+		$msg = 'no update to database';
 		try {
-			$check = User::where(['USERNAME'=>$data['username']])->get();
+			$isUpdate 	= $data['isUpdate'];
+			$doUpdate	= false;
+			$userId		= $data['ID'];
+			if ($isUpdate>=1) {
+				$checkUser	= User::find($userId);
+				$doUpdate   = $checkUser!=null;
+			}
+			else if ($isUpdate==0) {
+				$doUpdate	= true;
+			}
 				
-			if(count($check) > 0 ){
-	
+			if($doUpdate){
 				$user = new User;
 				$user->USERNAME = $data['username'];
 				$user->LAST_NAME = $data['lastname'];
@@ -442,26 +451,34 @@ class AdminController extends Controller {
 				$user->EMAIL = $data['email'];
 				$user->EXPIRE_DATE = date('Y/m/d', strtotime($data['expireDate']));
 				$user->ACTIVE = $data['active'];
-				
-				User::where(['ID'=>$data['ID']])->update(json_decode(json_encode($user), true));
-				
-				if($data['pass'] != ""){
-					$pUser = new User;
-					$now = Carbon::now('Europe/London');
-					$pUser->PASSWORD_CHANGED = date('Y-m-d H:i:s', strtotime($now));
-					$pUser->PASSWORD = $obj->myencrypt($data['pass']);
-// 					\DB::enableQueryLog();
-					User::where(['ID'=>$data['ID']])->update(json_decode(json_encode($pUser), true));
-// 					\Log::info(\DB::getQueryLog());
+				if ($isUpdate!=0){
+					User::where(['ID'=>$userId])->update(json_decode(json_encode($user), true));
+				}
+				else{
+					$user->save();
+					$userId	= $user->ID;
 				}
 				
+				if($data['pass'] != ""){
+					$now = Carbon::now('Europe/London');
+					if ($isUpdate!=0){
+						$pUser = new User;
+						$pUser->PASSWORD_CHANGED = date('Y-m-d H:i:s', strtotime($now));
+						$pUser->PASSWORD = $obj->myencrypt($data['pass']);
+						User::where(['ID'=>$userId])->update(json_decode(json_encode($pUser), true));
+					}
+					else{
+						$user->PASSWORD_CHANGED = date('Y-m-d H:i:s', strtotime($now));
+						$user->PASSWORD 		= $obj->myencrypt($data['pass']);
+						$user->save();
+					}
+				}
 				
-				UserDataScope::where(['USER_ID'=>$data['ID']])->delete();
-				
-				UserUserRole::where(['USER_ID'=>$data['ID']])->delete();
+				UserDataScope::where(['USER_ID'=>$userId])->delete();
+				UserUserRole::where(['USER_ID'=>$userId])->delete();
 				
 				$userDataScope = new UserDataScope;
-				$userDataScope->USER_ID = $data['ID'];
+				$userDataScope->USER_ID = $userId;
 				$userDataScope->PU_ID = ($data['pu_id']==0)?null:$data['pu_id'];
 				$userDataScope->AREA_ID = ($data['area_id'] == 0)?null:$data['area_id'];
 				$userDataScope->FACILITY_ID = ($data['fa_id'] == 0)?null:$data['fa_id'];
@@ -471,21 +488,22 @@ class AdminController extends Controller {
 				if(count($roles) > 0){
 					foreach ($roles as $role){
 						$userUserRole = new UserUserRole;
-						$userUserRole->USER_ID = $data['ID'];
+						$userUserRole->USER_ID = $userId;
 						$userUserRole->ROLE_ID = $role;
-	
 						UserUserRole::insert(json_decode(json_encode($userUserRole), true));
 					}
 				}
+				$msg = $isUpdate==0?'add new user successfully':'Update user successfully';
 			}
 		   } catch(\Exception $e){
 				DB::rollback();
+				$msg = 'error when update database';
+				\Log::info($e->getMessage());
+				\Log::info($e->getTraceAsString());
 		  }  
-	 
 		DB::commit();
-	
 		return response ()->json ( array (
-				'Message' => 'Update successfully'
+				'Message' => $msg
 		) );
 	}
 	
