@@ -169,7 +169,7 @@ a:hover {
 		text-transform: uppercase;
 	}
 	.hex_disabled h4 {
-		color:yellow;	
+		color:#bbbbbb;	
 	}
 	
 	.hex hr {
@@ -211,10 +211,10 @@ a:hover {
 	}
 
 	.hex_disabled {
-		background: #888;
+		background: #666666;
 	}
 	.hex_dim {
-		background: #444;
+		background: #444444;
 		cursor:default;
 	}
 	.hex_dim  .inner{display:none}
