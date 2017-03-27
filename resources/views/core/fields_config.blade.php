@@ -191,10 +191,15 @@ var _fieldconfig = {
 				var objectExtension	= data[0].OBJECT_EXTENSION;
 				_fieldconfig.objectExtensionTarget = respondData.objectExtensionTarget;
 				if(objectExtension!=null&&objectExtension!=""){
-					var objects = $.parseJSON(objectExtension);
-					$.each(objects, function( index, value ) {
-						_fieldconfig.addObjectExtension(objectExtensionSource,value,index);
-					});
+					try {
+						var objects = $.parseJSON(objectExtension);
+						$.each(objects, function( index, value ) {
+							_fieldconfig.addObjectExtension(objectExtensionSource,value,index);
+						});
+					}
+					catch(err) {
+					    console.log("can not parse  objectExtension +\n"+err.message);
+					}
 				}
 				
 				var addObjectBtn = $("<img id='addObjectBtn'></img>");
