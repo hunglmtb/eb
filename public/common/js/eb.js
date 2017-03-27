@@ -1002,16 +1002,21 @@ var actions = {
 		var isKeep = false;
 		var objectExtension	= property.OBJECT_EXTENSION;
 		if(objectExtension!=null&&objectExtension!=""){
-			var objects = $.parseJSON(objectExtension);
-			var objectId = rowData[actions.type.idName[0]];
-			var extension = objects[objectId];
-			if(typeof(extension) == "object"){
-				isKeep = typeof(extension.advance) == "object"
+			try {
+				var objects = $.parseJSON(objectExtension);
+				var objectId = rowData[actions.type.idName[0]];
+				var extension = objects[objectId];
+				if(typeof(extension) == "object"){
+					isKeep = typeof(extension.advance) == "object"
 						&&(extension.advance.KEEP_DISPLAY_VALUE==true||extension.advance.KEEP_DISPLAY_VALUE=="true");
-				/*var result = $.grep(extension, function(e){
+					/*var result = $.grep(extension, function(e){
     				return e == "KEEP_DISPLAY_VALUE";
      			});
      			isKeep = typeof(result) !== "undefined" && result.length > 0;*/
+				}
+			}
+			catch(err) {
+			    console.log("can not parse ] objectExtension +\n"+err.message);
 			}
 		}
 		return isKeep;
