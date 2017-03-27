@@ -1023,7 +1023,7 @@ var actions = {
 	
 	getObjectRules : function(property,rowData){
 		var rules;
-		var objectExtension	= property.OBJECT_EXTENSION;
+		var objectExtension	= typeof property !="undefined" ? property.OBJECT_EXTENSION:null;
 		if(objectExtension!=null&&objectExtension!=""){
 			var objects = $.parseJSON(objectExtension);
 			var objectId = rowData[actions.type.idName[0]];
@@ -1031,7 +1031,15 @@ var actions = {
 		}
 		return rules;
 	},
-	
+	checkEdittableWithRules	: function(objectRules){
+		if(typeof(objectRules) == "object"&& objectRules!=null && typeof objectRules.basic=="object"){
+			if(objectRules.OVERWRITE==true||objectRules.OVERWRITE=="true"){
+				return objectRules.basic.DATA_METHOD==1||objectRules.basic.DATA_METHOD=='1';
+			}
+		}
+		return true;
+	},
+
 	createCommonCell	: function(td,data,type,property,rowData){
 		colName 			= property.data;
 		$(td).addClass( "contenBoxBackground");
@@ -1085,6 +1093,11 @@ var actions = {
 				$(td).css("background-color","#"+objectRules.advance.COLOR);
 			}
 			
+			if(isEdittable){
+				isEdittable = actions.checkEdittableWithRules(objectRules);
+			}
+			
+			$(td).removeClass( "editInline" );
  			if(isEdittable){
  				$(td).addClass( "editInline" );
  	        	var table = $('#table_'+tab).DataTable();
@@ -1119,6 +1132,7 @@ var actions = {
  					}
  				});
  			}
+ 			
  			if(type=='number'){
         		var basicRules		= actions.getBasicRules(property,objectRules);
         		var originColor		= $(td).css('background-color');

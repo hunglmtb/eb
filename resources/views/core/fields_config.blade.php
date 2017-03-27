@@ -3,6 +3,7 @@
 	$cfg_input_type 	= App\Models\CfgInputType::all('ID', 'NAME');
 ?>
 <script type="text/javascript">
+var dataMethods = <?php echo json_encode($code_data_method); ?>
 
 var _fieldconfig = {
 
@@ -238,11 +239,13 @@ var _fieldconfig = {
 		        	VALUE_WARNING_MAX	: $("#VALUE_WARNING_MAX").val()	,
 		        	VALUE_WARNING_MIN	: $("#VALUE_WARNING_MIN").val()	,
 		        	RANGE_PERCENT		: $("#RANGE_PERCENT").val()		,
+		        	DATA_METHOD			: $("#data_method").val()		,
 				};
 				targets.OVERWRITE			= false;
 			}
 			else targets.OVERWRITE			= true;
 			
+			targets.basic.dataMethods		= dataMethods;
 			var basic = $("<span></span>");
 			basic.addClass("linkViewer");
 			basic.appendTo(li);

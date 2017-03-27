@@ -38,7 +38,8 @@ $(function(){
         @method render() 
         **/        
         render: function() {
-           this.$input = this.$tpl.find('input');
+        	this.$input 	= this.$tpl.find('input');
+       		this.$select 	= this.$tpl.find('select');
         },
         
         /**
@@ -61,8 +62,8 @@ $(function(){
         	var text = "rules";
         	if(typeof value.advance == "object") {
         		var texts	= [];
-        		if(value.advance.KEEP_DISPLAY_VALUE) texts.push("Display origin value");
-        		if(value.advance.ENFORCE_EDIT_NOTE) texts.push("Enforce Edit Note");
+        		if(value.advance.KEEP_DISPLAY_VALUE==true||value.advance.KEEP_DISPLAY_VALUE=="true") texts.push("Display origin value");
+        		if(value.advance.ENFORCE_EDIT_NOTE==true||value.advance.ENFORCE_EDIT_NOTE=="true") texts.push("Enforce Edit Note");
         		if(texts.length>0) text = texts.join(",");
             }
         	var html = '<b>' + text+ '</b>';
@@ -138,10 +139,19 @@ $(function(){
         	   this.$input.filter('[name="VALUE_WARNING_MAX"]').val(value.basic.VALUE_WARNING_MAX);
         	   this.$input.filter('[name="VALUE_WARNING_MIN"]').val(value.basic.VALUE_WARNING_MIN);
         	   this.$input.filter('[name="RANGE_PERCENT"]').val(value.basic.RANGE_PERCENT);
+        	   
+        	   var dataMethodSelect = this.$select.filter('[name="DATA_METHOD"]');
+        	   this.dataMethods		= typeof value.basic.dataMethods == "object" ? value.basic.dataMethods: this.dataMethods;
+        	   $.each(this.dataMethods, function(key, value) {   
+        		   dataMethodSelect.append($("<option></option>")
+        		                    .attr("value",value.ID)
+        		                    .text(value.NAME)); 
+        		});
+        	   dataMethodSelect.val(value.basic.DATA_METHOD);
            }
            if(typeof value.advance != "undefined") {
-        	   this.$input.filter('[name="KEEP_DISPLAY_VALUE"]').prop('checked', value.advance.KEEP_DISPLAY_VALUE);
-        	   this.$input.filter('[name="ENFORCE_EDIT_NOTE"]').prop('checked', value.advance.ENFORCE_EDIT_NOTE);
+        	   this.$input.filter('[name="KEEP_DISPLAY_VALUE"]').prop('checked', value.advance.KEEP_DISPLAY_VALUE==true||value.advance.KEEP_DISPLAY_VALUE=="true");
+        	   this.$input.filter('[name="ENFORCE_EDIT_NOTE"]').prop('checked', value.advance.ENFORCE_EDIT_NOTE==true||value.advance.ENFORCE_EDIT_NOTE=="true");
         	   this.$input.filter('[name="COLOR"]').val(value.advance.COLOR);
            }
        },       
@@ -160,6 +170,8 @@ $(function(){
 								        	  VALUE_WARNING_MAX	: this.$input.filter('[name="VALUE_WARNING_MAX"]').val(),
 								        	  VALUE_WARNING_MIN	: this.$input.filter('[name="VALUE_WARNING_MIN"]').val(),
 								        	  RANGE_PERCENT		: this.$input.filter('[name="RANGE_PERCENT"]').val(),
+								        	  DATA_METHOD		: this.$select.filter('[name="DATA_METHOD"]').val(),
+//								        	  dataMethods		: this.dataMethods,
 							           },
 			    	   		advance		: {
 			        		   					KEEP_DISPLAY_VALUE	: this.$input.filter('[name="KEEP_DISPLAY_VALUE"]').is(":checked"),
@@ -224,7 +236,8 @@ $(function(){
 
     Address.defaults = $.extend({}, $.fn.editabletypes.abstractinput.defaults, {
         tpl: '<div class="editable-address"><label><span>Overwrite General Rules</span><input type="checkbox" name="OVERWRITE"></label></div>'+
-        	 '<div class="editable-address"><label><span>Error Max Value: </span><input type="number" name="VALUE_MAX" class="input-small"></label></div>'+
+		 	 '<div class="editable-address"><label><span>Data method: </span><select class="editable-event" name="DATA_METHOD"></select></label></div>'+
+		 	 '<div class="editable-address"><label><span>Error Max Value: </span><input type="number" name="VALUE_MAX" class="input-small"></label></div>'+
              '<div class="editable-address"><label><span>Error Min Value: </span><input type="number" name="VALUE_MIN" class="input-small"></label></div>'+
              '<div class="editable-address"><label><span>Warning Max Value: </span><input type="number" name="VALUE_WARNING_MAX" class="input-small"></label></div>'+
              '<div class="editable-address"><label><span>Warning Min Value: </span><input type="number" name="VALUE_WARNING_MIN" class="input-small"></label></div>'+
