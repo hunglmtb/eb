@@ -7,6 +7,7 @@
 <script src="/common/js/jquery-ui.js"></script>
 <script src="/common/js/jquery-ui-timepicker-addon.js"></script>
 <script type="text/javascript" src="/common/js/utils.js"></script>
+<link rel="stylesheet" href="/common/css/style.css" />
 
 <?php
 $listControls = [ 
@@ -92,7 +93,11 @@ $(function(){
 	});
 
 	$('#updateUser').click(function(){
-		obj.updateUser();
+		obj.updateUser(1);
+	});
+
+	$('#saveAsUser').click(function(){
+		obj.updateUser(0);
 	});
 
 	$('#btnClose').click(function(){
@@ -163,7 +168,7 @@ var obj= {
 			}
 		});
 	},
-	updateUser : function(){
+	updateUser : function(isUpdate = 1){
 		var roles = '';
 		var active = 0;
 		
@@ -188,7 +193,8 @@ var obj= {
 			'area_id' : $('#Area').val(),
 			'fa_id' : $('#Facility').val(),
 			'active' : active,
-			'ID' : $('#UserID').val()
+			'ID' : $('#UserID').val(),
+			isUpdate	: isUpdate
 		}	 		
 		
 		$.ajax({
@@ -213,7 +219,7 @@ var obj= {
 					<tr>
 						<td>User ID</td>
 						<td><input id="txtUsername" style="width: 174px" type="text"
-							name="txtUsername" readonly="true" value="{!! $user->USERNAME !!}" size="20"></td>
+							name="txtUsername" value="{!! $user->USERNAME !!}" size="20"></td>
 					</tr>
 					<tr>
 						<td>Password</td>
@@ -323,12 +329,15 @@ var obj= {
 
 <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"
 	style="margin-top: 40px;">
-	<div class="div_footer">
-		<button type="button" id="updateUser" class="class_button">
+	<div class="div_footer2 floatRight" style="padding-right: 50px;">
+		<button type="button" id="btnClose" class="class_button floatRight">
+			<span>Close</span>
+		</button>
+		<button type="button" id="updateUser" class="class_button floatRight">
 			<span>Save</span>
 		</button>
-		<button type="button" id="btnClose" class="class_button">
-			<span>Close</span>
+		<button type="button" id="saveAsUser" class="class_button floatRight">
+			<span>Save As</span>
 		</button>
 	</div>
 </div>

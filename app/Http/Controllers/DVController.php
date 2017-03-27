@@ -280,27 +280,63 @@ class DVController extends CodeController {
 		$cellConfigs = [];
 		
 		foreach ( $vparam as $v ) {
-			$cell_id = $v ['ID'];
+			$cell_id 				= $v ['ID'];
 			if (!array_key_exists('OBJECT_ID', $v)) continue;
-			$object_type = $v ['OBJECT_TYPE'];
-			$object_id 	= $v ['OBJECT_ID'];
-			$conn_id 	= array_key_exists('CONN_ID', $v)?$v ['CONN_ID']:-1;
-			$phase_config = $v ['SUR_PHASE_CONFIG'];
-			$su = $v ['SU'];
-			if ($object_type == 'ENERGY_UNIT') {
-				$phase_configs = explode ( "!!", $phase_config );
+			$object_type 			= $v ['OBJECT_TYPE'];
+			$object_id 				= $v ['OBJECT_ID'];
+			$conn_id 				= array_key_exists('CONN_ID', $v)?$v ['CONN_ID']:-1;
+			$su 					= $v ['SU'];
+			$cellConfigs[$cell_id]	= [];
+				
+			if ($object_type == 'ENERGY_UNIT' && array_key_exists('SUR_PHASE_CONFIG', $v)) {
+				$phase_config 		= $v ['SUR_PHASE_CONFIG'];
+				foreach ( $phase_config as $phaseObject ) {
+					$flowPhase 		= $phaseObject ["phaseId"];
+					$eventType 		= $phaseObject ["eventType"];
+					$phase1 		= explode ( "/", $phaseObject ["dataField"] );
+					$table 			= $phase1 [0];
+					$field 			= $phase1 [1];
+					if (! $field) $field = "EU_DATA_GRS_VOL";
+					if (! $table) $table = "ENERGY_UNIT_DATA_VALUE";
+					$model 			= \Helper::getModelName ( $table );
+
+					// 					\DB::enableQueryLog ();
+					$tmp 			= 	$model::where ( [ 'EU_ID' => $object_id ] )
+												->whereDate ( 'OCCUR_DATE', '=', $occur_date)
+												->where([	'FLOW_PHASE'	=> $flowPhase,
+															'EVENT_TYPE'	=> $eventType])
+												->select ( [
+														$field . ' AS FIELD_VALUE',
+														'FLOW_PHASE',
+														'EVENT_TYPE'])
+												->first();
+					// 					\Log::info ( \DB::getQueryLog () );
+					if ($tmp) {
+						$value 					= $tmp->FIELD_VALUE;
+						$value 					= is_numeric ( $value )?number_format ( $value, 2 ):"--";
+						$phaseObject["value"]	= $value;
+						$cellConfigs[$cell_id]	["%SF"][] 	= $phaseObject;
+							
+						$item	= new EnergyUnit;
+						$item->{$item::$idField}	= $object_id;
+						$item->DT_RowId				= $object_id;
+						if (!array_key_exists($table, $fieldConfigs)) $fieldConfigs[$table] = [	"fields"	=> [$field	=> []],
+																								"model"		=> $model	];
+						$fieldConfigs[$table]["fields"][$field][$cell_id] = $item;
+					}
+				}
+				/* 
+				$phase_configs 		= explode ( "!!", $phase_config );
 				
 				if (!array_key_exists(1, $phase_configs)) continue;
 				
-				$phase0 = explode ( "@@", $phase_configs [0] );
-				$phase1 = explode ( "/", $phase_configs [1] );
+				$phase0 			= explode ( "@@", $phase_configs [0] );
+				$phase1 			= explode ( "/", $phase_configs [1] );
 				
 				$table = $phase1 [0];
 				$field = $phase1 [1];
-				if (! $field)
-					$field = "EU_DATA_GRS_VOL";
-				if (! $table)
-					$table = "ENERGY_UNIT_DATA_VALUE";
+				if (! $field) $field = "EU_DATA_GRS_VOL";
+				if (! $table) $table = "ENERGY_UNIT_DATA_VALUE";
 				
 				if (count ( $phase0 ) > 0) {
 					$flow_phases = "-1";
@@ -317,12 +353,13 @@ class DVController extends CodeController {
 					$model = 'App\\Models\\' . $model;
 // 					\DB::enableQueryLog ();
 					$conditions = explode ( ',', $flow_phases );
-					$tmps = $model::where ( [ 
-							'EU_ID' => $object_id 
-					] )->whereDate ( 'OCCUR_DATE', '=', $occur_date)->whereIn ( 'FLOW_PHASE', $conditions )->get ( [ 
-							$field . ' AS FIELD_VALUE',
-							'FLOW_PHASE' 
-					] );
+					$tmps = $model::where ( [ 'EU_ID' => $object_id ] )
+							->whereDate ( 'OCCUR_DATE', '=', $occur_date)
+							->whereIn ( 'FLOW_PHASE', $conditions )
+							->get ( [ 
+									$field . ' AS FIELD_VALUE',
+									'FLOW_PHASE' 
+							] );
 // 					\Log::info ( \DB::getQueryLog () );
 					$arr = array ();
 					foreach ( $tmps as $tmp ) {
@@ -333,8 +370,11 @@ class DVController extends CodeController {
 							$arr [$tmp->FLOW_PHASE] = "--";
 						}
 					}
-					$cells_data ["$cell_id"] ["%SF"] = $arr;
-					$cellConfigs[$cell_id] = ["table"=>$table,"field"=>$field,"value"	=> $value, "OBJECT_ID"	=> $object_id];
+					$cells_data ["$cell_id"]["%SF"] 	= $arr;
+ 					$cellConfigs[$cell_id]	["%SF"] 	= [	"table"		=> $table,
+								 							"field"		=> $field,
+								 							"value"		=> $tmps,
+								 							"OBJECT_ID"	=> $object_id];
 					
 					$item	= new EnergyUnit; 
 					$item->{$item::$idField}	= $object_id;
@@ -344,9 +384,7 @@ class DVController extends CodeController {
 													"model"		=> $model,
 												];
 					$fieldConfigs[$table]["fields"][$field][$cell_id] = $item;
-						
-// 					if ($item) $fieldConfigs[$table]["fields"][$field][$cell_id][] = $item;
-				}
+				} */
 			}
 			
 			$field_tables = explode ( "@", $su );
@@ -423,8 +461,8 @@ class DVController extends CodeController {
 						}
 						$rawValue	= $value;
 						$value = (is_numeric ( $value ) ? number_format ( $value, 2 ) : $value);
-						$cells_data ["$cell_id"] ["$xlabel"] = $value;
-						$cellConfigs[$cell_id] = ["table"=>$table,"field"=>$field,"value"	=> $rawValue, "OBJECT_ID"	=> $object_id];
+						$cells_data ["$cell_id"] ["$xlabel"] 	= $value;
+						$cellConfigs[$cell_id]["$table/$field"] = ["table"=>$table,"field"=>$field,"value"	=> $rawValue, "OBJECT_ID"	=> $object_id];
 						
 						if (!array_key_exists($table, $fieldConfigs))
 							$fieldConfigs[$table] = [	"fields"	=> [$field	=> []],
@@ -437,52 +475,6 @@ class DVController extends CodeController {
 			}
 		}
 		
-		/*
-		 * if(count($conn_objs)>0){
-		 * //include("../interface/adodb/adodb.inc.php");
-		 * foreach ($conn_objs as $conn_id => $objinfos){
-		 * $cell_ids=array();
-		 * $tagcondition="";
-		 * foreach($objinfos as $objinfo){
-		 * $os=explode("~", $objinfo);
-		 * $cell_id=$os[0];
-		 * $tag=str_replace("@TAG:","",$os[1]);
-		 * $cells_data["$cell_id"]["$tag"]="--";
-		 * if($cell_id && $tag){
-		 * $cell_ids["$tag"]=$cell_id;
-		 * $tagcondition.=($tagcondition?" or ":"")."tag='$tag'";
-		 * }
-		 * }
-		 * $sql="SELECT tt.tag,tt.TIME,tt.value
-		 * FROM [piarchive].[picomp] tt
-		 * inner join
-		 * (
-		 * SELECT tag tagx,max(time) mtime
-		 * FROM [piarchive].[picomp]
-		 * WHERE ($tagcondition)
-		 * AND time BETWEEN '$date_begin' AND '$date_end' group by tag
-		 * ) grouped on tt.tag=grouped.tagx and tt.time=grouped.mtime
-		 * WHERE ($tagcondition)
-		 * AND value is not null
-		 * AND time BETWEEN '$date_begin' AND '$date_end'";
-		 *
-		 * $connection = new \COM("ADODB.Connection") or die("Cannot start ADO");
-		 * $row=getOneRow("select SERVER,USER_NAME,PASSWORD,`TYPE` from int_connection where id=$conn_id");
-		 * $connection->Open("Provider=ihOLEDB.iHistorian.1;Initial Catalog=piarchive;Data Source=$row[SERVER];User ID =$row[USER_NAME];Password=$row[PASSWORD];");
-		 * $result_set = $connection->Execute($sql);
-		 * while (!$result_set->EOF)
-		 * {
-		 * $tagID=$result_set->fields[0]->value;
-		 * $tagValue=$result_set->fields[2]->value;
-		 * $cell_id=$cell_ids["$tagID"];
-		 * if($cell_id) $cells_data["$cell_id"]["$tagID"]=$tagValue;
-		 * $result_set->MoveNext();
-		 * }
-		 * $result_set->Close();
-		 * $connection->Close();
-		 * }
-		 * }
-		 */
 		foreach ( $cells_data as $cell_id => $cell_data ) {
 			$ret .= ($ret == "" ? "" : "#") . "$cell_id^";
 			foreach ( $cell_data as $data_label => $data_value ) {
@@ -520,8 +512,6 @@ class DVController extends CodeController {
 				];
 				$property	= CfgFieldProps::getOriginProperties($where,false)->first();
 				if ($property&&$property instanceof CfgFieldProps) {
-// 					$fieldData["data"] 	= $property;
-// 					$fields[$field] 	= $fieldData;
 					foreach ( $fieldData as $cell_id => $item) {
 						if ($item&&$property->shouldLoadLastValueOf($item)) {
 							$column		= $property->data;
@@ -531,7 +521,7 @@ class DVController extends CodeController {
 								$rQueryList[$column][]	= $query;
 							}
 						}
-						$cellConfigs[$cell_id]["index"] = $index;
+						if (array_key_exists("$table/$field", $cellConfigs[$cell_id])) $cellConfigs[$cell_id]["$table/$field"]["index"] = $index;
 					}
 					$properties->push($property);
 					$index++;

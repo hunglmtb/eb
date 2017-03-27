@@ -1002,16 +1002,21 @@ var actions = {
 		var isKeep = false;
 		var objectExtension	= property.OBJECT_EXTENSION;
 		if(objectExtension!=null&&objectExtension!=""){
-			var objects = $.parseJSON(objectExtension);
-			var objectId = rowData[actions.type.idName[0]];
-			var extension = objects[objectId];
-			if(typeof(extension) == "object"){
-				isKeep = typeof(extension.advance) == "object"
+			try {
+				var objects = $.parseJSON(objectExtension);
+				var objectId = rowData[actions.type.idName[0]];
+				var extension = objects[objectId];
+				if(typeof(extension) == "object"){
+					isKeep = typeof(extension.advance) == "object"
 						&&(extension.advance.KEEP_DISPLAY_VALUE==true||extension.advance.KEEP_DISPLAY_VALUE=="true");
-				/*var result = $.grep(extension, function(e){
+					/*var result = $.grep(extension, function(e){
     				return e == "KEEP_DISPLAY_VALUE";
      			});
      			isKeep = typeof(result) !== "undefined" && result.length > 0;*/
+				}
+			}
+			catch(err) {
+			    console.log("can not parse ] objectExtension +\n"+err.message);
 			}
 		}
 		return isKeep;
@@ -1023,22 +1028,35 @@ var actions = {
 	
 	getObjectRules : function(property,rowData){
 		var rules;
-		var objectExtension	= property.OBJECT_EXTENSION;
+		var objectExtension	= typeof property !="undefined" ? property.OBJECT_EXTENSION:null;
 		if(objectExtension!=null&&objectExtension!=""){
-			var objects = $.parseJSON(objectExtension);
-			var objectId = rowData[actions.type.idName[0]];
-			rules = objects[objectId];
+			try {
+			    var objects = $.parseJSON(objectExtension);
+			    var objectId = rowData[actions.type.idName[0]];
+			    rules = objects[objectId];
+			}
+			catch(err) {
+			    console.log("can not parse ] objectExtension +\n"+err.message);
+			}
 		}
 		return rules;
 	},
-	
+	checkEdittableWithRules	: function(objectRules){
+		if(typeof(objectRules) == "object"&& objectRules!=null && typeof objectRules.basic=="object"){
+			if(objectRules.OVERWRITE==true||objectRules.OVERWRITE=="true"){
+				return objectRules.basic.DATA_METHOD==1||objectRules.basic.DATA_METHOD=='1';
+			}
+		}
+		return true;
+	},
+
 	createCommonCell	: function(td,data,type,property,rowData){
 		colName 			= property.data;
 		$(td).addClass( "contenBoxBackground");
 		if(typeof type == "string") $(td).addClass( "cell"+type );
 		$(td).addClass( colName );
 		var isEdittable = !data.locked&&actions.isEditable(property,rowData,data.rights);
-		if(isEdittable) $(td).addClass( "editInline" );
+//		if(isEdittable) $(td).addClass( "editInline" );
 		return isEdittable;
 	},
 	
@@ -1085,6 +1103,11 @@ var actions = {
 				$(td).css("background-color","#"+objectRules.advance.COLOR);
 			}
 			
+			if(isEdittable){
+				isEdittable = actions.checkEdittableWithRules(objectRules);
+			}
+			
+			$(td).removeClass( "editInline" );
  			if(isEdittable){
  				$(td).addClass( "editInline" );
  	        	var table = $('#table_'+tab).DataTable();
@@ -1119,6 +1142,7 @@ var actions = {
  					}
  				});
  			}
+ 			
  			if(type=='number'){
         		var basicRules		= actions.getBasicRules(property,objectRules);
         		var originColor		= $(td).css('background-color');

@@ -64,7 +64,8 @@ class EuController extends CodeController {
 //     	else $euWheres["$eu.EU_GROUP_ID"]= null;
     	$columns	= $this->extractRespondColumns($dcTable,$properties);
     	if (!$columns) $columns = [];
-    	array_push($columns,"$eu.name as $dcTable",
+    	array_push($columns,"$dcTable.OCCUR_DATE",
+    						"$eu.name as $dcTable",
 							"$euPhaseConfig.ID as DT_RowId",
 	 						"$codeFlowPhase.name as PHASE_NAME",
 	 						"$codeEventType.name as TYPE_NAME",
