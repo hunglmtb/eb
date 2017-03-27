@@ -1025,9 +1025,14 @@ var actions = {
 		var rules;
 		var objectExtension	= typeof property !="undefined" ? property.OBJECT_EXTENSION:null;
 		if(objectExtension!=null&&objectExtension!=""){
-			var objects = $.parseJSON(objectExtension);
-			var objectId = rowData[actions.type.idName[0]];
-			rules = objects[objectId];
+			try {
+			    var objects = $.parseJSON(objectExtension);
+			    var objectId = rowData[actions.type.idName[0]];
+			    rules = objects[objectId];
+			}
+			catch(err) {
+			    console.log("can not parse ] objectExtension +\n"+err.message);
+			}
 		}
 		return rules;
 	},
@@ -1046,7 +1051,7 @@ var actions = {
 		if(typeof type == "string") $(td).addClass( "cell"+type );
 		$(td).addClass( colName );
 		var isEdittable = !data.locked&&actions.isEditable(property,rowData,data.rights);
-		if(isEdittable) $(td).addClass( "editInline" );
+//		if(isEdittable) $(td).addClass( "editInline" );
 		return isEdittable;
 	},
 	
