@@ -209,26 +209,23 @@ var diagram = {
 				showObjectMapping();
 			})
 
-			var phase_config=currentObjectMapping.getAttribute('sur_phase_config');
-			var conn_id=currentObjectMapping.getAttribute('conn_id');
-
+			var phaseConfig = getSurveilanceObject(currentObjectMapping);
+			var conn_id		= currentObjectMapping.getAttribute('conn_id');
 			if(conn_id != 0){
 				$('#cboConnection').val(conn_id);
 			}
-			if(phase_config+""!="undefined"){
-				var cfgs=phase_config.split("!!");
-				if(cfgs.length>1){
-					$("#sur_fields_select").val(cfgs[1]);
-				}
-				cfgs=cfgs[0].split("@@");
-				$('#sur_phase_list').html('');
-				for (i = 0; i < cfgs.length; i++) {
-					var attrs=cfgs[i].split("^^");
-					if(attrs.length>=4){
-						var phase_id=attrs[0], phase_name=attrs[1], prefix=attrs[2], subfix=attrs[3];
-						$('#sur_phase_list').append('<div class="sur_phase_item" sur="'+phase_id+'^^'+phase_name+'^^'+prefix+'^^'+subfix+'" id="sur_phase_id_'+phase_id+'">['+prefix+'] '+phase_name+' ['+subfix+'] &nbsp;&nbsp;&nbsp;(<a href="javascript:diagram.del_sur_phase('+phase_id+')">Remove</a>)</div>');
 
-					}
+			$('#sur_phase_list').html('');
+			if(typeof phaseConfig == "object" &&phaseConfig.length>0){
+				for (i = 0; i < phaseConfig.length; i++) {
+					var attrs		= phaseConfig[i];
+					var phase_id	= attrs.phaseId;
+					var eventType	= attrs.eventType;
+					var prefix		= attrs.prefix;
+					var subfix		= attrs.subfix;
+					var dataField	= attrs.dataField;
+					if(i==0) $("#sur_fields_select").val(dataField);
+					this.addPhaseObject(phase_id,eventType,prefix,subfix,dataField);
 				}
 			}
 
@@ -237,22 +234,52 @@ var diagram = {
 			});
 			
 		},
+		addPhaseObject : function(phase_id,eventType,prefix,subfix,dataField){
+			var addingField 	= getSurveilanceTextId("tmp",dataField,prefix,subfix,phase_id,eventType);
+			addingField = addingField.replace(/\//g,'kkkk');
+			addingField = addingField.replace(/\s/g,'');
+			addingField = addingField.replace(/[^\w\s]/gi, '');
+			addingField = addingField.replace("kkkk", '-');
+			
+			if($("#"+addingField).length>0){
+				$("#"+addingField).effect("highlight", {}, 2000);
+				return;
+			};
+
+			var surveilanceData = {
+									phaseId		: phase_id,
+									eventType	: eventType,
+									prefix		: prefix,
+									subfix		: subfix,
+									dataField	: dataField,
+									addingField	: addingField,
+									value		: "--",
+								};
+			var phase_name		= $("#sur_flow_phase  option[value='"+phase_id+"']").text();
+			var eventTypeName	= $("#sur_event_type  option[value='"+eventType+"']").text();
+			var li 				= $("<li class='x_item sur_phase_item'></li>");
+			var span 			= $("<span></span>");
+			var del				= $('<img valign="middle" onclick="$(this.parentElement).remove()" class="xclose" src="/img/x.png">');
+			span.text('['+prefix+'] '+phase_name+" - "+eventTypeName+' ['+subfix+']'+' ['+dataField+']');
+			li.attr("id",addingField);
+			span.appendTo(li);
+			del.appendTo(li);
+			li.data(surveilanceData);
+			li.appendTo($("#sur_phase_list"));
+		},
 
 		add_sur_phase : function(){
-			var phase_id, phase_name, prefix, subfix;
-			phase_id=$('#sur_flow_phase').val();
-			if($('#sur_phase_id_'+phase_id).length){
-				$('#sur_phase_id_'+phase_id).effect("highlight", {}, 2000);
-				return;
-			}
-			phase_name=$("#sur_flow_phase option:selected").text();
-			prefix=$('#txt_sur_phase_prefix').val();
-			subfix=$('#txt_sur_phase_subfix').val();
-			$('#sur_phase_list').append('<div class="sur_phase_item" sur="'+phase_id+'^^'+phase_name+'^^'+prefix+'^^'+subfix+'" id="sur_phase_id_'+phase_id+'">['+prefix+'] '+phase_name+' ['+subfix+'] &nbsp;&nbsp;&nbsp;(<a href="javascript:diagram.del_sur_phase('+phase_id+')">Remove</a>)</div>');
+			var phase_id, eventType, prefix, subfix, dataField;
+			phase_id	=$('#sur_flow_phase').val();
+			eventType	=$('#sur_event_type').val();
+			prefix		=$('#txt_sur_phase_prefix').val();
+			subfix		=$('#txt_sur_phase_subfix').val();
+			dataField	=$('#sur_fields_select').val();
+			this.addPhaseObject(phase_id,eventType,prefix,subfix,dataField);
 		},
 		
-		del_sur_phase : function(phase_id){
-			$('#sur_phase_id_'+phase_id).remove();
+		del_sur_phase : function(addingField){
+			$('#'+addingField).remove();
 		},
 
 		exportImage : function(type){
@@ -678,20 +705,51 @@ function cellMovedListener(sender, evt){
 	  	if(cell.id.substr(0,8)=='sur_val_'){
 	   		updateSurPhaseCellPosition(cell);
 	  	}
+	  	else if(cell.id.substr(0,6)=='label_'){
+	   		updateLabelCellPosition(cell);
+	  	}
  	}
 	 //ed.graph.model.endUpdate();
 	 ed.graph.refresh();
 }
 
 function updateSurPhaseCellPosition(baseCell){
+	var id 	= 	baseCell.getAttribute("parentCelId");
+	var ind	=	Number(baseCell.getAttribute("sur_phase_index"));
+	$.each(ed.graph.getChildCells(), function(key, cell) {
+		if(cell.id.lastIndexOf("sur_val_"+id+"_", 0) === 0 && cell.id != baseCell.id){
+			var ind2=Number(cell.getAttribute("sur_phase_index"));
+			if(ind2!=ind){
+				cell.geometry.y=baseCell.geometry.y+(ind2-ind)*baseCell.geometry.height;
+				cell.geometry.x=baseCell.geometry.x;
+			}
+		}
+    });
+	/* 
 	var ind=Number(baseCell.getAttribute("sur_phase_index"));
 	var id1=baseCell.id.substr(0,baseCell.id.lastIndexOf('_')+1);
 	for(i=0;i<30;i++){
+		var id		= baseCell.getId();
 		var cell=ed.graph.model.getCell(id1+i);
 		if(typeof cell!=='undefined'){
 			var ind2=Number(cell.getAttribute("sur_phase_index"));
 			if(ind2!=ind){
 				cell.geometry.y=baseCell.geometry.y+(ind2-ind)*baseCell.geometry.height;
+				cell.geometry.x=baseCell.geometry.x;
+			}
+		}
+	} */
+}
+
+function updateLabelCellPosition(baseCell){
+	var ind=Number(baseCell.getAttribute("label_index"));
+	var id1=baseCell.getAttribute("label_subfixId");
+	for(i=0;i<30;i++){
+		var cell=ed.graph.model.getCell(id1+i);
+		if(typeof cell!=='undefined'){
+			var ind2=Number(cell.getAttribute("label_index"));
+			if(ind2!=ind){
+				cell.geometry.y=baseCell.geometry.y - (ind2-ind)*baseCell.geometry.height;
 				cell.geometry.x=baseCell.geometry.x;
 			}
 		}
@@ -843,13 +901,46 @@ function setCurrentDiagramName(s)
     document.getElementById("diagramName").innerHTML=currentDiagramName;
 }
 
-function setCurrentDiagramId(i)
-{
+function setCurrentDiagramId(i){
     currentDiagramId = i;
 }
 
-function display()
-{
+function getSurveilanceObject(cell){
+	var jsonPhaseConfigObject;
+	var sur_phase_config	= cell.getAttribute('sur_phase_config');
+	if(typeof sur_phase_config =="string"){
+		try {
+			jsonPhaseConfigObject = $.parseJSON(sur_phase_config);
+		}
+		catch(err) {
+			console.log("error parse phase config json \n"+ err+"\n phaseconfig: \n"+sur_phase_config);
+			jsonPhaseConfigObject 	= [];
+			var phaseConfig 		= sur_phase_config;
+			var cfgs				= phaseConfig.split("!!");
+			var dataField			= cfgs.length>1?cfgs[1]:"";
+			cfgs					= cfgs[0].split("@@");
+			
+			for (i = 0; i < cfgs.length; i++) {
+				var attrs=cfgs[i].split("^^");
+				if(attrs.length>=4){
+					var phase_id=attrs[0], eventType=1, prefix=attrs[2], subfix=attrs[3];
+					jsonPhaseConfigObject.push({
+						phaseId		: phase_id,
+						eventType	: eventType,
+						prefix		: prefix,
+						subfix		: subfix,
+						dataField	: dataField,
+						value		: "--",
+					});
+				}
+			}
+			cell.setAttribute('sur_phase_config',JSON.stringify(jsonPhaseConfigObject));
+		}
+	}
+	return jsonPhaseConfigObject;
+}
+
+function display(){
 	//Get all cells
 	var cells=ed.graph.model.cells; //getChildVertices(ed.graph.getDefaultParent());
 	var occur_date=$("#Qoccurdate").val();
@@ -872,17 +963,18 @@ function display()
 		var conn_id=cell.getAttribute('conn_id');
 		if(conn_id=="undefined") conn_id=""; 
 
+		var phaseConfig = getSurveilanceObject(cell);
+		
 		var v = {
 			'ID' : cell.getId(),
 			'OBJECT_TYPE' : cell.getAttribute('object_type'),
 			'OBJECT_ID' : cell.getAttribute('object_id'),
 			'CONN_ID' : conn_id,
-			'SUR_PHASE_CONFIG' : sur_phase_config,
+			'SUR_PHASE_CONFIG' : phaseConfig,
 			'SU' : su
 		}
 
 		sData.push(v); 
-		//vparam += (vparam==""?"":"#")+cell.getId()+"~"+su+"~"+cell.getAttribute('object_type')+"~"+cell.getAttribute('object_id')+"~"+conn_id+"~"+sur_phase_config;
 	}
 	if(sData!="")
 	{
@@ -899,7 +991,7 @@ function display()
 				alert(data);
 				return;
 			}
-			var arrs=data.substr(2).split("#");
+			/* var arrs=data.substr(2).split("#");
 			var i = 0;
 			for (; i < arrs.length; i++)
 			{ 
@@ -909,7 +1001,9 @@ function display()
 						if(vs.length>2){
 							var arrfs=vs[2].split("%SV");
 							for(var j=0;j<arrfs.length-1;j+=2){
-								label=ed.graph.model.getCell('sur_val_'+vs[0]+'_'+arrfs[j]);
+								addingField 	= getSurveilanceTextId(id,dataField,prefix,subfix,phase_id,eventType);
+// 								label=ed.graph.model.getCell('sur_val_'+vs[0]+'_'+arrfs[j]);
+								label			=	ed.graph.model.getCell(addingField);
 								if(typeof label!=='undefined'){
 									var phase_name=label.getAttribute('phase_name', '');
 									var prefix=label.getAttribute('prefix', '');
@@ -919,37 +1013,58 @@ function display()
 							}
 						}
 					}
-					else{
-						var label=ed.graph.model.getCell('label_'+vs[0]);
-						if(typeof label!=='undefined'){
-							if(vs[1]!="%SF")
-								label.setAttribute('label', vs[1]);
-								var renderFuntion = function(color,cssProperty){
-									label.style = "fontColor="+color+";";
-								}
-								var cellConfig	= respondData.cellConfigs[vs[0]];
-								
-								rowData			= {
-													DT_RowId				: cellConfig.OBJECT_ID
-												};
-								rowData[actions.type.idName[0]] = cellConfig.OBJECT_ID;
-								
-								var cIndex		= cellConfig.index;
-								var property 	= respondData.properties[cIndex];
-								var objectRules	= actions.getObjectRules(property,rowData);
-								var newValue	= cellConfig.value;
-// 								label.setStyle("fontColor:red;");
-// 								label.style = "strokeColor=red;fillColor=green;fontColor=blue;";
-        						var basicRules		= actions.getBasicRules(property,objectRules);
- 								actions.addCellNumberRules(renderFuntion,basicRules,newValue,rowData,"","loading");
-						}
-					}
 				}
+			} */
+
+			for(var cellId in respondData.cellConfigs){
+				updateCellLabel(cellId,respondData.cellConfigs[cellId],respondData.properties);
 			}
 			ed.graph.refresh();
-		   }); 
+	   }); 
 	}
 }
+
+function updateCellLabel(cellId,cellData,properties){
+	var index = 0;
+	var label_subfixId 		= 'label_'+cellId+"_";
+	var doc = mxUtils.createXmlDocument();
+	var cell = ed.graph.model.getCell(cellId);
+	var text = "--";
+	var oldCell = ed.graph.model.getCell('label_'+cellId);
+	if(typeof oldCell!=='undefined') ed.graph.removeCells([oldCell]);
+	for(var field in cellData){
+		var cellConfig	= cellData[field];
+		var newValue	= cellConfig.value;
+		if(field!="%SF") {
+			var label=ed.graph.model.getCell(label_subfixId+index);
+			if(typeof label=='undefined') {
+				label = addOrUpdateLabel(doc,cell,text,index);
+			}
+			var renderFuntion = function(color,cssProperty){
+				label.setStyle("text_sur;fontColor="+color+";");
+			}
+			rowData			= {DT_RowId				: cellConfig.OBJECT_ID };
+			rowData[actions.type.idName[0]] = cellConfig.OBJECT_ID;
+			var cIndex		= cellConfig.index;
+			var property 	= properties[cIndex];
+			var objectRules	= actions.getObjectRules(property,rowData);
+			var basicRules		= actions.getBasicRules(property,objectRules);
+			var valueText = typeof cellConfig.value == "string"?cellConfig.value:"--";
+			label.setAttribute('label', (property.title)+": "+valueText);
+			label.setStyle('text_sur');
+			actions.addCellNumberRules(renderFuntion,basicRules,newValue,rowData,"","loading");
+			index++;
+		}
+		else{
+			addOrUpdateSurLabels(doc,cell,cellConfig);
+		}
+	}
+}
+
+function getSurveilanceTextId(cellId,dataField,prefix,subfix,phase_id,eventType){
+	return  ["sur_val",cellId,dataField,prefix,subfix,phase_id,eventType].join("_");
+}
+
 
 function showBoxDiagrams(){
 	$( "#listSavedDiagrams" ).dialog({
@@ -999,8 +1114,7 @@ function loadDiagram()
 
 
 
-function newDiagram()
-{
+function newDiagram(){
     clearGraph();
 	setCurrentDiagramId(0);
     setCurrentDiagramName(defaultDiagramName);
@@ -1090,23 +1204,22 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 					<table>
 						<tr>
 							<td>Flow phase</td>
+							<td>Event type</td>
 							<td>Prefix</td>
 							<td>Subfix</td>
 							<td></td>
 						</tr>
 						<tr>
 							<td><select id="sur_flow_phase"></select></td>
-							<td><input id="txt_sur_phase_prefix"
-								style="width: 100px; height: 18px;"></td>
-							<td><input id="txt_sur_phase_subfix"
-								style="width: 100px; height: 18px;"></td>
-							<td><input type="button" style="width: 60px; height: 16px;"
-								value="Add" onclick="diagram.add_sur_phase()"></input></td>
+							<td>{{ \Helper::filter(["modelName"=>"CodeEventType",'id' =>'sur_event_type']) }}</td>
+							<td><input id="txt_sur_phase_prefix" style="width: 100px; height: 18px;"></td>
+							<td><input id="txt_sur_phase_subfix" style="width: 100px; height: 18px;"></td>
+							<td><input type="button" style="width: 60px; height: 16px;" value="Add" onclick="diagram.add_sur_phase()"></input></td>
 						</tr>
 					</table>
 					<hr>
 					<b>Added flow phases:</b>
-					<div id="sur_phase_list"></div>
+					<div><ul id="sur_phase_list" style="list-style-type: none;padding-left: 0px;"></ul></div>
 				</div>
 			</div>
 		</div>
@@ -1547,150 +1660,42 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 	function applySurveillance(){
 		var s="";
 		var phase_config="";
+		var phaseConfig	= [];
+		
 		$("#sur_phase_list .sur_phase_item").each(function(){
 			phase_config+=(phase_config==""?"":"@@")+$(this).attr('sur');
+			phaseConfig.push($(this).data());
 		});
+		phaseConfigString	= JSON.stringify(phaseConfig);
 		phase_config+="!!"+$("#sur_fields_select").val();
-		var l=""; //lable display for cell (yellow cell)
+		var fields = [];
+		
 		$("#sur_fields :checked").each(function(){
 			s+=(s==""?"":"@")+$(this).attr("surveilance_settings");
-			l+=(l==""?"":"\n")+$(this).val()
+			fields.push($(this).val());
 		});
 		$("#sur_tag_content :checked").each(function(){
 			s+=(s==""?"":"@")+"TAG:"+$(this).attr("surveilance_settings");
-			l+=(l==""?"":"\n")+$(this).val()
+			fields.push($(this).val());
 		});
 		var other_tag=$("#txt_sur_other_tag").val().trim();
 		if(other_tag!=""){
 			s+=(s==""?"":"@")+"TAG:"+other_tag;
-			l+=(l==""?"":"\n")+other_tag
+			fields.push(other_tag);
 		}
-		var rowlabel=$("#surveillanceSetting input:checked").length;
 		
 		if(currentObjectMapping){
 			currentObjectMapping.setAttribute('surveillance',s);
-			currentObjectMapping.setAttribute('sur_phase_config',phase_config);
+			currentObjectMapping.setAttribute('sur_phase_config',phaseConfigString);
 			currentObjectMapping.setAttribute('conn_id',$("#cboConnection").val());
 		}
 		
 		//Create label or edit label
 		var cell = ed.graph.getSelectionCell();
-		var id=cell.getId();
+		var doc 	= mxUtils.createXmlDocument();
 		
-		var cellX = Number(cell.getGeometry().x);
-		var cellY = Number(cell.getGeometry().y-50);
-		
-		var doc = mxUtils.createXmlDocument();
-		var node = doc.createElement('MyNode')
-		node.setAttribute('label', l);
-		//node.setAttribute('width', '125');
-		//graph.insertVertex(graph.getDefaultParent(), null, node, 40, 40, 80, 30);
-		
-		//var parent = ed.graph.getDefaultParent();
-		var parent = cell.parent;
-		var model = ed.graph.model;
-		
-		//Phase value cells
-		var parr=[];
-		for(i=0;i<30;i++){
-			var c=ed.graph.model.getCell('sur_val_'+id+'_'+i);
-			if(typeof c!=='undefined'){
-				parr.push(i);
-			}
-		}
-
-		if(phase_config!=""){
-			var cfgs=phase_config.split("!!")[0].split("@@");
-			var s_ind=0;
-			for (i = 0; i < cfgs.length; i++) {
-				var attrs=cfgs[i].split("^^");
-				if(attrs.length>=4){
-					var phase_id=attrs[0], phase_name=attrs[1], prefix=attrs[2], subfix=attrs[3];
-					var i2=parr.indexOf(Number(phase_id));
-					if(i2>=0){
-						parr.splice(i2, 1);
-					}
-					s_ind++;
-					var label = model.getCell('sur_val_'+id+'_'+phase_id);
-					if(typeof label==='undefined'){
-						model.beginUpdate();
-						try
-						{
-							var n2 = doc.createElement('MyNode');
-							n2.setAttribute('label', (prefix+""==""?phase_name:prefix) + ": -- " + subfix);
-							var v1=ed.graph.insertVertex(parent, 'sur_val_'+id+'_'+phase_id, n2, cellX, cell.geometry.y+cell.geometry.height+20+(s_ind-1)*20, 100, 20);
-							var fillColor="gray";
-							if(phase_id==1) fillColor="#CC6600";
-							if(phase_id==2) fillColor="#FF0000";
-							if(phase_id==3) fillColor="#0066CC";
-							v1.setStyle('text_sur;dashed=0;fontColor=white;strokeColor=black;fillColor='+fillColor+';');
-							v1.setVisible(true);
-							v1.setAttribute('sur_phase_index', s_ind);
-							v1.setAttribute('phase_id', phase_id);
-							v1.setAttribute('phase_name', phase_name);
-							v1.setAttribute('prefix', prefix);
-							v1.setAttribute('subfix', subfix);
-							if(s_ind==1){
-								var v2=cell;
-								e=ed.graph.insertEdge(parent, 'sur_edge_'+id+'_'+phase_id, '', v1, v2);
-								e.setStyle('dashed=1');
-							}
-						}
-						finally
-						{
-						  model.endUpdate();
-						}
-					}
-					else{
-						label.setAttribute('label', (prefix+""==""?phase_name:prefix) + ": -- " + subfix);
-					}
-				}
-			}
-		}
-		for (i2 = 0; i2 < parr.length; i2++){
-			var c = model.getCell('sur_val_'+id+'_'+parr[i2]);
-			if(typeof c!=='undefined'){
-				ed.graph.removeCells([c]);
-			}
-		}
-
-		//Check cell existing
-		var label = model.getCell('label_'+id);
-		if(typeof label==='undefined')
-		{
-			model.beginUpdate();
-			try
-			{
-				var v1=ed.graph.insertVertex(parent, 'label_'+id, node, cellX, cellY, 160, 30);
-				v1.setStyle('text_sur');
-				if(rowlabel==0)
-					v1.setVisible(false)
-				else
-				{
-					v1.setVisible(true);
-					v1.geometry.height=8+rowlabel*12;
-				}
-				var v2=cell;
-				e=ed.graph.insertEdge(parent, 'edge_'+id, '', v1, v2);
-				e.setStyle('dashed=1');
-			}
-			finally
-			{
-			  model.endUpdate();
-			}
-		}
-		else
-		{
-			label.setAttribute('label', l);
-			//label.setGeometry({'width':label.getGeometry().width, 'height':8+rowlabel*12, 'x':label.getGeometry().x, 'y':label.getGeometry().y});
-			if(rowlabel==0)
-				label.setVisible(false)
-			else
-			{
-				label.setVisible(true);
-				label.geometry.height=8+rowlabel*12;
-			}
-		}
+		addOrUpdateSurLabels(doc,cell,phaseConfig);
+		addOrUpdateLabels(doc,cell,fields);
 		ed.graph.refresh();
 		$("#surveillanceSetting").dialog("close");
 	}
@@ -1699,6 +1704,128 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 		cell.setGeometry('100', '200', '250', '84');
 		ed.graph.refresh();
 	}
+
+	function addOrUpdateSurLabels(doc,cell,phaseConfig){
+
+		var cellX 	= Number(cell.getGeometry().x);
+		var cellY 	= Number(cell.getGeometry().y-50);
+		//var parent = ed.graph.getDefaultParent();
+		var parent 	= cell.parent;
+		var model 	= ed.graph.model;
+		var id		= cell.getId();
+		
+		//Phase value cells
+		var addingField;
+		$.each(ed.graph.getChildCells(), function(key, cell) {
+			if(cell.id.lastIndexOf("sur_val_"+id+"_", 0) === 0) ed.graph.removeCells([cell]);
+	    });
+
+		$.each(phaseConfig, function(s_ind, attrs) {
+			var phase_id		= attrs.phaseId;
+			var eventType		= attrs.eventType;
+			var prefix			= attrs.prefix;
+			var subfix			= attrs.subfix;
+			var dataField		= attrs.dataField;
+			var value			= attrs.value;
+			var phase_name		= $("#sur_flow_phase  option[value='"+phase_id+"']").text();
+			var eventTypeName	= $("#sur_event_type  option[value='"+eventType+"']").text();
+			eventTypeName 		= eventTypeName!=""?" - "+eventTypeName:"";
+			
+			var labelText		= (prefix+""==""?phase_name:prefix) + eventTypeName+ ": "+value+" " + subfix;
+			addingField 		= getSurveilanceTextId(id,dataField,prefix,subfix,phase_id,eventType);
+			var label 			= model.getCell(addingField);
+			
+			if(typeof label==='undefined'){
+				model.beginUpdate();
+				try {
+					var n2 = doc.createElement('MyNode');
+					n2.setAttribute('label',labelText);
+					var v1=ed.graph.insertVertex(parent, addingField, n2, cellX, cell.geometry.y+cell.geometry.height+20+(s_ind)*20, 160, 20);
+					var fillColor="gray";
+					if(phase_id==1) fillColor="#FBD070";
+					if(phase_id==2) fillColor="#FF9696";
+					if(phase_id==3) fillColor="#62CEFB";
+					v1.setStyle('text_sur;dashed=0;fontColor=black;strokeColor=black;fillColor='+fillColor+';');
+					v1.setVisible(true);
+					v1.setAttribute('parentCelId', id);
+					v1.setAttribute('sur_phase_index', s_ind);
+					v1.setAttribute('phase_id', phase_id);
+					v1.setAttribute('eventType', eventType);
+					v1.setAttribute('phase_name', phase_name);
+					v1.setAttribute('prefix', prefix);
+					v1.setAttribute('subfix', subfix);
+					if(s_ind==0){
+						var v2=cell;
+						e=ed.graph.insertEdge(parent, 'sur_edge_'+id+'_'+phase_id, '', v1, v2);
+						e.setStyle('dashed=1');
+					}
+				}
+				finally {
+				  model.endUpdate();
+				}
+			}
+			else{
+				label.setAttribute('label', labelText);
+			}
+	    });
+	}
+
+	function addOrUpdateLabels(doc,cell,fields){
+		var parent 	= cell.parent;
+		var model 	= ed.graph.model;
+		var id		= cell.getId();
+		var oldCell = model.getCell('label_'+id);
+		if(typeof oldCell!=='undefined') ed.graph.removeCells([oldCell]);
+		for (i = 0; i < 30; i++){
+			if(i<fields.length){
+				var text = fields[i];
+				addOrUpdateLabel(doc,cell,text,i);
+			}
+			else{
+				var c = model.getCell('label_'+id+'_'+i);
+				if(typeof c!=='undefined') ed.graph.removeCells([c]);
+			}
+		}
+	}
+
+	function addOrUpdateLabel(doc,cell,text,index){
+		var parent 				= cell.parent;
+		var model 				= ed.graph.model;
+		var id					= cell.getId();
+		var cellX 				= Number(cell.getGeometry().x);
+		var cellY 				= Number(cell.getGeometry().y-50);
+		var height				= 15;
+		var label_subfixId 		= 'label_'+id+"_";
+		var labelCellId			= label_subfixId+index;
+		var label 				= model.getCell(labelCellId);
+		
+		if(typeof label==='undefined') {
+			model.beginUpdate();
+			try {
+				var node = doc.createElement('MyNode');
+				node.setAttribute('label', text);
+				var v1=ed.graph.insertVertex(parent, labelCellId, node, cellX, cell.geometry.y-20-(index+1)*height, 160, height);
+				v1.setStyle('text_sur');
+				v1.setAttribute('label_index', index);
+				v1.setAttribute('label_subfixId', label_subfixId);
+				if(index==0){
+					e=ed.graph.insertEdge(parent, 'edge_'+id+'_'+index, '', v1, cell);
+					e.setStyle('dashed=1');
+				}
+				
+			}
+			finally {
+			  model.endUpdate();
+			}
+			label = v1;
+		}
+		else {
+			label.setAttribute('label', text);
+			label.setStyle('text_sur;');
+		}
+		return label;
+	}
+	
 </script>
 								<table border="0" cellpadding="0" cellspacing="0" width="100%"
 									id="table3" height="100%">
