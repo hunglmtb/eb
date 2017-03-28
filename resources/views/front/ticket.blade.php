@@ -155,7 +155,7 @@ RUN TICKET CAPTURE
 		orenderFilter(rowData);
 		$('#secondary_CodeProductType').val(rowData.PHASE_TYPE);
 		$('#secondary_CodeProductType').change();
- 		$('#secondary_CodeProductType').attr('disabled','disabled');
+//  		$('#secondary_CodeProductType').attr('disabled','disabled');
 	};
 </script>
 @stop
