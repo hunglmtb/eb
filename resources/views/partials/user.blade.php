@@ -137,40 +137,35 @@ $.ajaxSetup({
 			$("#boxTaskLog").html(data);
 		});
 	}
-	var taskCountingTimer;
+	var taskCountingTimer = null;
 	var username= '{{$current_username}}';
-	function _loadTasksCounting(){
-		//alert("_loadTasksCounting");
+	function loadTasksCounting(){
+		console.log("loadTasksCounting");
+		if(taskCountingTimer != null) {
+			clearTimeout(taskCountingTimer);
+			taskCountingTimer=null;
+		}
 		param = {};
 		sendAjaxNotMessage('/countWorkflowTask', param, function(data){
 			$("#wf_notify").html(data);
-			if(data=="0") 
+			if(data=="0")
 				$("#wf_notify_box").hide();
 			else
 				$("#wf_notify_box").show();
-			taskCountingTimer=setTimeout(_loadTasksCounting,2000);
+			taskCountingTimer=setTimeout(loadTasksCounting,30000);
 		});
-		
-		
-		
-		/* $.get("/taskman/ajaxs/WorkflowTaskCounter.php?user="+username,function(data){
-				$("#wf_notify").html(data);
-				if(data=="0") 
-					$("#wf_notify_box").hide();
-				else
-					$("#wf_notify_box").show();
-				taskCountingTimer=setTimeout(_loadTasksCounting,30000);
-			}); */
 	}
-	function loadTasksCounting(){
+/* 	function loadTasksCounting(){
 		if(taskCountingTimer) {
 			clearTimeout(taskCountingTimer);
 			taskCountingTimer=null;
 		}
 		if(username!="")
-			_loadTasksCounting();
+			loadTasksCounting();
 	}
- 	taskCountingTimer=setTimeout(_loadTasksCounting,2000);
+ 	taskCountingTimer=setTimeout(loadTasksCounting,2000);
+ */
+	loadTasksCounting();
 	</script>
 	</div>
 		<div id="boxWorkflow" style="display:none;width:100%;height:100%;background:#ffffff;overflow:hidden;">

@@ -60,7 +60,7 @@ $xmenu["forecast"]=[
 ];
 $xmenu["delivery"]=[
 	"text"  =>"Product Delivery",
-	"display" => 0,
+	"display" => 1,
 	"sub" =>[
 		["text"  =>"CONTRACT ADMIN","desc" => "","url" => "/pd/contractdata"],
 		["text"  =>"CARGO ADMIN","desc" => "","url" => "/pd/cargoentry"],
@@ -71,7 +71,7 @@ $xmenu["delivery"]=[
 ];
 $xmenu["greenhouse"]=[
 	"text"  =>"Greenhouse Gas",
-	"display" => 0,
+	"display" => 1,
 	"sub" =>[
 		["text"  =>"EMISSION SOURCES","desc" => "","url" => "../ghg/index.php/emission"],
 		["text"  =>"EMISSION ENTRY","desc" => "","url" => "../ghg/index.php/emissionEntry"],
