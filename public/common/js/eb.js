@@ -201,8 +201,8 @@ var registerOnChange = function(sourceObject, dependentIds,more) {
 						$('#'+elementId).append(option);
 					});
 					$('#'+elementId).val(results[i].currentId);
+					if(typeof onAfterGotDependences == "function") onAfterGotDependences(elementId,$('#'+elementId),results[i].currentId);
 				}
-				
 				enableSelect(dependentSelects,false);
 			},
 			error: function(data) {

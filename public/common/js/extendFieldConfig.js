@@ -142,12 +142,15 @@ $(function(){
         	   
         	   var dataMethodSelect = this.$select.filter('[name="DATA_METHOD"]');
         	   this.dataMethods		= typeof value.basic.dataMethods == "object" ? value.basic.dataMethods: this.dataMethods;
-        	   $.each(this.dataMethods, function(key, value) {   
-        		   dataMethodSelect.append($("<option></option>")
-        		                    .attr("value",value.ID)
-        		                    .text(value.NAME)); 
-        		});
-        	   dataMethodSelect.val(value.basic.DATA_METHOD);
+			   if(typeof this.dataMethods == "object"){
+				   $.each(this.dataMethods, function(key, value) {   
+					   dataMethodSelect.append($("<option></option>")
+							   .attr("value",value.ID)
+							   .text(value.NAME)); 
+				   });
+				   dataMethodSelect.val(value.basic.DATA_METHOD);
+			   }
+
            }
            if(typeof value.advance != "undefined") {
         	   this.$input.filter('[name="KEEP_DISPLAY_VALUE"]').prop('checked', value.advance.KEEP_DISPLAY_VALUE==true||value.advance.KEEP_DISPLAY_VALUE=="true");
@@ -171,7 +174,6 @@ $(function(){
 								        	  VALUE_WARNING_MIN	: this.$input.filter('[name="VALUE_WARNING_MIN"]').val(),
 								        	  RANGE_PERCENT		: this.$input.filter('[name="RANGE_PERCENT"]').val(),
 								        	  DATA_METHOD		: this.$select.filter('[name="DATA_METHOD"]').val(),
-//								        	  dataMethods		: this.dataMethods,
 							           },
 			    	   		advance		: {
 			        		   					KEEP_DISPLAY_VALUE	: this.$input.filter('[name="KEEP_DISPLAY_VALUE"]').is(":checked"),

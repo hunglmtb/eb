@@ -37,10 +37,10 @@
         		text = value.FREQUENCEMODE;
         		break;
         	case "TASK" :
-        		text = this.$input.filter('[name="JOB"]').text();
+        		text = value.name;
         		break;
         	}
-        	text=text!=""?text:"config";
+        	text	= typeof text == "string" && text!=""?text:"config";
         	var html = '<b>' + text+ '</b>';
             $(element).html(html); 
         },
@@ -116,10 +116,21 @@
 					this.renderValue('.MONTHROW',value.MONTH);
 				break;
 				case "TASK" :
-					this.$select.filter('[name="NETWORK"]').val(value.NETWORK);
-					this.$select.filter('[name="JOB"]').val(value.JOB);
+					var networkSelect = this.$select.filter('[name="NETWORK"]');
+				   this.networks		= typeof value.networks == "object" ? value.networks: this.networks;
+				   if(typeof this.networks == "object"){
+					   $.each(this.networks, function(key, value) {   
+						   networkSelect.append($("<option></option>")
+								   .attr("value",value.ID)
+								   .text(value.NAME)); 
+					   });
+					   networkSelect.val(value.NETWORK);
+				   }
 					this.renderDatetimeValue('DATE',value.DATE);
 					this.$input.filter('[name="SENDLOG"]').val(value.SENDLOG);
+					this.$select.filter('[name="JOB"]').val(value.JOB);
+					this.$select.filter('[name="JOB"]').attr("originValue",value.JOB);
+
 				break;
 			}
        },       
@@ -150,10 +161,11 @@
 				break;
 				case "TASK" :
 					value	= {
-							NETWORK			: this.$input.filter('[name="NETWORK"]').val(),
-							JOB				: this.$input.filter('[name="JOB"]').val(),
+							NETWORK			: this.$select.filter('[name="NETWORK"]').val(),
+							JOB				: this.$select.filter('[name="JOB"]').val(),
 							DATE			: this.getDatetimeValue('DATE'),
 							SENDLOG			: this.$input.filter('[name="SENDLOG"]').val(),
+							name			: this.$select.filter('[name="JOB"]').find(":selected").text(),
 					};
 				break;
 			}
@@ -241,6 +253,7 @@
        },
        activateJobEvent: function() {
     	   this.renderDateTimePicker('[name="DATE"]');
+    	   this.$select.filter('[name="NETWORK"]').change();
        },
         /**
         Activates input: sets focus on the first field.

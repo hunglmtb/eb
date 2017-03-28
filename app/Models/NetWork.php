@@ -8,8 +8,12 @@ class NetWork extends DynamicModel
 	protected $table = 'NETWORK';
 	
 	public $timestamps = false;
-	public $primaryKey  = 'ID';
 	
 	protected $fillable  = ['ID', 'CODE', 'NAME', 'START_DATE', 'END_DATE', 'NETWORK_TYPE', 'XML_CODE', 'DATA_CONNECTION'];
+	
+	
+	public function AllocJob($option=null){
+		return AllocJob::where("NETWORK_ID","=",$this->ID)->select("ID","NAME")->get();
+	}
 	
 }

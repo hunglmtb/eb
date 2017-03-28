@@ -1,8 +1,15 @@
 <?php
+	use \App\Models\Network;
+	use \App\Models\AllocJob;
+	
 	$currentSubmenu ='/dv/taskman';
 	$tables = ['TmTask'	=>['name'=>'Task'],
 	];
 	$isAction = true;
+	
+	$network	= NETWORK::getTableName();
+	$allocJob	= AllocJob::getTableName();
+	$networks 	= Network::join($allocJob,"$network.ID", '=', "$allocJob.NETWORK_ID")->distinct("$network.ID")->select("$network.ID","$network.NAME")->get();
 ?>
 
 @extends('core.pm')
@@ -12,6 +19,8 @@
 <script src="/common/edittable/event.js"></script>
 
 <script>
+	var networks = <?php echo json_encode($networks); ?>
+
 	actions.loadUrl 		= "/taskman/load";
 	actions.saveUrl 		= "/taskman/save";
 	
@@ -65,21 +74,41 @@
 		});
 	};
 
+
+	var firstTime = true;
+	function onAfterGotDependences(elementId,element,currentId){
+	   if(elementId=="AllocJob"){
+		   if(firstTime) {
+			   var originValue = element.attr("originValue");
+			   element.val(originValue);
+			   firstTime = false;
+		   }
+	   }
+   	}
+   	
 	actions.configEventType = function (editable,columnName,cellData,rowData){
 		if(columnName=="task_config") {
+			cellData.networks 	= networks;
 			editable.configType = "TASK";
 			editable.tpl = '<table class="eventTable" style="width:inherit;min-width:350px"><tbody>'+
-				 '<tr><td><label><span>Network</span></label></td><td colspan="1"><select class="editable-event" name="NETWORK"></select></td></tr>'+
-				 '<tr><td><label><span>Job</span></label></td><td colspan="1"><select class="editable-event" name="JOB"></select></td></tr>'+
+				 '<tr><td><label><span>Network</span></label></td><td colspan="1"><select id="Network" class="editable-event" name="NETWORK"></select></td></tr>'+
+				 '<tr><td><label><span>Job</span></label></td><td colspan="1"><select id="AllocJob" class="editable-event" name="JOB"></select></td></tr>'+
 	        	 '<tr class="DATE" ><td><label><span>Date</span></label></td><td colspan="1"><span class="editable-event clickable" name="DATE">set datetime</span></td></tr>'+
 				 '<tr><td><label><span>Send Logs</span></label></td><td colspan="5"><input class="editable-event eventTaskInput" name="SENDLOG"></input></td></tr>'+
-	            '</tbody></table>';
+	            '</tbody></table>'+
+	            "<script>registerOnChange('Network',['AllocJob'])<\/script>";
 		}
 	}
 
+	oPreEditableShow = actions.preEditableShow;
+	actions.preEditableShow  = function(){
+		oPreEditableShow();
+		firstTime = true;
+	};
+
 	actions.renderEventConfig = function( columnName,data2, type2, row){
 		if(columnName=="task_config") {
-			return typeof data2=="object"&&typeof data2.JOB != "undefined"? data2.JOB:"config";
+			return typeof data2=="object"&&typeof data2.name != "undefined"? data2.name:"config";
 		}
 		else  if(columnName=="time_config") {
 			return typeof data2=="object"&&typeof data2.FREQUENCEMODE != "undefined"? data2.FREQUENCEMODE:"config";
