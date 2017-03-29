@@ -969,7 +969,7 @@ var actions = {
     		if (newValue.constructor.name == "Date") {
         		newValue = actions.getTimeValueBy(newValue,columnName,tab);
     		}
-    		else if(type == "number") {
+    		else if(type == "number" && typeof newValue == "string") {
         		newValue = parseFloat(newValue.replace(',','.'));
     		}
 		}

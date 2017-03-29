@@ -46,16 +46,17 @@ actions.extensionHandle	 = function(tab,columnName,rowData,limit,successFunction
 																			};
 		currentHistory.tab				= tab;
 		currentHistory.columnName		= columnName;
-		currentHistory.rowData			= jQuery.extend({},rowData);
+		currentHistory.rowData			= rowData;
 		currentHistory.successFunction	= successFunction;
 		currentHistory.notLocked		= notLocked;
 
+		var submitRowData				= jQuery.extend({},rowData);
 
-		if(typeof currentHistory.rowData.OCCUR_DATE == "undefined" 
-			|| currentHistory.rowData.OCCUR_DATE == null) 
-			 currentHistory.rowData.OCCUR_DATE = $("#date_begin").val();
-		else 
-			currentHistory.rowData.OCCUR_DATE = moment.utc(currentHistory.rowData.OCCUR_DATE,configuration.time.DATE_FORMAT_UTC).format(configuration.time.DATE_FORMAT);
+		if(typeof submitRowData.OCCUR_DATE == "undefined" 
+			|| submitRowData.OCCUR_DATE == null) 
+			submitRowData.OCCUR_DATE = $("#date_begin").val();
+		else
+			submitRowData.OCCUR_DATE = moment.utc(submitRowData.OCCUR_DATE,configuration.time.DATE_FORMAT_UTC).format(configuration.time.DATE_FORMAT);
 
 		$("#boxHistory").dialog({
 			height: 350,
@@ -77,7 +78,7 @@ actions.extensionHandle	 = function(tab,columnName,rowData,limit,successFunction
 			data: {
 					tabTable	: tab,	
 					field		: columnName,	
-					rowData		: currentHistory.rowData, 
+					rowData		: submitRowData, 
 					limit		: limit
 				},
 			success:function(data){
