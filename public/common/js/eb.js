@@ -800,7 +800,7 @@ var actions = {
 		property.VALUE_WARNING_MAX != ""?
 		parseFloat(property.VALUE_WARNING_MAX):Number.MAX_VALUE;
 		if(newValue <= minWarningValue || newValue >= maxWarningValue) 
-			actions.renderResultByRule(td,"yellow",'background-color');
+			actions.renderResultByRule(td,"#f1c300",'background-color');
 //			$(td).css('background-color', 'yellow');
 		else {
 			actions.renderResultByRule(td,originColor,'background-color');

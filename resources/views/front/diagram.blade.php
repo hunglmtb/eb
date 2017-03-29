@@ -1041,7 +1041,7 @@ function updateCellLabel(cellId,cellData,properties){
 				label = addOrUpdateLabel(doc,cell,text,index);
 			}
 			var renderFuntion = function(color,cssProperty){
-				label.setStyle("text_sur;fontColor="+color+";");
+				label.setStyle("text_sur;fontColor="+color+";fillColor=white;");
 			}
 			rowData			= {DT_RowId				: cellConfig.OBJECT_ID };
 			rowData[actions.type.idName[0]] = cellConfig.OBJECT_ID;
@@ -1051,7 +1051,7 @@ function updateCellLabel(cellId,cellData,properties){
 			var basicRules		= actions.getBasicRules(property,objectRules);
 			var valueText = typeof cellConfig.value == "string"?cellConfig.value:"--";
 			label.setAttribute('label', (property.title)+": "+valueText);
-			label.setStyle('text_sur');
+			label.setStyle('text_sur;fillColor=white;');
 			actions.addCellNumberRules(renderFuntion,basicRules,newValue,rowData,"","loading");
 			index++;
 		}
@@ -1805,7 +1805,7 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 				var node = doc.createElement('MyNode');
 				node.setAttribute('label', text);
 				var v1=ed.graph.insertVertex(parent, labelCellId, node, cellX, cell.geometry.y-20-(index+1)*height, 160, height);
-				v1.setStyle('text_sur');
+				v1.setStyle('text_sur;fillColor=white;');
 				v1.setAttribute('label_index', index);
 				v1.setAttribute('label_subfixId', label_subfixId);
 				if(index==0){
