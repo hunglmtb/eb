@@ -108,10 +108,9 @@ return [
 	|
 	*/
 
-	'key' => env('APP_KEY', 'SomeRandomStringSomeRandomString'),
+	'key' => env('APP_KEY', 'base64:92QkHwquz2EU7oicGXvwaSKkEIy8gjfZkjHRkONpEbs='),
 
 	'cipher' => 'AES-256-CBC',
-
 	/*
 	|--------------------------------------------------------------------------
 	| Logging Configuration
