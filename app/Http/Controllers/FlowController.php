@@ -99,5 +99,8 @@ class FlowController extends CodeController {
 		$obj_id			= $rowData[config("constants.flowId")];
 		return ['FLOW_ID'	=>	$obj_id];
 	}
-    
+
+    public function getFirstProperty($dcTable){
+    	return  ['data'=>$dcTable,'title'=>'Object name','width'=>300];
+    }    
 }

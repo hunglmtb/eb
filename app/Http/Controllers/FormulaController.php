@@ -148,7 +148,7 @@ class FormulaController extends Controller {
 	public function getVarList(Request $request){
 		$data = $request->all ();
 		
-		$tmp = FoVar::where(['FORMULA_ID'=>$data['formula_id']])->orderBy('ORDER', 'ID')->select('*')->get();
+		$tmp = FoVar::where(['FORMULA_ID'=>$data['formula_id']])->orderBy('ORDER')->select('*')->get();
 		$s="";
 		$i=0;
 		$html="";
