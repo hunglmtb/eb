@@ -10,7 +10,7 @@ class FeatureTicketModel extends EbBussinessModel
 	protected $autoFillableColumns 	= true;
 	
 	public static function getKeyColumns(&$newData,$occur_date,$postData){
-		$attributes = parent:: getKeyColumns($newData,$occur_date,$postData);
+		$attributes	= ["ID"	=> $newData['ID']];
 		if ( array_key_exists ( 'isAdding', $newData ) && array_key_exists ( 'Tank', $postData )) {
 			$newData['TANK_ID'] = $postData['Tank'];
 		}

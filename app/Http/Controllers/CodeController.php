@@ -472,6 +472,7 @@ class CodeController extends EBController {
      			
      			//      			\DB::enableQueryLog();
      			if ($editedData) {
+     				$affectColumns = [];
 	     			foreach($editedData as $mdlName => $mdlData ){
 	     				if (!is_array($mdlData)) continue;
 	     				$modelName = $this->getModelName($mdlName,$postData);
@@ -507,19 +508,24 @@ class CodeController extends EBController {
 			     			}
 			     		}
 			     		$editedData[$mdlName] = $mdlData;
+			     		
+			     		if (is_array($mdlData)){
+				     		$cls  = \FormulaHelpers::doFormula($modelName,'ID',$ids[$mdlName]);
+				     		if (is_array($cls)&&count($cls)>0) {
+				     			$affectColumns[$mdlName] = $cls;
+				     		}
+			     		}
 	     			}
 	// 		     	\Log::info(\DB::getQueryLog());
-	// 		     	$objectIds = array_unique($objectIds);
 			     	//doFormula in config table
-			     	$affectColumns = [];
-			     	foreach($editedData as $mdlName => $mdlData ){
+			     	/* foreach($editedData as $mdlName => $mdlData ){
 	     				if (!is_array($mdlData)) continue;
 			     		$modelName = $this->getModelName($mdlName,$postData);
 			     		$cls  = \FormulaHelpers::doFormula($modelName,'ID',$ids[$mdlName]);
 			     		if (is_array($cls)&&count($cls)>0) {
 				     		$affectColumns[$mdlName] = $cls;
 			     		}
-			     	}
+			     	} */
 			     	
 			     	foreach($resultRecords as $mdlName => $records ){
 			     		foreach($records as $key => $returnRecord ){
