@@ -839,6 +839,7 @@ var actions = {
 		var originColor		= $(td).css('background-color');
 		return function(response, newValue) {
 			if(newValue!=null && $.trim(newValue)!=""){
+				if(typeof newValue == "string") newValue = newValue.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 				actions.saveNewValue(newValue,property,tab,td,rowData,columnName,collection,type);
 				if(typeof actions.getSimilarCells == "function"){
 					var similarCells =  actions.getSimilarCells(property,tab, td, rowData, columnName,collection,type);
@@ -1214,7 +1215,7 @@ var actions = {
 			cell["render"] = function ( data2, type2, row ) {
 								if (data2==null||data2=='') return "&nbsp";
 								if (data2.constructor.name == "Date") { 
-									return moment.utc(data2).format(configuration.time.TIME_FORMAT);
+									return moment(data2).format(configuration.time.TIME_FORMAT);
 //									return moment(data2).format("hh:mm A");
 								}
 								return moment.utc(data2,configuration.time.TIME_FORMAT_UTC).format(configuration.time.TIME_FORMAT);

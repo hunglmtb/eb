@@ -96,17 +96,24 @@ class TicketController extends CodeController {
     }
     
     public function checkExistPostEntry($editedData,$model,$element,$idColumn){
-    	$tankID = 'TANK_ID';
-    	$occurDate = 'OCCUR_DATE';
-    	$ticketNo = 'TICKET_NO';
-    	$tankIds = array_column($editedData[$model],$tankID);
+    	$tankID 	= 'TANK_ID';
+    	$occurDate 	= 'OCCUR_DATE';
+    	$ticketNo 	= 'TICKET_NO';
+    	$tankIds 	= array_column($editedData[$model],$tankID);
     	$occurDates = array_column($editedData[$model],$occurDate);
-    	$ticketNos = array_column($editedData[$model],$ticketNo);
+    	$ticketNos 	= array_column($editedData[$model],$ticketNo);
     	
-    	$notExist = (array_search($element[$tankID],$tankIds)===FALSE)||
-		    	(array_search($element[$occurDate],$occurDates)===FALSE)||
-		    	(array_search($element[$ticketNo],$ticketNos)===FALSE);
-    	return $notExist;
+    	$nonExist = true;
+    	foreach ($editedData[$model] as $entry) {
+    		if ($entry&&$entry[$tankID]==$element[$tankID]
+    			&&$entry[$occurDate]==$element[$occurDate]
+    			&&$entry[$ticketNo]==$element[$ticketNo]) {
+    				$nonExist = false;
+    				break;
+    		}
+    	}
+    	
+    	return $nonExist;
     }
     
     public function getHistoryConditions($dcTable,$rowData,$row_id){
