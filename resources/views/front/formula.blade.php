@@ -660,18 +660,18 @@ var _formula = {
 				}
 			});
 			//_alert(orders);
-			if(orders.length>0)
-
+			if(orders.length>0){
 				param = {
 					'orders' : orders
 				};		
-
+console.log(orders);
 				sendAjaxNotMessage('/savevarsorder', param, function(data){
 					if(data=="ok") 
 						alert("Update variables sort order successfully");
 					else
 						alert(data);
-				});		
+				});
+			}
 		},
 		showAddVar : function()
 		{

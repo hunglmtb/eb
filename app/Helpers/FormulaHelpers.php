@@ -430,6 +430,14 @@ class FormulaHelpers {
     		$row->STATIC_VALUE=str_replace("#OIL#","1",$row->STATIC_VALUE);
     		$row->STATIC_VALUE=str_replace("#GAS#","2",$row->STATIC_VALUE);
     		$row->STATIC_VALUE=str_replace("#WATER#","3",$row->STATIC_VALUE);
+
+						foreach($vvv as $key => $v)
+						{
+							if(isset($vars[$v]) && !is_array($vars[$v])){
+								$row->STATIC_VALUE = str_replace("[$v]",$vars[$v],$row->STATIC_VALUE);
+							}
+						}
+						
     		if(strpos($row->STATIC_VALUE,"#CODE_")!==false) $row->STATIC_VALUE=processFormulaCodeConstant($row->STATIC_VALUE);
     		if($row->IS_DATE>0){
     				$s='$'.$row->NAME."='$row->STATIC_VALUE';\$vs=\$$row->NAME;";
@@ -723,6 +731,12 @@ class FormulaHelpers {
     						}
     					}
     				}
+					else{
+						$s='$'.$row->NAME."=$row->STATIC_VALUE;\$vs=\$$row->NAME;";
+						eval($s);
+						$vars[$row->NAME]=$vs;
+						if($show_echo) $valueLog=  ["content" 	=> "$row->NAME = $vs",	"type" 		=> "value"];
+					}
     			}
     			if($show_echo) {
     				if($sqlLog) 	$logs["variables"][] 	= $sqlLog;
