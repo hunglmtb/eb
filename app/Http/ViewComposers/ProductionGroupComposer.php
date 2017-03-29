@@ -130,17 +130,24 @@ class ProductionGroupComposer
     		$areas 				= LoArea::whereHas('Facility', function ($query) use($facilityIds) {
 						    			$query->whereIn('ID',  $facilityIds);
 						    		})->get();
-    		$currentArea 		= $areas->first();
+    		$groupAreas			= $areas->groupBy("PRODUCTION_UNIT_ID");
+    		$groupAreas1 		= $groupAreas->first();
+    		$currentArea 		= $groupAreas1->first();
+    		$areaIds			= $areas->pluck("ID");
     		$facilities 		= Facility::whereIn('ID',$facilityIds)->where("AREA_ID","=",$currentArea->ID)->get();
     		$currentFacility 	= $facilities->first();
-    		$productionUnits	= LoProductionUnit::where("ID",$currentArea->PRODUCTION_UNIT_ID)->get();
-    		$currentProductUnit = $productionUnits->first();
+    		$productionUnits	= LoProductionUnit::whereHas('LoArea', function ($query) use($areaIds) {
+						    			$query->whereIn('ID',  $areaIds);
+						    		})->get();
+    		$currentProductUnit = $productionUnits->where('ID', $currentArea->PRODUCTION_UNIT_ID)->first();
+    		$areas				= $groupAreas1;
     	}
     	else if($DATA_SCOPE_AREA&&$DATA_SCOPE_AREA>0){
     		$areas 				= LoArea::where('ID',$DATA_SCOPE_AREA)->get();
     		$currentArea 		= $areas->first();
     		$productionUnits	= LoProductionUnit::where("ID",$currentArea->PRODUCTION_UNIT_ID)->get();
-    		$currentProductUnit = $productionUnits->first();
+//     		$currentProductUnit = $productionUnits->first();
+    		$currentProductUnit = $productionUnits->where('ID', $currentArea->PRODUCTION_UNIT_ID)->first();
     		if($currentArea) 
     			$facilities 	= $currentArea->Facility()->getResults();
     		else
@@ -170,9 +177,11 @@ class ProductionGroupComposer
 	    	$currentFacility = ProductionGroupComposer::getCurrentSelect($facilities,$fid);
     	}
     	
-    	$loAreaOption			= $this->getFilterArray('LoArea',$areas,$currentArea);
-    	$loAreaOption['extra']	= ["limit"	=> "Facility"];
-	    $productionFilterGroup =['LoProductionUnit'	=>	$this->getFilterArray('LoProductionUnit',$productionUnits,$currentProductUnit),
+    	$loProductionOption			= $this->getFilterArray('LoProductionUnit',$productionUnits,$currentProductUnit);
+    	$loProductionOption['extra']= ["limit"	=> "LoArea"];
+    	$loAreaOption				= $this->getFilterArray('LoArea',$areas,$currentArea);
+    	$loAreaOption['extra']		= ["limit"	=> "Facility"];
+	    $productionFilterGroup =['LoProductionUnit'	=>	$loProductionOption,
 					    		'LoArea'			=>	$loAreaOption,
 					    		'Facility'			=>	$this->getFilterArray('Facility',$facilities,$currentFacility)
     							];
