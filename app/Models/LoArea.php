@@ -22,7 +22,15 @@ class LoArea extends DynamicModel
 	 *
 	 * @return Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
-	public function Facility($fields=null){
+	public function Facility($option=null){
+		if ($option) {
+			$userDataScope			= UserDataScope::where("USER_ID",auth()->user()->ID)->first();
+			$DATA_SCOPE_FACILITY	= $userDataScope?$userDataScope->FACILITY_ID:null;
+			if($DATA_SCOPE_FACILITY&&$DATA_SCOPE_FACILITY!=""&&$DATA_SCOPE_FACILITY!="0"&&$DATA_SCOPE_FACILITY!=0){
+				$facilityIds		= explode(",", $DATA_SCOPE_FACILITY);
+				return Facility::whereIn('ID',$facilityIds)->where("AREA_ID","=",$this->ID)->get();
+			}
+		}
 		return $this->hasMany('App\Models\Facility', 'AREA_ID', 'ID');
 	}
 	

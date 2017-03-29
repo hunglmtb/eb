@@ -125,11 +125,14 @@ class ProductionGroupComposer
     		$DATA_SCOPE_FACILITY	=null;
     	}
     	
-    	if($DATA_SCOPE_FACILITY&&$DATA_SCOPE_FACILITY>0){
-    		$facilities 		= Facility::where('ID',$DATA_SCOPE_FACILITY)->get();
-    		$currentFacility 	= $facilities->first();
-    		$areas				= LoArea::where("ID",$currentFacility->AREA_ID)->get();
+    	if($DATA_SCOPE_FACILITY&&$DATA_SCOPE_FACILITY!=""&&$DATA_SCOPE_FACILITY!="0"&&$DATA_SCOPE_FACILITY!=0){
+    		$facilityIds		= explode(",", $DATA_SCOPE_FACILITY);
+    		$areas 				= LoArea::whereHas('Facility', function ($query) use($facilityIds) {
+						    			$query->whereIn('ID',  $facilityIds);
+						    		})->get();
     		$currentArea 		= $areas->first();
+    		$facilities 		= Facility::whereIn('ID',$facilityIds)->where("AREA_ID","=",$currentArea->ID)->get();
+    		$currentFacility 	= $facilities->first();
     		$productionUnits	= LoProductionUnit::where("ID",$currentArea->PRODUCTION_UNIT_ID)->get();
     		$currentProductUnit = $productionUnits->first();
     	}
@@ -166,8 +169,11 @@ class ProductionGroupComposer
 	    	
 	    	$currentFacility = ProductionGroupComposer::getCurrentSelect($facilities,$fid);
     	}
+    	
+    	$loAreaOption			= $this->getFilterArray('LoArea',$areas,$currentArea);
+    	$loAreaOption['extra']	= ["limit"	=> "Facility"];
 	    $productionFilterGroup =['LoProductionUnit'	=>	$this->getFilterArray('LoProductionUnit',$productionUnits,$currentProductUnit),
-					    		'LoArea'			=>	$this->getFilterArray('LoArea',$areas,$currentArea),
+					    		'LoArea'			=>	$loAreaOption,
 					    		'Facility'			=>	$this->getFilterArray('Facility',$facilities,$currentFacility)
     							];
 	    

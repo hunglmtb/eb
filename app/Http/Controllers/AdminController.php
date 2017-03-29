@@ -481,7 +481,11 @@ class AdminController extends Controller {
 				$userDataScope->USER_ID = $userId;
 				$userDataScope->PU_ID = ($data['pu_id']==0)?null:$data['pu_id'];
 				$userDataScope->AREA_ID = ($data['area_id'] == 0)?null:$data['area_id'];
-				$userDataScope->FACILITY_ID = ($data['fa_id'] == 0)?null:$data['fa_id'];
+				$facility			= null;
+				if (is_array($data['fa_id'])&&count($data['fa_id'])&&!in_array(0, $data['fa_id'])&&!in_array("0", $data['fa_id'])) {
+					$facility	= implode($data['fa_id'], ",");
+				}
+				$userDataScope->FACILITY_ID = $facility;
 				UserDataScope::insert(json_decode(json_encode($userDataScope), true));
 				
 				$roles = explode(',',$data['roles']);	

@@ -83,7 +83,8 @@ $(function(){
 	var facility_id = <?php echo json_encode($user->FACILITY_ID);?>
 
 	if(facility_id != null){
-		$('#Facility').val(facility_id);
+		var facilities	=  facility_id.split(",");
+		$('#Facility').val(facilities);
 	}
 
 	$( "#txtExpireDate" ).datepicker({
@@ -293,7 +294,7 @@ var obj= {
 									<div>
 										Facility
 									</div>
-									<select id="Facility">
+									<select id="Facility" style="min-height: 100px;" multiple>
 										<option value="0">All</option>
 										@foreach($facility as $fa)
 										<option value="{!!$fa->ID!!}">{!!$fa->NAME!!}</option>
