@@ -98,7 +98,8 @@ $(function(){
 	});
 
 	$('#saveAsUser').click(function(){
-		obj.updateUser(0);
+		var isUpdate	= $('#txtUsername').val()=='{!! $user->USERNAME !!}'? 1:0;
+		obj.updateUser(isUpdate);
 	});
 
 	$('#btnClose').click(function(){
@@ -290,6 +291,7 @@ var obj= {
 										@endforeach
 									</select>
 								</div>
+								<br>
 								<div class="filter"> 
 									<div>
 										Facility
