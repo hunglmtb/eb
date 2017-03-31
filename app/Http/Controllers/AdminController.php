@@ -205,6 +205,8 @@ class AdminController extends Controller {
 		->leftJoin($loProductionUnit.' AS pu', 'pu.id', '=', 'b.PU_ID')
 		->leftJoin($loArea.' AS ar', 'ar.id', '=', 'b.AREA_ID')
 		->leftJoin($facility.' AS fa', 'fa.id', '=', 'b.FACILITY_ID')
+		->distinct("a.ID")
+		->groupBy("a.ID")
 		->select($listColumn)
 		->orderBy ( 'a.id', 'asc' )
 		->get ();
@@ -254,6 +256,17 @@ class AdminController extends Controller {
 			
 			if ($facility_id != 0 && $facility_id != $data->FACILITY_ID){
 				continue;
+			}
+			
+			if ($data->FACILITY_ID && $data->FACILITY_ID!=0 && $data->FACILITY_ID!="0") {
+				$facilityIds = explode(",", $data->FACILITY_ID);
+				if (count($facilityIds)>0) {
+					$facilities = Facility::whereIn("ID",$facilityIds)->select("NAME")->get();
+					$facilities	= $facilities->pluck("NAME")->toArray();
+					if ($facilities&&count($facilityIds)>0) {
+						$data->FACILITY_NAME	= implode("<br>", $facilities);
+					}
+				}
 			}
 			
 			$data->ROLE = $sRole;	
@@ -364,7 +377,13 @@ class AdminController extends Controller {
 				
 				$userDataScope->PU_ID = ($data['pu_id']==0)?null:$data['pu_id'];
 				$userDataScope->AREA_ID = ($data['area_id'] == 0)?null:$data['area_id'];
-				$userDataScope->FACILITY_ID = ($data['fa_id'] == 0)?null:$data['fa_id'];
+				
+				$facility			= null;
+				if (is_array($data['fa_id'])&&count($data['fa_id'])&&!in_array(0, $data['fa_id'])&&!in_array("0", $data['fa_id'])) {
+					$facility	= implode($data['fa_id'], ",");
+				}
+				$userDataScope->FACILITY_ID = $facility;
+// 				$userDataScope->FACILITY_ID = ($data['fa_id'] == 0)?null:$data['fa_id'];
 				UserDataScope::insert(json_decode(json_encode($userDataScope), true));
 				
 				$roles = explode(',',$data['roles']);

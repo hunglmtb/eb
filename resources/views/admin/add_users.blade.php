@@ -7,6 +7,7 @@
 <script src="/common/js/jquery-ui.js"></script>
 <script src="/common/js/jquery-ui-timepicker-addon.js"></script>
 <script type="text/javascript" src="/common/utils.js"></script>
+<link rel="stylesheet" href="/common/css/style.css" />
 
 <?php
 $listControls = [ 
@@ -134,7 +135,6 @@ var obj= {
 			$('#txtUsername').focus();
 			return;
 		}
-		
 		 param = {
 			'username' : $('#txtUsername').val(),
 			'pass' : $('#txtPassword').val(),
@@ -232,11 +232,11 @@ var obj= {
 										<option value="0">All</option>
 									</select>
 								</div>
-								<div class="filter">
+								<div class="filter clearBoth">
 									<div>
 										Facility
 									</div>
-									<select id="Facility" name="Facility">
+									<select id="Facility" style="min-height: 100px;" multiple>
 										<option value="0">All</option>
 									</select>
 								</div>
@@ -266,13 +266,12 @@ var obj= {
 
 <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"
 	style="margin-top: 40px;">
-	<div class="div_footer">
-		<button type="button" id="btnSave" class="class_button">
-			<span>Save</span>
-		</button>		
-		
-		<button type="button" id="btnClose" class="class_button">
+	<div class="div_footer2 floatRight" style="padding-right: 50px;">
+		<button type="button" id="btnClose" class="class_button floatRight">
 			<span>Close</span>
+		</button>
+		<button type="button" id="btnSave" class="class_button floatRight">
+			<span>Save</span>
 		</button>
 	</div>
 </div>
