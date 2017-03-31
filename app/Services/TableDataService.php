@@ -1,10 +1,8 @@
 <?php
 namespace App\Services;
 // php datagrid for mysql and php5
-// MIT License - http://lazymofo.wdschools.com/
-// send feedback to lazymofo@wdschools.com
 // version 2014-03-11
-class lazy_mofo{
+class TableDataService{
     public $dbh = false;                    // required, pass the PDO connection object into the constructor
     public $table = '';                     // required, table for use for sql_insert(), sql_update(), sql_update_grid() and sql_delete()
     public $identity_name = '';             // required, column name of id primary key 

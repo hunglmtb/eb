@@ -2,7 +2,7 @@
 namespace App\Http\Controllers\Config;
 
 use App\Http\Controllers\CodeController;
-use App\Services\lazy_mofo;
+use App\Services\TableDataService;
 use Illuminate\Http\Request;
 
 class TableDataController extends CodeController {
@@ -12,7 +12,7 @@ class TableDataController extends CodeController {
     	$action 	= \Input::get('action');
     	$dbh 		= \DB::connection()->getPdo();
     	$dbh->setAttribute (\PDO::ATTR_EMULATE_PREPARES, false);
-    	$lm 		= new lazy_mofo($dbh);
+    	$lm 		= new TableDataService($dbh);
     	$lm->setModelName($tablename);
     	
     	return view ( 'tableData.ebedittable',['tablename'=>$tablename,

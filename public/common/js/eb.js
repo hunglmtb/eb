@@ -750,12 +750,15 @@ var actions = {
     	    	value = params.newValue;
     	    	if(value!=null&&value!=""){
     	    		if(configuration.number.DECIMAL_MARK=='comma') value = parseFloat(value.replace(',','.'));
-					else value = parseFloat(value);
-    	    		var numberValue = value;
-					if(configuration.number.DECIMAL_MARK=='comma') value = value.toLocaleString('de-DE');
-					else value = value.toLocaleString("en-US");
-					params.newValue = value;
-					params.submitValue = numberValue;
+//					else value = parseFloat(value);
+    	    		var pvalue = parseFloat(value);
+					if(!isNaN(pvalue)){
+						var formatNumberValue = actions.formatNumberDecimal(pvalue,property);
+						/*if(configuration.number.DECIMAL_MARK=='comma') value = pvalue.toLocaleString('de-DE');
+						else value = pvalue.toLocaleString("en-US");*/
+						params.newValue = formatNumberValue;
+						params.submitValue = pvalue;
+					}
 				}
     	    	else {
     	    		/*rowData[columnName]	= " ";
@@ -1183,13 +1186,10 @@ var actions = {
 									if(data2!=null&&data2!=''){
 										var pvalue = parseFloat(data2);
 										if(isNaN(pvalue)) return '';
-										value = Math.round(pvalue * 100) / 100;
-										if(actions.isDisplayOriginValue(property,row))  value = pvalue;
+										value = pvalue;
+										if(!actions.isDisplayOriginValue(property,row)) 
+											value	= actions.formatNumberDecimal(pvalue,property,row);
 									}
-								}
-								if(value!=null){
-									if(configuration.number.DECIMAL_MARK=='comma') value = value.toLocaleString('de-DE');
-									else value = value.toLocaleString("en-US"); 
 								}
 								return value;
 							};
@@ -1252,6 +1252,24 @@ var actions = {
 		}
 		return cell;
 	},
+
+	formatNumberDecimal : function (value,property,row) {
+		var decimalNumber	= 2;
+//		var value = Math.round(pvalue * 100) / 100;
+		if(typeof property.VALUE_FORMAT == "string" && property.VALUE_FORMAT!=""){
+			splits = property.VALUE_FORMAT.split(".");
+			if(splits.length>1) decimalNumber	= splits[1].length;
+		}
+		if(value!=null){
+			if(configuration.number.DECIMAL_MARK=='comma') 
+				value = value.toLocaleString('de-DE',{ minimumFractionDigits: decimalNumber,maximumFractionDigits : decimalNumber });
+			else 
+				value = value.toLocaleString("en-US",{ minimumFractionDigits: decimalNumber,maximumFractionDigits : decimalNumber});
+			
+		}
+		return value;
+	},
+	
 	getValueTextOfSelect : function (collection,data2) {
 		if(collection!=null){
  			var result = $.grep(collection, function(e){
