@@ -4,7 +4,7 @@
 			'EuTestDataStdValue'		=>['name'=>'STD VALUE'],
 			'EuTestDataValue'			=>['name'=>'DAY VALUE'],
 	];
- 	$active = 1;
+ 	//$active = 1;
 	$isAction = true;
 ?>
 

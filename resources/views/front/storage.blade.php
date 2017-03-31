@@ -8,7 +8,6 @@
 				'StorageDataPlan'		=>['name'=>'STORAGE PLAN'],
 				'StorageDataForecast'	=>['name'=>'STORAGE FORECAST'],
 	];
-// 	$active = 3;
 ?>
 
 @extends('core.pm')
