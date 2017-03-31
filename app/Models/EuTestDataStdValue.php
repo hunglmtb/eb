@@ -8,8 +8,6 @@ use App\Exceptions\DataInputException;
 { 
 	protected $table = 'EU_TEST_DATA_STD_VALUE'; 
 	
-	protected $primaryKey = 'ID';
-	
 	public  $fillable  = ['EU_ID', 
 						'BEGIN_TIME', 
 						'END_TIME', 

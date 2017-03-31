@@ -8,7 +8,7 @@ class DynamicModel extends Model {
 	protected $isOracleModel = false;
 	protected $isReservedName = false;
 	public 		$timestamps = false;
-	protected $autoFillableColumns = false;
+	protected $autoFillableColumns = true;
 	protected static $isAddAllAsDefault	= false;
 	
 	public function __construct() {
@@ -23,7 +23,11 @@ class DynamicModel extends Model {
 		}
 		
 		if ($this->autoFillableColumns) {
-			$this->fillable = $this->getTableColumns();
+			$fillable = $this->getTableColumns();
+			if(($key = array_search($this->primaryKey, $fillable)) !== false) {
+				unset($fillable[$key]);
+			}
+			$this->fillable = $fillable;
 		}
 	}
 	

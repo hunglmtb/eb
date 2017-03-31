@@ -129,9 +129,10 @@ class EbBussinessModel extends DynamicModel {
 					
 			$instance->isAuto = $auto;
 			$oldValues = [];
+// 			$attributeColumns	= array_keys($attributes);
 			foreach ( $values as $column => $value ) {
 				$oldValues[$column]= $instance->$column;
-				if ($column=="ID"||!$instance->isFillable($column)) {
+				if (!$instance->isFillable($column)) {
 					unset($values[$column]);
 				}
 			}
