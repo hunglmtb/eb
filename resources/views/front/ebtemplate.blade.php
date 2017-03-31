@@ -406,7 +406,7 @@ submenu_idx["8"] = [4,5,9,6,1,2,10,7,3];
 submenu_idx["9"] = [5,6,8,10,2,4,7,1,3];
 submenu_idx["10"] = [6,7,9,5,3,2,8,1,4];
 var menu = <?php echo json_encode($xmenu); ?>;
-function showMainMenu(){
+function showMainMenu(ind){
 /* 	$( "#boxFunctions" ).fadeIn( 500, function() {
 	});
 	$( "#boxMenu" ).fadeOut( 500, function() {
@@ -417,20 +417,22 @@ function showMainMenu(){
 		$(this).find("#menu_text").html($(this).attr("base_text"));
 		//$(this).find("a").attr("href","#");
 		$(this).attr("url","");
+		if($(this).attr("index") != ind)
+			$(this).css("background-color", "");
 		//$(this).css("opacity","1");
 	});
 }
-
-function func(menu_item)
+var bg_color;
+function func(item)
 {
-	var menu_item = $(menu_item);
+	var menu_item = $(item);
 	if(menu_item.hasClass("hex_dim") || menu_item.hasClass("hex_disabled"))
 		return;
 	if(menu_item.attr("back")=='1')
 	{
 		menu_item.attr("back","");
 		menu_item.find("#menu_back").html("");
-		showMainMenu();
+		showMainMenu(menu_item.attr("index"));
 		return;
 	}
 	
@@ -456,6 +458,8 @@ function func(menu_item)
 				m.removeClass("hex-1").removeClass("hex-2").removeClass("hex-3").removeClass("hex_disabled").addClass("hex-m");
 				m.find("#menu_text").html(a[i]["text"]);
 				m.attr("url",a[i]["url"]);
+				bg_color = shadeBlendConvert(0.2, getBgColor(menu_item));
+				m.css("background-color", bg_color);
 			}
 			else{
 				m.removeClass("hex-1").removeClass("hex-2").removeClass("hex-3").removeClass("hex_disabled").addClass("hex_dim");
@@ -535,12 +539,29 @@ function shadeBlendConvert(p, from, to) {
     if(h)return "rgb("+r((t[0]-f[0])*p+f[0])+","+r((t[1]-f[1])*p+f[1])+","+r((t[2]-f[2])*p+f[2])+(f[3]<0&&t[3]<0?")":","+(f[3]>-1&&t[3]>-1?r(((t[3]-f[3])*p+f[3])*10000)/10000:t[3]<0?f[3]:t[3])+")");
     else return "#"+(0x100000000+(f[3]>-1&&t[3]>-1?r(((t[3]-f[3])*p+f[3])*255):t[3]>-1?r(t[3]*255):f[3]>-1?r(f[3]*255):255)*0x1000000+r((t[0]-f[0])*p+f[0])*0x10000+r((t[1]-f[1])*p+f[1])*0x100+r((t[2]-f[2])*p+f[2])).toString(16).slice(f[3]>-1||t[3]>-1?1:3);
 }
+function getBgColor(o){
+	var color;
+	if($(o).hasClass("hex-1"))
+		color = "#d08924";
+	else if($(o).hasClass("hex-2"))
+		color = "#d46247";
+	else if($(o).hasClass("hex-3"))
+		color = "#3271b2";
+	else
+		color = bg_color;
+	return color;
+}
 $(".menu").each(function(){
 	$(this).hover(function(){
 			if($(this).hasClass("hex_dim") || $(this).hasClass("hex_disabled")) return;
-			$(this).css("background-color", shadeBlendConvert(0.25,$(this).css("background-color")));
+			$(this).attr("last-color", getBgColor(this));
+			$(this).css("background-color", shadeBlendConvert($(this).hasClass("hex-m")?0.2:0.35,$(this).attr("last-color")));
 		}, function(){
-			$(this).css("background-color", "");
+			if($(this).hasClass("hex_dim") || $(this).hasClass("hex_disabled")) return;
+			if($(this).hasClass("hex-m"))
+				$(this).css("background-color", $(this).attr("last-color"));
+			else
+				$(this).css("background-color", "");
 	});
 });
 	</script>
