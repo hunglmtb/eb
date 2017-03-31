@@ -233,6 +233,6 @@ use App\Models\CfgDataSource;
 @parent
 <script>
 	actions.enableCopySourceColumn 	= <?php echo json_encode($enableCopySourceColumn); ?>;
-	if(!actions.enableCopySourceColumn) addingOptions.keepColumns	= [];
+	if(!actions.enableCopySourceColumn && typeof addingOptions == "object") addingOptions.keepColumns	= [];
 </script>
 @stop
