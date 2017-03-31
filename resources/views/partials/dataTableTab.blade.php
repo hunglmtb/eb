@@ -22,6 +22,7 @@ use App\Models\CfgDataSource;
 			$tables[$index] = $table;
 		}
 	}
+	$enableCopySourceColumn	= env("ENABLE_COPY_SOURCE_COLUMN",false);
 ?>
 @if(isset($tables))
 	<div id="tabs">
@@ -224,5 +225,14 @@ use App\Models\CfgDataSource;
 		$('#buttonSave').prop('disabled', false); */
  		$('#btnoverlay').remove();
 	};
+</script>
+@stop
+
+
+@section('endDdaptData')
+@parent
+<script>
+	actions.enableCopySourceColumn 	= <?php echo json_encode($enableCopySourceColumn); ?>;
+	if(!actions.enableCopySourceColumn) addingOptions.keepColumns	= [];
 </script>
 @stop

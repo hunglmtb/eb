@@ -126,7 +126,7 @@ RUN TICKET CAPTURE
 @section('endDdaptData')
 @parent
 <script>
-	var tanks 	= <?php echo json_encode($tanks); ?>
+	var tanks 	= <?php echo json_encode($tanks); ?>;
 	
 	editBox.editSelectedObjects	= function(dataStore,resultText){
 		if(typeof editBox.currentId != "undefined"){
