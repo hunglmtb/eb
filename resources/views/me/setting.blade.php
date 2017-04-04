@@ -11,6 +11,7 @@ $decimalMarkFormatSource	=	$df->getFormat('DECIMAL_MARK');
 $currentSubmenu 			='/me/setting';
 $lang						= session()->get('locale', "en");
 
+$userName 					= $user->username;
 ?>
 @extends('core.bstemplate',['subMenus' => array('pairs' => $subMenus, 'currentSubMenu' => $currentSubmenu)])
 
@@ -121,16 +122,10 @@ function submit(){
 		$("#txt_confirm_password").focus();
 		return;
 	}
-	postRequest( 
-			 "settings.php?act=changepassword",
-			 {old_password:$("#txt_old_password").val(),new_password:$("#txt_new_password").val()},
-			 function(data) {
-				 if(data=="ok")
-					 alert("Password changed successfully");
-				 else
-					alert(data); 
-			 }
-		  );
+	sendAjax("/me/changepass",
+			 {username:'{{$userName}}',password:$("#txt_old_password").val(),newPassword:$("#txt_new_password").val()},
+			 function(data) {alert(data); }
+			 );
 }
 
 $(function() {

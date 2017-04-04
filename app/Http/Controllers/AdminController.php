@@ -473,65 +473,32 @@ class AdminController extends Controller {
 				}
 				$userId				= $user->ID;
 					
-					/* 
-				if($doUpdate){
-					$user = new User;
-					$user->USERNAME = $data['username'];
-					$user->LAST_NAME = $data['lastname'];
-					$user->MIDDLE_NAME = $data['middlename'];
-					$user->FIRST_NAME = $data['firstname'];
-					$user->EMAIL = $data['email'];
-					$user->EXPIRE_DATE = date('Y/m/d', strtotime($data['expireDate']));
-					$user->ACTIVE = $data['active'];
-					if ($isUpdate!=0){
-						User::where(['ID'=>$userId])->update(json_decode(json_encode($user), true));
-					}
-					else{
-						$user->save();
-						$userId	= $user->ID;
-					}
-					
-					if($data['pass'] != ""){
-						$now = Carbon::now('Europe/London');
-						if ($isUpdate!=0){
-							$pUser = new User;
-							$pUser->PASSWORD_CHANGED = date('Y-m-d H:i:s', strtotime($now));
-							$pUser->PASSWORD = $obj->myencrypt($data['pass']);
-							User::where(['ID'=>$userId])->update(json_decode(json_encode($pUser), true));
-						}
-						else{
-							$user->PASSWORD_CHANGED = date('Y-m-d H:i:s', strtotime($now));
-							$user->PASSWORD 		= $obj->myencrypt($data['pass']);
-							$user->save();
-						}
-					} */
-					
-					UserDataScope::where(['USER_ID'=>$userId])->delete();
-					UserUserRole::where(['USER_ID'=>$userId])->delete();
-					
-					$userDataScope = new UserDataScope;
-					$userDataScope->USER_ID = $userId;
-					$userDataScope->PU_ID = ($data['pu_id']==0)?null:$data['pu_id'];
-					$userDataScope->AREA_ID = ($data['area_id'] == 0)?null:$data['area_id'];
-					$facility			= null;
-					if (is_array($data['fa_id'])&&count($data['fa_id'])&&!in_array(0, $data['fa_id'])&&!in_array("0", $data['fa_id'])) {
-						$facility	= implode($data['fa_id'], ",");
-					}
-					$userDataScope->FACILITY_ID = $facility;
-					UserDataScope::insert(json_decode(json_encode($userDataScope), true));
-					
-					$roles = explode(',',$data['roles']);	
-					if(count($roles) > 0){
-						foreach ($roles as $role){
-							$userUserRole = new UserUserRole;
-							$userUserRole->USER_ID = $userId;
-							$userUserRole->ROLE_ID = $role;
-							UserUserRole::insert(json_decode(json_encode($userUserRole), true));
-						}
-					}
-					$msg = $user->wasRecentlyCreated?'add new user successfully':'Update user successfully';
+				UserDataScope::where(['USER_ID'=>$userId])->delete();
+				UserUserRole::where(['USER_ID'=>$userId])->delete();
+				
+				$userDataScope = new UserDataScope;
+				$userDataScope->USER_ID = $userId;
+				$userDataScope->PU_ID = ($data['pu_id']==0)?null:$data['pu_id'];
+				$userDataScope->AREA_ID = ($data['area_id'] == 0)?null:$data['area_id'];
+				$facility			= null;
+				if (is_array($data['fa_id'])&&count($data['fa_id'])&&!in_array(0, $data['fa_id'])&&!in_array("0", $data['fa_id'])) {
+					$facility	= implode($data['fa_id'], ",");
 				}
-				else $msg = "user name must empty";
+				$userDataScope->FACILITY_ID = $facility;
+				UserDataScope::insert(json_decode(json_encode($userDataScope), true));
+				
+				$roles = explode(',',$data['roles']);	
+				if(count($roles) > 0){
+					foreach ($roles as $role){
+						$userUserRole = new UserUserRole;
+						$userUserRole->USER_ID = $userId;
+						$userUserRole->ROLE_ID = $role;
+						UserUserRole::insert(json_decode(json_encode($userUserRole), true));
+					}
+				}
+				$msg = $user->wasRecentlyCreated?'add new user successfully':'Update user successfully';
+			}
+			else $msg = "user name must empty";
 // 			}
 		   } catch(\Exception $e){
 				DB::rollback();

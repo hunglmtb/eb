@@ -177,6 +177,7 @@ Route::post('allocateforecast/save',['uses' =>'AllocateForecastController@save',
 
 Route::get('me/setting',			['uses' =>'UserSettingController@index'/* ,'middleware' => 'checkRight:FP_ALLOCATE_PLAN' */]);
 Route::post('me/setting/save', 		'UserSettingController@saveSetting');
+Route::post('me/changepass', 		'UserSettingController@changePass');
 
 Route::get('fp/loadplanforecast',	['uses' =>'ForecastPlanningController@loadplan'	,'middleware' => 'checkRight:FP_LOAD_PLAN_FORECAST']);
 Route::get('fp/choke',				['uses' =>'ForecastPlanningController@choke'	,'middleware' => 'checkRight:CF_VIEW_CONFIG']);

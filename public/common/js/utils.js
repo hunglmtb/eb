@@ -62,8 +62,8 @@ function ___hideMessage()
 function postRequest(target,variables,completedFunc,container)
 {
     showWaiting(container);
-    $.post(target,variables,function(data){hideWaiting();completedFunc(data);});
-}
+    $.post(target,variables,function(data){hideWaiting();completedFunc(data);},
+    		function(data){hideWaiting();});}
 
 function sendAjax(url,param, func,error)
 {
