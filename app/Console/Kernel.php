@@ -2,6 +2,7 @@
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Carbon\Carbon;
 
 class Kernel extends ConsoleKernel {
 
@@ -24,7 +25,12 @@ class Kernel extends ConsoleKernel {
 	protected function schedule(Schedule $schedule)
 	{
 // 		$schedule->command('inspire')->hourly();
-		$schedule->command('taskman')->everyMinute();
+		$schedule->command('taskman')->everyMinute()->before(function () {
+ 			\Log::info("before schedule taskman at ".Carbon::now()->toDateTimeString());
+		})
+         ->after(function () {
+ 			\Log::info("after schedule taskman at ".Carbon::now()->toDateTimeString());
+         });
 	}
 
 }

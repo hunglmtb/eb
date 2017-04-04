@@ -1,8 +1,9 @@
 <?php namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use Illuminate\Foundation\Inspiring;
 use App\Models\TmTask;
+use Illuminate\Console\Command;
+use App\Jobs\ScheduleRunAllocation;
+use App\Jobs\ScheduleTestJob;
 
 class Taskman extends Command {
 
@@ -21,21 +22,60 @@ class Taskman extends Command {
 	 */
 	protected $description = 'task manager';
 
+	protected $scheduleJobs = [];
+	
 	/**
 	 * Execute the console command.
 	 *
 	 * @return mixed
 	 */
-	public function handle()
-	{
+	public function handle() {
 		\Log::info('task manager');
-		$tmTasks	= TmTask::where()->get();
+		$tmTasks	= TmTask::where("status",">",0)->get();
 		if ($tmTasks) {
+ 			\Log::info("id:name:count_run:status");
 			$tmTasks->each(function ($tmTask, $key){
-				$tmTask->handleScheduleJob();
+				$scheduleJob = $this->initScheduleJob($tmTask);
+				if ($scheduleJob) {
+					\Log::info("check task ".$tmTask->name);
+					$tmTask->preRunTask($scheduleJob);
+					try {
+						$result = $scheduleJob->handle();
+					} catch (Exception $e) {
+						$result = $e;
+						\Log::info($e->getMessage());
+						\Log::info($e->getTraceAsString());
+					}
+					$tmTask->afterRunTask($scheduleJob,$result);
+				}
     		});
 		}
-		//$this->comment(PHP_EOL.Inspiring::quote().PHP_EOL);
 	}
-
+	
+	public function initScheduleJob($tmTask) {
+		$validated		= $tmTask->validateTaskCondition();
+		$scheduleJob	= null;
+		if ($validated){
+			$scheduleJob = $this->getScheduleJob($tmTask);
+			if (!$scheduleJob){
+				switch ($tmTask->task_code) {
+					case "ALLOC_RUN":
+// 						$scheduleJob = new ScheduleRunAllocation($tmTask);
+					break;
+					
+					default:
+						$scheduleJob = new ScheduleTestJob($tmTask);
+					break;
+				}
+			}
+		}
+		if ($scheduleJob) $this->scheduleJobs[$tmTask->ID]	= $scheduleJob;
+		return $scheduleJob;
+	}
+	
+	public function getScheduleJob($tmTask) {
+		if (array_key_exists($tmTask->ID, $this->scheduleJobs)) 
+			return $this->scheduleJobs[$tmTask->ID];
+		return null;
+	}
 }
