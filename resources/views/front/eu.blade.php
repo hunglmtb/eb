@@ -8,7 +8,7 @@
 			'EnergyUnitDataPlan'		=> ['name'=>"Plan"],                            
 			'EnergyUnitDataForecast'	=> ['name'=>"Forecast"],                
 	];
- 	$active = 1;
+ 	//$active = 1;
 ?>
 
 @extends('core.pm')
