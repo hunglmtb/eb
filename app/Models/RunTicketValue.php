@@ -48,6 +48,7 @@ use Carbon\Carbon;
 				$attributes['TANK_ID'] = $newData['TANK_ID'];
 			}
 		}
+		if ( !array_key_exists ( 'TICKET_NO', $newData )) $attributes['TICKET_NO'] = "NO_NAME";
 		return $attributes;
 	}
 	

@@ -568,7 +568,7 @@ var actions = {
 		var successFunction = actions.getEditSuccessfn(property,tab,td, rowData, columnName,collection,type);
 		var  editable = {
 	    	    title: 'edit',
-	    	    emptytext: '',
+	    	    emptytext: '&nbsp;',
 	    	    onblur			: 'cancel',
 //				mode		: "inline",
 	    	    showbuttons:false,
@@ -611,9 +611,7 @@ var actions = {
 			editable['onblur'] 	= 'submit';
 			editable['type'] 	= 'datetime';
 			editable['format'] 	= configuration.picker.DATETIME_FORMAT_UTC;
-//			editable['format'] 	= 'mm/dd/yyyy hh:ii';
 			editable['viewformat'] = configuration.picker.DATETIME_FORMAT;
-//			editable['viewformat'] = 'mm/dd/yyyy hh:ii';
 			editable['datetimepicker'] 	= 	{
 //								          		weekStart: 1,
 								          		minuteStep :5,
@@ -746,6 +744,11 @@ var actions = {
     	});
     	
     	$(td).on('save', function(e, params) {
+    		if(params.newValue!=null&&$.trim(params.newValue)==""){
+    			params.newValue = "";
+				params.submitValue = "";
+				return;
+    		}
     	    if(type=="number") {
     	    	value = params.newValue;
     	    	if(value!=null&&value!=""){
@@ -853,7 +856,6 @@ var actions = {
 						actions.saveNewValue(newValue,property,tab,std,sRowData,columnName,sCollection,type,originColor);
 					});
 				}
-				
 			}
 	    };
 	},
@@ -1405,7 +1407,7 @@ var actions = {
 		 				$(td).editable({
 			        	    type: 'select',
 			        	    title: 'edit',
-			        	    emptytext: '',
+				    	    emptytext: '&nbsp;',
 			        	    value:cellData,
 			        	    showbuttons:false,
 			        	    source: actions.getUomCollection(collection,columnName,rowData),
