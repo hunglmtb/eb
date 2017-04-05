@@ -844,7 +844,7 @@ var actions = {
 	getEditSuccessfn  : function(property,tab, td, rowData, columnName,collection,type) {
 		var originColor		= $(td).css('background-color');
 		return function(response, newValue) {
-			if(newValue!=null && $.trim(newValue)!=""){
+//			if(newValue!=null && $.trim(newValue)!=""){
 				if(typeof newValue == "string") newValue = newValue.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 				actions.saveNewValue(newValue,property,tab,td,rowData,columnName,collection,type);
 				if(typeof actions.getSimilarCells == "function"){
@@ -856,7 +856,7 @@ var actions = {
 						actions.saveNewValue(newValue,property,tab,std,sRowData,columnName,sCollection,type,originColor);
 					});
 				}
-			}
+//			}
 	    };
 	},
 	
@@ -976,8 +976,10 @@ var actions = {
     		}
     		else if(type == "number" && typeof newValue == "string") {
         		newValue = parseFloat(newValue.replace(',','.'));
+        		newValue = isNaN(newValue)?null:newValue;
     		}
 		}
+    	if(typeof newValue == "string" && newValue.trim() =="") newValue = null;
     	if (result.length == 0) {
         	var editedData = {};
         	idName = actions.getKeyFieldSet(tab);

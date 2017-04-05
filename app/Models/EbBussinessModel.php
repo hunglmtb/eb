@@ -20,6 +20,17 @@ class EbBussinessModel extends DynamicModel {
 	protected $oldValues = null;
 	protected $isAuto = false;
 	
+	public function setAttribute($key, $value){
+		if (is_scalar($value)) {
+			$value = $this->emptyStringToNull($value);
+		}
+		return parent::setAttribute($key, $value);
+	}
+	
+	function emptyStringToNull($value){
+		return (!isset($value) || trim($value)==='')?null:$value;
+	}
+	
 	public static function getKeyColumns(&$newData,$occur_date,$postData)
 	{
 		return [static::$idField => $newData[static::$idField]];
@@ -120,7 +131,6 @@ class EbBussinessModel extends DynamicModel {
 // 	        $values = static::calculateBeforeUpdateOrCreate ( $attributes, $values );
 	        return $instance;
 		}
-		
 		$values = static::calculateBeforeUpdateOrCreate ( $attributes, $values );
 		$instance = null;
 		if ($values&&is_array($values)&&count($values)>0) {
