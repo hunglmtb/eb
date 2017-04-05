@@ -504,11 +504,33 @@ class CodeController extends EBController {
 				     				$ids[$mdlName][] = $affectRecord['ID'];
 				     				$resultRecords[$mdlName][] = $affectRecord;
 				     			}
-				     				 
+				     			
+			     				//formula in formula table
+				     			if ($this->isApplyFormulaAfterSaving) {
+					     			$columns 				= array_keys($newData);
+					     			$uColumns 				= $mdl::getKeyColumns($newData,$occur_date,$postData);
+					     			$columns 				= array_diff($columns, $uColumns);
+					     			$objectWithformulas 	= $this->getAffectedObjects($mdlName,$columns,$newData);
+					     			$applieds 				= \FormulaHelpers::applyAffectedFormula($objectWithformulas,$occur_date);
+					     			if ($applieds&&count($applieds)) {
+					     				foreach($applieds as $apply ){
+					     					$mdlName = $apply->modelName;
+					     					if (!array_key_exists($mdlName, $ids)) {
+					     						$ids[$mdlName] = [];
+					     					}
+					     					$ids[$mdlName][] = $apply->ID;
+					     					$ids[$mdlName]  = array_unique($ids[$mdlName]);
+					     					$resultRecords[$mdlName][] = $apply;
+					     					$resultRecords[$mdlName]  = array_unique($resultRecords[$mdlName]);
+					     				}
+					     			}
+				     			}
+				     			
 			     			}
 			     		}
 			     		$editedData[$mdlName] = $mdlData;
 			     		
+			     		//formula in field config
 			     		if (is_array($mdlData)){
 				     		$cls  = \FormulaHelpers::doFormula($modelName,'ID',$ids[$mdlName]);
 				     		if (is_array($cls)&&count($cls)>0) {
@@ -516,24 +538,14 @@ class CodeController extends EBController {
 				     		}
 			     		}
 	     			}
-	// 		     	\Log::info(\DB::getQueryLog());
-			     	//doFormula in config table
-			     	/* foreach($editedData as $mdlName => $mdlData ){
-	     				if (!is_array($mdlData)) continue;
-			     		$modelName = $this->getModelName($mdlName,$postData);
-			     		$cls  = \FormulaHelpers::doFormula($modelName,'ID',$ids[$mdlName]);
-			     		if (is_array($cls)&&count($cls)>0) {
-				     		$affectColumns[$mdlName] = $cls;
-			     		}
-			     	} */
-			     	
+	     			
 			     	foreach($resultRecords as $mdlName => $records ){
 			     		foreach($records as $key => $returnRecord ){
 			     			$returnRecord->afterSaving($postData);
 			     		}
 			     	}
 			     	
-			     	if ($this->isApplyFormulaAfterSaving) {
+			     /* 	if ($this->isApplyFormulaAfterSaving) {
 				     	//get affected object with id
 			     		$objectWithformulas = [];
 				     	foreach($editedData as $mdlName => $mdlData ){
@@ -565,7 +577,7 @@ class CodeController extends EBController {
 					     		$resultRecords[$mdlName]  = array_unique($resultRecords[$mdlName]);
 					     	}
 			     		}
-			     	}
+			     	} */
 			     	
 			     	$this->afterSave($resultRecords,$occur_date);
      			}
