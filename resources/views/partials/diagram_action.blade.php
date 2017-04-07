@@ -143,8 +143,9 @@
 	editBox.renderContrainTable = function (value,convertJson=true){
 		var properties	= editBox.buildTableProperties(value);
 		convertJson		= convertJson && typeof value.CONFIG == "string";
+		var dataSet 	= editBox.extractDiagramTableData(value,convertJson);
 		var tableData = {
-				dataSet		: convertJson?JSON.parse(value.CONFIG):value.CONFIG,
+				dataSet		: dataSet,
 				properties	: properties,
 				postData	: {'{{config("constants.tabTable")}}'	: '{{$tableTab}}'},
 // 				columnDefs	: [],
@@ -153,6 +154,10 @@
 		currentDiagram		= value;
 		actions.loadSuccess(tableData);
 	}
+
+	editBox.extractDiagramTableData = function (value,convertJson=true){
+		return convertJson?JSON.parse(value.CONFIG):value.CONFIG;
+	};
 		
 	editBox.loadConsList = function (){
  		success = function(data){
@@ -218,6 +223,7 @@
     	    	};
 		$("#objectList").css('display','none');
 		$("#viewNameDiv").css('display','none');
+		$("#isAdditionalLabel").css('display','none');
 		editBox.showDialog(option,success);
 	    $("button[class=saveAction]").remove();
 	}

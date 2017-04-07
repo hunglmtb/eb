@@ -10,6 +10,7 @@
 						<option value='+'>+</option><option value='-'>-</option><option value='*'>*</option><option value='/'>/</option>
 					</select>
 					<input id="txtConstant" type='text' class='_numeric' style='width:80px'>
+					@yield($prefix.'moreInput')
 				</td>
 				<td align="right" colspan="1">
 					<button id="updateFilterBtn" class="myButton"onclick="editBox.finishSelectingObjects(false)" style="width: 61px;display:none">Update</button>

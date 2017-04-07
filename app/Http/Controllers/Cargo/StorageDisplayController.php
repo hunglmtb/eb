@@ -49,9 +49,13 @@ class StorageDisplayController extends ChokeController {
 			$summaryLine= [];
 			$series		= [];
 			$plotLines	= [];
+			$groups 	= [];
 			foreach($constraints['CONFIG'] as $key => $constraint ){
 				$rquery				= null;
 				$rLineQuery			= null;
+				$group				= array_key_exists("GROUP", $constraint)?$constraint['GROUP']:"MAIN";
+				$isAdditional		= array_key_exists("isAdditional", $constraint)?$constraint['isAdditional']:false;
+				$groups[]			= $group;
 				$chartType			= $constraint['CHART_TYPE'];
 				$color				= $constraint['COLOR'];
 				$negative			= $constraint['NEGATIVE'];
@@ -166,13 +170,12 @@ class StorageDisplayController extends ChokeController {
 							"color" 		=> "#$color",
 							"data"  		=> $dataSet,
 							"extraTooltip"  => $objectNames,
+							"isAdditional"  => $isAdditional,
+							"group"  		=> $group,
 					];
+
 					foreach($dataSet as $index => $data ){
 						$dataValue		= $data->V;
-						
- 						/* $fieldD			= Carbon::parse($data->D)->format($dateFormat);
-						$fieldD			= substr($data->D, 0, strlen("2016-01-09"));
-						$data->D		=  $fieldD; */
  						$fieldD			=  $data->D;
 						if (array_key_exists($fieldD, $summaryLine))
 							$summaryLine[$fieldD]->V	+= $dataValue;
@@ -206,15 +209,19 @@ class StorageDisplayController extends ChokeController {
 					}
 				}
 			}
-			$summarySeriesData = array_values($summaryLine);
-// 			ksort($summarySeriesData);
+			$groups		= array_unique($groups);
+			$groups		= array_values($groups);
+			
+			ksort($series);
+			$this->modifySerieAdditional($series,$maxY,$minY);
+			$summaryLine		= $this->sumarySeries($series,$maxY,$minY,$groups);
+			$summarySeriesData 	= array_values($summaryLine);
 			$series[] 	= [
 					"type"	=> "line",
 					"name"	=> 'Storage Display',
 					"color"	=> "#de3ee6",
 					"data"	=> $summarySeriesData,
 			];
-			ksort($series);
 				
 			$title 					= $constraints["TITLE"];
 			$bgcolor				= "";
@@ -244,4 +251,117 @@ class StorageDisplayController extends ChokeController {
 		return response()->json("not available!");
 	}
 	
+	public function modifySerieAdditional(&$series,&$maxY,&$minY){
+		foreach($series as $serieIndex => $serie ){
+			$isAdditional	= array_key_exists("isAdditional", $serie)?$serie['isAdditional']:false;
+			if($isAdditional===true||$isAdditional==="true"){
+				$preValue		= 0;
+				foreach($serie["data"] as $index => $data ){
+					$otherValue				= $this->sumOtherValue($series,$serie,$serieIndex,$data);
+					$dataValue				= $preValue+$data->V+$otherValue;
+					$data->V				= $dataValue;
+					$preValue				= $dataValue;
+					$serie["data"][$index]	= $data;
+					
+					if ((!$minY||$minY>$dataValue)&&$dataValue) $minY = $dataValue;
+					if ((!$maxY||$maxY<$dataValue)&&$dataValue) $maxY = $dataValue;
+				}
+				$series[$serieIndex]		= $serie;
+			}
+		}
+	}
+	
+	
+	public function sumOtherValue($series,$mainSerie,$mainSerieIndex,$mainData){
+		$otherValue			= 0;
+		foreach($series as $serieIndex => $serie ){
+			if ($mainSerieIndex!=$serieIndex&& array_key_exists("group", $serie) && $serie['group']==$mainSerie['group']) {
+				$sValue		= 0;
+				foreach($serie["data"] as $index => $data ){
+					if($data->D&&$mainData->D==$data->D){
+						$sValue		= $data->V;
+						break;
+					}
+				}
+				$otherValue+=$sValue;
+			}
+		}
+		return $otherValue;
+	}
+	
+	public function sumarySeries($series,&$maxY,&$minY,$groups){
+		$summaryLine= [];
+		$groups;
+		foreach($series as $serieIndex => $serie ){
+			foreach($serie["data"] as $index => $data ){
+				$dataValue		= $data->V;
+				$fieldD			=  $data->D;
+				if (array_key_exists($fieldD, $summaryLine))
+					$summaryLine[$fieldD]->V	+= $dataValue;
+					else
+						$summaryLine[$fieldD]	= (object) array('D' => $fieldD,'V' => $dataValue);
+						$compareValue = $summaryLine[$fieldD]->V;
+	
+						if ((!$minY||$minY>$compareValue)&&$compareValue) $minY = $compareValue;
+						if ((!$maxY||$maxY<$compareValue)&&$compareValue) $maxY = $compareValue;
+			}
+		}
+	
+		return 	$summaryLine;
+	
+	}
+	
+	public function sumarySeriesWithGroup($series,&$maxY,&$minY,$groups){
+		$summaryGroups	= [];
+		foreach($groups as $groupIndex => $group ){
+			$summaryGroups[$group]	= [];
+		}
+		
+		$groupFinish= [];
+		foreach($series as $serieIndex => $serie ){
+			$group	= $serie["group"];
+// 			if (in_array($group, $groupFinish)) continue;
+			
+			$isAdditional	= array_key_exists("isAdditional", $serie)?$serie['isAdditional']:false;
+			if($isAdditional===true||$isAdditional==="true"){
+				$summaryGroups[$group]	= [];
+				$groupFinish[$group] 	= $serieIndex;
+			}
+			$dataSet	= $serie["data"];
+			foreach($dataSet as $index => $data ){
+				$dataValue		= $data->V;
+				$fieldD			=  $data->D;
+				if (array_key_exists($fieldD, $summaryGroups[$group])){
+					if ( array_key_exists($group, $groupFinish)&&$groupFinish[$group]==$serieIndex) {
+						$summaryGroups[$group][$fieldD]->V	= $dataValue;
+					}
+					else
+						$summaryGroups[$group][$fieldD]->V	+= $dataValue;
+				}
+				else{
+					$summaryGroups[$group][$fieldD]	= (object) array('D' => $fieldD,'V' => $dataValue);
+				}
+			}
+		}
+		
+		$summaryLine= [];
+		foreach($summaryGroups as $group => $summary ){
+			foreach($summary as $fieldD => $dataObject ){
+				$dataValue	= $dataObject->V;
+				if (array_key_exists($fieldD, $summaryLine)){
+					$summaryLine[$fieldD]->V	+= $dataValue;
+				}
+				else{
+					$summaryLine[$fieldD]	= (object) array('D' => $fieldD,'V' => $dataValue);
+				}
+				$compareValue = $summaryLine[$fieldD]->V;
+				if ((!$minY||$minY>$compareValue)&&$compareValue) $minY = $compareValue;
+				if ((!$maxY||$maxY<$compareValue)&&$compareValue) $maxY = $compareValue;
+			}
+		}
+		
+		ksort($summaryLine);
+		return 	$summaryLine;
+		
+	}
 }

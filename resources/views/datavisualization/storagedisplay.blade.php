@@ -47,13 +47,13 @@
 	 	 		  				},
 	 	 		  				{	'data' 		: 'FROM_DATE',
 	 	 		  					'title' 	: 'From date'  ,
-	 	 		  					'width'		: 110,
+	 	 		  					'width'		: 100,
 	 	 		  					'INPUT_TYPE': 3,
 	 	 		  					DATA_METHOD	: 1
 	 	 		  				},
 	 	 		  				{	'data' 		: 'TO_DATE',
 	 	 		  					'title' 	: 'To date'  ,
-	 	 		  					'width'		: 110,
+	 	 		  					'width'		: 100,
 	 	 		  					'INPUT_TYPE': 3,
 	 	 		  					DATA_METHOD	: 1
 	 	 		  				},
@@ -70,9 +70,15 @@
 	 	 		  					'INPUT_TYPE': 'color',
 	 	 		  					DATA_METHOD	: 1
 	 	 		  				},
+	 	 		  				{	'data' 		: 'GROUP',
+	 	 		  					'title' 	: 'Group'  ,
+	 	 		  					'width'		: 60,
+	 	 		  					'INPUT_TYPE': 1,
+	 	 		  					DATA_METHOD	: 1
+	 	 		  				},
 	 	 		  				{	'data' 		: 'NEGATIVE',
 	 	 		  					'title' 	: 'Negative'  ,
-	 	 		  					'width'		: 40,
+	 	 		  					'width'		: 30,
 	 	 		  					'INPUT_TYPE': 5,
 	 	 		  					DATA_METHOD	: 1
 	 	 		  				},
@@ -116,6 +122,18 @@
 		editBox.getItemName = function (value){	
 			return value.TITLE;
 		}
+
+		var oExtractDiagramTableData	= editBox.extractDiagramTableData;
+		editBox.extractDiagramTableData = function (value,convertJson=true){
+			var dataSet	= oExtractDiagramTableData(value,convertJson);
+			if(typeof dataSet == 'object'){
+				$.each(dataSet, function( index, rowData ) {
+					if(typeof rowData.GROUP == "undefined" || rowData.GROUP == "")
+						rowData.GROUP		= "MAIN";
+				});
+			}
+			return dataSet;
+		};
 	</script>
 @stop
 
@@ -321,28 +339,14 @@
 		
 		$("#viewName").val(typeof rowData.viewName == "string" ? rowData.viewName : plotName);
 		$("#viewNameDiv").show();
+		$("#isAdditionalLabel").css('display','block');
+		$("#isAdditional").prop('checked', (typeof rowData.isAdditional != "undefined" && 
+				( rowData.isAdditional == "true" || rowData.isAdditional == true)));
 	};
 
 	editBox.getDiagramConfig = function (convertJson,rows){
 		$.each(rows,function( index, row) {
-			/* if(typeof row.OBJECTS =="object"){
-				var shouldRemove	= true;
-				$.each(row.OBJECTS,function( index2, object) {
-	// 				delete object.LoProductionUnit;
-	// 				delete object.LoArea;
-	// 				delete object.Facility;
-	// 				delete object.CodeProductType;
-					if(typeof row.originObjects=="object"){
-						var a = $(object);
-						var b = $(row.originObjects[index2]);
-						shouldRemove = shouldRemove&&a.equals(b)
-					}
-					else shouldRemove = false;
-				});
-				if(shouldRemove) row.OBJECTS = '[]';
-			} */
 			delete row.originObjects;
-// 			delete row.ObjectPlotViewConfigId;
 		});
 		return convertJson?JSON.stringify(rows):rows;
 	}
@@ -350,7 +354,7 @@
 	editBox.updateMoreObject = function (rowData){
 		rowData.viewName = $("#viewName").val();
 		$("#"+rowData['DT_RowId']).find( ".PlotViewConfig:first" ).text(rowData.viewName);
-// 		$("#item_edit_"+rowData['DT_RowId']).text(rowData.viewName);
+		rowData.isAdditional = $("#isAdditional").prop('checked');
 	}
 </script>
 @stop
