@@ -52,7 +52,7 @@ Constrain diagrams
 <div id="objectListContainer" style="overflow-x: hidden;z-index: 1001;position: relative;float: right;width:44%;height:100%">
 	<div id="objectList" style="height:80%;width:100%;overflow-x: hidden;"></div>
 	<div id="viewNameDiv" style="width:100%;overflow-x: hidden;display:none">View Name<input id="viewName" type="text" style="width:auto"></div>
-	<label id="isAdditionalLabel" style="display:none;float:left"><input id="isAdditional" class="cellCheckboxInput" type="checkbox" value="" size="15"> is additional</label>
+	<label id="isAdditionalLabel" style="display:none;float:left"><input id="isAdditional" class="cellCheckboxInput" type="checkbox" value="" size="15">Accumulate?</label>
 </div>
 @stop
 
