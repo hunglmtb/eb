@@ -1368,6 +1368,19 @@ var actions = {
 	getUomCollection: function(collection,columnName,rowData){
 		return collection;
 	},
+	
+	setTableWidth: function(tab,tblWdth){
+		if(tblWdth < ($(window).width()-50)){
+			$('#container_'+tab).css('min-width',(tblWdth+40)+'px');
+	 		$('#container_'+tab).css('width',(tblWdth+40)+"px");
+		}
+		else {
+			$('#container_'+tab).css('min-width',($(window).width()-50)+'px');
+
+			$('#container_'+tab).css('width',($(window).width()-50)+"px");
+		}
+	},
+	
 	initTableOption : function (tab,data,options,renderFirsColumn,createdFirstCellColumn){
 		if(typeof(data.uoms) == "undefined"||data.uoms==null){
 			data.uoms = [];
@@ -1455,48 +1468,8 @@ var actions = {
 		}
 		
 		var tblWdth = actions.getTableWidth(data,autoWidth,tab);
-		if(!autoWidth) {
-//			$('#table_'+tab).css('width',(tblWdth+20)+'px');
-//			$('#table_'+tab).css('min-width',(tblWdth+20)+'px');
-//			$('#container_'+tab).css('min-width',(tblWdth+20)+'px');
-//			autoWidth = tblWdth < $(window).width()-30;
-		}
+		actions.setTableWidth(tab,tblWdth);
 		
-//		autoWidth = getActiveTabID()==tab;
-//		$('#container_'+tab).css('min-width',tblWdth < ($(window).width()-10)? (tblWdth)+'px':($(window).width()-10)+'px');
-		if(!autoWidth && tblWdth>600) {
-//			$('#container_'+tab).css('width',tblWdth < ($(window).width()-20)? (tblWdth)+'px':($(window).width()-20)+'px');
-//			$('#table_'+tab).css('width',(tblWdth)+'px');
-		}
-		
-		/*if($( window ).width()-100>$('#table_'+tab).width()){
-	 		$('#container_'+tab).css('width',$('#table_'+tab).width());
-		}
-		else {
-			$('#container_'+tab).css('width',"100%");
-		}
-		*/
-		if(tblWdth < ($(window).width()-50)){
-			$('#container_'+tab).css('min-width',(tblWdth+40)+'px');
-	 		$('#container_'+tab).css('width',(tblWdth+40)+"px");
-		}
-		else {
-			$('#container_'+tab).css('min-width',($(window).width()-50)+'px');
-
-			$('#container_'+tab).css('width',($(window).width()-50)+"px");
-		}
-		
-		/*if($( window ).width()-200>$('#table_'+tab).width()){
-//	 		$('#container_'+tab).css('width',($('#table_'+tab).width()+100)+"px");
-	 		$('#container_'+tab).css('width',tblWdth+"px");
-		}
-		else {
-			$('#container_'+tab).css('width',"100%");
-		}*/
-		
-		
-//		if(tblWdth>200) $('#table_'+tab).css('width',(tblWdth)+'px');
-
 		tHeight = actions.getTableHeight(tab);
 		option = {data: data.dataSet,
 		          columns: data.properties,

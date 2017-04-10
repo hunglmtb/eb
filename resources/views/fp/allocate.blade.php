@@ -70,6 +70,11 @@
 				invisible:[]};
 		
 	}
+
+	actions.setTableWidth	= function(tab,tblWdth){
+// 		$('#container_'+tab).css('min-width',(tblWdth+40)+'px');
+ 		$('#container_'+tab).css('width',"auto");
+	},
 	
 	actions.validating = function (reLoadParams){
 		return true;
@@ -233,28 +238,28 @@
 		 }, {
 		 	"data": prefix+"GRS_VOL",
 		 	"title": "Gross Vol",
-		 	"width": 125,
+		 	"width": 100,
 		 	"INPUT_TYPE": 2,
 		 	"DATA_METHOD": 1,
 		 	"FIELD_ORDER": 2
 		 }, {
 		 	"data": prefix+"GRS_MASS",
 		 	"title": "Gross Mass",
-		 	"width": 125,
+		 	"width": 100,
 		 	"INPUT_TYPE": 2,
 		 	"DATA_METHOD": 1,
 		 	"FIELD_ORDER": 3
 		 }, {
 		 	"data": prefix+"GRS_ENGY",
 		 	"title": "Gross Energy",
-		 	"width": 125,
+		 	"width": 100,
 		 	"INPUT_TYPE": 2,
 		 	"DATA_METHOD": 1,
 		 	"FIELD_ORDER": 4
 		 }, {
 		 	"data": prefix+"GRS_PWR",
 		 	"title": "Gross Power",
-		 	"width": 125,
+		 	"width": 100,
 		 	"INPUT_TYPE": 2,
 		 	"DATA_METHOD": 1,
 		 	"FIELD_ORDER": 5
@@ -293,6 +298,12 @@
 @stop
 
 @section('content')
+	<style>
+ 		.dataTables_scrollHeadInner{
+    		background-color: rgb(230, 230, 230); 
+    	}
+	</style>
+	
 	<div id="container_{{$key}}">
 		<table border="0" id="table_{{$key}}" class="fixedtable nowrap display" cellspacing="0">
 			<thead>
