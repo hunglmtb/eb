@@ -6,10 +6,11 @@ use Carbon\Carbon;
 { 
 	const STOPPED			= 0;
 	const STARTING 			= 1;
-	const QUEUED 			= 2;
+	const READY 			= 2;
 	const RUNNING			= 3;
 	const CANCELLING		= 4;
 	const DONE				= 5;
+	const NONE				= 15;
 	
 	const RUN_BY_SYSTEM 	= 1;
 	const RUN_BY_USER 		= 2;
@@ -51,10 +52,22 @@ use Carbon\Carbon;
     	return json_decode ( $value , true );
     }
 	
+    public static function loadStatus($option=null){
+	    return collect([
+			    		(object)['ID' =>	self::STOPPED		,'NAME' => 'STOPPED'   	],
+			    		(object)['ID' =>	self::STARTING 		,'NAME' => 'STARTING'   ],
+			    		(object)['ID' =>	self::READY 		,'NAME' => 'READY'   	],
+			    		(object)['ID' =>    self::RUNNING	 	,'NAME' => 'RUNNING'   	],      
+			    		(object)['ID' =>    self::CANCELLING  	,'NAME' => 'CANCELLING' ],  
+			    		(object)['ID' =>    self::DONE			,'NAME' => 'DONE'   	],
+	    				(object)['ID' =>    self::NONE			,'NAME' => ''   		],      
+	    		
+	    ]);
+    }
 	
 	public function validateTaskCondition(){
  		$validated	= 	$this->runby==self::RUN_BY_SYSTEM&&
- 						($this->status==self::STARTING||$this->status==self::QUEUED)
+ 						($this->status==self::STARTING||$this->status==self::READY)
  						&&(!$this->expire_date||$this->expire_date&&$this->expire_date->gt(Carbon::now()));
  		
 		$validated	= $validated&&$this->shouldRunByTimeConfig();
@@ -77,8 +90,14 @@ use Carbon\Carbon;
 			switch ($frequenceMode) {
 				case "ONCETIME":
 					$should		= true;
-					if ($startTime)			$should	=	$now->gte($startTime);
-					if ($should&&$endTime) 	$should	=	$now->lte($endTime);
+					if ($startTime)			{
+						$should	=	$now->gte($startTime);
+// 	 					\Log::info("startTime $startTime now $now should $should gte {$now->gte($startTime)}");
+					}
+					if ($should&&$endTime) 	{
+						$should	=	$now->lte($endTime);
+// 	 					\Log::info("endTime $endTime now $now should $should lte {$now->lte($endTime)}");
+					}
 					break;
 			}
 		}
@@ -87,20 +106,30 @@ use Carbon\Carbon;
 	
 	public function preRunTask($scheduleJob){
 		$this->last_run		= Carbon::now();
-		if ($this->count_run)$this->count_run = 0;
+		if (!$this->count_run)$this->count_run = 0;
 		$this->count_run	= $this->count_run+1;
 		$this->status		= self::RUNNING;
 		$this->save();
 	}
 	
 	public function afterRunTask($scheduleJob,$result){
-		$this->last_run	= Carbon::now();
+		$this->last_check	= Carbon::now();
+		$result	= $result?$result:"no return";
 		//TODO check expire date
+		if ($result instanceof \Exception) {
+			$this->result	= "ERROR : ".$result->getMessage();
+		}
+		else if(is_string($result)){
+			$this->result	= "RETURN : ".$result;
+		}
+		else{
+			$this->result	= "RETURN object ";
+		}
 		if ($this->expire_date&&$this->expire_date->lte(Carbon::now())){
 			$this->status	= self::DONE;
 		}
 		else
-			$this->status	= $this->status==self::CANCELLING?self::STOPPED:self::QUEUED;
+			$this->status	= $this->status==self::CANCELLING?self::STOPPED:self::READY;
 		$this->save();
 	}
  } 

@@ -25,12 +25,13 @@ class Kernel extends ConsoleKernel {
 	protected function schedule(Schedule $schedule)
 	{
 // 		$schedule->command('inspire')->hourly();
-		$schedule->command('taskman')->everyMinute()->before(function () {
- 			\Log::info("before schedule taskman at ".Carbon::now()->toDateTimeString());
-		})
-         ->after(function () {
- 			\Log::info("after schedule taskman at ".Carbon::now()->toDateTimeString());
-         });
+		$schedule->command('taskman')->everyMinute()
+		         ->after(function () {
+		 			\Log::info("================== end ");
+		         })
+				->before(function () {
+		 			\Log::info("---------------- start ");
+				});
 	}
 
 }

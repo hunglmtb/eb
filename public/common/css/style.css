@@ -235,6 +235,7 @@ table.dataTable {
 .actionLink {
 	color: gray;
 	margin: 5px;
+    cursor: pointer;
 }
 
 .secondaryTable table.dataTable thead th, .secondaryTable table.dataTable thead td

@@ -1113,11 +1113,7 @@ class CodeController extends EBController {
 	    			break;
     			case 'status' :
     				$selectData = ['id'=>'status','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				$selectData['data'] = collect([
-    						(object)['ID' =>	1	,'NAME' => 'Ready'   	],
-    						(object)['ID' =>	2	,'NAME' => 'Stop'    	],
-    						(object)['ID' =>	7	,'NAME' => 'Starting'   ],
-    				]);
+		    		$selectData['data'] = \App\Models\TmTask::loadStatus();
     				$rs[] = $selectData;
     				break;
 	    		

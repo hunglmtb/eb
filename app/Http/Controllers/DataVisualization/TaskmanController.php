@@ -21,8 +21,8 @@ class TaskmanController extends CodeController {
 	public function getFirstProperty($dcTable) {
 		return [ 
 				'data' => $dcTable,
-				'title' => '',
-				'width' => 100 
+				'title' => 'Command',
+				'width' => 150 
 		];
 	}
 	
@@ -31,9 +31,9 @@ class TaskmanController extends CodeController {
     	$mdl 		= "App\Models\\$mdlName";
     	$date_end 	= $postData['date_end'];
     	$date_end	= $date_end&&$date_end!=""?\Helper::parseDate($date_end):Carbon::now();
-//     	$status		= 
+     	$wheres 	= [];
 //     	$wheres 	= ['STATUS' => 1];
-    	$dataSet 	= $mdl::where('STATUS' ,'>', 0)
+    	$dataSet 	= $mdl::where($wheres)
 				    	->whereBetween('CDATE', [$occur_date,$date_end])
 				    	->select(
 				    			"$dcTable.*",
@@ -44,15 +44,8 @@ class TaskmanController extends CodeController {
 				    			) 
   		    			->orderBy("$dcTable.CDATE")
   		    			->get();
-  		/* if ($dataSet&&$dataSet instanceof Collection && $dataSet->count()>0) {
-  			$dataSet->each(function ($item, $key){
-  				if ($item&&$item instanceof Model) {
-  					$item->time_config	= $item->time_config;
-  				}
-  			});
-  		} */
+    	
   		$extraDataSet 	= $this->getExtraDataSet($dataSet, null);
-  		
 		return [ 
 				'dataSet' 		=> $dataSet,
       			'extraDataSet'	=>$extraDataSet
@@ -71,14 +64,34 @@ class TaskmanController extends CodeController {
 		return $data;
 	}
 	
-	public function start($id){
+	public function update($command,$id){
 		$result		= ["CODE"	=>"ATTEMP_FAILT"];
 		$task		= TmTask::find($id);
 		if ($task) {
-			$task->status		= 7;
-			$task->save();
+			switch ($command) {
+				case "start":
+					$task->command		= TmTask::STARTING;
+					if ($task->status	!= TmTask::RUNNING) {
+						$task->status	= TmTask::READY;
+						$task->command	= TmTask::NONE;
+					}
+					$task->save();
+				break;
+				case "stop":
+					$task->command		= TmTask::CANCELLING;
+					if ($task->status	!= TmTask::RUNNING) {
+						$task->status	= TmTask::STOPPED;
+						$task->command	= TmTask::NONE;
+					}
+					$task->save();
+					break;
+				case "refresh":
+					break;
+				default:
+				break;
+			}
 			$result["CODE"]		= "ATTEMP_SUCCESS";
-			$result["status"]	= $task->status;
+			$result["task"]		= $task;
 		}
 		return response()->json($result);
 	}

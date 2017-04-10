@@ -30,18 +30,19 @@ class Taskman extends Command {
 	 * @return mixed
 	 */
 	public function handle() {
-		\Log::info('task manager');
+// 		\Log::info('task manager');
 		$tmTasks	= TmTask::where("status",">",0)->get();
 		if ($tmTasks) {
- 			\Log::info("id:name:count_run:status");
+//  			\Log::info("id:name:count_run:status");
 			$tmTasks->each(function ($tmTask, $key){
 				$scheduleJob = $this->initScheduleJob($tmTask);
 				if ($scheduleJob) {
-					\Log::info("check task ".$tmTask->name);
+// 					\Log::info("check task ".$tmTask->name);
 					$tmTask->preRunTask($scheduleJob);
 					try {
-						$result = $scheduleJob->handle();
-					} catch (Exception $e) {
+ 						$result = $scheduleJob->handle();
+// 						$result	= $this->dispatch($scheduleJob);
+					} catch (\Exception $e) {
 						$result = $e;
 						\Log::info($e->getMessage());
 						\Log::info($e->getTraceAsString());
@@ -74,8 +75,11 @@ class Taskman extends Command {
 	}
 	
 	public function getScheduleJob($tmTask) {
-		if (array_key_exists($tmTask->ID, $this->scheduleJobs)) 
-			return $this->scheduleJobs[$tmTask->ID];
+		if (array_key_exists($tmTask->ID, $this->scheduleJobs)){
+			$scheduleJob	= $this->scheduleJobs[$tmTask->ID];
+			$scheduleJob->setTask($tmTask);
+			return $scheduleJob;
+		}
 		return null;
 	}
 }
