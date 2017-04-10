@@ -62,9 +62,9 @@ function ___hideMessage()
 function postRequest(target,variables,completedFunc,container)
 {
     showWaiting(container);
-    $.post(target,variables,function(data){hideWaiting();completedFunc(data);},
-    		function(data){hideWaiting();});
+    $.post(target,variables,function(data){hideWaiting();completedFunc(data);});
 }
+
 function zeroFill( number, width )
 {
   width -= number.toString().length;
