@@ -559,6 +559,7 @@ class FormulaHelpers {
 										//process INTERVAL x DAY
 										$ds = explode("'",$whereItem[2]);
 										$ds = explode(' ',$ds[count($ds)-1]);
+										$isSelectLastDate = false;
 										if(count($ds) >= 4 && ($ds[1]=='+' || $ds[1]=='-') && $ds[2] === 'INTERVAL' && is_numeric($ds[3])){
 											$sign = $ds[1];
 											$qty = (int)$ds[3];
@@ -573,11 +574,15 @@ class FormulaHelpers {
 											else if(substr( $whereItem[2], 0, 8 ) === "LAST_DAY"){
 												$whereItem[2]=date('Y-m-t', strtotime($occur_date));
 											}
+											else if(substr($whereItem[2],0,10) === "LAST_VALUE"){
+												$isSelectLastDate = $whereItem[0];
+												$dateCondition = trim(substr($whereItem[2],10));
+											}
 											else
 												$whereItem[2] 	= str_replace("'","",$whereItem[2]);
 										}
 
-		    							$whereDate[]	= $whereItem;
+		    							if($isSelectLastDate === false) $whereDate[]	= $whereItem;
 	    							}
 	    							else if (strpos($whereItem[0], 'month') !== false || strpos($whereItem[0], 'year') !== false) {
     									$swhere = $swhere?"$swhere and $pp":$pp;
@@ -616,8 +621,16 @@ class FormulaHelpers {
        						foreach ($whereYear as $ykey => $yvalue){
        							$queryField->whereYear($yvalue[0],$yvalue[1],$yvalue[2]);
        						}
+							$takeRowsCount = 100;
+							if($isSelectLastDate){
+       							$queryField->whereNotNull($field);
+       							$queryField->orderBy($isSelectLastDate, 'DESC');
+								if($dateCondition)
+									$queryField->whereDate($isSelectLastDate,'<',str_replace("'","",$dateCondition));
+								$takeRowsCount = 1;
+							}
        						 
-    						$getDataResult = $queryField->select($field)->skip(0)->take(100)->get();
+    						$getDataResult = $queryField->select($field)->skip(0)->take($takeRowsCount)->get();
 //      						\Log::info(\DB::getQueryLog());
     						unset($table);
     						unset($where);
@@ -777,7 +790,7 @@ class FormulaHelpers {
     	{
       		set_error_handler("evalErrorHandler");
 	    	try {
-				\Log::info($varsKey);
+				//\Log::info($varsKey);
     			eval($s);
     			if($show_echo) $logs["variables"][] =  ["content" => "Final result: $vf",	"type" => "value"];
 	    	} catch( Exception $e ){

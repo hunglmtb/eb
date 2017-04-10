@@ -603,7 +603,7 @@ var _formula = {
 				width: 900,
 				height: 500,
 				modal: true,
-				title: "Test formula"});
+				title: "Simulate formula"});
 
 			$("#test_formula").html($("#Q_Formula_"+id).html());
 			$('#test_log').html("Processing...");
@@ -702,9 +702,9 @@ console.log(orders);
 			<b>Occur date</b> <input style="width: 120px" type="text"
 				id="test_formula_occur_date" name="test_formula_occur_date"
 				size="15">
-			<button onclick="_formula.testFormula(-1)" style="width: 100px;">
-				<b>Run test</b>
-			</button>
+			<button onclick="_formula.testFormula(-1)" style="width: 100px;">Apply</button>
+				   
+			
 		</div>
 		<i><span id="test_formula"
 			style="font-family: Times New Roman; font-size: 12pt">Formula</span></i>

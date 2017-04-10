@@ -15,7 +15,7 @@ Dashboard
 
 @section('script')
 @parent
-	<script src="/common/js/utils.js"></script>
+	<script src="/common/js/utils.js?1"></script>
 	<script src="/common/js//base64.js"></script>	
 	<script src="/common/js/jquery-ui-timepicker-addon.js"></script>
 	<script>
@@ -359,13 +359,12 @@ function loadReport(o){
 
  */
  	var date_begin	= $("#date_begin").datepicker( "getDate" );
- 	var month 		= date_begin.getMonth() + 1;              
+ 	var day 		= date_begin.getDate();
+ 	var month 		= date_begin.getMonth() + 1;
  	var year 		= date_begin.getFullYear();
-	var iurl = 	"/report/"+$(o).parent().attr("d_obj")+".blade.php?bgcolor="+bgcolor+
-				"&startDate="+year+"/"+month+"/01"+
-				"&export=HTML"+
-				"&report_time="+Months[Number(month-1)]+"%20"+year+
-				"&facility_id=";
+	var iurl = 	"/report/viewreport.php?export=HTML&file="+$(o).parent().attr("d_obj")+
+		"&bgcolor="+bgcolor+
+		"&begin_date__T_3="+year+"-"+month+"-"+day;
 	$(o).attr("src",iurl);	
 }
 function loadNetworkModel(o){

@@ -17,9 +17,15 @@ class ReportController extends Controller {
 	
 	public function loadReports(Request $request) {
 		$data = $request->all ();
-		$reports = RptReport::where('GROUP','=', $data['group_id'])
+		$group_cond = 'GROUP';
+		if(isset($data['group_id']))
+			if(is_numeric($data['group_id']))
+				$group_cond = $data['group_id'];
+		$reports = RptReport::where('GROUP','=', $group_cond)
 			->select("ID", "NAME", "FILE")
+			->orderBy('GROUP')
 			->orderBy('ORDER')
+			->orderBy('NAME')
 			->get();
 		return response ()->json ($reports);
 	}
