@@ -11,7 +11,7 @@
 	actions.loadUrl 		= "/am/loadAudittrail";
 	actions.getTableOption	= function(data){
 		return {tableOption :	{searching: true,
-								autoWidth	: true},
+								autoWidth	: false},
 				invisible	: []};
 		
 	};

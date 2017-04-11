@@ -90,7 +90,7 @@ var _userLog = {
 			$("#boxUsersList").css("display","block");
 			$("#usersTable").dataTable({
 				scrollX		: false,
-				autoWidth	: true,
+				autoWidth	: false,
 				searching	: true,
 				paging		: false,
 				info		: false,
