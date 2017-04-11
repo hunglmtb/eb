@@ -9,8 +9,13 @@ class ScheduleJob extends Job {
 		$this->tmTask = $tmTask;
 	}
 	
+	public function setTask($tmTask){
+		$this->tmTask = $tmTask;
+	}
+	
  	public function handle() {
  		\Log::info("{$this->tmTask->ID}:{$this->tmTask->name}:{$this->tmTask->count_run}:{$this->tmTask->status}");
-	    sleep(3);
+	    sleep(15);
     }
+    
 }

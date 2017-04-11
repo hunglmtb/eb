@@ -598,12 +598,13 @@ var actions = {
 			}
 	    	break;
 		case "EVENT":
+			cellData				= cellData==null?{}:cellData;
 			editable['type'] 		= type;
 			editable['title'] 		= "";
 			editable['onblur'] 		= 'cancel';
 			editable['value'] 		= cellData;
 			editable['mode'] 		= "popup";
-			editable['placement'] 	= "left";
+			editable['placement'] 	= "bottom";
 			editable['showbuttons'] = true;
 			if(typeof actions.configEventType == "function") actions.configEventType(editable,columnName,cellData,rowData);
 	    	break;

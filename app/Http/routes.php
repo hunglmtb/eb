@@ -186,11 +186,11 @@ Route::post('choke/save',			['uses' =>'Forecast\ChokeController@save'		,'middlew
 Route::post('choke/filter', 		['uses' =>'Forecast\ChokeController@filter'		,'middleware' => 'checkRight:CF_VIEW_CONFIG']);
 Route::post('choke/summary', 		['uses' =>'Forecast\ChokeController@summary'	,'middleware' => ['checkRight:CF_VIEW_CONFIG','saveWorkspace']]);
 
-Route::get('dv/taskman',		['uses' =>'DVController@taskman',						'middleware' => 'checkRight:VIS_TASKMAN']);
-Route::post('taskman/load',		['uses' =>'DataVisualization\TaskManController@load',	'middleware' =>  ['checkRight:VIS_TASKMAN','saveWorkspace']]);
-Route::post('taskman/save',		['uses' =>'DataVisualization\TaskManController@save',	'middleware' =>  ['checkRight:VIS_TASKMAN']]);
-Route::post('taskman/loadsrc',	['uses' =>'DataVisualization\TaskManController@loadsrc','middleware' =>  ['checkRight:VIS_TASKMAN']]);
-Route::post('taskman/start/{id}',	['uses' =>'DataVisualization\TaskManController@start',	'middleware' =>  ['checkRight:VIS_TASKMAN']]);
+Route::get('dv/taskman',			['uses' =>'DVController@taskman',						'middleware' => 'checkRight:VIS_TASKMAN']);
+Route::post('taskman/load',			['uses' =>'DataVisualization\TaskManController@load',	'middleware' =>  ['checkRight:VIS_TASKMAN','saveWorkspace']]);
+Route::post('taskman/save',			['uses' =>'DataVisualization\TaskManController@save',	'middleware' =>  ['checkRight:VIS_TASKMAN']]);
+Route::post('taskman/loadsrc',		['uses' =>'DataVisualization\TaskManController@loadsrc','middleware' =>  ['checkRight:VIS_TASKMAN']]);
+Route::post('taskman/update/{command}/{id}',	['uses' =>'DataVisualization\TaskManController@update',	'middleware' =>  ['checkRight:VIS_TASKMAN']]);
 
 Route::get('pd/cargoentry',			['uses' =>'ProductDeliveryController@cargoentry','middleware' => 'checkRight:PD_CARGO_ADMIN_ENTRY']);
 Route::post('cargoentry/load',		['uses' =>	'Cargo\CargoEntryController@load'	,'middleware' => 'saveWorkspace']);
