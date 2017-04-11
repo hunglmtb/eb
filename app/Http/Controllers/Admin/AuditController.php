@@ -33,11 +33,14 @@ class AuditController extends CodeController {
 	} */
 	
     public function getDataSet($postData,$dcTable,$facility_id,$occur_date,$properties){
-    	$date_end 			= $postData['date_end'];
-    	$date_end			= $date_end&&$date_end!=""?\Helper::parseDate($date_end):Carbon::now();
     	$auditTrail 		= AuditTrail::getTableName();
     	$codeAuditReason 	= CodeAuditReason::getTableName();
-    	$beginDate 			= $occur_date;
+    	$date_begin			= $occur_date;
+    	$date_end			= $date_begin;
+		if(isset($postData['date_end'])){
+			if($postData['date_end'] && $postData['date_end']!="")
+				$date_end = \Helper::parseDate($postData['date_end']);
+		}
     	$tableName 			= $postData['ObjectDataSource'];
     	 
     	if($postData['IntObjectType'] >0){
@@ -52,7 +55,7 @@ class AuditController extends CodeController {
 						    	->where(["$auditTrail.FACILITY_ID" => $facility_id])
 //  						    	->where('TABLE_NAME', 'like', $objectType)
  						    	->where('TABLE_NAME', '=', $tableName)
- 						    	->whereDate("$auditTrail.WHEN", '>=', $occur_date)
+ 						    	->whereDate("$auditTrail.WHEN", '>=', $date_begin)
 						    	->whereDate("$auditTrail.WHEN", '<=', $date_end)
 						    	->select(['*','ACTION',
 						    			'WHO', 
