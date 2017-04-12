@@ -137,7 +137,7 @@ class EnergyUnitForecastController extends CodeController {
 				$lastT=$time;
 			}
 		}
-		
+		chdir("/matlab");
 		file_put_contents("data$mkey.txt",$data);
 		
 		//$end = '2013-08-29';
@@ -272,7 +272,7 @@ class EnergyUnitForecastController extends CodeController {
 				$error[]= "Input files not found";
 			}
 		}
-		
+		chdir("/");
 		$finalResults = [
 				'data'			=>$data,
 				'warning'		=>$warning,
@@ -290,11 +290,13 @@ class EnergyUnitForecastController extends CodeController {
     
     public function cleanFiles($mkey)
     {
+		chdir("/matlab");
     	if(file_exists("forecast_q$mkey.csv")) unlink("forecast_q$mkey.csv");
     	if(file_exists("forecast_Np$mkey.csv")) unlink("forecast_Np$mkey.csv");
     	if(file_exists("data$mkey.txt")) unlink("data$mkey.txt");
     	if(file_exists("t$mkey.txt")) unlink("t$mkey.txt");
     	if(file_exists("prop$mkey.txt")) unlink("prop$mkey.txt");
     	if(file_exists("error$mkey.txt")) unlink("error$mkey.txt");
+		chdir("/");
     }
 }
