@@ -4,21 +4,23 @@ $host = ENV('DB_HOST');
 ?>
 @extends('core.bsdiagram')
 @section('title')
-<div class="title">REPORTS</div>
 @stop 
 
 @section('content')
 <link rel="stylesheet" href="/common/css/admin.css">
+<link rel="stylesheet" href="/common/monthpicker/MonthPicker.css">
 <style>
 #box_conditions .param_name {min-width:60px;padding-right:10px}
 </style>
+<script src="/common/monthpicker/MonthPicker.js"></script>
 <script type="text/javascript">
 function getDefaultDate(month){
 	return "";
 	var d = new Date();
 	var m=(1+d.getMonth());
 	if(m<10)m="0"+m;
-	if(month) return d.getFullYear()+"-"+m;
+	if(month) 
+		return m+"/"+d.getFullYear();
 	var day=d.getDate();
 	if(day<10)day="0"+day;
 	return d.getFullYear()+"-"+m+"-"+day;
@@ -72,6 +74,7 @@ var _report = {
 			return;
 		}
 		showWaiting();
+		$("#showReport").hide();
 		$.ajax({
 			url: this.loadParamUrl,
 			type: "post",
@@ -102,7 +105,7 @@ var _report = {
 						html += '<input class="param datepicker daterange_from" code="'+item.CODE+'" type="text" data-type="3" name="param_'+item.CODE+'_from" value="'+getDefaultDate()+'"> To <input class="param datepicker daterange_to" code="'+item.CODE+'" type="text" data-type="3" name="param_'+item.CODE+'_to" value="'+getDefaultDate()+'">';
 					}
 					else if(item.VALUE_TYPE==5){
-						html += '<input class="param datepicker" type="text" data-type="5" name="param_'+item.CODE+'" value="'+getDefaultDate(true)+'">';
+						html += '<input class="param monthpicker" type="text" data-type="5" name="param_'+item.CODE+'" value="'+getDefaultDate(true)+'">';
 					}
 					html += '</td></tr>';
 				});
@@ -125,10 +128,17 @@ var _report = {
 						}
 					}
 				});
+				var d = new Date();
+				d.setMonth(d.getMonth() - 1);
+				var m=(1+d.getMonth());
+				if(m<10)m="0"+m;
+				var SelectedMonth = m+"/"+d.getFullYear();
+				$("#box_conditions .monthpicker").MonthPicker({ Button: false, SelectedMonth: SelectedMonth});
 				//set default date
 				$(".datepicker").each(function(){
 					$(this).datepicker("setDate", new Date());
 				});
+				$("#showReport").show();
 			},
 			error: function(data) {
 				console.log ( "load params error");
@@ -174,6 +184,10 @@ var _report = {
 					}
 				}
 				params += '&'+$(this).attr("name").substr(6)+'__T_3='+getStandardDateString(date, (data_type == "5"));
+			}
+			else if($(this).hasClass("monthpicker")){
+				var date = $(this).MonthPicker('GetSelectedYear')+"-"+$(this).MonthPicker('GetSelectedMonth')+"-01";
+				params += '&'+$(this).attr("name").substr(6)+'__T_3='+date;
 			}
 			else
 				params += '&'+$(this).attr("name").substr(6)+'__T_'+data_type+'='+$(this).val();
