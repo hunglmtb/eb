@@ -1103,6 +1103,11 @@ class CodeController extends EBController {
 		    		$selectData['data'] = \App\Models\EbFunctions::loadByCode();
 		    		$rs[] = $selectData;
 		    		break;
+	    		case 'task_code' :
+	    			$selectData = ['id'=>'EbFunctions','targets'=>$i,'COLUMN_NAME'=>$columnName];
+	    			$selectData['data'] = \App\Models\EbFunctions::loadActiveFunction();
+	    			$rs[] = $selectData;
+	    			break;
 	    		case 'runby' :
 	    			$selectData = ['id'=>'runby','targets'=>$i,'COLUMN_NAME'=>$columnName];
 	    			$selectData['data'] = collect([

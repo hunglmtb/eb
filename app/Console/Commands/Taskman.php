@@ -4,6 +4,7 @@ use App\Models\TmTask;
 use Illuminate\Console\Command;
 use App\Jobs\ScheduleRunAllocation;
 use App\Jobs\ScheduleTestJob;
+use App\Jobs\ScheduleWorkflow;
 
 class Taskman extends Command {
 
@@ -61,9 +62,11 @@ class Taskman extends Command {
 			if (!$scheduleJob){
 				switch ($tmTask->task_code) {
 					case "ALLOC_RUN":
-// 						$scheduleJob = new ScheduleRunAllocation($tmTask);
+ 						$scheduleJob = new ScheduleRunAllocation($tmTask);
 					break;
-					
+					case "VIS_WORKFLOW":
+						$scheduleJob = new ScheduleWorkflow($tmTask);
+					break;
 					default:
 						$scheduleJob = new ScheduleTestJob($tmTask);
 					break;

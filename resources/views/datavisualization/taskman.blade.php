@@ -2,16 +2,38 @@
 	use \App\Models\Network;
 	use \App\Models\AllocJob;
 	use \App\Models\TmTask;
+	use \App\Models\Facility;
+	use \App\Models\TmWorkflow;
+	use \App\Models\EnergyUnitGroup;
+	use \App\Models\CodeAllocType;
+	use \App\Models\CodePlanType;
+	use \App\Models\CodeForecastType;
+	use \App\Models\CodeProductType;
+	use \App\Models\EnergyUnit;
+	use \App\Models\CodeFlowPhase ;
+	use \App\Models\CodeEventType ;
+	use \App\Models\CodeReadingFrequency ;
 	
 	$currentSubmenu ='/dv/taskman';
 	$tables = ['TmTask'	=>['name'=>'Task'],
 	];
 	$isAction = true;
 	
-	$taskStatus	= TmTask::loadStatus();
-	$network	= NETWORK::getTableName();
-	$allocJob	= AllocJob::getTableName();
-	$networks 	= Network::join($allocJob,"$network.ID", '=', "$allocJob.NETWORK_ID")->distinct("$network.ID")->select("$network.ID","$network.NAME")->get();
+	$facilities			= Facility::all();
+	$taskStatus			= TmTask::loadStatus();
+	$network			= NETWORK::getTableName();
+	$allocJob			= AllocJob::getTableName();
+	$networks 			= Network::join($allocJob,"$network.ID", '=', "$allocJob.NETWORK_ID")->distinct("$network.ID")->select("$network.ID","$network.NAME")->get();
+	$tmWorkflows		= TmWorkflow::loadActive();
+	$codeFlowPhase		= CodeFlowPhase::loadActive();
+	$codeReadingFrequency= CodeReadingFrequency::loadActive();
+	$codeEventType		= CodeEventType::loadActive();
+	$energyUnitGroup	= EnergyUnitGroup::all();
+	$codeAllocType		= CodeAllocType::loadActive();
+	$codePlanType		= CodePlanType::loadActive();
+	$codeForecastType	= CodeForecastType::loadActive();
+	$codeProductType	= CodeProductType::loadActive();
+	$energyUnit			= EnergyUnit::all();
 ?>
 
 @extends('core.pm')
@@ -21,9 +43,20 @@
 <script src="/common/edittable/event.js"></script>
 
 <script>
-	var networks 	= <?php echo json_encode($networks); ?>;
-	var taskStatus 	= <?php echo json_encode($taskStatus); ?>;
-
+	var networks 			= <?php echo json_encode($networks); ?>;
+	var taskStatus 			= <?php echo json_encode($taskStatus); ?>;
+	var facilities 			= <?php echo json_encode($facilities); ?>;
+	var tmWorkflows 		= <?php echo json_encode($tmWorkflows); ?>;
+	var codeReadingFrequency= <?php echo json_encode($codeReadingFrequency		);		?>;
+	var codeFlowPhase		= <?php echo json_encode($codeFlowPhase		);		?>;
+	var codeEventType		= <?php echo json_encode($codeEventType		);		?>;
+	var energyUnitGroup		= <?php echo json_encode($energyUnitGroup	);	?>;
+	var codeAllocType		= <?php echo json_encode($codeAllocType		);	?>;
+	var codePlanType		= <?php echo json_encode($codePlanType		);	?>;
+	var codeForecastType	= <?php echo json_encode($codeForecastType	); ?>;
+	var codeProductType		= <?php echo json_encode($codeProductType	);	?>;
+	var energyUnit			= <?php echo json_encode($energyUnit		);		?>;
+	
 	actions.loadUrl 		= "/taskman/load";
 	actions.saveUrl 		= "/taskman/save";
 	
@@ -34,12 +67,16 @@
 						return 'ID';
 					},
 	};
+// 	actions.extraDataSetColumns = {'task_config':'task_code'};
+	
+// 	source['task_code']	={	dependenceColumnName	:	['task_config'],};
 
-	actions.extraDataSetColumns = {'task_code':'task_group'};
+	/* actions.extraDataSetColumns = {'task_code':'task_group'};
 	
 	source['task_group']	={	dependenceColumnName	:	['task_code'],
 								url						: 	'/taskman/loadsrc'
-								};
+								}; */
+								
 
 	var renderFirsColumn = actions.renderFirsColumn;
 	actions.renderFirsColumn  = function ( data, type, rowData ) {
@@ -78,6 +115,16 @@
 	    return command;
 	}
 
+	actions.dominoColumns = function(columnName,newValue,tab,rowData,collection,table,td){
+		if(columnName=="task_code"){
+			var dependence = 'task_config';
+			var DT_RowId = rowData['DT_RowId'];
+			var dependencetd = $('#'+DT_RowId+" ."+dependence);
+			actions.applyEditable(tab,"EVENT",dependencetd, null, rowData, dependence);
+		}
+		actions.createdFirstCellColumnByTable(table,rowData,td,tab);
+	}
+
 	actions.sendCommandJob  = function ( id, element,command) {
 		$(element).html('<a class="actionLink"><img alt="loading" title="loading" src="/ckeditor/skins/moono/images/spinner.gif"></a>');
         var table 		= $('#table_TmTask').DataTable();
@@ -101,30 +148,25 @@
 		});
 	};
 
-
-	var firstTime = true;
-	function onAfterGotDependences(elementId,element,currentId){
-	   if(elementId=="AllocJob"){
-		   if(firstTime) {
-			   var originValue = element.attr("originValue");
-			   element.val(originValue);
-			   firstTime = false;
-		   }
-	   }
-   	}
-   	
 	actions.configEventType = function (editable,columnName,cellData,rowData){
 		if(columnName=="task_config") {
-			if(cellData!=null) cellData.networks 	= networks;
-			editable.configType = "TASK";
+			if(cellData!=null) {
+				cellData.networks 				= networks;
+				cellData.facilities 			= facilities;
+				cellData.tmWorkflows 			= tmWorkflows;
+				cellData.codeFlowPhase			= codeFlowPhase;
+				cellData.codeEventType			= codeEventType;
+				cellData.energyUnitGroup		= energyUnitGroup	;
+				cellData.codeAllocType	    	= codeAllocType	;    
+				cellData.codePlanType	    	= codePlanType	;    
+				cellData.codeForecastType   	= codeForecastType;   
+				cellData.codeProductType		= codeProductType	;
+				cellData.energyUnit		    	= energyUnit		;    
+				cellData.codeReadingFrequency 	= codeReadingFrequency		;    
+				
+			}
+			editable.configType = rowData.task_code;
 			editable.placement 	= "bottom";
-			editable.tpl = '<table class="eventTable" style="width:inherit;min-width:350px"><tbody>'+
-				 '<tr><td><label><span>Network</span></label></td><td colspan="1"><select id="Network" class="editable-event" name="NETWORK"></select></td></tr>'+
-				 '<tr><td><label><span>Job</span></label></td><td colspan="1"><select id="AllocJob" class="editable-event" name="JOB"></select></td></tr>'+
-	        	 '<tr class="DATE" ><td><label><span>Date</span></label></td><td colspan="1"><span class="editable-event clickable" name="DATE">set datetime</span></td></tr>'+
-				 '<tr><td><label><span>Send Logs</span></label></td><td colspan="5"><input class="editable-event eventTaskInput" name="SENDLOG"></input></td></tr>'+
-	            '</tbody></table>'+
-	            "<script>registerOnChange('Network',['AllocJob'])<\/script>";
 		}
 	}
 

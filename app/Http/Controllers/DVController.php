@@ -634,14 +634,7 @@ class DVController extends CodeController {
 		return view ( 'front.workflow',array ('ebfunctions'=>$result, 'user'=>$users, 'foGroup'=>$foGroup) );
 	}
 	public function getListWorkFlow() {
-		$result = TmWorkflow::where ( [ 
-				'STATUS' => 1 
-		] )->get ( [ 
-				'id',
-				'name',
-				'isrun' 
-		] );
-		
+		$result = TmWorkflow::loadActive();
 		return response ()->json ( [ 
 				'result' => $result 
 		] );

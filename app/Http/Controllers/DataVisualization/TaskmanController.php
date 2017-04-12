@@ -31,8 +31,8 @@ class TaskmanController extends CodeController {
     	$mdl 		= "App\Models\\$mdlName";
     	$date_end 	= $postData['date_end'];
     	$date_end	= $date_end&&$date_end!=""?\Helper::parseDate($date_end):Carbon::now();
-     	$wheres 	= [];
-//     	$wheres 	= ['STATUS' => 1];
+//      	$wheres 	= [];
+     	$wheres 	= ['runby' => 1];
     	$dataSet 	= $mdl::where($wheres)
 				    	->whereBetween('CDATE', [$occur_date,$date_end])
 				    	->select(
