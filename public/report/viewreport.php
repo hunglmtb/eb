@@ -9,15 +9,11 @@ if (isset ( $exportType )) {
 	$System = java ( "java.lang.System" );
 	try {
 		java ( "java.lang.Class" )->forName ( "com.mysql.jdbc.Driver" );
-		$connection = java ( "java.sql.DriverManager" )->getConnection ( "jdbc:mysql://localhost/eb_mero", "root", "" );
+		$connection = java ( "java.sql.DriverManager" )->getConnection ( "jdbc:mysql://localhost/energy_builder", "eb", "4v@Zy#m." );
 		$root = realpath ( "." );
 		$file = str_replace(".jrxml","", $file);
 		$in = $root . "\\{$file}.jrxml";
-		if($exportType == "Excel"){
-			$path = $root . "\\{$file}_excel.jrxml";
-			if(file_exists($path))
-				$in = $path;
-		}
+
 		$report = java ( "net.sf.jasperreports.engine.JasperCompileManager" )->compileReport ( $in );
 		
 		$dateFormat = new java ( "java.text.SimpleDateFormat", "yy-MM-dd" );
@@ -71,7 +67,8 @@ if (isset ( $exportType )) {
 		readfile ( $out );
 		unlink($out);
 	} catch ( Exception $ex ) {
-		echo "<b>Error...:</b>" . $ex->getCause ();
+		echo "Can not generate report. Please contact technical support.";
+		//echo "<b>Error...:</b>" . $ex->getCause ();
 	}
 }
 ?>
