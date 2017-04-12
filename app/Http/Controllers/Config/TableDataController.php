@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Controllers\Config;
-
+use DB;
 use App\Http\Controllers\CodeController;
 use App\Services\TableDataService;
 use Illuminate\Http\Request;
@@ -20,7 +20,37 @@ class TableDataController extends CodeController {
 							    			'lm'		=>$lm
     	]);
     }
-    
+	
+    public function genSql(Request $request){
+    	$postData 	= $request->all();
+		$table 	= $postData["table"];
+		$ids 		= $postData["ids"];
+		$type 		= $postData["type"];
+		$result = DB::table ( $table )->whereIn("ID",$ids)->select('*')->get();
+		$sss="";
+		foreach ($result as $r){
+			$row = get_object_vars($r);
+			\Log::info($row);
+			$f="";
+			$v="";
+			$s="";
+			foreach ($row as $key => $value) {
+				$f.=($f?",":"")."`$key`";
+				$v.=($v?",":"")."'".addslashes($value)."'";
+				$s.=($s?",":"")."`$key`='".addslashes($value)."'";
+			}
+			if($type==1)
+				$sss.="insert into $table($f) values($v);\n";
+			else if($type==2)
+				$sss.="update $table set $s where id=$row[ID];\n";
+			else
+				$sss.="insert into $table($f) values($v);~@^@~update $table set $s where id=$row[ID];";
+		}
+
+		$sss=str_replace("''","null", $sss);
+		return $sss;
+	}
+	
     public function delete(Request $request){
     	$postData 		= $request->all();
     	$results		= "no data to delete";

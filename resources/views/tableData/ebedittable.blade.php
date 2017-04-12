@@ -1,9 +1,9 @@
 <html>
 <head>
 	<meta charset='UTF-8' />
-	<link rel='stylesheet' type='text/css' href='/common/css/style.css'  />
+	<link rel='stylesheet' type='text/css' href='/common/css/style.css?1'  />
     <link rel="stylesheet" href="/common/css/jquery-ui.css" />
-	<link rel='stylesheet' href='/common/css/tableDataStyle.css'  />
+	<link rel='stylesheet' href='/common/css/tableDataStyle.css?1'  />
 	<script src="/common/js/jquery-2.1.3.js"></script>
 	<script src="/common/js/jquery-ui.js"></script>
 <!--     <script  src="/common/lm/colResizable-1.3.min.js"></script> -->
@@ -215,17 +215,25 @@ $lm->run();
 
 function genSQL(type)
 {
-	var ids="";
+	var ids = [];
 	$('input[name="_delete[]"]:checked').each(function(){
-		ids+=(ids==""?"":",")+$(this).val();
+		ids.push($(this).val());
 	});
+	if(ids.length == 0)
+		return;
+		
 	$( '#box_sql2' ).dialog({
 		width: 730,
 		modal: true,
 		title: 'Generate SQL'
 	});
 	$('#sql_2').val('Loading...');
-	postRequest('gen_sql.php?type='+type+'&table=<?php echo $tablename; ?>&id='+ids,{},
+	postRequest('/loadtabledata/gensql',
+		{
+			table: '<?php echo $tablename; ?>',
+			ids: ids,
+			type: type
+		},
 		function(data){
 			$('#sql_2').val(data);
 		});
@@ -233,6 +241,7 @@ function genSQL(type)
 
 function _genSQL(id){
 	//$('#box_sql').show();
+	var ids = [id];
 	$( '#box_sql' ).dialog({
 		width: 730,
 		modal: true,
@@ -240,7 +249,12 @@ function _genSQL(id){
 	});
 	$('#sql_insert').val('Loading...');
 	$('#sql_update').val('Loading...');
-	postRequest('gen_sql.php?table=<?php echo $tablename; ?>&id='+id,{},
+	postRequest('/loadtabledata/gensql',
+		{
+			table: '<?php echo $tablename; ?>',
+			ids: ids,
+			type: 0
+		},
 		function(data){
 			var ds=data.split('~@^@~');
 			$('#sql_insert').val(ds[0]);

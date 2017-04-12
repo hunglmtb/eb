@@ -55,7 +55,7 @@ a:hover {
 	text-decoration: underline;
 }
 
-input[type="button"], button {
+input[type="button"],input[type="submit"], button {
 	background-color: #378de5;
 	display: inline-block;
 	cursor: pointer;

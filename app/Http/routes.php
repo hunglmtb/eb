@@ -455,6 +455,7 @@ Route::get('loadtabledata',['uses' =>'DataViewController@tabledata','middleware'
 Route::get('loadtabledata/edittable',['uses' =>'Config\TableDataController@edittable','middleware' => 'checkRight:CONFIG_TABLE_DATA']);
 Route::post('loadtabledata/edittable',['uses' =>'Config\TableDataController@edittable','middleware' => 'checkRight:CONFIG_TABLE_DATA']);
 Route::post('loadtabledata/delete',['uses' =>'Config\TableDataController@delete','middleware' => 'checkRight:CONFIG_TABLE_DATA']);
+Route::post('loadtabledata/gensql',['uses' =>'Config\TableDataController@genSql','middleware' => 'checkRight:CONFIG_TABLE_DATA']);
 Route::get('pdtabledata',['uses' =>'DataViewController@pdtabledata','middleware' => 'checkRight:CONFIG_TABLE_DATA']);
 
 Route::get('formula',['uses' =>'FormulaController@_index','middleware' => 'checkRight:CONFIG_FORMULA']);
