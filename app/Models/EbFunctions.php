@@ -38,6 +38,28 @@ use App\Models\DynamicModel;
 		return $entries;
 	}
 	
+	public static function loadActiveFunction(){
+		$entries = EbFunctions ::whereIn('CODE',[
+									"ALLOC_CHECK",	
+									"ALLOC_RUN",		
+									"VIS_WORKFLOW",	
+									"FDC_EU",
+									"FDC_EU_TEST",		
+									"FDC_FLOW",  		
+									"FDC_STORAGE", 	
+									])
+								->select(
+									"CODE as ID",
+									"PATH as FUNCTION_URL",
+									\DB::raw("concat(case when PARENT_CODE is null then '' else '--- ' end,NAME) as NAME"))
+								->orderBy("CODE")
+								->get();
+		$entries->each(function ($item, $key) {
+			$item->primaryKey = "CODE";
+		});
+		return $entries;
+	}
+	
 	
 	public static function findByCode($code){
 		/* if($id==="0"||$id===0){

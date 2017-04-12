@@ -125,11 +125,13 @@ use Carbon\Carbon;
 		else{
 			$this->result	= "RETURN object ";
 		}
+		
 		if ($this->expire_date&&$this->expire_date->lte(Carbon::now())){
 			$this->status	= self::DONE;
 		}
 		else
-			$this->status	= $this->status==self::CANCELLING?self::STOPPED:self::READY;
+			$this->status	= $this->command==self::CANCELLING?self::STOPPED:self::READY;
+		$this->command	= 0;
 		$this->save();
 	}
  } 
