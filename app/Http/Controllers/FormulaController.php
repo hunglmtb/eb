@@ -8,6 +8,7 @@ use App\Models\Facility;
 use App\Models\LoArea;
 use App\Models\CodeFlowPhase;
 use App\Models\CodeAllocType;
+use App\Models\CodeEventType;
 use App\Models\LoProductionUnit;
 
 use Illuminate\Http\Request;
@@ -26,11 +27,13 @@ class FormulaController extends Controller {
 		$fo_group = $this->getFoGroup();
 		$code_flow_phase = CodeFlowPhase::all(['ID', 'NAME']);
 		$code_alloc_type = CodeAllocType::all(['ID', 'NAME']);
+		$code_event_type = CodeEventType::all(['ID', 'NAME']);
 		$loProductionUnit = LoProductionUnit::all(['ID', 'NAME']);
 		
 		return view ( 'front.formula', ['fo_group'=>$fo_group, 
 										'code_flow_phase'=>$code_flow_phase, 
 										'code_alloc_type'=>$code_alloc_type,
+										'code_event_type'=>$code_event_type,
 										'loProductionUnit'=>$loProductionUnit
 				
 		]);
@@ -91,13 +94,19 @@ class FormulaController extends Controller {
 	
 	public function getformulaslist(Request $request){
 		$data = $request->all ();
-
-		$formula = Formula::where(['GROUP_ID'=>$data['group_id']])
-		->orderBy('ID')->select('*')->get();
+		$formula = Formula::getTableName();
+		$code_flow_phase = CodeFlowPhase::getTableName();
+		$code_event_type = CodeEventType::getTableName();
+		
+		$formulas = DB::table ( $formula . ' AS a' )
+		->leftjoin ( $code_flow_phase . ' AS b', 'a.alloc_type', '=', 'b.ID' )
+		->leftjoin ( $code_event_type . ' AS c', 'a.event_type', '=', 'c.ID' )
+		->where(['GROUP_ID'=>$data['group_id']])
+		->orderBy('ID')->select('a.*','b.NAME as FLOW_PHASE_NAME','c.NAME as EVENT_TYPE_NAME')->get();
 		$html="";
 		$result = [];
 		 $i = 0;
-		foreach ($formula as $row)
+		foreach ($formulas as $row)
 		{
 			$r1 = [];
 			$table_name=$row->OBJECT_TYPE;
@@ -142,7 +151,7 @@ class FormulaController extends Controller {
 // 			array_push($result, $row);
 		} 
 		
-		return response ()->json ( $formula );
+		return response ()->json ( $formulas );
 	}
 	
 	public function getVarList(Request $request){
@@ -237,6 +246,7 @@ class FormulaController extends Controller {
 				$param['OBJ_ID_COLUMN'] = $data['txtIDColumn'];
 				$param['DATE_COLUMN'] = $data['txtDateColumn'];
 				$param['FLOW_PHASE'] = $data['cboFlowPhase'];
+				$param['EVENT_TYPE'] = $data['cboEventType'];
 				$param['ALLOC_TYPE'] = $data['cboAllocType'];
 				$param['FORMULA'] = $data['txtFormula'];
 				
@@ -257,7 +267,7 @@ class FormulaController extends Controller {
 				{
 					$tmp = [];
 					$tmp = FoVar::where(['FORMULA_ID'=>$formula_id])
-					->select('NAME','STATIC_VALUE','ORDER', 'FORMULA_ID', 'OBJECT_TYPE', 'OBJECT_ID', 'TABLE_NAME', 'VALUE_COLUMN', 'OBJ_ID_COLUMN', 'DATE_COLUMN', 'FLOW_PHASE', 'ALLOC_TYPE', 'COMMENT')
+					->select('NAME','STATIC_VALUE','ORDER', 'FORMULA_ID', 'OBJECT_TYPE', 'OBJECT_ID', 'TABLE_NAME', 'VALUE_COLUMN', 'OBJ_ID_COLUMN', 'DATE_COLUMN', 'FLOW_PHASE', 'EVENT_TYPE', 'ALLOC_TYPE', 'COMMENT')
 					->first ();
 					$tmp ['FORMULA_ID'] = $new_formula_id;
 					$tmp = json_decode ( json_encode ( $tmp ), true );
@@ -284,6 +294,7 @@ class FormulaController extends Controller {
 					'OBJ_ID_COLUMN'=>$data['txtIDColumn'],
 					'DATE_COLUMN'=>$data['txtDateColumn'],
 					'FLOW_PHASE'=>$data['cboFlowPhase'],
+					'EVENT_TYPE'=>$data['cboEventType'],
 					'ALLOC_TYPE'=>$data['cboAllocType'],
 					'FORMULA'=>$data['txtFormula'],
 // 					'BEGIN_DATE'=>$begin_date,
@@ -324,6 +335,7 @@ class FormulaController extends Controller {
 					'OBJ_ID_COLUMN' => $data['txtIDColumn'],
 					'DATE_COLUMN' => $data['txtDateColumn'],
 					'FLOW_PHASE' => $data['cboFlowPhase'],
+					'EVENT_TYPE' => $data['cboEventType'],
 					'ALLOC_TYPE' => $data['cboAllocType'],
 					'COMMENT' => $data['txtComment']
 				];
@@ -343,6 +355,7 @@ class FormulaController extends Controller {
 					'OBJ_ID_COLUMN' => $data['txtIDColumn'],
 					'DATE_COLUMN' => $data['txtDateColumn'],
 					'FLOW_PHASE' => $data['cboFlowPhase'],
+					'EVENT_TYPE' => $data['cboEventType'],
 					'ALLOC_TYPE' => $data['cboAllocType'],
 					'COMMENT' => $data['txtComment']
 				];

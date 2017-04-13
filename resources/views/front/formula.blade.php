@@ -280,7 +280,10 @@ var _formula = {
 				_formula.loadVarsList(0);
 				$('#boxVarList').hide();
 				var $r=$("#bodyFormulasList").find("#Qrowformula_"+_formula.current_formula_id);
-				if(_formula.current_formula_id<=0)
+				console.log("#Qrowformula_"+_formula.current_formula_id);
+				if($r.length)
+					$r.trigger("click");
+				else if(_formula.current_formula_id<=0)
 				{
 					_formula.current_formula_id=-1;
 					_formula.current_var_id=-1;
@@ -311,9 +314,10 @@ var _formula = {
 				str += "		<span id='Q_ObjID_"+data[i].ID+"'>"+checkValue(data[i].OBJECT_ID,"")+"</span>";
 				str += "		<span id='Q_FlowPhase_"+data[i].ID+"'>"+checkValue(data[i].FLOW_PHASE,"")+"</span>";
 				str += "		<span id='Q_AllocType_"+data[i].ID+"'>"+checkValue(data[i].ALLOC_TYPE,"")+"</span>";
+				str += "		<span id='Q_EventType_"+data[i].ID+"'>"+checkValue(data[i].EVENT_TYPE,"")+"</span>";
 				str += "		<span id='Q_PUID_"+data[i].ID+"'>"+checkValue(data[i].PRODUCTION_UNIT_ID,"")+"</span>";
 				str += "		<span id='Q_AreaID_"+data[i].ID+"'>"+checkValue(data[i].AREA_ID,"")+"</span>";
-				str += "		<span id='Q_FAcilityID_"+data[i].ID+"'>"+checkValue(data[i].FACILITY_ID,"")+"</span>";
+				str += "		<span id='Q_FacilityID_"+data[i].ID+"'>"+checkValue(data[i].FACILITY_ID,"")+"</span>";
 				str += "		<span id='Q_DateColumn_"+data[i].ID+"'>"+checkValue(data[i].DATE_COLUMN,"")+"</span>";
 				str += "	</span>";
 				str += "	</td>";
@@ -373,9 +377,10 @@ var _formula = {
 				str += "<span id='V_ObjID_"+data[i].ID+"'>"+checkValue(data[i].OBJECT_ID,"")+"</span>";
 				str += "<span id='V_FlowPhase_"+data[i].ID+"'>"+checkValue(data[i].FLOW_PHASE,"")+"</span>";
 				str += "<span id='V_AllocType_"+data[i].ID+"'>"+checkValue(data[i].ALLOC_TYPE,"")+"</span>";
+				str += "<span id='V_EventType_"+data[i].ID+"'>"+checkValue(data[i].EVENT_TYPE,"")+"</span>";
 				str += "<span id='V_PUID_"+data[i].ID+"'>"+checkValue(data[i].PRODUCTION_UNIT_ID,"")+"</span>";
 				str += "<span id='V_AreaID_"+data[i].ID+"'>"+checkValue(data[i].AREA_ID,"")+"</span>";
-				str += "<span id='V_FAcilityID_"+data[i].ID+"'>"+checkValue(data[i].FACILITY_ID,"")+"</span>";
+				str += "<span id='V_FacilityID_"+data[i].ID+"'>"+checkValue(data[i].FACILITY_ID,"")+"</span>";
 				str += "<span id='V_DateColumn_"+data[i].ID+"'>"+checkValue(data[i].DATE_COLUMN,"")+"</span>";
 				str += "</span>";
 				str += "</td>";
@@ -486,6 +491,7 @@ var _formula = {
 //				$("#cboObjName").val(xx);
 				$("#cboFlowPhase").val($("#"+pre+"FlowPhase_"+formula_id).html());
 				$("#cboAllocType").val($("#"+pre+"AllocType_"+formula_id).html());
+				$("#cboEventType").val($("#"+pre+"EventType_"+formula_id).html());
 				
 				$("#txtDateColumn").val($("#"+pre+"DateColumn_"+formula_id).html());
 				
@@ -502,11 +508,23 @@ var _formula = {
 			{
 				document.forms["frmEditFormula"].reset();
 			}
+
 			$( "#boxEditFormula" ).dialog({
-				height: 430,
+				height: 450,
 				width: 800,
 				modal: true,
 				title: tt+(isVar?" variable":" formula"),
+				buttons:{
+					Save: function(){
+						_formula.saveFormula();
+					},
+					"Save as new": function(){
+						_formula.saveFormula(1);
+					},
+					Cancel: function(){
+						_formula.cancelEdit();
+					},
+				}
 			});
 		},
 		reloadCbo : function(id, data, vdefault){
@@ -554,6 +572,7 @@ var _formula = {
 				'txtDateColumn' : $('#txtDateColumn').val(),
 				'cboFlowPhase' : $('#cboFlowPhase').val(),
 				'cboAllocType' : $('#cboAllocType').val(),
+				'cboEventType' : $('#cboEventType').val(),
 				'txtBeginDate' : $('#txtBeginDate').val(),
 				'txtEndDate' : $('#txtEndDate').val(),
 				'txtComment' : $('#txtComment').val(),
@@ -876,7 +895,7 @@ console.log(orders);
 													style="width: 180px; height: 150px" size="1"
 													name="cboObjName[]"></select></td>
 											</tr>
-											<tr height=22>
+											<tr height=22 style="display:none">
 												<td>Alloc type</td>
 												<td><select id="cboAllocType" style="width: 180px;" size="1"
 													name="cboAllocType">
@@ -887,15 +906,21 @@ console.log(orders);
 													</select></td>
 												<td>&nbsp;</td>
 											</tr>
+											<tr height=22>
+												<td>Event type</td>
+												<td><select id="cboEventType" style="width: 180px;" size="1"
+													name="cboEventType">
+													<option value="0"></option> 
+													@foreach($code_event_type as $re2)
+														<option value="{!!$re2['ID']!!}">{!!$re2['NAME']!!}</option> 
+													@endforeach
+													</select></td>
+												<td>&nbsp;</td>
+											</tr>
 											<tr id="trBeginDate" height=22>
-												<td>Begin date</td>
 												<td>
 												{{ Helper::selectDate($filterbeginDate)}}
 												</td>
-												<td>&nbsp;</td>
-											</tr>
-											<tr id="trEndDate" height=22>
-												<td>End date</td>
 												<td>
 													{{ Helper::selectDate($filterEndDate)}}
 												</td>
@@ -912,19 +937,6 @@ console.log(orders);
 								</td>
 							</tr>
 						</table>
-					</td>
-				</tr>
-			</table>
-			<table border="0" cellpadding="2" id="table5"
-				style="position: absolute; bottom: 5px; left: 5px;">
-				<tr>
-					<td>
-						<p>
-							<input onClick="_formula.saveFormula()" type="button" value="Save"
-								name="B3"> <input onClick="_formula.saveFormula(1)" type="button"
-								value="Save as new" id="buttonSaveAsNew" name="B5"> <input
-								onClick="_formula.cancelEdit()" type="button" value="Cancel" name="B4">
-					
 					</td>
 				</tr>
 			</table>

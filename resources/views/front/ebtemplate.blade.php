@@ -30,7 +30,7 @@ $xmenu["visual"]=[
 	"sub" =>[
 		["text"  =>"Network Model","desc" => "","url" => "/diagram"],
 		["text"  =>"Data View","desc" => "","url" => "/dataview"],
-		["text"  =>"Report","desc" => "","url" => "/workreport"],
+		["text"  =>"Reports","desc" => "","url" => "/workreport"],
 		["text"  =>"Advanced Graph","desc" => "","url" => "/graph"],
 		["text"  =>"Workflow","desc" => "","url" => "/workflow"],
 		["text"  =>"Choke Model","desc" => "","url" => "/fp/choke"],
