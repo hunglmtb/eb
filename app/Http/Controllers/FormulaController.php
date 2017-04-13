@@ -99,7 +99,7 @@ class FormulaController extends Controller {
 		$code_event_type = CodeEventType::getTableName();
 		
 		$formulas = DB::table ( $formula . ' AS a' )
-		->leftjoin ( $code_flow_phase . ' AS b', 'a.alloc_type', '=', 'b.ID' )
+		->leftjoin ( $code_flow_phase . ' AS b', 'a.flow_phase', '=', 'b.ID' )
 		->leftjoin ( $code_event_type . ' AS c', 'a.event_type', '=', 'c.ID' )
 		->where(['GROUP_ID'=>$data['group_id']])
 		->orderBy('ID')->select('a.*','b.NAME as FLOW_PHASE_NAME','c.NAME as EVENT_TYPE_NAME')->get();
