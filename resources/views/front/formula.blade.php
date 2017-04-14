@@ -303,14 +303,16 @@ var _formula = {
 				}
 				
 				var well_info="";
-				if(data[i].FLOW_PHASE_NAME != undefined)
-					if(data[i].FLOW_PHASE_NAME.length > 0)
-						well_info += (well_info==""?"":", ") + data[i].FLOW_PHASE_NAME;
-				if(data[i].EVENT_TYPE_NAME != undefined)
-					if(data[i].EVENT_TYPE_NAME.length > 0)
-						well_info += (well_info==""?"":", ") + data[i].EVENT_TYPE_NAME;
-				if(well_info!="")
-					well_info = "<br><font color='green' size='1'><b>"+well_info+"</b></font>";
+				if(data[i].OBJECT_TYPE.toUpperCase()=="ENERGY_UNIT"){
+					if(data[i].FLOW_PHASE_NAME != undefined)
+						if(data[i].FLOW_PHASE_NAME.length > 0)
+							well_info += (well_info==""?"":", ") + data[i].FLOW_PHASE_NAME;
+					if(data[i].EVENT_TYPE_NAME != undefined)
+						if(data[i].EVENT_TYPE_NAME.length > 0)
+							well_info += (well_info==""?"":", ") + data[i].EVENT_TYPE_NAME;
+					if(well_info!="")
+						well_info = "<br><font color='green' size='1'><b>"+well_info+"</b></font>";
+				}
 				str += "<tr bgcolor="+bgcolor+" class='formula_item' rowid='"+data[i].ID+"' order='$row[ORDER]' new_order='"+checkValue(data[i].ORDER, -1)+"' id='Qrowformula_"+data[i].ID+"' style=\"cursor:pointer\" onclick=\"_formula.loadVarsList("+data[i].ID+",\'"+data[i].NAME+"')\">";
 				str += "	<td align='center'>"+(i+1)+"</td>";
 				str += "	<td><span id='Q_FormulaName_"+data[i].ID+"'>"+checkValue(data[i].NAME,"")+"</span>";

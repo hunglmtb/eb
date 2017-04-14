@@ -11,6 +11,7 @@ use App\Models\PdContractYear;
 use App\Models\PdContractCalculation;
 use App\Models\PdContractData;
 use App\Models\PdCodeContractAttribute;
+use App\Models\EbBussinessModel;
 
 function sum(){
 	$args = func_get_args();
@@ -496,6 +497,50 @@ class FormulaHelpers {
 				}
 				// $s="$m = file_get_contents('http://energybuilder.co/eb/matlab/test.php?act=get&a=1%204%202', true);
 			} 
+    		else if(substr($row->STATIC_VALUE,0,14)=="getEUTestAlloc"){
+				$j=strpos($row->STATIC_VALUE,"(");
+				$k=self::findClosedSign(")",$row->STATIC_VALUE,$j);
+				if($k>$j && $j>0){
+					$params=explode(",",substr($row->STATIC_VALUE,$j+1,$k-$j-1));
+					//\Log::info ($params);
+					if(count($params)>=3){
+						$t_field=$params[2];
+						$occur_date = str_replace("'","",$params[1]);
+						$object_id = $params[0];
+						$t_value = EbBussinessModel :: getEUTestAlloc($object_id,$occur_date,$t_field);
+						$s='$'.$row->NAME."='$t_value';\$vs=\$$row->NAME;";
+						eval($s);
+						$vars[$row->NAME]=$vs;
+						//$sql = "select $t_field from EU_TEST_DATA_VALUE where EU_ID=$object_id and EFFECTIVE_DATE<='$occur_date' order by EFFECTIVE_DATE desc limit 1";
+						if($show_echo) {
+							//$sqlLog		=  ["content" 	=> $sql,				"type" 		=> "sql"];
+							$valueLog	=  ["content" 	=> "$row->NAME = $vs",	"type" 		=> "value"];
+						}
+					}
+				}
+			}
+    		else if(substr($row->STATIC_VALUE,0,9)=="getEUTest"){
+				$j=strpos($row->STATIC_VALUE,"(");
+				$k=self::findClosedSign(")",$row->STATIC_VALUE,$j);
+				if($k>$j && $j>0){
+					$params=explode(",",substr($row->STATIC_VALUE,$j+1,$k-$j-1));
+					//\Log::info ($params);
+					if(count($params)>=3){
+						$t_field=$params[2];
+						$occur_date = str_replace("'","",$params[1]);
+						$object_id = $params[0];
+						$t_value = EbBussinessModel :: getEUTest($object_id,$occur_date)[$t_field];
+						$s='$'.$row->NAME."='$t_value';\$vs=\$$row->NAME;";
+						eval($s);
+						$vars[$row->NAME]=$vs;
+						//$sql = "select $t_field from EU_TEST_DATA_VALUE where EU_ID=$object_id and EFFECTIVE_DATE<='$occur_date' order by EFFECTIVE_DATE desc limit 1";
+						if($show_echo) {
+							//$sqlLog		=  ["content" 	=> $sql,				"type" 		=> "sql"];
+							$valueLog	=  ["content" 	=> "$row->NAME = $vs",	"type" 		=> "value"];
+						}
+					}
+				}
+			}
     		else if(substr($row->STATIC_VALUE,0,7)=="getData"){
     				if($row->TABLE_NAME && $row->VALUE_COLUMN)
     				{

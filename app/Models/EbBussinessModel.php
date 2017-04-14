@@ -277,23 +277,34 @@ class EbBussinessModel extends DynamicModel {
 			AuditTrail::insert($records);
 		}
 	}
-	
-	
+
 	public static function getEUTest($object_id,$occur_date) {
-		$rowTest=EuTestDataValue::where([['EU_ID',$object_id],
-				['TEST_USAGE',1]])
+		$rowTest=EuTestDataValue::where([['EU_ID',$object_id]
+		//,['TEST_USAGE',1]
+		])
 				->whereDate('EFFECTIVE_DATE', '<=', $occur_date)
 				->orderBy('EFFECTIVE_DATE','desc')
 				->first();
 		return $rowTest;
 	}
 	
+	public static function getEUTestAlloc($object_id,$occur_date,$attr) {
+		$rowTest=EuTestDataValue::where([
+			['EU_ID',$object_id],
+			['TEST_USAGE',1]
+		])
+				->whereDate('EFFECTIVE_DATE', '<=', $occur_date)
+				->orderBy('EFFECTIVE_DATE','desc')
+				->select($attr)
+				->first();
+		//\Log::info ($rowTest);
+		return $rowTest[$attr];
+	}
 	
 	public static function getCalculateFields() {
 		return null;
 	}
-	
-	
+
 	public static function getObjectTargets() {
 		return  collect([
 				(object)['value' =>	'KEEP_DISPLAY_VALUE','text' => 'Display origin value'      	],
