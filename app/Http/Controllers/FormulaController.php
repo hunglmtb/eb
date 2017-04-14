@@ -92,8 +92,7 @@ class FormulaController extends Controller {
 		return response ()->json ( $fo_group );
 	}
 	
-	public function getformulaslist(Request $request){
-		$data = $request->all ();
+	private function getFormula($param){
 		$formula = Formula::getTableName();
 		$code_flow_phase = CodeFlowPhase::getTableName();
 		$code_event_type = CodeEventType::getTableName();
@@ -101,7 +100,7 @@ class FormulaController extends Controller {
 		$formulas = DB::table ( $formula . ' AS a' )
 		->leftjoin ( $code_flow_phase . ' AS b', 'a.flow_phase', '=', 'b.ID' )
 		->leftjoin ( $code_event_type . ' AS c', 'a.event_type', '=', 'c.ID' )
-		->where(['GROUP_ID'=>$data['group_id']])
+		->where($param)
 		->orderBy('ID')->select('a.*','b.NAME as FLOW_PHASE_NAME','c.NAME as EVENT_TYPE_NAME')->get();
 		$html="";
 		$result = [];
@@ -149,15 +148,24 @@ class FormulaController extends Controller {
 				$row->sLO= "";
 			}
 // 			array_push($result, $row);
-		} 
-		
-		return response ()->json ( $formulas );
+		}
+		return $formulas;
+	}
+	
+	public function getformulaslist(Request $request){
+		$data = $request->all ();
+		$result = self::getFormula(['GROUP_ID'=>$data['group_id']]);
+		return response ()->json ( $result );
 	}
 	
 	public function getVarList(Request $request){
 		$data = $request->all ();
-		
-		$tmp = FoVar::where(['FORMULA_ID'=>$data['formula_id']])->orderBy('ORDER')->select('*')->get();
+		$result = self::getVar(['FORMULA_ID'=>$data['formula_id']]);
+		return response ()->json ( $result );
+	}
+	
+	public function getVar($condition){
+		$tmp = FoVar::where($condition)->orderBy('ORDER')->select('*')->get();
 		$s="";
 		$i=0;
 		$html="";
@@ -197,8 +205,7 @@ class FormulaController extends Controller {
 			
 			array_push($result, $row);
 		}
-		
-		return response ()->json ( $result );
+		return $result;
 	}
 	
 	public function deleteformula(Request $request){
@@ -221,6 +228,10 @@ class FormulaController extends Controller {
 	
 	public function saveformula(Request $request){
 		$data = $request->all ();
+		$new_formula_id = 0;
+		$formula_id = 0;
+		$new_var_id = 0;
+		$var_id = 0;
 		
 		$objname = "";
 		if(is_array($data['cboObjName'])&&count($data['cboObjName']) > 0){
@@ -263,19 +274,20 @@ class FormulaController extends Controller {
 				$ins = Formula::updateOrCreate ( $condition, $param );
 				$new_formula_id=$ins->ID;
 	
-				if($formula_id>0 && $new_formula_id>0)
-				{
-					$tmp = [];
-					$tmp = FoVar::where(['FORMULA_ID'=>$formula_id])
+				if($formula_id>0 && $new_formula_id>0){
+					$tmps = [];
+					$tmps = FoVar::where(['FORMULA_ID'=>$formula_id])
 					->select('NAME','STATIC_VALUE','ORDER', 'FORMULA_ID', 'OBJECT_TYPE', 'OBJECT_ID', 'TABLE_NAME', 'VALUE_COLUMN', 'OBJ_ID_COLUMN', 'DATE_COLUMN', 'FLOW_PHASE', 'EVENT_TYPE', 'ALLOC_TYPE', 'COMMENT')
-					->first ();
-					$tmp ['FORMULA_ID'] = $new_formula_id;
-					$tmp = json_decode ( json_encode ( $tmp ), true );
-					
-					$condition = array (
-							'ID' => - 1 
-					);
-					$tmp = FoVar::updateOrCreate ( $condition, $tmp );
+					->get ();
+					foreach($tmps as $tmp){
+						$tmp ['FORMULA_ID'] = $new_formula_id;
+						$tmp = json_decode ( json_encode ( $tmp ), true );
+						
+						$condition = array (
+								'ID' => - 1 
+						);
+						$tmp = FoVar::updateOrCreate ( $condition, $tmp );
+					}
 				}
 			} else {
 				if ($objname)
@@ -321,9 +333,7 @@ class FormulaController extends Controller {
 			
 			if($var_id<=0 || $saveAsNew==1)
 			{			
-				
-					
-				$pra = [
+				$param = [
 					'NAME' => $data['txtFormulaName'],
 					'STATIC_VALUE' => $data['txtStaticValue'],
 					'ORDER' => $data['txtOrder'],
@@ -340,11 +350,16 @@ class FormulaController extends Controller {
 					'COMMENT' => $data['txtComment']
 				];
 				
-				FoVar::insert($pra);
+				$condition = array (
+						'ID' => -1
+				);
+				
+				$ins = FoVar::updateOrCreate ( $condition, $param );
+				$new_var_id=$ins->ID;
 			}
 			else
 			{
-				$pra1 = [
+				$param = [
 					'NAME' => $data['txtFormulaName'],
 					'STATIC_VALUE' => $data['txtStaticValue'],
 					'ORDER' => $data['txtOrder'],
@@ -360,13 +375,21 @@ class FormulaController extends Controller {
 					'COMMENT' => $data['txtComment']
 				];
 				
-				if($str) $pra1['OBJECT_ID'] =$str;
+				if($str) $param['OBJECT_ID'] =$str;
 				
-				FoVar::where(['ID'=>$var_id])->update($pra1);
+				FoVar::where(['ID'=>$var_id])->update($param);
 			}
 		}
 		
-		return response ()->json ( "ok");
+		if($new_formula_id > 0 || $formula_id > 0){
+			$objs = self::getFormula(['a.ID'=>($new_formula_id > 0?$new_formula_id:$formula_id)]);
+			return response ()->json (['success' => true, 'data' => $objs]);
+		}
+		else if($new_var_id > 0 || $var_id > 0){
+			$objs = self::getVar(['ID'=>($new_var_id > 0?$new_var_id:$var_id)]);
+			return response ()->json (['success' => true, 'data' => $objs]);
+		}
+		return response ()->json ("error");
 	}
 	
 	public function testformula(Request $request){

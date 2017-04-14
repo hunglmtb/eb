@@ -12,6 +12,9 @@ use App\Models\PdContractCalculation;
 use App\Models\PdContractData;
 use App\Models\PdCodeContractAttribute;
 use App\Models\EbBussinessModel;
+use Symfony\Component\Debug\Exception\FatalThrowableError;
+use Symfony\Component\Debug\Exception\FatalErrorException;
+
 
 function sum(){
 	$args = func_get_args();
@@ -383,10 +386,40 @@ class FormulaHelpers {
     	$formula 	= Formula::find($formulaId);
     	return 		self::evalFormula($formula);
     }
+	
+	private static function replaceVariable($str, &$vars){
+		$words = preg_split("/[*\/+-]/", $str);
+		$ret = "";
+		$i = 0;
+		$k1 = 0;
+		while($i<count($words)){
+			$key = trim($words[$i]);
+			if(strlen($key)>0){
+				if(isset($vars[$key]))
+					$ret .= "\$vars['$key']";
+				else
+					$ret .= $words[$i];
+				
+				if($i<count($words) - 1){
+					if(strlen($words[$i+1])>0){
+						$k1 = strpos($str, $words[$i], $k1) + strlen($words[$i]);
+						$k2 = strpos($str, $words[$i+1], $k1);
+						if($k2 > $k1){
+							$ss = substr($str,$k1,$k2-$k1);
+							$ret .= $ss;
+						}
+					}
+				}
+			}
+			$i++;
+		}
+		return $ret;
+	}
     
     public static function evalFormula($formulaRow,$occur_date = null,  $show_echo = false){
 		//\Log::info($formulaRow);
 		//\Log::info("$occur_date, $show_echo");
+		$occur_date = explode(" ",$occur_date)[0];
     	$logs = false;
     	if(!$formulaRow){
     		$logs = $show_echo?["error"		=> true,"reason"	=> "Formula is out of date range"]:false;
@@ -417,13 +450,12 @@ class FormulaHelpers {
     	];
     	
     	foreach($foVars as $row ){
-    		if($show_echo) {
-    			$logs["variables"][] =  ["content" => "Processing $row->NAME=$row->STATIC_VALUE ...",	"type" => "source"];
-    			$sqlLog 	=  null;
-    			$valueLog 	=  null;
-    		}
-    		
     		array_push($vvv,$row->NAME);
+			//replece STATIC_VALUE to prevent dangerous injected php code
+    		$row->STATIC_VALUE=str_replace("{","#",$row->STATIC_VALUE);
+    		$row->STATIC_VALUE=str_replace("}","#",$row->STATIC_VALUE);
+    		$row->STATIC_VALUE=str_replace(";","#",$row->STATIC_VALUE);
+			
     		$row->STATIC_VALUE=str_replace("@OCCUR_DATE","'$occur_date'",$row->STATIC_VALUE);
     		$row->STATIC_VALUE=str_replace("@OBJECT_ID",$object_id,$row->STATIC_VALUE);
     		$row->STATIC_VALUE=str_replace("@FLOW_PHASE",$flow_phase,$row->STATIC_VALUE);
@@ -431,15 +463,26 @@ class FormulaHelpers {
     		$row->STATIC_VALUE=str_replace("#OIL#","1",$row->STATIC_VALUE);
     		$row->STATIC_VALUE=str_replace("#GAS#","2",$row->STATIC_VALUE);
     		$row->STATIC_VALUE=str_replace("#WATER#","3",$row->STATIC_VALUE);
-
-						foreach($vvv as $key => $v)
-						{
-							if(isset($vars[$v]) && !is_array($vars[$v])){
-								$row->STATIC_VALUE = str_replace("[$v]",$vars[$v],$row->STATIC_VALUE);
-							}
-						}
-						
+			
     		if(strpos($row->STATIC_VALUE,"#CODE_")!==false) $row->STATIC_VALUE=processFormulaCodeConstant($row->STATIC_VALUE);
+
+    		if($show_echo) {
+    			$logs["variables"][] =  ["content" => "Processing $row->NAME = $row->STATIC_VALUE ...",	"type" => "source"];
+    			$sqlLog 	=  null;
+    			$valueLog 	=  null;
+    		}
+    		
+			//replace calculated variables for current variable
+			$row->STATIC_VALUE = self::replaceVariable($row->STATIC_VALUE, $vars);
+			/*
+			foreach($vvv as $key => $v)
+			{
+				if(isset($vars[$v]) && !is_array($vars[$v])){
+					$row->STATIC_VALUE = str_replace("[$v]",$vars[$v],$row->STATIC_VALUE);
+				}
+			}
+			*/
+
     		if($row->IS_DATE>0){
     				$s='$'.$row->NAME."='$row->STATIC_VALUE';\$vs=\$$row->NAME;";
     				eval($s);
@@ -452,12 +495,12 @@ class FormulaHelpers {
     				$vars[$row->NAME]=$vs;
     				if($show_echo) $valueLog=  ["content" 	=> "$row->NAME = $vs",	"type" 		=> "value"];
     		}
-    		else if(strpos($row->STATIC_VALUE,"[")>0){
-    				$i=strpos($row->STATIC_VALUE,"[");
+    		else if(strpos($row->STATIC_VALUE,"#[")>0){
+    				$i=strpos($row->STATIC_VALUE,"#[");
     				$j=strpos($row->STATIC_VALUE,"]",$i);
     				if($j>$i){
     					$ms=substr($row->STATIC_VALUE,0,$i);
-    					$key=substr($row->STATIC_VALUE,$i+1,$j-$i-1);
+    					$key=substr($row->STATIC_VALUE,$i+1,$j-$i-2);
     					$vs=explode("\r",$vars[$ms]);
     					$vl="";
     					foreach($vs as $v){
@@ -511,9 +554,9 @@ class FormulaHelpers {
 						$s='$'.$row->NAME."='$t_value';\$vs=\$$row->NAME;";
 						eval($s);
 						$vars[$row->NAME]=$vs;
-						//$sql = "select $t_field from EU_TEST_DATA_VALUE where EU_ID=$object_id and EFFECTIVE_DATE<='$occur_date' order by EFFECTIVE_DATE desc limit 1";
+						$sql = "select $t_field from EU_TEST_DATA_VALUE where EU_ID=$object_id and EFFECTIVE_DATE<='$occur_date' order by EFFECTIVE_DATE desc limit 1";
 						if($show_echo) {
-							//$sqlLog		=  ["content" 	=> $sql,				"type" 		=> "sql"];
+							$sqlLog		=  ["content" 	=> $sql,				"type" 		=> "sql"];
 							$valueLog	=  ["content" 	=> "$row->NAME = $vs",	"type" 		=> "value"];
 						}
 					}
@@ -533,9 +576,9 @@ class FormulaHelpers {
 						$s='$'.$row->NAME."='$t_value';\$vs=\$$row->NAME;";
 						eval($s);
 						$vars[$row->NAME]=$vs;
-						//$sql = "select $t_field from EU_TEST_DATA_VALUE where EU_ID=$object_id and EFFECTIVE_DATE<='$occur_date' order by EFFECTIVE_DATE desc limit 1";
+						$sql = "select $t_field from EU_TEST_DATA_VALUE where EU_ID=$object_id and EFFECTIVE_DATE<='$occur_date' order by EFFECTIVE_DATE desc limit 1";
 						if($show_echo) {
-							//$sqlLog		=  ["content" 	=> $sql,				"type" 		=> "sql"];
+							$sqlLog		=  ["content" 	=> $sql,				"type" 		=> "sql"];
 							$valueLog	=  ["content" 	=> "$row->NAME = $vs",	"type" 		=> "value"];
 						}
 					}
@@ -646,7 +689,7 @@ class FormulaHelpers {
 	    							//echo "param: $pp<br>";
     							}
     						}
-    						$sql .= " limit 100";
+    						$sql .= " limit 1000";
     						if($show_echo) $sqlLog=  ["content" 	=> $sql,	"type" 		=> "sql"];
 //      						\DB::enableQueryLog();
 //      						$getDataResult = DB::table($table)->where( \DB::raw($swhere))->select($field)->skip(0)->take(100)->get();
@@ -791,13 +834,14 @@ class FormulaHelpers {
     				}
 					else{
 						$s='$'.$row->NAME."=$row->STATIC_VALUE;\$vs=\$$row->NAME;";
+						//\Log::info($s);
 						eval($s);
 						$vars[$row->NAME]=$vs;
 						if($show_echo) $valueLog=  ["content" 	=> "$row->NAME = $vs",	"type" 		=> "value"];
 					}
     			}
     			if($show_echo) {
-    				if($sqlLog) 	$logs["variables"][] 	= $sqlLog;
+    				//if($sqlLog) 	$logs["variables"][] 	= $sqlLog;
     				if($valueLog) 	$logs["variables"][] 	= $valueLog;
     			}
     	}
@@ -828,8 +872,7 @@ class FormulaHelpers {
     
     	$s='$vf = '.$f.";";
     	
-    	if($show_echo) $logs["variables"][] =  ["content" => $fDisplay,	"type" => "sql"];
-    	
+    	if($show_echo) $logs["variables"][] =  ["content" => "$fDisplay = $f",	"type" => "sql"];
     	
     	if(!(self::php_syntax_error($s)))
     	{
@@ -837,8 +880,8 @@ class FormulaHelpers {
 	    	try {
 				//\Log::info($varsKey);
     			eval($s);
-    			if($show_echo) $logs["variables"][] =  ["content" => "Final result: $vf",	"type" => "value"];
-	    	} catch( Exception $e ){
+    			if($show_echo) $logs["variables"][] =  ["content" => "Final result: $vf",	"type" => "result"];
+	    	} catch(FatalErrorException $e ){
     			\Log::info("Exception with eval $s ".$e->getMessage());
 	    		$vf=null;
     			if($show_echo) $logs["variables"][] =  ["content" => "Syntax error in final expression: $s",	"type" => "error"];

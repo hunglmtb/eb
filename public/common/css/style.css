@@ -56,22 +56,24 @@ a:hover {
 }
 
 input[type="button"],input[type="submit"], button {
-	background-color: #378de5;
+	background-color: #33b5e8;
 	display: inline-block;
+	border-radius: 3px;
 	cursor: pointer;
 	color: #ffffff;
 	font-size: 13px;
 	font-weight: bold;
-	padding: 3px 5px;
+	padding: 2px 10px;
 	border: none;
 	text-decoration: none;
+	//text-transform: uppercase;
 	text-shadow: 0px 1px 0px #528ecc;
-	min-width: 50px;
-	min-height: 25px;
+	//min-width: 80px;
+	height: 30px;
 }
 
-input[type="button"]:hover, button:hover {
-	background-color: #79bbff;
+input[type="button"]:hover,input[type="submit"]:hover, button:hover {
+	background-color: #44c7f4;
 }
 
 input[type="button"]:active, button:active {
@@ -484,8 +486,18 @@ table.dataTable thead .BAL_POWER,table.dataTable thead .ADJUST_POWER {
 #boxHelp strong{
 	font-size:26px;
 }
-#test_log .sql,#test_log .value{
-	color:blue
+#test_log .sql,#test_log .value,#test_log .result{
+	color:blue;
+	font-family:courier new;
+}
+#test_log .error{
+	color:red;
+}
+#test_log .result{
+	font-weight:bold;
+    border-top: 1px dotted gray;
+    margin-top: 6px;
+    padding-top: 6px;
 }
 
 .floatLeft, .filterContainer {

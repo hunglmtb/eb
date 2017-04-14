@@ -48,7 +48,7 @@ $filterEndDate = ['name'	=> "End date",
 <script src="/common/js/jquery-ui.min.js"></script>
 <script type="text/javascript">
 $().ready(function() {
-	$("#MySplitter").height($(window).height()-150);
+	$("#MySplitter").height($(window).height()-155);
 	$("#MySplitter").splitter({
 		type: "h", 
 	});
@@ -97,8 +97,8 @@ $(function(){
 	$( "#test_formula_occur_date" ).datepicker({
 	    changeMonth:true,
 	     changeYear:true,
-	     dateFormat:jsFormat
-	});	
+	     dateFormat:jsFormat,
+	});
 
 	$('#cboObjType').change(function(e){
 		_formula.loadObjects();
@@ -266,8 +266,7 @@ var _formula = {
 
 			$('#cboFormulaGroups').html(cbo);
 		},
-		loadFormulasList : function()
-		{
+		loadFormulasList : function(){
 		    $('#bodyFormulasList').html('');
 
 		    param = {
@@ -279,6 +278,7 @@ var _formula = {
 				$("#isvar").val(0);
 				_formula.loadVarsList(0);
 				$('#boxVarList').hide();
+				console.log("_formula.current_formula_id: "+_formula.current_formula_id);
 				var $r=$("#bodyFormulasList").find("#Qrowformula_"+_formula.current_formula_id);
 				console.log("#Qrowformula_"+_formula.current_formula_id);
 				if($r.length)
@@ -291,6 +291,45 @@ var _formula = {
 				}
 			});	
 		},
+		buildFormulaDetailHTML: function(dataobj, index){
+				var well_info="";
+				if(dataobj.OBJECT_TYPE.toUpperCase()=="ENERGY_UNIT"){
+					if(dataobj.FLOW_PHASE_NAME != undefined)
+						if(dataobj.FLOW_PHASE_NAME.length > 0)
+							well_info += (well_info==""?"":", ") + dataobj.FLOW_PHASE_NAME;
+					if(dataobj.EVENT_TYPE_NAME != undefined)
+						if(dataobj.EVENT_TYPE_NAME.length > 0)
+							well_info += (well_info==""?"":", ") + dataobj.EVENT_TYPE_NAME;
+					if(well_info!="")
+						well_info = "<br><font color='green' size='1'><b>"+well_info+"</b></font>";
+				}
+				var str = "";
+				str += "	<td id='Q_Index_"+dataobj.ID+"' align='center'>"+index+"</td>";
+				str += "	<td><span id='Q_FormulaName_"+dataobj.ID+"'>"+checkValue(dataobj.NAME,"")+"</span>";
+				str += "	<span style='display:none'>";
+				str += "		<span id='Q_TableName_"+dataobj.ID+"'>"+checkValue(dataobj.TABLE_NAME,"")+"</span>";
+				str += "		<span id='Q_ValueColumn_"+dataobj.ID+"'>"+checkValue(dataobj.VALUE_COLUMN,"")+"</span>";
+				str += "		<span id='Q_IDColumn_"+dataobj.ID+"'>"+checkValue(dataobj.OBJ_ID_COLUMN,"")+"</span>";
+				str += "		<span id='Q_ObjType_"+dataobj.ID+"'>"+checkValue(dataobj.OBJECT_TYPE,"")+"</span>";
+				str += "		<span id='Q_ObjID_"+dataobj.ID+"'>"+checkValue(dataobj.OBJECT_ID,"")+"</span>";
+				str += "		<span id='Q_FlowPhase_"+dataobj.ID+"'>"+checkValue(dataobj.FLOW_PHASE,"")+"</span>";
+				str += "		<span id='Q_AllocType_"+dataobj.ID+"'>"+checkValue(dataobj.ALLOC_TYPE,"")+"</span>";
+				str += "		<span id='Q_EventType_"+dataobj.ID+"'>"+checkValue(dataobj.EVENT_TYPE,"")+"</span>";
+				str += "		<span id='Q_PUID_"+dataobj.ID+"'>"+checkValue(dataobj.PRODUCTION_UNIT_ID,"")+"</span>";
+				str += "		<span id='Q_AreaID_"+dataobj.ID+"'>"+checkValue(dataobj.AREA_ID,"")+"</span>";
+				str += "		<span id='Q_FacilityID_"+dataobj.ID+"'>"+checkValue(dataobj.FACILITY_ID,"")+"</span>";
+				str += "		<span id='Q_DateColumn_"+dataobj.ID+"'>"+checkValue(dataobj.DATE_COLUMN,"")+"</span>";
+				str += "	</span>";
+				str += "	</td>";
+				str += "	<td>"+checkValue(dataobj.sLO,"")+well_info+"</td>";
+				str += "	<td>"+checkValue(dataobj.TABLE_NAME,"")+"</td>";
+				str += "	<td>"+checkValue(dataobj.VALUE_COLUMN,"")+"</td>";
+				str += "	<td><span id='Q_Formula_"+dataobj.ID+"' style='word-wrap: break-word;'>"+checkValue(dataobj.FORMULA,"")+"</span></td>";
+				str += "	<td><span id='Q_BeginDate_"+dataobj.ID+"'>"+formatDate(checkValue(dataobj.BEGIN_DATE,""))+"</span></td>";
+				str += "	<td><span id='Q_EndDate_"+dataobj.ID+"'>"+formatDate(checkValue(dataobj.END_DATE,""))+"</span></td>";
+				str += "	<td><span id='Q_Comment_"+dataobj.ID+"'>"+checkValue(dataobj.COMMENT,"")+"</span></td>";
+				return str;
+		},
 		showFormula : function(data){
 			var bgcolor="";
 			var str = "";
@@ -302,43 +341,8 @@ var _formula = {
 					bgcolor="#f8f8f8";
 				}
 				
-				var well_info="";
-				if(data[i].OBJECT_TYPE.toUpperCase()=="ENERGY_UNIT"){
-					if(data[i].FLOW_PHASE_NAME != undefined)
-						if(data[i].FLOW_PHASE_NAME.length > 0)
-							well_info += (well_info==""?"":", ") + data[i].FLOW_PHASE_NAME;
-					if(data[i].EVENT_TYPE_NAME != undefined)
-						if(data[i].EVENT_TYPE_NAME.length > 0)
-							well_info += (well_info==""?"":", ") + data[i].EVENT_TYPE_NAME;
-					if(well_info!="")
-						well_info = "<br><font color='green' size='1'><b>"+well_info+"</b></font>";
-				}
 				str += "<tr bgcolor="+bgcolor+" class='formula_item' rowid='"+data[i].ID+"' order='$row[ORDER]' new_order='"+checkValue(data[i].ORDER, -1)+"' id='Qrowformula_"+data[i].ID+"' style=\"cursor:pointer\" onclick=\"_formula.loadVarsList("+data[i].ID+",\'"+data[i].NAME+"')\">";
-				str += "	<td align='center'>"+(i+1)+"</td>";
-				str += "	<td><span id='Q_FormulaName_"+data[i].ID+"'>"+checkValue(data[i].NAME,"")+"</span>";
-
-				str += "	<span style='display:none'>";
-				str += "		<span id='Q_TableName_"+data[i].ID+"'>"+checkValue(data[i].TABLE_NAME,"")+"</span>";
-				str += "		<span id='Q_ValueColumn_"+data[i].ID+"'>"+checkValue(data[i].VALUE_COLUMN,"")+"</span>";
-				str += "		<span id='Q_IDColumn_"+data[i].ID+"'>"+checkValue(data[i].OBJ_ID_COLUMN,"")+"</span>";
-				str += "		<span id='Q_ObjType_"+data[i].ID+"'>"+checkValue(data[i].OBJECT_TYPE,"")+"</span>";
-				str += "		<span id='Q_ObjID_"+data[i].ID+"'>"+checkValue(data[i].OBJECT_ID,"")+"</span>";
-				str += "		<span id='Q_FlowPhase_"+data[i].ID+"'>"+checkValue(data[i].FLOW_PHASE,"")+"</span>";
-				str += "		<span id='Q_AllocType_"+data[i].ID+"'>"+checkValue(data[i].ALLOC_TYPE,"")+"</span>";
-				str += "		<span id='Q_EventType_"+data[i].ID+"'>"+checkValue(data[i].EVENT_TYPE,"")+"</span>";
-				str += "		<span id='Q_PUID_"+data[i].ID+"'>"+checkValue(data[i].PRODUCTION_UNIT_ID,"")+"</span>";
-				str += "		<span id='Q_AreaID_"+data[i].ID+"'>"+checkValue(data[i].AREA_ID,"")+"</span>";
-				str += "		<span id='Q_FacilityID_"+data[i].ID+"'>"+checkValue(data[i].FACILITY_ID,"")+"</span>";
-				str += "		<span id='Q_DateColumn_"+data[i].ID+"'>"+checkValue(data[i].DATE_COLUMN,"")+"</span>";
-				str += "	</span>";
-				str += "	</td>";
-				str += "	<td>"+checkValue(data[i].sLO,"")+well_info+"</td>";
-				str += "	<td>"+checkValue(data[i].TABLE_NAME,"")+"</td>";
-				str += "	<td>"+checkValue(data[i].VALUE_COLUMN,"")+"</td>";
-				str += "	<td><span id='Q_Formula_"+data[i].ID+"' style='word-wrap: break-word;'>"+checkValue(data[i].FORMULA,"")+"</span></td>";
-				str += "	<td><span id='Q_BeginDate_"+data[i].ID+"'>"+formatDate(checkValue(data[i].BEGIN_DATE,""))+"</span></td>";
-				str += "	<td><span id='Q_EndDate_"+data[i].ID+"'>"+formatDate(checkValue(data[i].END_DATE,""))+"</span></td>";
-				str += "	<td><span id='Q_Comment_"+data[i].ID+"'>"+checkValue(data[i].COMMENT,"")+"</span></td>";
+				str += this.buildFormulaDetailHTML(data[i], i+1);
 				str += "</tr>";
 			}
 			$('#bodyFormulasList').html(str);
@@ -368,6 +372,35 @@ var _formula = {
 			    $("#isvar").val(0);
 			});			
 		},
+		buildVarDetailHTML: function(dataobj, index){
+			var str = "";
+			str += "<td id='V_Index_"+dataobj.ID+"' align='center'>"+index+"</td><td>";
+			str += "<span id='V_FormulaName_"+dataobj.ID+"'>"+checkValue(dataobj.NAME,"")+"</span>";
+			str += "<span style='display:none'>";
+			str += "<span id='V_Order_"+dataobj.ID+"'>"+dataobj.ORDER+"</span>";
+			str += "<span id='V_StaticValue_"+dataobj.ID+"'>"+checkValue(dataobj.STATIC_VALUE,"")+"</span>";
+			str += "<span id='V_TableName_"+dataobj.ID+"'>"+checkValue(dataobj.TABLE_NAME,"")+"</span>";
+			str += "<span id='V_ValueColumn_"+dataobj.ID+"'>"+checkValue(dataobj.VALUE_COLUMN,"")+"</span>";
+			str += "<span id='V_IDColumn_"+dataobj.ID+"'>"+checkValue(dataobj.OBJ_ID_COLUMN,"")+"</span>";
+			str += "<span id='V_ObjType_"+dataobj.ID+"'>"+checkValue(dataobj.OBJECT_TYPE,"")+"</span>";
+			str += "<span id='V_ObjID_"+dataobj.ID+"'>"+checkValue(dataobj.OBJECT_ID,"")+"</span>";
+			str += "<span id='V_FlowPhase_"+dataobj.ID+"'>"+checkValue(dataobj.FLOW_PHASE,"")+"</span>";
+			str += "<span id='V_AllocType_"+dataobj.ID+"'>"+checkValue(dataobj.ALLOC_TYPE,"")+"</span>";
+			str += "<span id='V_EventType_"+dataobj.ID+"'>"+checkValue(dataobj.EVENT_TYPE,"")+"</span>";
+			str += "<span id='V_PUID_"+dataobj.ID+"'>"+checkValue(dataobj.PRODUCTION_UNIT_ID,"")+"</span>";
+			str += "<span id='V_AreaID_"+dataobj.ID+"'>"+checkValue(dataobj.AREA_ID,"")+"</span>";
+			str += "<span id='V_FacilityID_"+dataobj.ID+"'>"+checkValue(dataobj.FACILITY_ID,"")+"</span>";
+			str += "<span id='V_DateColumn_"+dataobj.ID+"'>"+checkValue(dataobj.DATE_COLUMN,"")+"</span>";
+			str += "</span>";
+			str += "</td>";
+			str += "<td>"+checkValue(dataobj.STATIC_VALUE,"")+"</td>";
+			str += "<td>"+checkValue(dataobj.OBJECT_NAME,"")+"</td>";
+			str += "<td>"+checkValue(dataobj.TABLE_NAME,"")+"</td>";
+			str += "<td>"+checkValue(dataobj.VALUE_COLUMN,"")+"</td>";
+			str += "<td><span id='V_Comment_"+dataobj.ID+"'>"+checkValue(dataobj.COMMENT,"")+"</span></td>";
+			str += "<td style='font-size:9pt'><a href=\"javascript:_formula.deleteVar("+dataobj.ID+")\">Delete</a> | <a href=\"javascript:_formula.editFormula("+dataobj.ID+",true)\">Edit</a></td>";
+			return str;
+		},
 		showVariable : function(data){
 			var str = "";
 			var new_order = 0;
@@ -376,31 +409,7 @@ var _formula = {
 				if(data[i].ORDER) new_order = data[i].ORDER; else data[i].ORDER = -1;
 				if(i % 2==0) bgcolor="#eeeeee"; else bgcolor="#f8f8f8";
 				str += "<tr class='var_item' rowid='"+data[i].ID+"' order='"+data[i].ORDER+"' new_order='"+new_order+"' bgcolor='"+bgcolor+"' id='Qrowvar_"+data[i].ID+"'>";
-				str += "<td align='center'>"+(i+1)+"</td><td>";
-				str += "<span id='V_FormulaName_"+data[i].ID+"'>"+checkValue(data[i].NAME,"")+"</span>";
-				str += "<span style='display:none'>";
-				str += "<span id='V_Order_"+data[i].ID+"'>"+data[i].ORDER+"</span>";
-				str += "<span id='V_StaticValue_"+data[i].ID+"'>"+checkValue(data[i].STATIC_VALUE,"")+"</span>";
-				str += "<span id='V_TableName_"+data[i].ID+"'>"+checkValue(data[i].TABLE_NAME,"")+"</span>";
-				str += "<span id='V_ValueColumn_"+data[i].ID+"'>"+checkValue(data[i].VALUE_COLUMN,"")+"</span>";
-				str += "<span id='V_IDColumn_"+data[i].ID+"'>"+checkValue(data[i].OBJ_ID_COLUMN,"")+"</span>";
-				str += "<span id='V_ObjType_"+data[i].ID+"'>"+checkValue(data[i].OBJECT_TYPE,"")+"</span>";
-				str += "<span id='V_ObjID_"+data[i].ID+"'>"+checkValue(data[i].OBJECT_ID,"")+"</span>";
-				str += "<span id='V_FlowPhase_"+data[i].ID+"'>"+checkValue(data[i].FLOW_PHASE,"")+"</span>";
-				str += "<span id='V_AllocType_"+data[i].ID+"'>"+checkValue(data[i].ALLOC_TYPE,"")+"</span>";
-				str += "<span id='V_EventType_"+data[i].ID+"'>"+checkValue(data[i].EVENT_TYPE,"")+"</span>";
-				str += "<span id='V_PUID_"+data[i].ID+"'>"+checkValue(data[i].PRODUCTION_UNIT_ID,"")+"</span>";
-				str += "<span id='V_AreaID_"+data[i].ID+"'>"+checkValue(data[i].AREA_ID,"")+"</span>";
-				str += "<span id='V_FacilityID_"+data[i].ID+"'>"+checkValue(data[i].FACILITY_ID,"")+"</span>";
-				str += "<span id='V_DateColumn_"+data[i].ID+"'>"+checkValue(data[i].DATE_COLUMN,"")+"</span>";
-				str += "</span>";
-				str += "</td>";
-				str += "<td>"+checkValue(data[i].STATIC_VALUE,"")+"</td>";
-				str += "<td>"+checkValue(data[i].OBJECT_NAME,"")+"</td>";
-				str += "<td>"+checkValue(data[i].TABLE_NAME,"")+"</td>";
-				str += "<td>"+checkValue(data[i].VALUE_COLUMN,"")+"</td>";
-				str += "<td><span id='V_Comment_"+data[i].ID+"'>"+checkValue(data[i].COMMENT,"")+"</span></td>";
-				str += "<td style='font-size:9pt'><a href=\"javascript:_formula.deleteVar("+data[i].ID+")\">Delete</a> | <a href=\"javascript:_formula.editFormula("+data[i].ID+",true)\">Edit</a></td>";
+				str += this.buildVarDetailHTML(data[i], i+1);
 				str += "</tr>";
 			}
 
@@ -538,15 +547,15 @@ var _formula = {
 				}
 			});
 		},
-		reloadCbo : function(id, data, vdefault){
+		reloadCbo : function(id, data){
 			$('#'+id).empty();
 			
 			var _data = data.result;
 			var cbo = '';
 			$('#'+id).html(cbo);
+			vdefault = (id=="cboUserPU"?_formula.curPUID:(id=="cboUserArea"?_formula.curAreaID:(id=="cboUserFacility"?_formula.curFacilityID:"")));
 			for(var v in _data){
-
-				cbo += ' 		<option value="' + _data[v].ID + '">' + _data[v].NAME + '</option>';
+				cbo += ' 		<option value="' + _data[v].ID + '"'+(_data[v].ID==vdefault?" selected":"")+'>' + _data[v].NAME + '</option>';
 			}
 
 			$('#'+id).html(cbo);
@@ -571,7 +580,7 @@ var _formula = {
 		saveFormula : function(saveAsNew)
 		{
 			var isVar=$("#isvar").val();
-			
+			console.debug("isVar:"+isVar);
 			param = {
 				'asnew' : (saveAsNew?'1':''),
 				//'_id' : isVar?current_var_id, //(isVar?_formula.current_var_id+'&formula_id='+_formula.current_formula_id:_formula.current_formula_id+'&group_id='+$("#cboFormulaGroups").val()),
@@ -599,21 +608,52 @@ var _formula = {
 				'txtStaticValue' : $('#txtStaticValue').val(),
 				'txtOrder' : $('#txtOrder').val()
 			};
-				
+
 				sendAjaxNotMessage('/saveformula', param, function(data){
-					if(data != "ok")
+					console.log(data);
+					//alert("logged");
+					//return;
+					if(data.success === true){
+						var obj = data.data[0];
+						var obj_id = obj.ID;
+						if(isVar == 1){
+							var index = $("#V_Index_" + obj_id).html();
+							if(index){
+								var html = _formula.buildVarDetailHTML(obj, index);
+								$("#Qrowvar_"+obj_id).html(html);
+							}
+							else{
+								_formula.reloadVarsList();
+							}
+						}
+						else{
+							var index = $("#Q_Index_" + obj_id).html();
+							if(index){
+								var html = _formula.buildFormulaDetailHTML(obj, index);
+								$("#Qrowformula_"+obj_id).html(html);
+							}
+							else{
+								_formula.loadFormulasList();
+							}
+						}
+						$("#boxEditFormula").dialog("close");
+					}
+					else
                 		alert(data);
+					/*
 					else
 					{
 						alert("Save successfully");
 						$("#boxEditFormula").dialog("close");
-						$("#isvar").val(0);
-						/* if(isVar){
+						//$("#isvar").val(0);
+						console.debug("isVar:"+isVar);
+						if(isVar == 1){
 							_formula.reloadVarsList();
-						}else{ */
+						}else{
 							_formula.loadFormulasList();
-						//}
+						}
 					}
+					*/
 				});			
 		},
 		testFormula : function(id)
@@ -646,7 +686,7 @@ var _formula = {
 			sendAjaxNotMessage('/testformula', param, function(data){
 				if(data=="need_occur_date")
 				{
-					$("#test_formula_occur_date").val("");
+					//$("#test_formula_occur_date").val("");
 					$("#div_edit_date").show();
 					$('#test_log').html("Please select occur date");
 					//alert("Please select occur date");
@@ -654,18 +694,15 @@ var _formula = {
 				}
 				else{
 					$('#test_log').html("");
-					var htmlLog = jQuery('<div/>', {});
-					if(data["error"]) htmlLog.text = data["reason"];
-					else {
-						$.each(data["variables"], function( index, value ) {
-							var lineLog = jQuery('<div/>', {
-							    text: value.content
-							});
-							lineLog.addClass(value.type);
-							lineLog.appendTo(htmlLog);
+					$.each(data["variables"], function( index, value ) {
+						var lineLog = jQuery('<div/>', {
+							text: value.content
 						});
-					}
-					htmlLog.appendTo('#test_log');
+						lineLog.addClass(value.type);
+						$('#test_log').append(lineLog);
+					});
+					if(data["error"])
+						$('#test_log').append(data["reason"]);
 				}
 			});	
 		},
