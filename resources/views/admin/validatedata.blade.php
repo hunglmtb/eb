@@ -1,16 +1,7 @@
 <?php
 $currentSubmenu = '/am/validatedata';
 $configuration	= isset($configuration)?$configuration:auth()->user()->getConfiguration();
-	$currentSubmenu ='/dc/flow';
-	$tables = ['FlowDataFdcValue'	=>['name'=>'FDC Value'],
-				'FlowDataValue'		=>['name'=>'STD Value'],
-				'FlowDataTheor'		=>['name'=>"Theoretical"],
-				'FlowDataAlloc'		=>['name'=>"Allocation"],
-				'FlowCompDataAlloc'	=>['name'=>"Composition Alloc"],
-				'FlowDataPlan'		=>['name'=>"Plan"],
-				'FlowDataForecast'	=>['name'=>"Forecast"],
-	];
- 	//$active = 0;
+
 $listControls = [ 
 		'LoProductionUnit' => array (
 				'label' => 'Production Unit',
