@@ -1318,8 +1318,8 @@ function stopWorkFlow(sId)
 
 	sendAjax('/stopWorkFlow', param, function(data){
 		_workFlow.listData(data);
+		if(parent) parent.loadTasksCounting();
 	});
-    if(parent) parent.loadTasksCounting();
 }
 
 
@@ -1331,9 +1331,8 @@ function runWorkFlow(sId)
 
 	sendAjax('/runWorkFlow', param, function(data){
 		_workFlow.listData(data);
+		if(parent) parent.loadTasksCounting();
 	});
-
-    if(parent) parent.loadTasksCounting();
 }
 
 function loadSavedDiagram(sId,sName){
