@@ -184,12 +184,6 @@ function onAfterGotDependences(elementId,element,currentId){
     	 '<tr class="DATAROW DAYROW" ><td> <label><span>Day</span></label></td><td colspan="3"> <label><input type="checkbox" name="chk_day[]" value="1"> 1</label><label><input type="checkbox" name="chk_day[]" value="2"> 2</label><label><input type="checkbox" name="chk_day[]" value="3"> 3</label><label><input type="checkbox" name="chk_day[]" value="4"> 4</label><label><input type="checkbox" name="chk_day[]" value="5"> 5</label><label><input type="checkbox" name="chk_day[]" value="6"> 6</label><label><input type="checkbox" name="chk_day[]" value="7"> 7</label><label><input type="checkbox" name="chk_day[]" value="8"> 8</label><label><input type="checkbox" name="chk_day[]" value="9"> 9</label><label><input type="checkbox" name="chk_day[]" value="10"> 10</label><label><input type="checkbox" name="chk_day[]" value="11"> 11</label><label><input type="checkbox" name="chk_day[]" value="12"> 12</label><label><input type="checkbox" name="chk_day[]" value="13"> 13</label><label><input type="checkbox" name="chk_day[]" value="14"> 14</label><label><input type="checkbox" name="chk_day[]" value="15"> 15</label><label><input type="checkbox" name="chk_day[]" value="16"> 16</label><br>'+
     	 '<label><input type="checkbox" name="chk_day[]" value="17"> 17</label><label><input type="checkbox" name="chk_day[]" value="18"> 18</label><label><input type="checkbox" name="chk_day[]" value="19"> 19</label><label><input type="checkbox" name="chk_day[]" value="20"> 20</label><label><input type="checkbox" name="chk_day[]" value="21"> 21</label><label><input type="checkbox" name="chk_day[]" value="22"> 22</label><label><input type="checkbox" name="chk_day[]" value="23"> 23</label><label><input type="checkbox" name="chk_day[]" value="24"> 24</label><label><input type="checkbox" name="chk_day[]" value="25"> 25</label><label><input type="checkbox" name="chk_day[]" value="26"> 26</label><label><input type="checkbox" name="chk_day[]" value="27"> 27</label><label><input type="checkbox" name="chk_day[]" value="28"> 28</label><label><input type="checkbox" name="chk_day[]" value="29"> 29</label><label><input type="checkbox" name="chk_day[]" value="30"> 30</label><label><input type="checkbox" name="chk_day[]" value="31"> 31</label></td></tr>'+
     	 '</tbody></table>';
-     var allocationEditableTpl	= '<table class="eventTable TASK_TABLE" style="width:inherit;min-width:350px"><tbody>'+
-		 '<tr><td><label><span>Network</span></label></td><td colspan="1"><select id="Network" class="editable-event" name="Network"></select></td></tr>'+
-		 '<tr><td><label><span>Job</span></label></td><td colspan="1"><select id="AllocJob" class="editable-event" name="AllocJob"></select></td></tr>'+
-		 '<tr class="DATE" ><td><label><span>Date</span></label></td><td colspan="1"><span class="editable-event clickable" name="DATE">set datetime</span></td></tr>'+
-		 '<tr><td><label><span>Send Logs</span></label></td><td colspan="5"><input class="editable-event eventTaskInput" name="SENDLOG"></input></td></tr>'+
-		 '</tbody></table>';
     
     var builInputElement = function (type,element) {
     	var input = "";
@@ -208,9 +202,30 @@ function onAfterGotDependences(elementId,element,currentId){
     	for (var name in types) {
     		var dependences	= [];
     		html+='<table class="eventTable '+name+'_TABLE" style="width:inherit;"><tbody>';
+    		var preRow 			= '<tr>';
+    		var afterRow 		= '</tr>';
+    		var columnNumber	= 1;
+    		if(types[name].length>5){
+    			columnNumber = 2;
+    		}
     		$.each(types[name], function(key, element) {
     	    	var widthAttr = typeof element.width == "string" ? 'width="'+element.width+'"':'';
-    			html+='<tr class="'+element.name+'" ><td><label><span>'+element.label+'</span></label></td><td '+widthAttr+'>'+builInputElement(element.type,element)+'</td></tr>';
+//    			html+='<tr><td><label><span>'+element.label+'</span></label></td><td '+widthAttr+'>'+builInputElement(element.type,element)+'</td></tr>';
+    			if(columnNumber>1){
+    				if(key%columnNumber==0){
+        				preRow		=  '<tr>';
+        				afterRow	=  '';
+        			}
+    				else if(key%columnNumber==(columnNumber-1)){
+    					preRow		=  '';
+    					afterRow	=  '</tr>';
+    				}
+    				else{
+    					preRow		=  '';
+    					afterRow	=  '';
+    				}
+    			}
+    			html+=preRow+'<td><label><span>'+element.label+'</span></label></td><td '+widthAttr+'>'+builInputElement(element.type,element)+'</td>'+afterRow;
     			if(typeof element.dependence != "undefined" && typeof element.id != "undefined" )
     				dependences.push({	source	: element.id,
     									targets	: element.dependence});

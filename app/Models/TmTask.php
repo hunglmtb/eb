@@ -1,6 +1,10 @@
 <?php 
 namespace App\Models; 
 use Carbon\Carbon;
+use App\Jobs\ScheduleRunAllocation;
+use App\Jobs\ScheduleTestJob;
+use App\Jobs\ScheduleWorkflow;
+use App\Jobs\ScheduleChekAllocation;
 
  class TmTask extends EbBussinessModel 
 { 
@@ -101,10 +105,14 @@ use Carbon\Carbon;
 					break;
 			}
 		}
+		else{
+			$should = true;
+		}
 		return $should;
 	}
 	
 	public function preRunTask($scheduleJob){
+		\Log::info("preRunTask ".$this->name);
 		$this->last_run		= Carbon::now();
 		if (!$this->count_run)$this->count_run = 0;
 		$this->count_run	= $this->count_run+1;
@@ -120,7 +128,7 @@ use Carbon\Carbon;
 			$this->result	= "ERROR : ".$result->getMessage();
 		}
 		else if(is_string($result)){
-			$this->result	= "RETURN : ".$result;
+			$this->result	= $result;
 		}
 		else{
 			$this->result	= "RETURN object ";
@@ -133,5 +141,34 @@ use Carbon\Carbon;
 			$this->status	= $this->command==self::CANCELLING?self::STOPPED:self::READY;
 		$this->command	= 0;
 		$this->save();
+		\Log::info("afterRunTask ".$this->name." result ".$this->result);
+	}
+	
+	public function stop(){
+		$scheduleJob = $this->initScheduleJob();
+		if($scheduleJob) $scheduleJob->stop();
+	}
+	
+	public function start(){
+	
+	}
+	
+	public function initScheduleJob() {
+		$scheduleJob = null;
+		switch ($this->task_code) {
+			case "ALLOC_RUN":
+				$scheduleJob = new ScheduleRunAllocation($this);
+				break;
+			case "ALLOC_CHECK":
+				$scheduleJob = new ScheduleChekAllocation($this);
+				break;
+			case "VIS_WORKFLOW":
+				$scheduleJob = new ScheduleWorkflow($this);
+				break;
+			default:
+				$scheduleJob = new ScheduleTestJob($this);
+				break;
+		}
+		return $scheduleJob;
 	}
  } 

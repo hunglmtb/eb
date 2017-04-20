@@ -1001,39 +1001,42 @@ class DVController extends CodeController {
 	}
 	
 	public function stopWorkFlow(Request $request){
-		$data = $request->all ();
-				
-		TmWorkflow::where(['ID'=>$data['ID']])->update(['ISRUN'=>'no']);
-	
-		$result = $this->getTmWorkflow();
-	
+		$data 			= $request->all ();
+		$tmWorkflowId	= $data['ID'];
+		$this->stopWorkFlowId($tmWorkflowId);
+		$result 		= $this->getTmWorkflow();
 		return response ()->json ( [
 				'result' => $result
 		] );
 	}
 	
-	public function runWorkFlow(Request $request){
-		$data = $request->all ();
+	public function stopWorkFlowId($tmWorkflowId){
+		TmWorkflow::where(['ID'=>$tmWorkflowId])->update(['ISRUN'=>'no']);
+	}
 	
-		TmWorkflow::where(['ID'=>$data['ID']])->update(['ISRUN'=>'yes']);
-		
-		\DB::enableQueryLog ();
-		$tmWorkflowTask = TmWorkflowTask::where(['WF_ID'=>$data['ID'], 'ISBEGIN'=>1])->first();		
-		\Log::info ( \DB::getQueryLog () );
-		
-		if(count($tmWorkflowTask) > 0){				
-			TmWorkflowTask::where(['WF_ID'=>$data['ID']])
-			->where('ID', '<>', $tmWorkflowTask['id'])
-			->update(['ISRUN'=>0]);
-			
+	public function runWorkFlowId($tmWorkflowId){
+		TmWorkflow::where(['ID'=>$tmWorkflowId])->update(['ISRUN'=>'yes']);
+		// 		\DB::enableQueryLog ();
+		$tmWorkflowTask = TmWorkflowTask::where(['WF_ID'=>$tmWorkflowId, 'ISBEGIN'=>1])->first();
+		// 		\Log::info ( \DB::getQueryLog () );
+		if(count($tmWorkflowTask) > 0){
+			TmWorkflowTask::where(['WF_ID'=>$tmWorkflowId])
+							->where('ID', '<>', $tmWorkflowTask['id'])
+							->update(['ISRUN'=>0]);
 			$objRun = new WorkflowProcessController(null, $tmWorkflowTask);
 			$objRun->runTask(null, $tmWorkflowTask);
-		
 			/* $job = (new runAllocation(null, $tmWorkflowTask));
-			$this->dispatch($job); */
+			 $this->dispatch($job); */
 		}
+		else \Log::info ( "TmWorkflowTask id not found");
+	}
+	
+	public function runWorkFlow(Request $request){
+		$data 			= $request->all ();
+		$tmWorkflowId	= $data['ID'];
+		$this->runWorkFlowId($tmWorkflowId);
+		$result 		= $this->getTmWorkflow();
 		
-		$result = $this->getTmWorkflow();
 		return response ()->json ( [
 				'result' => $result
 		] );

@@ -1,7 +1,7 @@
 <?php
-namespace App\Jobs;
+namespace App\Trail;
 
-class ScheduleJob extends Job {
+trait ScheduleJobTrail {
 	
 	protected $tmTask;
 	
@@ -13,9 +13,15 @@ class ScheduleJob extends Job {
 		$this->tmTask = $tmTask;
 	}
 	
- 	public function handle() {
+ 	/* public function handle() {
  		\Log::info("{$this->tmTask->ID}:{$this->tmTask->name}:{$this->tmTask->count_run}:{$this->tmTask->status}");
-	    sleep(15);
+    } */
+    
+    public function stop(){
     }
     
+    public function shouldRun(){
+//     	\Log::info("name {$this->tmTask->name} shouldRun true ");
+    	return true;
+    }
 }

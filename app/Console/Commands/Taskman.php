@@ -2,9 +2,6 @@
 
 use App\Models\TmTask;
 use Illuminate\Console\Command;
-use App\Jobs\ScheduleRunAllocation;
-use App\Jobs\ScheduleTestJob;
-use App\Jobs\ScheduleWorkflow;
 
 class Taskman extends Command {
 
@@ -31,27 +28,35 @@ class Taskman extends Command {
 	 * @return mixed
 	 */
 	public function handle() {
-// 		\Log::info('task manager');
 		$tmTasks	= TmTask::where("status",">",0)->get();
 		if ($tmTasks) {
-//  			\Log::info("id:name:count_run:status");
+		\Log::info('queue task number '.$tmTasks->count());
 			$tmTasks->each(function ($tmTask, $key){
+	  			\Log::info("key:$key name:{$tmTask->name}");
 				$scheduleJob = $this->initScheduleJob($tmTask);
 				if ($scheduleJob) {
-// 					\Log::info("check task ".$tmTask->name);
-					$tmTask->preRunTask($scheduleJob);
-					try {
- 						$result = $scheduleJob->handle();
-// 						$result	= $this->dispatch($scheduleJob);
-					} catch (\Exception $e) {
-						$result = $e;
-						\Log::info($e->getMessage());
-						\Log::info($e->getTraceAsString());
+					if ($scheduleJob->shouldRun()) {
+						$tmTask->preRunTask($scheduleJob);
+						try {
+	 						$result = $scheduleJob->handle();
+						} catch (\Exception $e) {
+							$result = $e;
+							\Log::info('exception when handle schedule job');
+							\Log::info($e->getMessage());
+							\Log::info($e->getTraceAsString());
+						}
+						$tmTask->afterRunTask($scheduleJob,$result);
 					}
-					$tmTask->afterRunTask($scheduleJob,$result);
+					else
+						\Log::info('the task is invalid for running');
 				}
-    		});
+				else
+					\Log::info('could not init schedule job');
+				
+			});
 		}
+		else 
+			\Log::info('queue task number : empty ');
 	}
 	
 	public function initScheduleJob($tmTask) {
@@ -60,17 +65,7 @@ class Taskman extends Command {
 		if ($validated){
 			$scheduleJob = $this->getScheduleJob($tmTask);
 			if (!$scheduleJob){
-				switch ($tmTask->task_code) {
-					case "ALLOC_RUN":
- 						$scheduleJob = new ScheduleRunAllocation($tmTask);
-					break;
-					case "VIS_WORKFLOW":
-						$scheduleJob = new ScheduleWorkflow($tmTask);
-					break;
-					default:
-						$scheduleJob = new ScheduleTestJob($tmTask);
-					break;
-				}
+				$scheduleJob	= $tmTask->initScheduleJob();
 			}
 		}
 		if ($scheduleJob) $this->scheduleJobs[$tmTask->ID]	= $scheduleJob;

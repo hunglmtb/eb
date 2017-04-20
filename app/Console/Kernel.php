@@ -30,7 +30,7 @@ class Kernel extends ConsoleKernel {
 		 			\Log::info("================== end ");
 		         })
 				->before(function () {
-		 			\Log::info("---------------- start ");
+		 			\Log::info("---------------------------------------- start ");
 				});
 	}
 

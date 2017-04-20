@@ -502,3 +502,5 @@ Route::post('pi', 'InterfaceController@pi');
 Route::get('dataloader',['uses' =>'InterfaceController@_indexDataloader','middleware' => 'checkRight:INT_DATA_LOADER']);
 Route::post('gettablefieldsall', 'InterfaceController@getTableFieldsAll');
 Route::post('doimportdataloader', 'InterfaceController@doImportDataLoader');
+
+Route::get('test/runschedule','TestController@runSchedule');
