@@ -50,7 +50,7 @@ function onAfterGotDependences(elementId,element,currentId){
     var startDate	= {	type		: "datetime",
 			    		name		: "STARTTIME",
 			    		collection	: "datetimeValues",
-			    		label		: "Start time"};
+			    		label		: "Begin time"};
     var endDate		= {	type		: "datetime",
 			    		name		: "ENDTIME",
 			    		collection	: "datetimeValues",
@@ -58,7 +58,7 @@ function onAfterGotDependences(elementId,element,currentId){
     var sendLog		= {	type		: "input",
 			    		name		: "SENDLOG",
 			    		width		: "200px",
-			    		label		: "Send Logs"};
+			    		label		: "emails"};
     var facility	= {	type		: "select",
 			    		name		: "FACILITY",
 			    		label		: "Facility",
