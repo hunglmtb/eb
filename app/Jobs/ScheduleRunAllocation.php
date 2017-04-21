@@ -18,7 +18,7 @@ class ScheduleRunAllocation extends runAllocation {
 			$from_date			= $taskConfig['STARTTIME']["value"];
 			$to_date			= $taskConfig['ENDTIME']["value"];
 			$param = [
-					'taskid'	=> 1,
+					'taskid'	=> -2,
 					'act'		=> "run",
 					'job_id'	=> $job_id,
 					'type'		=> $type,
