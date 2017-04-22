@@ -107,7 +107,7 @@ $.ajaxSetup({
 				$("#boxHelp").html("No data");
 				return;
 			}
-			$("#boxHelp").html('<img class="center_content" src="/wf/images/loading.gif">');
+			$("#boxHelp").html('<img class="center_content" src="/images/loading.gif">');
 			$.get("/help/"+func_code,function(data){
 // 				help="1";
 				if(typeof data == 'undefined'
@@ -132,7 +132,7 @@ $.ajaxSetup({
 				//position: ['right-4.5', 'top+20'],
 				title: "Task log"
 			});
-		$("#boxTaskLog").html('<img class="center_content" src="/wf/images/loading.gif">');
+		$("#boxTaskLog").html('<img class="center_content" src="/images/loading.gif">');
 		$.get("/common/act.php?act=get_tasklog&task_id="+task_id,function(data){
 			$("#boxTaskLog").html(data);
 		});
@@ -170,13 +170,13 @@ $.ajaxSetup({
 	</div>
 		<div id="boxWorkflow" style="display:none;width:100%;height:100%;background:#ffffff;overflow:hidden;">
 		    <iframe id="iframeWorkflow" onload="loadTasksCounting()" style="border:none;padding:0px;width:100%;height:100%;box-sizing: border-box;"></iframe>
-				<div id="wf_loading_box" style="position:absolute;left:0px;top:0px;width:100%;height:100%;background:white;opacity:0.8"><center id="notify_splash"><img class="center_content" src="/wf/images/loading.gif"></center></div>
+				<div id="wf_loading_box" style="position:absolute;left:0px;top:0px;width:100%;height:100%;background:white;opacity:0.8"><center id="notify_splash"><img class="center_content" src="/images/loading.gif"></center></div>
 		</div>
 	<!-- <div id="boxWorkflow" onclick="showWorkflow()" style="z-index:1;display:none;position:fixed;top:0px;left:0px;width:100%;height:100%;background:rgba(0,0,0,0.3)">
 		<div id="boxWorkflow_content" style="z-index:100;padding:0px;position:absolute;top: 99px;left:50%;transform: translateX(-50%);width:900px;height:520px;background:#ffffff;border:1px solid #333333;border-radius:0px;box-shadow:0px 5px 20px rgba(0,0,0,0.4)">
 			<iframe id="iframeWorkflow" style="border:none;padding:0px;width:100%;height:100%;box-sizing: border-box;"></iframe>
-			<div id="wf_loading_box" style="position:absolute;left:0px;top:0px;width:100%;height:100%;background:white;opacity:0.5"><center id="notify_splash"><img style="position: absolute;top: 50%;left:50%;transform: translate(-50%,-50%);" src="/wf/images/loading.gif"></center></div>
+			<div id="wf_loading_box" style="position:absolute;left:0px;top:0px;width:100%;height:100%;background:white;opacity:0.5"><center id="notify_splash"><img style="position: absolute;top: 50%;left:50%;transform: translate(-50%,-50%);" src="/images/loading.gif"></center></div>
 		</div>
 	</div> -->
-	<div id="boxHelp" style="display:none;width:100%;height:100%"><img class="center_content" src="/wf/images/loading.gif"></div>
+	<div id="boxHelp" style="display:none;width:100%;height:100%"><img class="center_content" src="/images/loading.gif"></div>
 	<div id="boxTaskLog" style="display:none;z-index:100;width:100%;height:100%"></div>

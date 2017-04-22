@@ -948,25 +948,25 @@ class DVController extends CodeController {
 			
 			TmWorkflow::where(['ID'=>$wfid])->update(['DATA'=>$key]);
 			
-			$objwf_task['ID'] = 0;
+			$objwf_task['id'] = 0;
 			if(!empty($tasks->id)){
 				$objwf_task['ID'] = (int)$tasks->id;
 			}
-			$objwf_task['WF_ID'] = $wfid;
-			$objwf_task['NAME'] = addslashes($tasks->name);
-			$objwf_task['RUNBY'] = addslashes($tasks->runby);
-			$objwf_task['USER'] = addslashes($tasks->user);
-			$objwf_task['TASK_GROUP'] = addslashes($tasks->task_group);
-			$objwf_task['TASK_CODE'] = addslashes($tasks->task_code);
+			$objwf_task['wf_id'] = $wfid;
+			$objwf_task['name'] = addslashes($tasks->name);
+			$objwf_task['runby'] = addslashes($tasks->runby);
+			$objwf_task['user'] = addslashes($tasks->user);
+			$objwf_task['task_group'] = addslashes($tasks->task_group);
+			$objwf_task['task_code'] = addslashes($tasks->task_code);
 			
 			if(isset($data['taskconfig'])){
-				$objwf_task['TASK_CONFIG'] = $data['taskconfig'];
+				$objwf_task['task_config'] = $data['taskconfig'];
 				
-				$objwf_task['NEXT_TASK_CONFIG'] = addslashes(str_replace('NaN,','',$tasks->next_task_config));
-				$objwf_task['PREV_TASK_CONFIG'] = addslashes(str_replace('NaN,','',$tasks->prev_task_config));
+				$objwf_task['next_task_config'] = addslashes(str_replace('NaN,','',$tasks->next_task_config));
+				$objwf_task['prev_task_config'] = addslashes(str_replace('NaN,','',$tasks->prev_task_config));
 				
 				$conTask = array (
-						'ID' => $objwf_task['ID']
+						'id' => $objwf_task['id']
 				);
 					
 				//\DB::enableQueryLog ();

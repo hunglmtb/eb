@@ -71,6 +71,7 @@ var _workFlow = {
 			_workFlow.clearGraph();
 			setCurrentDiagramId(0);
 		    setCurrentDiagramName(defaultDiagramName);
+			setCurrentDiagramIntro(defaultDiagramIntro);
 		},
 
 		loadWorkFlow : function()
@@ -180,9 +181,10 @@ var _workFlow = {
 		listUser : function(){
 			$('.chk').each(function(){ this.checked = false; });
 			$( "#listUser" ).dialog({
-				width: 550,
-				modal: false,
-				title: "Select user",
+				width: 400,
+				height: 450,
+				modal: true,
+				title: "Select users",
 				buttons: {
 					Save: function() {
 						chk=document.getElementsByName('chk');
@@ -230,7 +232,8 @@ var _workFlow = {
 				//	$('#task_config').html(data);
 				//	return;
 				//}
-				alert(data.result.value);
+				//alert(data.result.value);
+				console.log(data);
 				switch(data.result.value){
 					case 'ALLOC_CHECK':
 					case 'ALLOC_RUN':
@@ -1104,6 +1107,24 @@ function onInit(editor){
 			curent_object=null;
 	});
 
+    // Changes the zoom on mouseWheel events
+    mxEvent.addMouseWheelListener(function (evt, up)
+    {
+        if (!mxEvent.isConsumed(evt))
+        {
+            if (up)
+            {
+                editor.execute('zoomIn');
+            }
+            else
+            {
+                editor.execute('zoomOut');
+            }
+
+            mxEvent.consume(evt);
+        }
+    });
+
     //outlineContainer
     if(!outline){
         outline = document.getElementById('outlineContainer');
@@ -1134,7 +1155,10 @@ function buttonActionClick(act){
     	}else{ 
         	ed.execute(act);
     	}
-    } 
+    }
+	if(act=="actualSize"){
+		ed.graph.center(true,true);
+	}
 }
 
 function changeLineColor(color)
@@ -1229,6 +1253,7 @@ function loadTaskConfig(){
 	}
 
 	sendAjaxNotMessage('/loadConfigTask', param, function(_data){
+		console.log(_data);
 		if(_data.flowTask != null){
 			_workFlow.setDataTaskConfig(_data);
 		}	
@@ -1405,21 +1430,6 @@ function listSubnetworkClick()
     }
 }
 
-function saveDiagram(saveAs){
-    try{
-		$("#listSavedDiagrams").html("Loading...");
-		
-		if(saveAs == "addNew"){
-			loadSaveForm(true);
-		}else{
-			loadSaveForm(false);
-		}
-    }
-    catch(err){
-        alert(err.message);
-    }
-}
-
 function doButtonSaveWorkflow(isSaveAs){
 	currentDiagramName=$('#txt_name').val();
 	currentDiagramId=$('#txt_id').val();
@@ -1483,14 +1493,14 @@ function doButtonSaveWorkflow(isSaveAs){
 		'KEY' : currentXML
 	}
 
+		console.log(param);
 	sendAjax('/workflowSave', param, function(data){
 		if($.isNumeric(data)){
 			setCurrentDiagramId(data);
 			loadSavedDiagram(data);
 		}
 		setCurrentDiagramName(currentDiagramName);
-		$("#boxSavedDiagrams").html('');
-		$("#boxSavedDiagrams").dialog('close');
+		alert("Complete");
 	});
 }
 
@@ -1671,28 +1681,27 @@ function showBoxTaskConfig(){
 					}
 					
 					task_config=JSON.stringify(task_config);
-					console.log(task_config);
 					curent_object.setAttribute('task_config',task_config);
 					
 					task=JSON.stringify(_task);
 					curent_object.setAttribute('task_data',task);
 					curent_object.setAttribute('label',$('#txt_task_name').val());
 					if(currentDiagramName=="" || !currentDiagramName || currentDiagramName ==defaultDiagramName){
-						
+						alert("Error: Workflow name is undefined");
 					}else{
 						var enc = new mxCodec();
 						var node = enc.encode(ed.graph.getModel());
 						var currentXML=mxUtils.getPrettyXml(node);
-						
 						param = {
 							'wfid' : currentDiagramId,
 							'taskdata' : task,
 							'taskconfig' : task_config,
 							'key' : currentXML
 						}
-
+						console.log(param);
 						sendAjax('/workflowSaveTask', param, function(_data){
 							var data = _data.result;
+							console.log(_data);
 							curent_object.setAttribute('task_id',data.ID);
 						});
 					}
@@ -1782,16 +1791,19 @@ function upfile(){
 	}
 }
 
-function loadSaveForm(isAddNew){
-	var title=(isAddNew?'Add New Workflow':'Edit Workflow: '+currentDiagramName);
+function saveDiagram(){
 	$( "#frmSave" ).dialog({
 		height: 270,
 		width: 550,
 		modal: true,
-		title: title,
+		title: "Save workflow",
 		buttons: {
 			Save: function() {
-				doButtonSaveWorkflow(isAddNew);
+				doButtonSaveWorkflow(false);
+				$( this ).dialog( "close" );
+			},
+			"Save as": function() {
+				doButtonSaveWorkflow(true);
 				$( this ).dialog( "close" );
 			},
 			Close: function() {
@@ -1881,15 +1893,8 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 											class="xbutton">New</td>
 										<td onClick="_workFlow.loadWorkFlow()" width="60"
 											class="xbutton">Load</td>
-										<td id="buttonSave" onMouseOut="$('#buttonSaveAs').hide();"
-											onMouseOver="$('#buttonSaveAs').show();" width="60"
-											class="xbutton"><span id="buttonSave_text"
-											onClick="saveDiagram()">Save</span>
-											<div class="xbutton"
-												style="padding: 5px; display: none; position: absolute; width: 64px; z-index: 101; margin-left: 0px; margin-top: 4px; border: 2px solid #666"
-												id="buttonSaveAs">
-												<span onClick="saveDiagram('addNew')">Save As</span>
-											</div></td>
+										<td onClick="saveDiagram()" width="60" id="buttonSave"
+											class="xbutton">Save</td>
 										<td onClick="buttonActionClick('print')" width="60"
 											class="xbutton">Print</td>
 										<td style="display: none"
@@ -2324,13 +2329,13 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 	<div id="frmSave" style="display: none;">
 		<div class="form-group">
 			<input type="hidden" id="txt_id" value=''> <label
-				class='col-md-2 control-label'>Name*:</label>
+				class='col-md-2 control-label'>Name (*)</label>
 			<div class="col-md-10">
 				<input type="text" class="form-control" id="txt_name">
 			</div>
 		</div>
-		<div class="form-group">
-			<label class='col-md-2 control-label'>Description:</label>
+		<div class="form-group" style="margin-top:5px">
+			<label class='col-md-2 control-label'>Description</label>
 			<div class="col-md-10">
 				<textarea class='form-control' rows=3 id='txt_intro'></textarea>
 			</div>
