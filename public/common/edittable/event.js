@@ -12,6 +12,32 @@ function onAfterGotDependences(elementId,element,currentId){
 (function ($) {
     "use strict";
     
+    var timeConfigEditableTpl	= '<table class="eventTable EVENT_TABLE TIMECONFIG" style="width:inherit;"><tbody><tr><td><label><span>Recurring</span></label></td><td><select class="editable-event" name="FREQUENCEMODE"><option value="ONCETIME">ONCETIME</option><option value="DAILY">DAILY</option><option value="WEEKLY">WEEKLY</option><option value="MONTHLY">MONTHLY</option></select></td></tr>'+
+	 '<tr class="INTERVALROW" ><td><label><span>Recur every</span></label></td><td><input class="editable-event" type="number" name="INTERVALDAY"><label><span> day(s)</span></label></td></tr>'+
+	 '<tr class="STARTTIMEROW" ><td><label><span>Start Time</span></label></td><td><span class="editable-event clickable" name="StartTime">set datetime</span></td></tr>'+
+	 '<tr class="ENDTIMEROW" ><td><label><span>End Time</span></label></td><td><span class="editable-event clickable" type="text" name="EndTime">set datetime</span></td></tr>'+
+	 '<tr class="DATAROW WEEKDAYROW" ><td><label><span> Week days</span></label></td><td colspan="3"> <label class="weekDayLabel"><input class="dhx_repeat_checkbox" type="checkbox" name="week_day" value="1">Monday </label><label class="weekDayLabel"><input class="dhx_repeat_checkbox" type="checkbox" name="week_day" value="2">Tuesday </label><label class="weekDayLabel"><input class="dhx_repeat_checkbox" type="checkbox" name="week_day" value="3">Wednesday</label> <label class="weekDayLabel"><input class="dhx_repeat_checkbox" type="checkbox" name="week_day" value="4">Thursday </label><br><label class="weekDayLabel"><input class="dhx_repeat_checkbox" type="checkbox" name="week_day" value="5">Friday </label><label class="weekDayLabel"><input class="dhx_repeat_checkbox" type="checkbox" name="week_day" value="6">Saturday </label><label class="weekDayLabel"><input class="dhx_repeat_checkbox" type="checkbox" name="week_day" value="0">Sunday</label></td></tr>'+
+	 '<tr class="DATAROW MONTHROW" ><td><label><span> Month</span></label></td><td colspan="3"> <label><input type="checkbox" name="chk_month[]" value="1"> 1</label><label><input type="checkbox" name="chk_month[]" value="2"> 2</label><label><input type="checkbox" name="chk_month[]" value="3"> 3</label><label><input type="checkbox" name="chk_month[]" value="4"> 4</label><label><input type="checkbox" name="chk_month[]" value="5"> 5</label><label><input type="checkbox" name="chk_month[]" value="6"> 6</label><label><input type="checkbox" name="chk_month[]" value="7"> 7</label><label><input type="checkbox" name="chk_month[]" value="8"> 8</label><label><input type="checkbox" name="chk_month[]" value="9"> 9</label><label><input type="checkbox" name="chk_month[]" value="10"> 10</label><label><input type="checkbox" name="chk_month[]" value="11"> 11</label><label><input type="checkbox" name="chk_month[]" value="12"> 12</label></td></tr>'+
+	 '<tr class="DATAROW DAYROW" ><td> <label><span>Day</span></label></td><td colspan="3"> <label><input type="checkbox" name="chk_day[]" value="1"> 1</label><label><input type="checkbox" name="chk_day[]" value="2"> 2</label><label><input type="checkbox" name="chk_day[]" value="3"> 3</label><label><input type="checkbox" name="chk_day[]" value="4"> 4</label><label><input type="checkbox" name="chk_day[]" value="5"> 5</label><label><input type="checkbox" name="chk_day[]" value="6"> 6</label><label><input type="checkbox" name="chk_day[]" value="7"> 7</label><label><input type="checkbox" name="chk_day[]" value="8"> 8</label><label><input type="checkbox" name="chk_day[]" value="9"> 9</label><label><input type="checkbox" name="chk_day[]" value="10"> 10</label><label><input type="checkbox" name="chk_day[]" value="11"> 11</label><label><input type="checkbox" name="chk_day[]" value="12"> 12</label><label><input type="checkbox" name="chk_day[]" value="13"> 13</label><label><input type="checkbox" name="chk_day[]" value="14"> 14</label><label><input type="checkbox" name="chk_day[]" value="15"> 15</label><label><input type="checkbox" name="chk_day[]" value="16"> 16</label><br>'+
+	 '<label><input type="checkbox" name="chk_day[]" value="17"> 17</label><label><input type="checkbox" name="chk_day[]" value="18"> 18</label><label><input type="checkbox" name="chk_day[]" value="19"> 19</label><label><input type="checkbox" name="chk_day[]" value="20"> 20</label><label><input type="checkbox" name="chk_day[]" value="21"> 21</label><label><input type="checkbox" name="chk_day[]" value="22"> 22</label><label><input type="checkbox" name="chk_day[]" value="23"> 23</label><label><input type="checkbox" name="chk_day[]" value="24"> 24</label><label><input type="checkbox" name="chk_day[]" value="25"> 25</label><label><input type="checkbox" name="chk_day[]" value="26"> 26</label><label><input type="checkbox" name="chk_day[]" value="27"> 27</label><label><input type="checkbox" name="chk_day[]" value="28"> 28</label><label><input type="checkbox" name="chk_day[]" value="29"> 29</label><label><input type="checkbox" name="chk_day[]" value="30"> 30</label><label><input type="checkbox" name="chk_day[]" value="31"> 31</label></td></tr>'+
+	 '</tbody></table>';
+    
+    var event			= [{	type		: "select",
+								name		: "FREQUENCEMODE",
+								label		: "Recurring",
+								collection	: [	{ID	: "ONCETIME"	, NAME	: "ONCETIME" },
+									          	{ID	: "DAILY"		, NAME	: "DAILY" },
+									          	{ID	: "WEEKLY"		, NAME	: "WEEKLY" },
+									          	{ID	: "MONTHLY"		, NAME	: "MONTHLY" },
+									          	],
+								display		: true,
+							},
+							{	type		: "input",
+					    		name		: "INTERVALDAY",
+					    		width		: "200px",
+					    		label		: "Recur every day(s)"
+			    			}
+    						];
     var datetimeValues	= [
                       	   	{ID	: "THIS_DAY"			, NAME	: "THIS DAY" },
 				          	{ID	: "MONTH_BEGIN_DAY"		, NAME	: "MONTH_BEGIN_DAY" },
@@ -24,7 +50,7 @@ function onAfterGotDependences(elementId,element,currentId){
     var startDate	= {	type		: "datetime",
 			    		name		: "STARTTIME",
 			    		collection	: "datetimeValues",
-			    		label		: "Start time"};
+			    		label		: "Begin time"};
     var endDate		= {	type		: "datetime",
 			    		name		: "ENDTIME",
 			    		collection	: "datetimeValues",
@@ -32,7 +58,7 @@ function onAfterGotDependences(elementId,element,currentId){
     var sendLog		= {	type		: "input",
 			    		name		: "SENDLOG",
 			    		width		: "200px",
-			    		label		: "Send Logs"};
+			    		label		: "emails"};
     var facility	= {	type		: "select",
 			    		name		: "FACILITY",
 			    		label		: "Facility",
@@ -89,6 +115,7 @@ function onAfterGotDependences(elementId,element,currentId){
     		collection	: "codeEventType",
 	    };
     var types = {
+//		EVENT			: event,
 		ALLOC_CHECK		: checkAllocation,
     	ALLOC_RUN		: runAllocation,
     	VIS_WORKFLOW	: [facility,
@@ -175,16 +202,6 @@ function onAfterGotDependences(elementId,element,currentId){
     							], 
     };
     
-    var timeConfigEditableTpl	= '<table class="eventTable EVENT_TABLE" style="width:inherit;"><tbody><tr><td><label><span>Recurring</span></label></td><td><select class="editable-event" name="FREQUENCEMODE"><option value="ONCETIME">ONCETIME</option><option value="DAILY">DAILY</option><option value="WEEKLY">WEEKLY</option><option value="MONTHLY">MONTHLY</option></select></td></tr>'+
-		 '<tr class="INTERVALROW" ><td><label><span>Recur every</span></label></td><td><input class="editable-event" type="number" name="INTERVALDAY"><label><span> day(s)</span></label></td></tr>'+
-    	 '<tr class="STARTTIMEROW" ><td><label><span>Start Time</span></label></td><td><span class="editable-event clickable" name="STARTTIME">set datetime</span></td></tr>'+
-    	 '<tr class="ENDTIMEROW" ><td><label><span>End Time</span></label></td><td><span class="editable-event clickable" type="text" name="ENDTIME">set datetime</span></td></tr>'+
-    	 '<tr class="DATAROW WEEKDAYROW" ><td><label><span> Week days</span></label></td><td colspan="3"> <label class="weekDayLabel"><input class="dhx_repeat_checkbox" type="checkbox" name="week_day" value="1">Monday </label><label class="weekDayLabel"><input class="dhx_repeat_checkbox" type="checkbox" name="week_day" value="2">Tuesday </label><label class="weekDayLabel"><input class="dhx_repeat_checkbox" type="checkbox" name="week_day" value="3">Wednesday</label> <label class="weekDayLabel"><input class="dhx_repeat_checkbox" type="checkbox" name="week_day" value="4">Thursday </label><br><label class="weekDayLabel"><input class="dhx_repeat_checkbox" type="checkbox" name="week_day" value="5">Friday </label><label class="weekDayLabel"><input class="dhx_repeat_checkbox" type="checkbox" name="week_day" value="6">Saturday </label><label class="weekDayLabel"><input class="dhx_repeat_checkbox" type="checkbox" name="week_day" value="0">Sunday</label></td></tr>'+
-    	 '<tr class="DATAROW MONTHROW" ><td><label><span> Month</span></label></td><td colspan="3"> <label><input type="checkbox" name="chk_month[]" value="1"> 1</label><label><input type="checkbox" name="chk_month[]" value="2"> 2</label><label><input type="checkbox" name="chk_month[]" value="3"> 3</label><label><input type="checkbox" name="chk_month[]" value="4"> 4</label><label><input type="checkbox" name="chk_month[]" value="5"> 5</label><label><input type="checkbox" name="chk_month[]" value="6"> 6</label><label><input type="checkbox" name="chk_month[]" value="7"> 7</label><label><input type="checkbox" name="chk_month[]" value="8"> 8</label><label><input type="checkbox" name="chk_month[]" value="9"> 9</label><label><input type="checkbox" name="chk_month[]" value="10"> 10</label><label><input type="checkbox" name="chk_month[]" value="11"> 11</label><label><input type="checkbox" name="chk_month[]" value="12"> 12</label></td></tr>'+
-    	 '<tr class="DATAROW DAYROW" ><td> <label><span>Day</span></label></td><td colspan="3"> <label><input type="checkbox" name="chk_day[]" value="1"> 1</label><label><input type="checkbox" name="chk_day[]" value="2"> 2</label><label><input type="checkbox" name="chk_day[]" value="3"> 3</label><label><input type="checkbox" name="chk_day[]" value="4"> 4</label><label><input type="checkbox" name="chk_day[]" value="5"> 5</label><label><input type="checkbox" name="chk_day[]" value="6"> 6</label><label><input type="checkbox" name="chk_day[]" value="7"> 7</label><label><input type="checkbox" name="chk_day[]" value="8"> 8</label><label><input type="checkbox" name="chk_day[]" value="9"> 9</label><label><input type="checkbox" name="chk_day[]" value="10"> 10</label><label><input type="checkbox" name="chk_day[]" value="11"> 11</label><label><input type="checkbox" name="chk_day[]" value="12"> 12</label><label><input type="checkbox" name="chk_day[]" value="13"> 13</label><label><input type="checkbox" name="chk_day[]" value="14"> 14</label><label><input type="checkbox" name="chk_day[]" value="15"> 15</label><label><input type="checkbox" name="chk_day[]" value="16"> 16</label><br>'+
-    	 '<label><input type="checkbox" name="chk_day[]" value="17"> 17</label><label><input type="checkbox" name="chk_day[]" value="18"> 18</label><label><input type="checkbox" name="chk_day[]" value="19"> 19</label><label><input type="checkbox" name="chk_day[]" value="20"> 20</label><label><input type="checkbox" name="chk_day[]" value="21"> 21</label><label><input type="checkbox" name="chk_day[]" value="22"> 22</label><label><input type="checkbox" name="chk_day[]" value="23"> 23</label><label><input type="checkbox" name="chk_day[]" value="24"> 24</label><label><input type="checkbox" name="chk_day[]" value="25"> 25</label><label><input type="checkbox" name="chk_day[]" value="26"> 26</label><label><input type="checkbox" name="chk_day[]" value="27"> 27</label><label><input type="checkbox" name="chk_day[]" value="28"> 28</label><label><input type="checkbox" name="chk_day[]" value="29"> 29</label><label><input type="checkbox" name="chk_day[]" value="30"> 30</label><label><input type="checkbox" name="chk_day[]" value="31"> 31</label></td></tr>'+
-    	 '</tbody></table>';
-    
     var builInputElement = function (type,element) {
     	var input = "";
     	var idAttr = typeof element.id == "string" ? 'id="'+element.id+'"':'';
@@ -198,10 +215,10 @@ function onAfterGotDependences(elementId,element,currentId){
     };
     
     var buildEditableTemplate = function (types) {
-    	var html = "";
+    	var html = timeConfigEditableTpl;
     	for (var name in types) {
     		var dependences	= [];
-    		html+='<table class="eventTable '+name+'_TABLE" style="width:inherit;"><tbody>';
+    		html+='<table class="eventTable '+name+'_TABLE TASKCONFIG" style="width:inherit;"><tbody>';
     		var preRow 			= '<tr>';
     		var afterRow 		= '</tr>';
     		var columnNumber	= 1;
@@ -349,8 +366,8 @@ function onAfterGotDependences(elementId,element,currentId){
 				case "EVENT" :
 					this.$select.filter('[name="FREQUENCEMODE"]').val(value.FREQUENCEMODE);
 					this.$input.filter('[name="INTERVALDAY"]').val(value.INTERVALDAY);
-					this.renderDatetimeValue('STARTTIME',value.STARTTIME);
-					this.renderDatetimeValue('ENDTIME',value.ENDTIME);
+					this.originRenderDateTimePicker('StartTime',value.StartTime);
+					this.originRenderDateTimePicker('EndTime',value.EndTime);
 					this.renderValue('.WEEKDAYROW',value.WEEKDAY);
 					this.renderValue('.DAYROW',value.MONTHDAY);
 					this.renderValue('.MONTHROW',value.MONTH);
@@ -367,21 +384,23 @@ function onAfterGotDependences(elementId,element,currentId){
        renderElement: function(value,element) {
     	   switch(element.type){
 			case "select" :
-				var select = this.$select.filter('[name="'+element.name+'"]');
+				var select 		= this.$select.filter('[name="'+element.name+'"]');
+				var collection 	= [];
 				if(typeof this.collection =="undefined" ) this.collection = [];
 				this.collection[element.collection]	= typeof value[element.collection] == "object" ? value[element.collection]: this.collection[element.collection];
 				if(element.hasAll==true)
 					select.append($("<option></option>")
 						.attr("value",0)
-						.text("(All)")); 
+						.text("(All)"));
 				if(typeof this.collection[element.collection] == "object"){
-					$.each(this.collection[element.collection], function(key, item) {   
-						select.append($("<option></option>")
-								.attr("value",item.ID)
-								.text(item.NAME)); 
-					});
-					select.val(value[element.name]);
+					collection	= this.collection[element.collection];
 				}
+				$.each(collection, function(key, item) {   
+					select.append($("<option></option>")
+							.attr("value",item.ID)
+							.text(item.NAME)); 
+				});
+				select.val(value[element.name]);
 				select.attr("originValue",value[element.name]);
 				break;
 			case "datetime" :
@@ -404,13 +423,13 @@ function onAfterGotDependences(elementId,element,currentId){
 					var weekdays = this.extractValue('.WEEKDAYROW');
 					var months 	= this.extractValue('.MONTHROW');
 					var days 	= this.extractValue('.DAYROW');
-					var startTime= this.getDatetimeValue('STARTTIME');
-					var endTime	= this.getDatetimeValue('ENDTIME');
+					var startTime= this.originGetDatetimeValue('StartTime');
+					var endTime	= this.originGetDatetimeValue('EndTime');
 					value	= {
 							FREQUENCEMODE	: this.$select.filter('[name="FREQUENCEMODE"]').val(),
 							INTERVALDAY		: this.$input.filter('[name="INTERVALDAY"]').val(),
-							STARTTIME		: startTime,
-							ENDTIME			: endTime,
+							StartTime		: startTime,
+							EndTime			: endTime,
 							WEEKDAY			: weekdays,
 							MONTHDAY		: days,
 							MONTH			: months,
@@ -453,7 +472,12 @@ function onAfterGotDependences(elementId,element,currentId){
     	   var value= datetime.isValid()?datetime.format(configuration.time.DATETIME_FORMAT_UTC):null;
            return value;
        },
-       
+       originGetDatetimeValue: function(filterName) {
+    	   var timeText	= this.$span.filter('[name="'+filterName+'"]').text();
+    	   var datetime	= moment.utc(timeText,configuration.time.DATETIME_FORMAT);
+    	   var value= datetime.isValid()?datetime.format(configuration.time.DATETIME_FORMAT_UTC):null;
+           return value;
+       },
        extractValue: function(filterName) {
     	   var weekdays =$.grep(this.$rows.filter(filterName).find('td input'), function(object){ 
              	 return $(object).is(":checked");
@@ -465,8 +489,13 @@ function onAfterGotDependences(elementId,element,currentId){
            return value;
        },
        renderDatetimeValue: function(filterName,value) {
-    	   var datetime	= moment.utc(value,configuration.time.DATETIME_FORMAT_UTC);
-    	   if(datetime.isValid()) this.$span.filter('[name="'+filterName+'_PICKER"]').text(datetime.format(configuration.time.DATETIME_FORMAT));
+    	   var datetime	= moment.utc(value,configuration.time.DATE_FORMAT_UTC);
+    	   if(datetime.isValid()) this.$span.filter('[name="'+filterName+'_PICKER"]').text(datetime.format(configuration.time.DATE_FORMAT));
+    	   
+       },
+       originRenderDatetimeValue: function(filterName,value) {
+    	   var datetime	= moment.utc(value,configuration.time.DATE_FORMAT_UTC);
+    	   if(datetime.isValid()) this.$span.filter('[name="'+filterName+'"]').text(datetime.format(configuration.time.DATE_FORMAT));
     	   
        },
        renderDatetimeInput: function(filterName,datetimeValue) {
@@ -534,16 +563,34 @@ function onAfterGotDependences(elementId,element,currentId){
     			   showbuttons		: true,
     			   mode				: 'popup',
     			   placement 		: "bottom",
-    			   type				: 'datetime',
-    			   format			: configuration.picker.DATETIME_FORMAT_UTC,
-    			   viewformat		: configuration.picker.DATETIME_FORMAT,
-    			   datetimepicker	: {
+    			   type				: 'date',
+    			   format			: configuration.picker.DATE_FORMAT_UTC,
+    			   viewformat		: configuration.picker.DATE_FORMAT,
+    			   /*datetimepicker	: {
     				   minuteStep :5,
     				   showMeridian : true,
-    			   },
+    			   },*/
     	   };
     	   var datetimeInputs	= this.$span.filter('[name="'+filterQuery+'_PICKER"]');
     	   datetimeInputs.editable(editable);
+    	   
+       },
+       originRenderDateTimePicker: function(filterQuery,value) {
+    	   var  editable = {
+    			   title			: 'edit',
+    			   clear			: false,
+    			   emptytext		: '',
+    			   onblur			: 'submit',
+    			   showbuttons		: true,
+    			   mode				: 'popup',
+    			   placement 		: "bottom",
+    			   type				: 'date',
+    			   format			: configuration.picker.DATE_FORMAT_UTC,
+    			   viewformat		: configuration.picker.DATE_FORMAT,
+    	   };
+    	   var datetimeInputs	= this.$span.filter('[name="'+filterQuery+'"]');
+    	   datetimeInputs.editable(editable);
+    	   this.originRenderDatetimeValue(filterQuery,value);
     	   
        },
        activateJobEvent: function() {
