@@ -424,7 +424,7 @@ function onAfterGotDependences(elementId,element,currentId){
 					var months 	= this.extractValue('.MONTHROW');
 					var days 	= this.extractValue('.DAYROW');
 					var startTime= this.originGetDatetimeValue('StartTime');
-					var endTime	= this.originGetDatetimeValue('ENDTIME');
+					var endTime	= this.originGetDatetimeValue('EndTime');
 					value	= {
 							FREQUENCEMODE	: this.$select.filter('[name="FREQUENCEMODE"]').val(),
 							INTERVALDAY		: this.$input.filter('[name="INTERVALDAY"]').val(),
