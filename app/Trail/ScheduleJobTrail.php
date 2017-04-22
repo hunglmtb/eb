@@ -13,10 +13,6 @@ trait ScheduleJobTrail {
 		$this->tmTask = $tmTask;
 	}
 	
- 	/* public function handle() {
- 		\Log::info("{$this->tmTask->ID}:{$this->tmTask->name}:{$this->tmTask->count_run}:{$this->tmTask->status}");
-    } */
-    
     public function stop(){
     }
     

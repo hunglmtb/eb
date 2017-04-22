@@ -36,6 +36,7 @@ class ScheduleWorkflow extends Job {
 		if ($tmWorkflowId) {
 			$dvController = new DVController;
 			$dvController->stopWorkFlowId($tmWorkflowId);
+			$this->tmTask->updateStopStatus();
 			return "stop success";
 		}
 		return "stop nothing : TmWorkflow id is not specified";

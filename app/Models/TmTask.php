@@ -5,6 +5,10 @@ use App\Jobs\ScheduleRunAllocation;
 use App\Jobs\ScheduleTestJob;
 use App\Jobs\ScheduleWorkflow;
 use App\Jobs\ScheduleChekAllocation;
+use App\Jobs\ScheduleFlowJob;
+use App\Jobs\ScheduleEuJob;
+use App\Jobs\ScheduleEuTestJob;
+use App\Jobs\ScheduleStorageJob;
 
  class TmTask extends EbBussinessModel 
 { 
@@ -20,7 +24,7 @@ use App\Jobs\ScheduleChekAllocation;
 	const RUN_BY_USER 		= 2;
 	
 	protected $table = 'TM_TASK';
-	protected $dates = ["expire_date",'slast_run','last_check','next_run',"cdate"];
+	protected $dates = ["expire_date",'last_run','last_check','next_run',"cdate"];
 	protected $fillable  = ['name',
 							'runby',
 							'user',
@@ -68,13 +72,28 @@ use App\Jobs\ScheduleChekAllocation;
 	    		
 	    ]);
     }
+    
+    public static function loadActiveTask($option=null){
+    	return self::whereIn("status",[	
+										self::STARTING 		,
+										self::READY 		,
+										self::RUNNING	 	,
+    									])
+    			->get();
+    }
+    
 	
 	public function validateTaskCondition(){
+		$validated	= $this->shouldRunByStatus();
+		$validated	= $validated&&$this->shouldRunByTimeConfig();
+		return $validated;
+	}
+	
+	public function shouldRunByStatus(){
  		$validated	= 	$this->runby==self::RUN_BY_SYSTEM&&
  						($this->status==self::STARTING||$this->status==self::READY)
  						&&(!$this->expire_date||$this->expire_date&&$this->expire_date->gt(Carbon::now()));
- 		
-		$validated	= $validated&&$this->shouldRunByTimeConfig();
+ 		\Log::info('task with status is '.($validated ? 'valid' : 'invalid'));
  		return $validated;
 	}
 	
@@ -96,18 +115,22 @@ use App\Jobs\ScheduleChekAllocation;
 					$should		= true;
 					if ($startTime)			{
 						$should	=	$now->gte($startTime);
-// 	 					\Log::info("startTime $startTime now $now should $should gte {$now->gte($startTime)}");
 					}
 					if ($should&&$endTime) 	{
 						$should	=	$now->lte($endTime);
-// 	 					\Log::info("endTime $endTime now $now should $should lte {$now->lte($endTime)}");
 					}
+					break;
+					
+				case "DAILY":
+// 					$should		= true;
+					break;
+					
+				case "WEEKLY":
+				case "MONTHLY":
 					break;
 			}
 		}
-		else{
-			$should = true;
-		}
+		\Log::info('task with time config is '.($should ? 'valid' : 'invalid'));
 		return $should;
 	}
 	
@@ -120,6 +143,16 @@ use App\Jobs\ScheduleChekAllocation;
 		$this->save();
 	}
 	
+	public function isOnetimeRunning(){
+		$result = false;
+		$timeConfig	= $this->time_config;
+		if ($timeConfig) {
+			$frequenceMode	= array_key_exists('FREQUENCEMODE'	, $timeConfig)?$timeConfig["FREQUENCEMODE"]	:"ONCETIME";
+			$result			= $frequenceMode=="ONCETIME";
+		}
+		return $result;
+	}
+
 	public function afterRunTask($scheduleJob,$result){
 		$this->last_check	= Carbon::now();
 		$result	= $result?$result:"no return";
@@ -134,23 +167,42 @@ use App\Jobs\ScheduleChekAllocation;
 			$this->result	= "RETURN object ";
 		}
 		
-		if ($this->expire_date&&$this->expire_date->lte(Carbon::now())){
-			$this->status	= self::DONE;
+		if ($this->task_code=="VIS_WORKFLOW") {
 		}
-		else
-			$this->status	= $this->command==self::CANCELLING?self::STOPPED:self::READY;
+		else{
+			if (($this->expire_date&&$this->expire_date->lte(Carbon::now())||
+					$this->isOnetimeRunning())){
+				$this->status	= self::DONE;
+			}
+			else{
+				$this->status	= $this->command==self::CANCELLING?self::STOPPED:self::READY;
+			}
+		}
 		$this->command	= 0;
 		$this->save();
 		\Log::info("afterRunTask ".$this->name." result ".$this->result);
 	}
 	
 	public function stop(){
+		$this->command		= self::CANCELLING;
+		if ($this->status	!= self::RUNNING) $this->updateStopStatus();
 		$scheduleJob = $this->initScheduleJob();
 		if($scheduleJob) $scheduleJob->stop();
 	}
 	
 	public function start(){
+		$this->command		= self::STARTING;
+		if ($this->status	!= self::RUNNING) {
+			$this->status	= self::READY;
+			$this->command	= self::NONE;
+		}
+		$this->save();
+	}
 	
+	public function updateStopStatus(){
+		$this->status	= self::STOPPED;
+		$this->command	= self::NONE;
+		$this->save();
 	}
 	
 	public function initScheduleJob() {
@@ -164,6 +216,18 @@ use App\Jobs\ScheduleChekAllocation;
 				break;
 			case "VIS_WORKFLOW":
 				$scheduleJob = new ScheduleWorkflow($this);
+				break;
+			case "FDC_FLOW":
+				$scheduleJob = new ScheduleFlowJob($this);
+				break;
+			case "FDC_EU":
+				$scheduleJob = new ScheduleEuJob($this);
+				break;
+			case "FDC_EU_TEST":
+				$scheduleJob = new ScheduleEuTestJob($this);
+				break;
+			case "FDC_STORAGE":
+				$scheduleJob = new ScheduleStorageJob($this);
 				break;
 			default:
 				$scheduleJob = new ScheduleTestJob($this);
