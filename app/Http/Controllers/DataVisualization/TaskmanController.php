@@ -71,21 +71,9 @@ class TaskmanController extends CodeController {
 			switch ($command) {
 				case "start":
 					$task->start();
-					$task->command		= TmTask::STARTING;
-					if ($task->status	!= TmTask::RUNNING) {
-						$task->status	= TmTask::READY;
-						$task->command	= TmTask::NONE;
-					}
-					$task->save();
 					break;
 				case "stop":
 					$task->stop();
-					$task->command		= TmTask::CANCELLING;
-					if ($task->status	!= TmTask::RUNNING) {
-						$task->status	= TmTask::STOPPED;
-						$task->command	= TmTask::NONE;
-					}
-					$task->save();
 					break;
 				case "refresh":
 					break;

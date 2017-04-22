@@ -65,9 +65,19 @@ class Taskman extends Command {
 		if ($validated){
 			$scheduleJob = $this->getScheduleJob($tmTask);
 			if (!$scheduleJob){
-				$scheduleJob	= $tmTask->initScheduleJob();
+				try {
+					$scheduleJob	= $tmTask->initScheduleJob();
+				} catch (\Exception $e) {
+					$result = $e;
+					\Log::info('exception when initScheduleJob');
+					\Log::info($e->getMessage());
+					\Log::info($e->getTraceAsString());
+					$scheduleJob = null;
+				}
 			}
 		}
+		else
+			\Log::info('task is invalid for running');
 		if ($scheduleJob) $this->scheduleJobs[$tmTask->ID]	= $scheduleJob;
 		return $scheduleJob;
 	}

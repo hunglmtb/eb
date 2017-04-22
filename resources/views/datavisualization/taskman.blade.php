@@ -19,7 +19,7 @@
 	];
 	$isAction = true;
 	
-	$facilities			= Facility::all();
+	$facility			= Facility::all();
 	$taskStatus			= TmTask::loadStatus();
 	$network			= NETWORK::getTableName();
 	$allocJob			= AllocJob::getTableName();
@@ -45,7 +45,7 @@
 <script>
 	var networks 			= <?php echo json_encode($networks); ?>;
 	var taskStatus 			= <?php echo json_encode($taskStatus); ?>;
-	var facilities 			= <?php echo json_encode($facilities); ?>;
+	var facility 			= <?php echo json_encode($facility); ?>;
 	var tmWorkflows 		= <?php echo json_encode($tmWorkflows); ?>;
 	var codeReadingFrequency= <?php echo json_encode($codeReadingFrequency		);		?>;
 	var codeFlowPhase		= <?php echo json_encode($codeFlowPhase		);		?>;
@@ -136,8 +136,10 @@
 			data: {id	: id},
 			success:function(data){
 				console.log ( "attemp "+command+" Job success with code "+data.CODE+" status code"+data.status+" status");
-				rowData.status	= data.task.status;
+				jQuery.extend(rowData,data.task)
+				/* rowData.status	= data.task.status;
 				rowData.command	= data.task.command;
+				rowData.command	= data.task.command; */
 				row.data(rowData).draw();
 						
 			},
@@ -152,7 +154,7 @@
 		if(columnName=="task_config") {
 			if(cellData!=null) {
 				cellData.networks 				= networks;
-				cellData.facilities 			= facilities;
+				cellData.facility 				= facility;
 				cellData.tmWorkflows 			= tmWorkflows;
 				cellData.codeFlowPhase			= codeFlowPhase;
 				cellData.codeEventType			= codeEventType;

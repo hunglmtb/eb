@@ -46,23 +46,25 @@ function onAfterGotDependences(elementId,element,currentId){
 				          	{ID	: "WEEK_END_DAY"		, NAME	: "WEEK_END_DAY" },
 				          	{ID	: "SPECIFIC_DAY"		, NAME	: "SPECIFIC_DAY" },
 				      	   ];
+    var endTimeValues	= datetimeValues.slice();
     
+    endTimeValues.unshift({ID	: "NONE"			, NAME	: "none" });
     var startDate	= {	type		: "datetime",
 			    		name		: "STARTTIME",
 			    		collection	: "datetimeValues",
 			    		label		: "Begin time"};
     var endDate		= {	type		: "datetime",
 			    		name		: "ENDTIME",
-			    		collection	: "datetimeValues",
+			    		collection	: "endTimeValues",
 			    		label		: "End time"};
     var sendLog		= {	type		: "input",
 			    		name		: "SENDLOG",
 			    		width		: "200px",
 			    		label		: "emails"};
     var facility	= {	type		: "select",
-			    		name		: "FACILITY",
+			    		name		: "Facility",
 			    		label		: "Facility",
-			    		collection	: "facilities",
+			    		collection	: "facility",
 						display		: true,
 	    				};
     var network		= {
@@ -276,7 +278,7 @@ function onAfterGotDependences(elementId,element,currentId){
         	this.$span 			= this.$tpl.find('span');
         	this.$rows 			= this.$tpl.find('.DATAROW');
         	this.$tables 		= this.$tpl.filter("table");
-        	this.datetimeValues	= datetimeValues;
+        	this.datetimeValues	= {STARTTIME	: datetimeValues,ENDTIME	: endTimeValues,};
         },
         /**
         Default method to show value in element. Can be overwritten by display option.
@@ -499,10 +501,11 @@ function onAfterGotDependences(elementId,element,currentId){
     	   
        },
        renderDatetimeInput: function(filterName,datetimeValue) {
-    	   this.datetimeValues		= typeof value.datetimeValues == "object" ? value.datetimeValues: this.datetimeValues;
-		   if(typeof this.datetimeValues == "object"){
+//    	   this.datetimeValues		= typeof value.datetimeValues == "object" ? value.datetimeValues: this.datetimeValues;
+    	   var collection	= this.datetimeValues[filterName];
+		   if(typeof collection == "object"){
 			   var select = this.$select.filter('[name="'+filterName+'"]');
-			   $.each(this.datetimeValues, function(key, value) {   
+			   $.each(collection, function(key, value) {   
 				   select.append($("<option></option>")
 						   .attr("value",value.ID)
 						   .text(value.NAME)); 
@@ -556,7 +559,7 @@ function onAfterGotDependences(elementId,element,currentId){
        },
        renderDateTimePicker: function(filterQuery) {
     	   var  editable = {
-    			   title			: 'edit',
+//    			   title			: 'edit',
     			   clear			: false,
     			   emptytext		: '',
     			   onblur			: 'submit',
