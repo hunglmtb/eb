@@ -88,8 +88,10 @@
  			switch(status){
  			case {{TmTask::STOPPED}}:
  			case {{TmTask::CANCELLING}}:
+ 			case {{TmTask::DONE}}:
  			case '{{TmTask::STOPPED}}':
  			case '{{TmTask::CANCELLING}}':
+ 			case '{{TmTask::DONE}}':
 				html += '<a onclick="actions.sendCommandJob('+id+',this,\'start\')" class="actionLink"><img alt="Run" title="Run" src="/images/run.png"></a>';
  	 			break;
  			case {{TmTask::STARTING}}:

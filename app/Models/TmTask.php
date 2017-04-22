@@ -6,6 +6,9 @@ use App\Jobs\ScheduleTestJob;
 use App\Jobs\ScheduleWorkflow;
 use App\Jobs\ScheduleChekAllocation;
 use App\Jobs\ScheduleFlowJob;
+use App\Jobs\ScheduleEuJob;
+use App\Jobs\ScheduleEuTestJob;
+use App\Jobs\ScheduleStorageJob;
 
  class TmTask extends EbBussinessModel 
 { 
@@ -21,7 +24,7 @@ use App\Jobs\ScheduleFlowJob;
 	const RUN_BY_USER 		= 2;
 	
 	protected $table = 'TM_TASK';
-	protected $dates = ["expire_date",'slast_run','last_check','next_run',"cdate"];
+	protected $dates = ["expire_date",'last_run','last_check','next_run',"cdate"];
 	protected $fillable  = ['name',
 							'runby',
 							'user',
@@ -69,6 +72,16 @@ use App\Jobs\ScheduleFlowJob;
 	    		
 	    ]);
     }
+    
+    public static function loadActiveTask($option=null){
+    	return self::whereIn("status",[	
+										self::STARTING 		,
+										self::READY 		,
+										self::RUNNING	 	,
+    									])
+    			->get();
+    }
+    
 	
 	public function validateTaskCondition(){
 		$validated	= $this->shouldRunByStatus();
@@ -130,6 +143,16 @@ use App\Jobs\ScheduleFlowJob;
 		$this->save();
 	}
 	
+	public function isOnetimeRunning(){
+		$result = false;
+		$timeConfig	= $this->time_config;
+		if ($timeConfig) {
+			$frequenceMode	= array_key_exists('FREQUENCEMODE'	, $timeConfig)?$timeConfig["FREQUENCEMODE"]	:"ONCETIME";
+			$result			= $frequenceMode=="ONCETIME";
+		}
+		return $result;
+	}
+
 	public function afterRunTask($scheduleJob,$result){
 		$this->last_check	= Carbon::now();
 		$result	= $result?$result:"no return";
@@ -144,13 +167,16 @@ use App\Jobs\ScheduleFlowJob;
 			$this->result	= "RETURN object ";
 		}
 		
-		if ($this->expire_date&&$this->expire_date->lte(Carbon::now())){
-			$this->status	= self::DONE;
-		}
-		else if ($this->task_code=="VIS_WORKFLOW") {
+		if ($this->task_code=="VIS_WORKFLOW") {
 		}
 		else{
-			$this->status	= $this->command==self::CANCELLING?self::STOPPED:self::READY;
+			if (($this->expire_date&&$this->expire_date->lte(Carbon::now())||
+					$this->isOnetimeRunning())){
+				$this->status	= self::DONE;
+			}
+			else{
+				$this->status	= $this->command==self::CANCELLING?self::STOPPED:self::READY;
+			}
 		}
 		$this->command	= 0;
 		$this->save();
@@ -195,8 +221,14 @@ use App\Jobs\ScheduleFlowJob;
 				$scheduleJob = new ScheduleFlowJob($this);
 				break;
 			case "FDC_EU":
+				$scheduleJob = new ScheduleEuJob($this);
+				break;
 			case "FDC_EU_TEST":
+				$scheduleJob = new ScheduleEuTestJob($this);
+				break;
 			case "FDC_STORAGE":
+				$scheduleJob = new ScheduleStorageJob($this);
+				break;
 			default:
 				$scheduleJob = new ScheduleTestJob($this);
 				break;

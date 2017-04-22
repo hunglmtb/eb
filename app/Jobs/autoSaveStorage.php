@@ -41,7 +41,7 @@ class autoSaveStorage extends Job implements ShouldQueue, SelfHandling
 		if(isset($this->param['taskid'])){
 			$task_id = $this->param['taskid'];
 			$date_type = $this->param['type'];			
-			$facility_id = $this->param['facility_id'];
+			$facility_id = $this->param['facility'];
 			$product_type = $this->param['product_type'];
 			$from_date = $this->param['from_date'];
 			$to_date = $this->param['to_date'];
@@ -57,7 +57,7 @@ class autoSaveStorage extends Job implements ShouldQueue, SelfHandling
 				$from_date = date('Y-m-01', strtotime($date .' -1 month'))."";
 				$to_date = $from_date;
 			}
-			_log("from_date: $from_date, to_date: $to_date",2);	
+			$this->_log("from_date: $from_date, to_date: $to_date",2);	
 		}
 		if(!$task_id){
     		$this->_log("Unknown task to perform",1);
@@ -69,14 +69,14 @@ class autoSaveStorage extends Job implements ShouldQueue, SelfHandling
 
 		//Get object Ids
 		$occur_date = $from_date;
-    	$obj = Tank::getTableName();
+//     	$obj = Tank::getTableName();
     	$where = ['FACILITY_ID' => $facility_id, 'FDC_DISPLAY' => 1];
-    	if ($product_type>0) $where["$obj.PRODUCT"]= $product_type;
+    	if ($product_type>0) $where["PRODUCT"]= $product_type;
 
 //      	\DB::enableQueryLog();
     	$dataSet = Tank::where($where)
 				    	->select(
-				    			"$obj.ID as OBJECT_ID"
+				    			"ID as OBJECT_ID"
 				    			) 
   		    			->get();
 		$objectIdsTank = [];
@@ -84,9 +84,10 @@ class autoSaveStorage extends Job implements ShouldQueue, SelfHandling
 			$objectIdsTank[] = $row->OBJECT_ID;
 		}
 		
+// 		$obj = Storage::getTableName();
     	$dataSet = Storage::where($where)
 				    	->select(
-				    			"$obj.ID as OBJECT_ID"
+				    			"ID as OBJECT_ID"
 				    			) 
   		    			->get();
 		$objectIdsStorage = [];
@@ -144,7 +145,7 @@ class autoSaveStorage extends Job implements ShouldQueue, SelfHandling
 		$month=$ds[1];
 		$year=$ds[0];
 		if(!($day>=1 && $day<=31 && $month>=1 && $month<=12 && $year>=1900 && $year<=3000)){
-			_log("Wrong occur date ($occur_date)",1);
+			$this->_log("Wrong occur date ($occur_date)",1);
 			return;
 		}
 		//CHECK DATA LOCKED
@@ -154,7 +155,7 @@ class autoSaveStorage extends Job implements ShouldQueue, SelfHandling
 			$islocked[$table] = \Helper::checkLockedTable($table,$occur_date,$facility_id);
 			if($islocked[$table]){
 				echo "Table locked ($table, date: $occur_date, facility_id: $facility_id)";
-				_log("Table locked ($table, date: $occur_date, facility_id: $facility_id)",2);
+				$this->_log("Table locked ($table, date: $occur_date, facility_id: $facility_id)",2);
 			}
 		}
 		/*
@@ -169,7 +170,7 @@ class autoSaveStorage extends Job implements ShouldQueue, SelfHandling
 			$fo_mdlName = \Helper::camelize(strtolower ($table),'_');
 			\FormulaHelpers::applyFormula($fo_mdlName,$objectIds,$occur_date);
 		}
-		_log("saveData $occur_date",2);
+		$this->_log("saveData $occur_date",2);
 	}
 
 	function saveDataStorage($occur_date,$facility_id,$objectIds){
@@ -179,7 +180,7 @@ class autoSaveStorage extends Job implements ShouldQueue, SelfHandling
 		$month=$ds[1];
 		$year=$ds[0];
 		if(!($day>=1 && $day<=31 && $month>=1 && $month<=12 && $year>=1900 && $year<=3000)){
-			_log("Wrong occur date ($occur_date)",1);
+			$this->_log("Wrong occur date ($occur_date)",1);
 			return;
 		}
 		//CHECK DATA LOCKED
@@ -189,7 +190,7 @@ class autoSaveStorage extends Job implements ShouldQueue, SelfHandling
 			$islocked[$table] = \Helper::checkLockedTable($table,$occur_date,$facility_id);
 			if($islocked[$table]){
 				echo "Table locked ($table, date: $occur_date, facility_id: $facility_id)";
-				_log("Table locked ($table, date: $occur_date, facility_id: $facility_id)",2);
+				$this->_log("Table locked ($table, date: $occur_date, facility_id: $facility_id)",2);
 			}
 		}
 		/*
@@ -204,7 +205,7 @@ class autoSaveStorage extends Job implements ShouldQueue, SelfHandling
 			$fo_mdlName = \Helper::camelize(strtolower ($table),'_');
 			\FormulaHelpers::applyFormula($fo_mdlName,$objectIds,$occur_date);
 		}
-		_log("saveData $occur_date",2);
+		$this->_log("saveData $occur_date",2);
 	}
 
     public function finalizeTask($task_id,$status,$log,$email){

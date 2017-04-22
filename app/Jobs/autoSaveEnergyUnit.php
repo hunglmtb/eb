@@ -41,8 +41,8 @@ class autoSaveEnergyUnit extends Job implements ShouldQueue, SelfHandling
 		if(isset($this->param['taskid'])){
 			$task_id = $this->param['taskid'];
 			$date_type = $this->param['type'];			
-			$facility_id = $this->param['facility_id'];
-			$eu_group_id = $this->param['eu_group_id'];
+			$facility_id = $this->param['facility'];
+			$eu_group_id = $this->param['eugroup_id'];
 			$record_freq = $this->param['record_freq'];
 			$flow_phase = $this->param['phase_type'];
 			$event_type = $this->param['event_type'];
@@ -63,7 +63,7 @@ class autoSaveEnergyUnit extends Job implements ShouldQueue, SelfHandling
 				$from_date = date('Y-m-01', strtotime($date .' -1 month'))."";
 				$to_date = $from_date;
 			}
-			_log("from_date: $from_date, to_date: $to_date",2);	
+			$this->_log("from_date: $from_date, to_date: $to_date",2);	
 		}
 		if(!$task_id){
     		$this->_log("Unknown task to perform",1);
@@ -87,9 +87,9 @@ class autoSaveEnergyUnit extends Job implements ShouldQueue, SelfHandling
 		if($day != 1) $where[]= ["$eu.DATA_FREQ",'<>',$FREQ_MONTH];
 
 //      	\DB::enableQueryLog();
-    	$dataSet = EnergyUnit::join($euPhaseConfig,function ($query) use ($eu,$euPhaseConfig,$phase_type,$event_type) {
+    	$dataSet = EnergyUnit::join($euPhaseConfig,function ($query) use ($eu,$euPhaseConfig,$flow_phase,$event_type) {
 						    					$query->on("$euPhaseConfig.EU_ID",'=',"$eu.ID");
-										    	if ($phase_type>0) $query->where("$euPhaseConfig.FLOW_PHASE",'=',$phase_type) ;
+										    	if ($flow_phase>0) $query->where("$euPhaseConfig.FLOW_PHASE",'=',$flow_phase) ;
 										    	if ($event_type>0) $query->where("$euPhaseConfig.EVENT_TYPE",'=',$event_type) ;
 						}) 
 						->where($where)
@@ -153,7 +153,7 @@ class autoSaveEnergyUnit extends Job implements ShouldQueue, SelfHandling
 		$month=$ds[1];
 		$year=$ds[0];
 		if(!($day>=1 && $day<=31 && $month>=1 && $month<=12 && $year>=1900 && $year<=3000)){
-			_log("Wrong occur date ($occur_date)",1);
+			$this->_log("Wrong occur date ($occur_date)",1);
 			return;
 		}
 		//CHECK DATA LOCKED
@@ -163,7 +163,7 @@ class autoSaveEnergyUnit extends Job implements ShouldQueue, SelfHandling
 			$islocked[$table] = \Helper::checkLockedTable($table,$occur_date,$facility_id);
 			if($islocked[$table]){
 				echo "Table locked ($table, date: $occur_date, facility_id: $facility_id)";
-				_log("Table locked ($table, date: $occur_date, facility_id: $facility_id)",2);
+				$this->_log("Table locked ($table, date: $occur_date, facility_id: $facility_id)",2);
 			}
 		}
 		/*
@@ -178,7 +178,7 @@ class autoSaveEnergyUnit extends Job implements ShouldQueue, SelfHandling
 			$fo_mdlName = \Helper::camelize(strtolower ($table),'_');
 			\FormulaHelpers::applyFormula($fo_mdlName,$objectIds,$occur_date);
 		}
-		_log("saveData $occur_date",2);
+		$this->_log("saveData $occur_date",2);
 	}
 
     public function finalizeTask($task_id,$status,$log,$email){

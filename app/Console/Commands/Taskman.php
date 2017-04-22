@@ -28,7 +28,7 @@ class Taskman extends Command {
 	 * @return mixed
 	 */
 	public function handle() {
-		$tmTasks	= TmTask::where("status",">",0)->get();
+		$tmTasks	= TmTask::loadActiveTask();
 		if ($tmTasks) {
 		\Log::info('queue task number '.$tmTasks->count());
 			$tmTasks->each(function ($tmTask, $key){
