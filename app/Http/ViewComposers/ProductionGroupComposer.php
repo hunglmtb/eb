@@ -53,7 +53,7 @@ class ProductionGroupComposer
     	}
     	
     	if (array_key_exists('productionFilterGroup', $fgs)) {
-	    	$productionFilterGroup = $this->initProductionFilterGroup($workspace,$fgs['productionFilterGroup']);
+	    	$productionFilterGroup = $this->initProductionFilterGroup($workspace,$fgs['productionFilterGroup'],$fgs);
 	    	$filterGroups['productionFilterGroup'] = $productionFilterGroup;
     	}
     	
@@ -94,7 +94,7 @@ class ProductionGroupComposer
     }
     
     
-    public function initProductionFilterGroup($workspace,$extras=null)
+    public function initProductionFilterGroup($workspace,$extras=null,$fgs)
     {
     	if ($workspace) {
 	    	$pid = $workspace->PRODUCTION_UNIT_ID;
@@ -178,9 +178,9 @@ class ProductionGroupComposer
     	}
     	
     	$loProductionOption			= $this->getFilterArray('LoProductionUnit',$productionUnits,$currentProductUnit);
-    	$loProductionOption['extra']= ["limit"	=> "LoArea"];
+    	if(!array_key_exists('extra', $fgs)) $loProductionOption['extra']= ["limit"	=> "LoArea"];
     	$loAreaOption				= $this->getFilterArray('LoArea',$areas,$currentArea);
-    	$loAreaOption['extra']		= ["limit"	=> "Facility"];
+    	if(!array_key_exists('extra', $fgs)) $loAreaOption['extra']		= ["limit"	=> "Facility"];
 	    $productionFilterGroup =['LoProductionUnit'	=>	$loProductionOption,
 					    		'LoArea'			=>	$loAreaOption,
 					    		'Facility'			=>	$this->getFilterArray('Facility',$facilities,$currentFacility)
