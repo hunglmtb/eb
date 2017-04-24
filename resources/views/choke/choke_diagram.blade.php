@@ -31,6 +31,7 @@
 				});
 				console.log ( "requestGenDiagram error "/* +JSON.stringify(data) */);
 // 				container.html("<a >error when generate diagram</a>");
+				if(typeof onGenDiagramError == 'function') onGenDiagramError(data);
 			}
 		});
 	}

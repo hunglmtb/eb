@@ -19,8 +19,8 @@ $dateformat = $_REQUEST['dateformat'];
 $balance = isset($_REQUEST['txt_balance'])?$_REQUEST['txt_balance']:"";
 $cargoSize = isset($_REQUEST['cargoSize'])?$_REQUEST['cargoSize']:0;
 
-$balanceData = $_POST['balanceData'];
 $bal_data = null;
+$balanceData = $_POST['balanceData'];
 if(count($balanceData)>0){
 	//var_dump($balanceData);
 	$bal_data = [];
@@ -83,7 +83,7 @@ if(!$lifting_acc_ids){
 
 $sSQL="select la.id LA_ID, ps.ID SHIPPER_ID, ps.name SHIPPER_NAME, ps.CARGO_SIZE
 from pd_lifting_account la, PD_SHIPPER ps, PD_CARGO_SHIPPER cs where la.storage_id = $storage_id and cs.LIFTING_ACCOUNT_ID = la.id and cs.SHIPPER_ID=ps.ID";
-echo $sSQL;
+
 $result=mysql_query($sSQL) or die("fail: ".$sSQL."-> error:".mysql_error());
 $shipper_id = [];
 $shipper_r1 = [];
@@ -101,24 +101,35 @@ while($row=mysql_fetch_assoc($result)){
 	$shipper_la["$row[SHIPPER_ID]"][] = $row["LA_ID"];
 }
 
-$sSQL="select DATE_FORMAT(a.OCCUR_DATE,'$mysql_dateformat') OCCUR_DATE,d.id LIFTING_ACCOUNT_ID, round(sum(a.FL_DATA_GRS_VOL*d.INTEREST_PCT/100),3) flow_qty
-from flow_data_value a, flow b, pd_lifting_account d 
-where d.id in($lifting_acc_ids) and d.PROFIT_CENTER=b.COST_INT_CTR_ID and b.id=a.FLOW_ID 
-and a.OCCUR_DATE between '$date_from' and '$date_to' and exists(select 1 from storage_data_value x
-where x.OCCUR_DATE = a.OCCUR_DATE and x.storage_id=$storage_id)
-group by a.occur_date,d.id
-";
-//echo $sSQL;
-$result=mysql_query($sSQL) or die("fail: ".$sSQL."-> error:".mysql_error());
 $la_data = [];
-while($row=mysql_fetch_assoc($result)){
-	$la_data["$row[OCCUR_DATE]"]["$row[LIFTING_ACCOUNT_ID]"] = $row["flow_qty"];
+$laData = $_POST['laData'];
+if(count($laData)>0){
+	//var_dump($laData);
+	foreach($laData as $bData){
+		foreach($ent_r1 as $la_id => $name){
+			$la_data[$bData["D"]]["$la_id"] = (float)$bData["V"]*$interest_percents["$la_id"]/100;
+		}
+	}
 }
-//echo "xxx".count($la_data); exit();
+else{
+	$sSQL="select DATE_FORMAT(a.OCCUR_DATE,'$mysql_dateformat') OCCUR_DATE,d.id LIFTING_ACCOUNT_ID, round(sum(a.FL_DATA_GRS_VOL*d.INTEREST_PCT/100),3) qty
+	from flow_data_value a, flow b, pd_lifting_account d 
+	where d.id in($lifting_acc_ids) and d.PROFIT_CENTER=b.COST_INT_CTR_ID and b.id=a.FLOW_ID 
+	and a.OCCUR_DATE between '$date_from' and '$date_to' and exists(select 1 from storage_data_value x
+	where x.OCCUR_DATE = a.OCCUR_DATE and x.storage_id=$storage_id)
+	group by a.occur_date,d.id
+	";
+
+	$result=mysql_query($sSQL) or die("fail: ".$sSQL."-> error:".mysql_error());
+	while($row=mysql_fetch_assoc($result)){
+		$la_data["$row[OCCUR_DATE]"]["$row[LIFTING_ACCOUNT_ID]"] = $row["qty"];
+	}
+}
+
 echo '<thead><tr>
 	<td colspan="3" rowspan="2" style="background:#dddddd"><b>Open balance &gt; </b><input id="txt_balance" name="txt_balance" value="'.$balance.'" style="width:100px" onkeypress="return txt_balance_keypress(event)"></td>
-	<td colspan="'.count($ent_r1).'" class="group1_th"><b>Entitlement</b></td>
-	<td colspan="'.count($shipper_r1).'" class="group2_th"><b>Plan Cargo</b><br><input type="button" style="font-weight:normal;font-size:8pt;height:10px" onclick="genCargoEntry()" value="Generate All Cargo Entry"></td>
+	<td colspan="'.count($ent_r1).'" class="group1_th"><b>Entitlement</b><br> <input type="button" style="font-weight:normal;font-size:8pt;height:25px" onclick="showConfig(1)" value="Config"></td>
+	<td colspan="'.count($shipper_r1).'" class="group2_th"><b>Plan Cargo</b><br><input type="button" style="font-weight:normal;font-size:8pt;height:25px" onclick="genCargoEntry()" value="Generate All Cargo Entry"></td>
 	<td colspan="'.count($ent_r1).'" class="group3_th"><b>Schedule Cargo</b></td>
 </tr><tr>';
 foreach($ent_r1 as $id => $name){
@@ -132,7 +143,7 @@ foreach($ent_r1 as $id => $name){
 }
 echo '</tr><tr>
 	<td rowspan="2" style="background:#dddddd"><b>Date</b></td>
-	<td rowspan="2" style="background:#dddddd"><b><span style="color:#378de5;cursor:pointer" onclick="showConfig()">Openning balance</span></b></td>
+	<td rowspan="2" style="background:#dddddd"><b>Openning balance</b><br> <input type="button" style="font-weight:normal;font-size:8pt;height:25px" onclick="showConfig(0)" value="Config"></td>
 	<td rowspan="2" style="background:#dddddd"><b>Plan cargo</b></td>
 ';
 foreach($ent_r2 as $id => $name){

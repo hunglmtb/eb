@@ -38,8 +38,10 @@ CARGO PLANNING
 $(document).ready(function(){
 	$("#date_begin, #date_end").off('change');
 	$('.addButton').trigger("click");
+	$('.addButton').trigger("click");
 	$("#diagramTableAction").hide();
 	//loadOpenningBalanceConfig();
+	$("#menu_navi .active_item").html("Cargo Planning");
 });
 
 	var last_storage_id = 0;
@@ -202,8 +204,12 @@ var currentRowData;
  
 editBox.genDiagram = function (diagram,view){
   if(typeof diagram == "undefined") return;
-  console.log(diagram.series[0].data);
-  balanceData={'balanceData':diagram.series[0].data};
+  console.log(diagram.series);
+  if(diagram.series.length > 0)
+	  balanceData.balanceData = diagram.series[0].data;
+  if(diagram.series.length > 1)
+	  balanceData.laData = diagram.series[1].data;
+  //balanceData={'balanceData':diagram.series[0].data};
   loadData();
 /*
 	var series   = diagram.series;
@@ -225,14 +231,18 @@ editBox.editObjectMoreHandle = function (table,rowData,td,tab) {
  //rowData.OBJECTS = JSON.parse(viewConfig);
  oEditObjectMoreHandle(table,rowData,td,tab);
 };
-
- function showConfig(){
+ function showConfig(i){
 /* 	 if(!(PlotViewConfigID>0))
 	 {
 		 alert("Openning Balance configuration not ready");
 		 return;
 	 } */
-	 $('a[id^="item_edit_"]').trigger("click");	 
+	 $('a[id^="item_edit_"]').eq(i).trigger("click");
+ }
+ 
+ function onGenDiagramError(data){
+	 _alert("Error happened. Please make sure both Openning balance and Entitlement were configured correctly.");
+	 $("#buttonLoadData").show();
  }
 </script>
 @stop

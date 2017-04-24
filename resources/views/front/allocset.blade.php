@@ -14,7 +14,7 @@ $currentSubmenu = '/allocset';
 		<option value="{!!$re['ID']!!}">{!!$re['NAME']!!}</option> @endforeach
 	</select>
 	<button onclick="cloneNetwork()"
-		style="margin-left: 10px; width: 160px">Clone allocation group</button>
+		style="margin-left: 10px">Clone allocation group</button>
 	<input style="min-width: 80px; float: right" type="button"
 		onClick="cancelEdit();showEditJob();" value="Add job" />
 	<button onclick="showJobDiagram()"
