@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Trail;
-
+use App\Models\Facility;
 
 trait ObjectNameLoad
 {
@@ -28,12 +28,16 @@ trait ObjectNameLoad
 				$mdl			= \Helper::getModelName($this->CODE);
 			}
 			
-			if ( array_key_exists('Facility', $option)) {
-				$facility 		= $option['Facility'];
-				$facility_id 	= $facility['id'];
+			if($this instanceof Facility){
+				$facility_id 	= $this->ID;
 			}
-			else if($this instanceof App\Models\Facility) $facility_id 	= $this->ID;
-			else $facility_id 	= 0;
+			elseif( array_key_exists('Facility', $option)) {
+					$facility 		= $option['Facility'];
+					$facility_id 	= $facility['id'];
+			}
+			else{
+				$facility_id 	= 0;
+			}
 			
 			if ( array_key_exists('ExtensionPhaseType', $option)) {
 				$phaseType 		= $option['ExtensionPhaseType'];
