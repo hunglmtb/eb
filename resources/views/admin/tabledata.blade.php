@@ -410,6 +410,18 @@ function scopeChange(c){
 "<option>RPT_PARAM</option>"+
 		"";
 	}
+	else if($("#cboObjectScope").val()=="DATACAPTURE")
+	{
+		s=
+"<option>DC_ROUTE</option>"+
+"<option>DC_ROUTE_USER</option>"+
+"<option>DC_POINT</option>"+
+"<option>DC_POINT_FLOW</option>"+
+"<option>DC_POINT_EU</option>"+
+"<option>DC_POINT_TANK</option>"+
+"<option>DC_POINT_EQUIPMENT</option>"+
+		"";
+	}
 	else if($("#cboObjectScope").val()=="GHG")
 	{
 		s=
@@ -493,6 +505,7 @@ function scopeChange(c){
 				<option value="TAGMAP">TAG MAPPING</option>
 				<option value="GHG">GHG tables</option>
 				<option value="REPORT">REPORT tables</option>
+				<option value="DATACAPTURE">DATA CAPTURE tables</option>
 				</select></td>
 					</tr>
 				</table>
