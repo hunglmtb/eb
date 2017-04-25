@@ -13,7 +13,7 @@ class Helper {
 		$option['id'] 			= $id;
 		$option['modelName'] 	= array_key_exists('modelName', $option)?$option['modelName']:$id;
 		$option['collection'] 	= $collection;
-		$option['currentId'] 	= $currentUnit&&isset($currentUnit->ID)?$currentUnit->ID:'';
+		$option['currentId'] 	= $currentUnit&&$currentUnit->ID?$currentUnit->ID:'';
 		$option['current'] 		= $currentUnit;
 		return $option;
 	}
@@ -68,10 +68,11 @@ class Helper {
 		if ($collection) {
 			foreach($collection as $item ){
 				if($item){
-					$fvalue = $item->ID!=""?$item->ID:(isset($item->CODE)?$item->CODE:"");
+					$nameValue 	= $item->CODE;
+					$fvalue 	= $item->ID;
 					$optionName	= $item->NAME;
 					$optionName	= Lang::has("front/site.$optionName", $lang)?trans("front/site.$optionName"):$optionName;
-					$htmlFilter .= '<option name="'.(isset($item->CODE)?$item->CODE:"")
+					$htmlFilter .= '<option name="'.$nameValue
 								.'" value="'.$fvalue.'"'.($currentUnit&&$currentUnit==$item?'selected="selected"':'')
 								.'>'.$optionName.'</option>';
 				}
@@ -134,8 +135,8 @@ class Helper {
     			default:
     				$configuration = auth()->user()->getConfiguration();
     				$format = $configuration['time']['DATE_FORMAT_CARBON'];//'m/d/Y';
-    				if ($value) {
-						$value=$value->format($format);
+    				if ($value&&$value instanceof Carbon) {
+						$value	=	$value->format($format);
     				}
     				$jsFormat = $configuration['picker']['DATE_FORMAT_JQUERY'];//'mm/dd/yy';
     				$htmlFilter.= "<div class='date_input'><div><b>$name</b></div><input style='width:85%' type='text' id = '$id' name='$sName' size='15' value='$value'></div>";

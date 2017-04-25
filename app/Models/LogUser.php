@@ -6,8 +6,8 @@ use App\Models\DynamicModel;
 class LogUser extends DynamicModel
 {
 	protected $table = 'LOG_USER';
+	protected $autoFillableColumns = false;
 	
-	protected $primaryKey = 'ID';
 	protected $fillable  = ['USERNAME', 
 							'LOGIN_TIME', 
 							'LOGOUT_TIME', 

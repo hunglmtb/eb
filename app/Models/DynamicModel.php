@@ -1,6 +1,7 @@
 <?php namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Services\EBBuilder;
 
 class DynamicModel extends Model {
 	
@@ -20,6 +21,13 @@ class DynamicModel extends Model {
 		
 		if ($this->isOracleModel){
 			$this->primaryKey = strtolower($this->primaryKey);
+			if ($this->dates&&count($this->dates)>0){
+				$sDates = [];
+				foreach($this->dates as $item ){
+					$sDates[] = strtolower($item);
+				}
+				$this->dates = array_merge($this->dates,$sDates);
+			}
 		}
 		
 		if ($this->autoFillableColumns) {
@@ -48,6 +56,15 @@ class DynamicModel extends Model {
 		} 
 		return $this->getAttribute($key);
 	}
+	
+ 	protected function newBaseQueryBuilder()
+    {
+        $conn = $this->getConnection();
+
+        $grammar = $conn->getQueryGrammar();
+
+        return new EBBuilder($conn, $grammar, $conn->getPostProcessor());
+    }
 	
 	public function belongsTo($related, $foreignKey = null, $otherKey = null, $relation = null)
 	{

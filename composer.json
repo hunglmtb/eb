@@ -10,7 +10,7 @@
         "laravelcollective/html": "5.2.*",
         "bestmomo/filemanager": "1.1.2",
         "barryvdh/laravel-ide-helper": "^2.1",
-        "yajra/laravel-oci8": "~4.0",
+        "yajra/laravel-oci8": "5.2.*",
 		"maatwebsite/excel": "~2.1.6"
     },
     "require-dev": {

@@ -73,9 +73,11 @@ function isFloat(n){
 var filters = {};
 var renderDependenceHtml = function(elementId,dependenceData) {
 	var option = $('<option />');
-	var name = typeof(dependenceData.CODE) !== "undefined"?dependenceData.CODE:dependenceData.NAME;
+	var name = typeof(dependenceData.CODE) !== "undefined"?dependenceData.CODE:dependenceData.code;
+	var text = typeof(dependenceData.NAME) !== "undefined"?dependenceData.NAME:dependenceData.name;
+	var id 	= typeof(dependenceData.ID) !== "undefined"?dependenceData.ID:dependenceData.id;
 	option.attr('name', name);
-	option.attr('value', dependenceData.ID).text(dependenceData.NAME);
+	option.attr('value', id).text(text);
 	return option;
 };
 

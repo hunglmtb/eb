@@ -18,6 +18,7 @@ class UserWorkspace extends DynamicModel
 							'TIME_FORMAT',
 							'DECIMAL_MARK'
 	];
+	protected $autoFillableColumns = false;
 	
 	/**
 	 * One to Many relation

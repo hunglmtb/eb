@@ -158,7 +158,7 @@ class ProductionGroupComposer
 	    	if($DATA_SCOPE_PU&&$DATA_SCOPE_PU>0)
 	    		$productionUnits = LoProductionUnit::where('ID',$DATA_SCOPE_PU)->get();
 	    	else 
-	    		$productionUnits = LoProductionUnit::all(['ID', 'NAME']);
+	    		$productionUnits = LoProductionUnit::all();
 	
 	    	$currentProductUnit = ProductionGroupComposer::getCurrentSelect($productionUnits,$pid);
 	    	
