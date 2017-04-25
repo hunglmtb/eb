@@ -504,3 +504,4 @@ Route::post('gettablefieldsall', 'InterfaceController@getTableFieldsAll');
 Route::post('doimportdataloader', 'InterfaceController@doImportDataLoader');
 
 Route::get('test/runschedule','TestController@runSchedule');
+Route::get('test/gpm','TestController@gitPullMaster');

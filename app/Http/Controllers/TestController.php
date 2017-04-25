@@ -7,4 +7,8 @@ class TestController extends EBController {
     	$output = shell_exec('cd .. & php artisan schedule:run');
     	return response ()->json ($output);
     }
+    public function gitPullMaster(){
+    	$output = shell_exec('cd .. & git pull origin master');
+    	return response ()->json ($output);
+    }
 }
