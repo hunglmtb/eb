@@ -15,7 +15,7 @@ class FieldsConfigController extends Controller {
 	}
 	
 	public function _index() {
-		$cfg_data_source = collect(CfgDataSource::all('NAME')->toArray());
+		$cfg_data_source = CfgDataSource::all('NAME');
 		return view ( 'front.fieldsconfig',[
 				'cfg_data_source' 		=> $cfg_data_source,
 		]);

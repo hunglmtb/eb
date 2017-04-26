@@ -62,7 +62,7 @@ $(function(){
         <tr><td>
             <select size="1" name="data_source" id="data_source" style="width:200px" onchange="_fieldconfig.data_source_change();_fieldconfig.reset();">
                @foreach($cfg_data_source as $re)
-					<option value="{!!$re['NAME']!!}">{!!$re['NAME']!!}</option> 
+					<option value="{!!$re->NAME!!}">{!!$re->NAME!!}</option> 
 				@endforeach
             </select> 
             <input type="checkbox" checked id="chk_tbl" value="1">Tables
