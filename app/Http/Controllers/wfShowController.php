@@ -28,10 +28,10 @@ class wfShowController extends Controller {
 		
 		$tmworkflowtask = collect(TmWorkflowTask::whereIn('ISRUN', [2,3])
 			 ->where ( function ($q) use ($user_name) {
-				$q->where('USER', 'like', '%,'.$user_name.',%');
-				$q->orWhere('USER', 'like', $user_name.',%');
-				$q->orWhere('USER', 'like', '%,'.$user_name);
-				$q->orWhere('USER', '=', $user_name);
+				$q->where('USER_', 'like', '%,'.$user_name.',%');
+				$q->orWhere('USER_', 'like', $user_name.',%');
+				$q->orWhere('USER_', 'like', '%,'.$user_name);
+				$q->orWhere('USER_', '=', $user_name);
 			} ) 
 			->get(['WF_ID']))->toArray();
 		
@@ -92,10 +92,10 @@ class wfShowController extends Controller {
 		$tmworkflowtask = TmWorkflowTask::whereIn('ISRUN', [2,3])
 			->whereIn('WF_ID', $tmworkflow)
 			->where ( function ($q) use ($user_name) {
-				$q->where('USER', 'like', '%,'.$user_name.',%');
-				$q->orWhere('USER', 'like', $user_name.',%');
-				$q->orWhere('USER', 'like', '%,'.$user_name);
-				$q->orWhere('USER', '=', $user_name);
+				$q->where('USER_', 'like', '%,'.$user_name.',%');
+				$q->orWhere('USER_', 'like', $user_name.',%');
+				$q->orWhere('USER_', 'like', '%,'.$user_name);
+				$q->orWhere('USER_', '=', $user_name);
 			} )
 			->get(['WF_ID']);
 
