@@ -55,6 +55,17 @@ class FlowController extends CodeController {
 		    $where[]= ["$flow.RECORD_FREQUENCY",'<>',6];
 		}
     	//      	\DB::enableQueryLog();
+		$columns	= $this->extractRespondColumns($dcTable,$properties);
+		if (!$columns) $columns = [];
+		array_push($columns,"$dcTable.OCCUR_DATE",
+							"$flow.name as $dcTable",
+			    			"$dcTable.ID as DT_RowId",
+			    			"$flow.ID as ".config("constants.flowId"),
+			    			"$flow.ID as ID",
+			    			"$flow.phase_id as FL_FLOW_PHASE",
+			    			"$codeFlowPhase.name as PHASE_NAME",
+			    			"$codeFlowPhase.CODE as PHASE_CODE");
+		
     	$dataSet = Flow::join($codeFlowPhase,'PHASE_ID', '=', "$codeFlowPhase.ID")
 				    	->where($where)
 				    	->whereDate('EFFECTIVE_DATE', '<=', $occur_date)
@@ -67,16 +78,7 @@ class FlowController extends CodeController {
 		    				else if (($forecastType > 0 &&  ($dcTable == FlowDataForecast::getTableName() )))
 		    					$join->where("$dcTable.FORECAST_TYPE",'=',$forecastType);
 				    	})
-				    	->select(
-				    			"$dcTable.*",
-				    			"$flow.name as $dcTable",
-				    			"$dcTable.ID as DT_RowId",
-				    			"$flow.ID as ".config("constants.flowId"),
-				    			"$flow.ID as ID",
-				    			"$flow.phase_id as FL_FLOW_PHASE",
-				    			"$codeFlowPhase.name as PHASE_NAME",
-				    			"$codeFlowPhase.CODE as PHASE_CODE"
-				    			)
+				    	->select($columns)
 		    			->orderBy($dcTable)
 		    			->orderBy('FL_FLOW_PHASE')
 		    			->get();

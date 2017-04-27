@@ -137,6 +137,7 @@ class CodeController extends EBController {
     	}
     	
     	$results 		= $this->getProperties($dcTable,$facility_id,$occur_date,$postData);
+    	\Helper::setGetterUpperCase();
     	$data 			= $this->getDataSet($postData,$dcTable,$facility_id,$occur_date,$results);
     	$secondaryData 	= $this->getSecondaryData($postData,$dcTable,$facility_id,$occur_date,$results);
     	$results['secondaryData'] = $secondaryData;

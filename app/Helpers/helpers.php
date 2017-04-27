@@ -286,6 +286,12 @@ class Helper {
 		return $extraSelect;
 	}
 	
+	public static function setGetterUpperCase(){
+		if(config('database.default')==='oracle'){
+			$dbh 			= \DB::connection()->getPdo();
+	    	$dbh->setAttribute (\PDO::ATTR_CASE, \PDO::CASE_UPPER);
+		}
+	}
 	
 	public static function getCommonGroupFilter($options = []){
 		$codeFlowPhase	= ["name"		=>	"CodeFlowPhase",
