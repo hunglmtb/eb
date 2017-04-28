@@ -34,4 +34,9 @@ class LoArea extends DynamicModel
 		return $this->hasMany('App\Models\Facility', 'AREA_ID', 'ID');
 	}
 	
+	public static function getEntries($facility_id=null,$product_type = 0){
+
+		$entries = static ::select('ID','NAME')->orderBy('NAME')->get();
+		return $entries;
+	}	
 }

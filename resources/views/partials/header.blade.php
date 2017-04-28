@@ -125,7 +125,7 @@
 						[
 							["name"	=>	"Demurrage/EBO","title"	=>	"Demurrage/EBO","link"	=>	"/pd/demurrageebo"],
 							["name"	=>	"Cargo Documents","title"	=>	"Cargo Documents","link"	=>	"/pd/cargodocuments"],
-							["name"	=>	"Cargo Status","title"	=>	"Cargo Status","link"	=>	"/pd/cargostatus"],
+							["name"	=>	"Cargo Ledger","title"	=>	"Cargo Ledger","link"	=>	"/pd/cargostatus"],
 						]
 					],
 				]

@@ -25,6 +25,7 @@ use App\Models\CodePersonnelTitle;
 use App\Models\CodePersonnelType;
 use App\Models\CodePressUom;
 use App\Models\CodeProductType;
+use App\Models\CodeSampleType;
 use App\Models\CodeQltySrcType;
 use App\Models\CodeReadingFrequency;
 use App\Models\CodeSafetySeverity;
@@ -767,6 +768,11 @@ class CodeController extends EBController {
 		    	case 'PHASE_TYPE' :
 		    		$selectData = ['id'=>'CodeProductType','targets'=>$i,'COLUMN_NAME'=>$columnName];
 		    		$selectData['data'] = CodeProductType::loadActive();
+		    		$rs[] = $selectData;
+		    		break;
+		    	case 'SAMPLE_TYPE' :
+		    		$selectData = ['id'=>'CodeSampleType','targets'=>$i,'COLUMN_NAME'=>$columnName];
+		    		$selectData['data'] = CodeSampleType::loadActive();
 		    		$rs[] = $selectData;
 		    		break;
 	    		case 'DEFER_REASON' :
