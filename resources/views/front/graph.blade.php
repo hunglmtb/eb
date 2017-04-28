@@ -89,6 +89,7 @@ var _graph = {
 			cbo += ' 		<option value="TANK/TANK/TANK/Tank">Tank</option>';
 			cbo += ' 		<option value="STORAGE/STORAGE/STORAGE/Storage">Storage</option>';
 			cbo += ' 		<option value="ENERGY_UNIT/EU_TEST/EU_TEST/Energy Unit">Well Test</option>';
+			cbo += ' 		<option value="LO_AREA/LO_AREA//Area">Area</option>';
 			cbo += ' 	</select>';
 			cbo += ' </div>';
 

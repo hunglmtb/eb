@@ -22,7 +22,7 @@ QUALITY DATA CAPTURE
 	}
 	
 	actions.type = {
-					idName:['ID'/* ,'PRODUCT_TYPE' */],
+					idName:['ID'],
 					keyField:'DT_RowId',
 					saveKeyField : function (model){
 						return 'ID';

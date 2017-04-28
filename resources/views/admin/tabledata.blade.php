@@ -103,6 +103,7 @@ function scopeChange(c){
 "<option value='CODE_READING_FREQUENCY'>CODE_READING_FREQUENCY</option>"+
 "<option value='CODE_SAFETY_CATEGORY'>CODE_SAFETY_CATEGORY</option>"+
 "<option value='CODE_SAFETY_SEVERITY'>CODE_SAFETY_SEVERITY</option>"+
+"<option>CODE_SAMPLE_TYPE</option>"+
 "<option value='CODE_SDS_CAPACITY_METHOD'>CODE_SDS_CAPACITY_METHOD</option>"+
 "<option value='CODE_STATUS'>CODE_STATUS</option>"+
 "<option value='CODE_STORAGE_TYPE'>CODE_STORAGE_TYPE</option>"+

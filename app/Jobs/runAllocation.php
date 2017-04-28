@@ -334,163 +334,163 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
 
     		$ID_C1 = QltyProductElementType::where ( [
     				'CODE' => 'C1',
-    				'PRODUCT_TYPE' => 2
+    				'SAMPLE_TYPE' => 2
     		] )->SELECT ( 'ID' )->first ();
     		$data ['ID_C1'] = $ID_C1->ID;
 
     		$ID_C2 = QltyProductElementType::where ( [
     				'CODE' => 'C2',
-    				'PRODUCT_TYPE' => 2
+    				'SAMPLE_TYPE' => 2
     		] )->SELECT ( 'ID' )->first ();
     		$data ['ID_C2'] = $ID_C2->ID;
 
     		$ID_C3 = QltyProductElementType::where ( [
     				'CODE' => 'C3',
-    				'PRODUCT_TYPE' => 2
+    				'SAMPLE_TYPE' => 2
     		] )->SELECT ( 'ID' )->first ();
     		$data ['ID_C3'] = $ID_C3->ID;
 
     		$ID_C4I = QltyProductElementType::where ( [
     				'CODE' => 'IC4',
-    				'PRODUCT_TYPE' => 2
+    				'SAMPLE_TYPE' => 2
     		] )->SELECT ( 'ID' )->first ();
     		$data ['ID_C4I'] = $ID_C4I->ID;
 
     		$ID_C4N = QltyProductElementType::where ( [
     				'CODE' => 'NC4',
-    				'PRODUCT_TYPE' => 2
+    				'SAMPLE_TYPE' => 2
     		] )->SELECT ( 'ID' )->first ();
     		$data ['ID_C4N'] = $ID_C4N->ID;
 
     		$ID_C5I = QltyProductElementType::where ( [
     				'CODE' => 'IC5',
-    				'PRODUCT_TYPE' => 2
+    				'SAMPLE_TYPE' => 2
     		] )->SELECT ( 'ID' )->first ();
     		$data ['ID_C5I'] = $ID_C5I->ID;
 
     		$ID_C5N = QltyProductElementType::where ( [
     				'CODE' => 'NC5',
-    				'PRODUCT_TYPE' => 2
+    				'SAMPLE_TYPE' => 2
     		] )->SELECT ( 'ID' )->first ();
     		$data ['ID_C5N'] = $ID_C5N->ID;
 
     		$ID_C6 = QltyProductElementType::where ( [
     				'CODE' => 'C6',
-    				'PRODUCT_TYPE' => 2
+    				'SAMPLE_TYPE' => 2
     		] )->SELECT ( 'ID' )->first ();
     		$data ['ID_C6'] = $ID_C6->ID;
 
     		$ID_C7 = QltyProductElementType::where ( [
     				'CODE' => 'C7+',
-    				'PRODUCT_TYPE' => 2
+    				'SAMPLE_TYPE' => 2
     		] )->SELECT ( 'ID' )->first ();
     		$data ['ID_C7'] = $ID_C7->ID;
 
     		$ID_H2S = QltyProductElementType::where ( [
     				'CODE' => 'H2S',
-    				'PRODUCT_TYPE' => 2
+    				'SAMPLE_TYPE' => 2
     		] )->SELECT ( 'ID' )->first ();
     		$data ['ID_H2S'] = $ID_H2S->ID;
 
     		$ID_CO2 = QltyProductElementType::where ( [
     				'CODE' => 'CO2',
-    				'PRODUCT_TYPE' => 2
+    				'SAMPLE_TYPE' => 2
     		] )->SELECT ( 'ID' )->first ();
     		$data ['ID_CO2'] = $ID_CO2->ID;
 
     		$ID_N2 = QltyProductElementType::where ( [
     				'CODE' => 'N2',
-    				'PRODUCT_TYPE' => 2
+    				'SAMPLE_TYPE' => 2
     		] )->SELECT ( 'ID' )->first ();
     		$data ['ID_N2'] = $ID_N2->ID;
 
     		$C1 = collect ( DB::table ( 'qlty_data_detail AS a' )->join ( 'qlty_product_element_type AS b', 'a.ELEMENT_TYPE', '=', 'b.ID' )->where ( [
     				'a.QLTY_DATA_ID' => $row->ID,
     				'b.CODE' => 'C1',
-    				'b.PRODUCT_TYPE' => 2
+    				'b.SAMPLE_TYPE' => 2
     		] )->SELECT ( 'a.' . $field )->get () )->max ( $field );
     		$data ['C1'] = $C1;
 
     		$C2 = collect ( DB::table ( 'qlty_data_detail AS a' )->join ( 'qlty_product_element_type AS b', 'a.ELEMENT_TYPE', '=', 'b.ID' )->where ( [
     				'a.QLTY_DATA_ID' => $row->ID,
     				'b.CODE' => 'C2',
-    				'b.PRODUCT_TYPE' => 2
+    				'b.SAMPLE_TYPE' => 2
     		] )->SELECT ( 'a.' . $field )->get () )->max ( $field );
     		$data ['C2'] = $C2;
 
     		$C3 = collect ( DB::table ( 'qlty_data_detail AS a' )->join ( 'qlty_product_element_type AS b', 'a.ELEMENT_TYPE', '=', 'b.ID' )->where ( [
     				'a.QLTY_DATA_ID' => $row->ID,
     				'b.CODE' => 'C3',
-    				'b.PRODUCT_TYPE' => 2
+    				'b.SAMPLE_TYPE' => 2
     		] )->SELECT ( 'a.' . $field )->get () )->max ( $field );
     		$data ['C3'] = $C3;
 
     		$C4I = collect ( DB::table ( 'qlty_data_detail AS a' )->join ( 'qlty_product_element_type AS b', 'a.ELEMENT_TYPE', '=', 'b.ID' )->where ( [
     				'a.QLTY_DATA_ID' => $row->ID,
     				'b.CODE' => 'IC4',
-    				'b.PRODUCT_TYPE' => 2
+    				'b.SAMPLE_TYPE' => 2
     		] )->SELECT ( 'a.' . $field )->get () )->max ( $field );
     		$data ['C4I'] = $C4I;
 
     		$C4N = collect ( DB::table ( 'qlty_data_detail AS a' )->join ( 'qlty_product_element_type AS b', 'a.ELEMENT_TYPE', '=', 'b.ID' )->where ( [
     				'a.QLTY_DATA_ID' => $row->ID,
     				'b.CODE' => 'NC4',
-    				'b.PRODUCT_TYPE' => 2
+    				'b.SAMPLE_TYPE' => 2
     		] )->SELECT ( 'a.' . $field )->get () )->max ( $field );
     		$data ['C4N'] = $C4N;
 
     		$C5I = collect ( DB::table ( 'qlty_data_detail AS a' )->join ( 'qlty_product_element_type AS b', 'a.ELEMENT_TYPE', '=', 'b.ID' )->where ( [
     				'a.QLTY_DATA_ID' => $row->ID,
     				'b.CODE' => 'IC5',
-    				'b.PRODUCT_TYPE' => 2
+    				'b.SAMPLE_TYPE' => 2
     		] )->SELECT ( 'a.' . $field )->get () )->max ( $field );
     		$data ['C5I'] = $C5I;
 
     		$C5N = collect ( DB::table ( 'qlty_data_detail AS a' )->join ( 'qlty_product_element_type AS b', 'a.ELEMENT_TYPE', '=', 'b.ID' )->where ( [
     				'a.QLTY_DATA_ID' => $row->ID,
     				'b.CODE' => 'NC5',
-    				'b.PRODUCT_TYPE' => 2
+    				'b.SAMPLE_TYPE' => 2
     		] )->SELECT ( 'a.' . $field )->get () )->max ( $field );
     		$data ['C5N'] = $C5N;
 
     		$C6 = collect ( DB::table ( 'qlty_data_detail AS a' )->join ( 'qlty_product_element_type AS b', 'a.ELEMENT_TYPE', '=', 'b.ID' )->where ( [
     				'a.QLTY_DATA_ID' => $row->ID,
     				'b.CODE' => 'C6',
-    				'b.PRODUCT_TYPE' => 2
+    				'b.SAMPLE_TYPE' => 2
     		] )->SELECT ( 'a.' . $field )->get () )->max ( $field );
     		$data ['C6'] = $C6;
 
     		$C7 = collect ( DB::table ( 'qlty_data_detail AS a' )->join ( 'qlty_product_element_type AS b', 'a.ELEMENT_TYPE', '=', 'b.ID' )->where ( [
     				'a.QLTY_DATA_ID' => $row->ID,
     				'b.CODE' => 'C7+',
-    				'b.PRODUCT_TYPE' => 2
+    				'b.SAMPLE_TYPE' => 2
     		] )->SELECT ( 'a.' . $field )->get () )->max ( $field );
     		$data ['C7'] = $C7;
 
     		$H2S = collect ( DB::table ( 'qlty_data_detail AS a' )->join ( 'qlty_product_element_type AS b', 'a.ELEMENT_TYPE', '=', 'b.ID' )->where ( [
     				'a.QLTY_DATA_ID' => $row->ID,
     				'b.CODE' => 'H2S',
-    				'b.PRODUCT_TYPE' => 2
+    				'b.SAMPLE_TYPE' => 2
     		] )->SELECT ( 'a.' . $field )->get () )->max ( $field );
     		$data ['H2S'] = $H2S;
 
     		$CO2 = collect ( DB::table ( 'qlty_data_detail AS a' )->join ( 'qlty_product_element_type AS b', 'a.ELEMENT_TYPE', '=', 'b.ID' )->where ( [
     				'a.QLTY_DATA_ID' => $row->ID,
     				'b.CODE' => 'CO2',
-    				'b.PRODUCT_TYPE' => 2
+    				'b.SAMPLE_TYPE' => 2
     		] )->SELECT ( 'a.' . $field )->get () )->max ( $field );
     		$data ['CO2'] = $CO2;
 
     		$N2 = collect ( DB::table ( 'qlty_data_detail AS a' )->join ( 'qlty_product_element_type AS b', 'a.ELEMENT_TYPE', '=', 'b.ID' )->where ( [
     				'a.QLTY_DATA_ID' => $row->ID,
     				'b.CODE' => 'N2',
-    				'b.PRODUCT_TYPE' => 2
+    				'b.SAMPLE_TYPE' => 2
     		] )->SELECT ( 'a.' . $field )->get () )->max ( $field );
     		$data ['N2'] = $N2;
 
     		$M_C7 = collect ( QltyProductElementType::where ( [
     				'CODE' => 'C7+',
-    				'PRODUCT_TYPE' => 2
+    				'SAMPLE_TYPE' => 2
     		] )->get ( [
     				'MOL_WEIGHT'
     		] ) )->max ( 'MOL_WEIGHT' );
@@ -499,7 +499,7 @@ class runAllocation extends Job implements ShouldQueue, SelfHandling
     		$G_C7 = collect ( DB::table ( 'qlty_data_detail AS a' )->join ( 'qlty_product_element_type AS b', 'a.ELEMENT_TYPE', '=', 'b.ID' )->where ( [
     				'a.QLTY_DATA_ID' => $row->ID,
     				'b.CODE' => 'C7+',
-    				'b.PRODUCT_TYPE' => 2
+    				'b.SAMPLE_TYPE' => 2
     		] )->SELECT ( 'a.GAMMA_C7' )->get () )->max ( 'GAMMA_C7' );
     		$data ['G_C7'] = $G_C7;
 

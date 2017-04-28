@@ -19,7 +19,7 @@ class QltyData extends EbBussinessModel
 							'LAB_TECHNICIAN_NAME',
 							'SRC_TYPE',
 							'SRC_ID',
-							'PRODUCT_TYPE',
+							'SAMPLE_TYPE',
 							'EFFECTIVE_DATE',
 							'QLTY_VALUE1',
 							'QLTY_VALUE2',

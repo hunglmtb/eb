@@ -209,7 +209,7 @@ class QualityController extends CodeController {
     public function edit(Request $request){
     	$postData = $request->all();
     	$id = $postData['id'];
-//     	$ptype= QltyData::find($id)->get('PRODUCT_TYPE');
+//     	$ptype= QltyData::find($id)->get('SAMPLE_TYPE');
     	$dcTable =QltyData::getTableName();
     	$qltyDataDetail =QltyDataDetail::getTableName();
     	$qltyProductElementType =QltyProductElementType::getTableName();
@@ -217,7 +217,7 @@ class QualityController extends CodeController {
     	$properties = $this->getOriginProperties($qltyDataDetail);
     	 
     	$dataSet = QltyProductElementType::join($dcTable,function ($query) use ($dcTable,$id,$qltyProductElementType) {
-										    		$query->on("$dcTable.PRODUCT_TYPE",'=',"$qltyProductElementType.PRODUCT_TYPE")
+										    		$query->on("$dcTable.SAMPLE_TYPE",'=',"$qltyProductElementType.SAMPLE_TYPE")
 										    				->where("$dcTable.ID",'=',$id) ;
 									    	})
 									    	->leftJoin($qltyDataDetail, function($join) use ($qltyDataDetail,$id,$qltyProductElementType){
@@ -229,7 +229,7 @@ class QualityController extends CodeController {
 								    				"$qltyProductElementType.ID as DT_RowId",
 								    				"$qltyProductElementType.ORDER",
 								    				"$qltyProductElementType.NAME",
-								    				"$qltyProductElementType.PRODUCT_TYPE",
+								    				"$qltyProductElementType.SAMPLE_TYPE",
 								    				"$qltyProductElementType.DEFAULT_UOM",
 								    				/* "$qltyDataDetail.ELEMENT_TYPE",
 								    				"$qltyDataDetail.VALUE",
@@ -245,7 +245,7 @@ class QualityController extends CodeController {
 						    				->get();
     	$datasetGroups = $dataSet->groupBy(function ($item, $key) {
 									    $group	= "none";
-									    if ($item->PRODUCT_TYPE!=2&&$item['DEFAULT_UOM']	!='Mole fraction') {
+									    if ($item->SAMPLE_TYPE!=2&&$item['DEFAULT_UOM']	!='Mole fraction') {
 									    	$group	= 'NONE_MOLE_FACTION';
 									    }
 									    elseif ($item['DEFAULT_UOM']	=='Mole fraction') $group	= 'MOLE_FACTION';
@@ -282,7 +282,7 @@ class QualityController extends CodeController {
     	
     	$qltyDataEntry 	= QltyData::find($id);
     	if ($qltyDataEntry) {
-    		$productType = $qltyDataEntry->PRODUCT_TYPE;
+    		$productType = $qltyDataEntry->SAMPLE_TYPE;
     		switch ($productType){
     			case 1://oil
    					$attributes = ['QLTY_DATA_ID'=>$id];
@@ -313,7 +313,7 @@ class QualityController extends CodeController {
    					}
     				break;
     			case 2://gas
-    				$constantElementTypes = QltyProductElementType::where("PRODUCT_TYPE",'=', $productType)->select("MOL_WEIGHT","CODE","ID")->get();
+    				$constantElementTypes = QltyProductElementType::where("SAMPLE_TYPE",'=', $productType)->select("MOL_WEIGHT","CODE","ID")->get();
     				
     				$gases = array_key_exists("gas", $postData)?$postData['gas']:null;
     				if ($gases) {

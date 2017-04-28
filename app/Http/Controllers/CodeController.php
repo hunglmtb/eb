@@ -1102,7 +1102,7 @@ class CodeController extends EBController {
 	    			break;
     			case 'COMPOSITION' :
     				$selectData = ['id'=>'QltyProductElementType','targets'=>$i,'COLUMN_NAME'=>$columnName];
-    				$selectData['data'] = \App\Models\QltyProductElementType::where(["PRODUCT_TYPE"	=> 2,"ACTIVE"	=> 1])->orderBy("ORDER")->get();
+    				$selectData['data'] = \App\Models\QltyProductElementType::where(["SAMPLE_TYPE"	=> 2,"ACTIVE"	=> 1])->orderBy("ORDER")->get();
     				$rs[] = $selectData;
     				break;
     			case 'task_group' :
