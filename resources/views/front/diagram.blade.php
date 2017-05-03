@@ -95,7 +95,7 @@ $(function(){
 
 var diagram = {
 
-		change: function(id){
+		change: function(id,params = null){
 			var table = ""
 			var cboSet = "";
 			var value = -1;
@@ -134,8 +134,27 @@ var diagram = {
 				$("#"+cboSet).prop("disabled", true);  
 				sendAjax('/onChangeObj', param, function(data){
 					diagram.loadCbo(cboSet, data);
-					if(cboSet=="cboArea") diagram.change("cboArea");
-					else if(cboSet=="cboFacility") diagram.change("cboFacility"); 
+					if(typeof params == "object" &&params!=null){
+						if(params.cboArea!=$('#cboArea').val()){
+							$('#cboArea').val(params.cboArea);
+							diagram.change("cboArea",params);
+						}
+						else if(params.cboFacility!=$('#cboFacility').val()){
+							$('#cboFacility').val(params.cboFacility);
+							diagram.change("cboFacility",params);
+						}
+						else if(cboSet=="cboFacility"){
+							$('#cboObjType').val(params.objtype);
+							diagram.change("cboObjType",params);
+						}
+						else if(cboSet=="cboObjType"){
+							$('#cboObjs').val(params.cboObjs);
+						}
+					}
+					else{
+						if(cboSet=="cboArea") diagram.change("cboArea");
+						else if(cboSet=="cboFacility") diagram.change("cboFacility"); 
+					}
 				});
 			}
 		},
@@ -1520,6 +1539,9 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 		{
 			currentObjectMapping.setAttribute('object_id',$("#cboObjs").val());
 			currentObjectMapping.setAttribute('object_type',$("#cboObjType").val());
+			currentObjectMapping.setAttribute('cboProdUnit',$("#cboProdUnit").val());
+			currentObjectMapping.setAttribute('cboArea',$("#cboArea").val());
+			currentObjectMapping.setAttribute('cboFacility',$("#cboFacility").val());
 		}
 	}
 	var currentObjectMapping,currentObjectID;
@@ -1539,10 +1561,23 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 
 				if (true || objtype=='ENERGY_UNIT' || objtype=='FLOW' || objtype=='TANK' || objtype=='EQUIPMENT' || objtype=='ENERGY_UNIT_GROUP')
 				{
-					if(objtype != ''){
+					/* currentObjectMapping.setAttribute('cboProdUnit',$("#cboProdUnit").val());
+					currentObjectMapping.setAttribute('cboArea',$("#cboArea").val());
+					currentObjectMapping.setAttribute('cboFacility',$("#cboFacility").val()); */
+					var params = {
+							cboProdUnit	: currentObjectMapping.getAttribute('cboProdUnit'),
+							cboArea		: currentObjectMapping.getAttribute('cboArea'),
+							cboFacility	: currentObjectMapping.getAttribute('cboFacility'),
+							objtype		: objtype,
+							cboObjs		: currentObjectMapping.getAttribute('object_id'),
+							};
+					
+					$("#cboProdUnit").val(currentObjectMapping.getAttribute('cboProdUnit'));
+					diagram.change("cboProdUnit",params);
+					/* if(objtype != ''){
 						$("#cboObjType").val(objtype);
-					}
-					$("#cboObjType").change();
+					} */
+// 					$("#cboObjType").change();
 					showObjectMapping();
 				}
 				else if (objtype=='FLOW')
