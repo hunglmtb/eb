@@ -24,7 +24,9 @@
 	$network		= array("name"		=>"Network",
 							"enableTitle"=>false,
 							"id"		=> "cboSelectNetworkModels",
-							"modelName"	=> "NetWork");
+							"modelName"	=> "NetWork",
+                            "getMethod" => "getDataWithNetworkType",
+                            "filterData"=> 2);
 	
 	$sqlList		= array("name"		=> "SqlList",
 							"enableTitle"=>false,
