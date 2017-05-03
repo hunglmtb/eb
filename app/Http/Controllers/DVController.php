@@ -102,12 +102,8 @@ class DVController extends CodeController {
 		return response ()->json ( $result );
 	}
 	public function getdiagram(Request $request) {
-		$tmp = NetWork::where ( [ 
-				'NETWORK_TYPE' => 2 
-		] )->get ( [ 
-				'ID',
-				'NAME' 
-		] );
+        $network_type = 2;
+        $tmp = NetWork::getDataWithNetworkType($network_type);
 		return response ()->json ( $tmp );
 	}
 	public function loaddiagram($id) {

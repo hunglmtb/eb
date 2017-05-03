@@ -16,4 +16,7 @@ class NetWork extends DynamicModel
 		return AllocJob::where("NETWORK_ID","=",$this->ID)->select("ID","NAME")->get();
 	}
 	
+	public static function getDataWithNetworkType($network_type = null){
+		return NetWork::where(['NETWORK_TYPE' => $network_type])->select("ID","NAME")->get();
+	}
 }
