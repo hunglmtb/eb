@@ -62,10 +62,10 @@ class AllocationController extends Controller {
 		$allocjob = AllocJob::getTableName ();
 		$code_alloc_value_type = CodeAllocValueType::getTableName();
 		
-		$result = DB::table ( $allocjob . ' AS a' )
-		->join ( $code_alloc_value_type . ' AS b', 'a.VALUE_TYPE', '=', 'b.ID' )
-		->where ( ['a.NETWORK_ID' => $network_id])
-		->orderBy('a.ID')->select('a.*', 'b.name AS VALUE_TYPE_NAME')->get();
+		$result = DB::table ( $allocjob)
+		->join ( $code_alloc_value_type, "$allocjob.VALUE_TYPE", '=', "$code_alloc_value_type.ID" )
+		->where ( ["$allocjob.NETWORK_ID" => $network_id])
+		->orderBy("$allocjob.ID")->select("$allocjob.*", "$code_alloc_value_type.name AS VALUE_TYPE_NAME")->get();
 		
 		return $result;
 	}
