@@ -744,7 +744,7 @@ class AdminController extends Controller {
 						
 					//\DB::enableQueryLog();
 					AuditValidateTable::updateOrCreate($condition,$obj);
-					$this->updateRecordStatus("V",$table,$facility_id,$dateFrom,$dateTo,$current_username);
+					$this->updateRecordStatus($data['PREFIX'],$table,$facility_id,$dateFrom,$dateTo,$current_username);
 					//\Log::info(\DB::getQueryLog());
 				}
 				
@@ -899,7 +899,7 @@ class AdminController extends Controller {
 					);
 					$obj['TABLE_NAME'] = $table;
 					AuditApproveTable::updateOrCreate($condition,$obj);
-					$this->updateRecordStatus("A",$table,$facility_id,$dateFrom,$dateTo,$current_username);
+					$this->updateRecordStatus($data['PREFIX'],$table,$facility_id,$dateFrom,$dateTo,$current_username);
 				}
 				
 				$objType_id 	= $data['OBJECTTYPE'];
