@@ -2,6 +2,12 @@
 $currentSubmenu = '/am/validatedata';
 $configuration	= isset($configuration)?$configuration:auth()->user()->getConfiguration();
 
+$filterbeginDate = ['name'	=> "Begin date",
+					'id'	=> "begin_date",
+					];
+$filterEndDate = ['name'	=> "End date",
+					'id'	=> "end_date",
+					];
 $listControls = [ 
 		'LoProductionUnit' => array (
 				'label' => 'Production Unit',
@@ -33,32 +39,11 @@ $listControls = [
 		),
 		
 		'loadData' => array(
-				'label' => 'Load Data',
+				'label' => 'Load data sources',
 				'ID' => 'loadData',
 				'TYPE' => 'BUTTON',
 				'onclick' => '_validatedata.loadData()'
 		),
-		
-		'begin_date' => array (
-				'label' => 'From Date (<span style="font-size:9px; color: red;">for validate All</span>)',
-				'ID' => 'begin_date',
-				'TYPE' 		=> 'DATE',
-				'FORMAT'	=> $configuration['time']['DATE_FORMAT_CARBON'],
-		),
-		
-		'end_date' => array (
-				'label' 	=> 'To Date (<span style="font-size:9px; color: red;">for validate All</span>)',
-				'ID' 		=> 'end_date',
-				'TYPE' 		=> 'DATE',
-				'FORMAT'	=> $configuration['time']['DATE_FORMAT_CARBON'],
-		) ,
-		
-		'validateData' => array(
-				'label' => 'Validate All',
-				'ID' => 'validate All',
-				'TYPE' => 'BUTTON',
-				'onclick' => '_validatedata.validateAll()'
-		)
 ];
 
 ?>
@@ -68,11 +53,13 @@ $listControls = [
 @section('content')
 
 <script type="text/javascript">
+$(window).load(function () {
+	_validatedata.loadData();
+});
 $(function(){
 	$("#checkAll").click(function () {
         $('.chckbox').prop('checked', this.checked);
 	});
-	
 });
 
 var _validatedata = {
@@ -102,10 +89,10 @@ var _validatedata = {
 				str += '<tr class='+ cssClass +'>';
 				str += '	<td class="vcolumn35"><input class="chckbox" table_name = '+data[i].TABLE_NAME+' name='+data[i].ID +' type="checkbox" ' + (data[i].T_ID) + '></td>';
 				str += '	<td class="vcolumn205" id="table_name_'+i+'">'+ checkValue(data[i].TABLE_NAME,'') +'</td>';
-				str += '	<td class="vcolumn205">'+ checkValue(data[i].FRIENDLY_NAME,'') +'</td>';
-				str += '	<td class="vcolumn165"><input type="text" id="txtDateFrom_'+i+'" value="'+formatDate(checkValue(data[i].DATE_FROM,''))+'"/></td>';
-				str += '	<td class="vcolumn165"><input type="text" id="txtDateTo_'+i+'" value="'+formatDate(checkValue(data[i].DATE_TO,''))+'"/></td>'; 
-				str += '	<td class="vcolumn105"><input type="button" onclick="_validatedata.validateData('+i+')" value="Validate" class="btnValidate"/></td>';
+				//str += '	<td class="vcolumn205">'+ checkValue(data[i].FRIENDLY_NAME,'') +'</td>';
+				//str += '	<td class="vcolumn165"><input type="text" id="txtDateFrom_'+i+'" value="'+formatDate(checkValue(data[i].DATE_FROM,''))+'"/></td>';
+				//str += '	<td class="vcolumn165"><input type="text" id="txtDateTo_'+i+'" value="'+formatDate(checkValue(data[i].DATE_TO,''))+'"/></td>'; 
+				//str += '	<td class="vcolumn105"><input type="button" onclick="_validatedata.validateData('+i+')" value="Validate" class="btnValidate"/></td>';
 				str += '</tr>';
 			}
 
@@ -145,7 +132,7 @@ var _validatedata = {
 			});
 		},
 
-		validateAll : function(){
+		validateAll : function(prefix){
 			var tableName="";
 			$('.chckbox').each(function(){
 				if(this.checked) tableName+=(tableName==""?"":",")+$(this).attr("table_name");
@@ -166,7 +153,8 @@ var _validatedata = {
 					'DATE_TO' : dateTo,
 					'TABLE_NAMES' : tableName,
 					'GROUP_ID' : $('#DataTableGroup').val(),
-					'OBJECTTYPE' : $('#ObjectType').val()
+                    'OBJECTTYPE' : $('#ObjectType').val(),
+                    'PREFIX' : prefix
 			}
 
 			sendAjax('/am/validateData', param, function(data){
@@ -177,26 +165,30 @@ var _validatedata = {
 }
 </script>
 
-<div>
+<div style="width:270px;float:left">
 	<table style="table-layout: fixed;">
 		<thead id="table5">
 			<tr>
 				<td class="column30"><input class="chckAll" type="checkbox"
 					id="checkAll"></td>
-				<td class="column200">Data table</td>
-				<td class="column200">Name</td>
-				<td class="column160">From date</td>
-				<td class="column160">To date</td>
-				<td class="column100">Action</td>
+				<td class="column200">Data source</td>
 			</tr>
 		</thead>
 	</table>
 
-	<div id="listValidate">
+	<div id="listValidate" style="width:270px">
 		<table style="table-layout: fixed;">
 			<tbody id="bodyList">
 			</tbody>
 		</table>
 	</div>
+</div>
+<div style="width:400px;float:left;margin:10px 20px">
+{{ Helper::selectDate($filterbeginDate)}}
+{{ Helper::selectDate($filterEndDate)}}
+<br>
+<input type="button" value="Validate data" onclick="_validatedata.validateAll('V')" style="width:230px;margin-top:10px">
+<input type="button" value="Set back to Provisional" onclick="_validatedata.validateAll('P')" style="width:230px;margin-top:5px">
+<!-- <input type="button" value="Set back to Approved" onclick="_validatedata.validateAll()" style="width:230px;margin-top:5px"> -->
 </div>
 @stop
