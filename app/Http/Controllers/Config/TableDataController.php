@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Config;
 use DB;
 use App\Http\Controllers\CodeController;
 use App\Services\TableDataService;
+use App\Services\TableDataServiceOracle;
 use Illuminate\Http\Request;
 
 class TableDataController extends CodeController {
@@ -12,7 +13,7 @@ class TableDataController extends CodeController {
     	$action 	= \Input::get('action');
     	$dbh 		= \DB::connection()->getPdo();
     	$dbh->setAttribute (\PDO::ATTR_EMULATE_PREPARES, false);
-    	$lm 		= new TableDataService($dbh);
+    	$lm 		=  config('database.default')==='oracle'?new TableDataServiceOracle($dbh):new TableDataService($dbh);
     	$lm->setModelName($tablename);
     	
     	return view ( 'tableData.ebedittable',['tablename'=>$tablename,
@@ -27,10 +28,10 @@ class TableDataController extends CodeController {
 		$ids 		= $postData["ids"];
 		$type 		= $postData["type"];
 		$result = DB::table ( $table )->whereIn("ID",$ids)->select('*')->get();
+			//\Log::info($result);
 		$sss="";
 		foreach ($result as $r){
 			$row = get_object_vars($r);
-			\Log::info($row);
 			$f="";
 			$v="";
 			$s="";
@@ -42,9 +43,9 @@ class TableDataController extends CodeController {
 			if($type==1)
 				$sss.="insert into $table($f) values($v);\n";
 			else if($type==2)
-				$sss.="update $table set $s where id=$row[ID];\n";
+				$sss.="update $table set $s where id=".(array_key_exists("ID",$row)?$row["ID"]:$row["id"]).";\n";
 			else
-				$sss.="insert into $table($f) values($v);~@^@~update $table set $s where id=$row[ID];";
+				$sss.="insert into $table($f) values($v);~@^@~update $table set $s where id=".(array_key_exists("ID",$row)?$row["ID"]:$row["id"]).";";
 		}
 
 		$sss=str_replace("''","null", $sss);

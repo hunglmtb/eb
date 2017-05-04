@@ -84,7 +84,75 @@ $rel_columns=array();
 $rel_tables=array();
 $lm->grid_show_search_box = true;
 
-//if($action=='edit' || $action=='insert')
+if(config('database.default')==='oracle')
+{
+	$sSQL = "select COLUMN_NAME, DATA_TYPE, NULLABLE,  DATA_DEFAULT column_default from user_tab_cols where table_name = '$tablename'";
+	//$sSQL="SHOW COLUMNS FROM $tablename";
+	$result=$lm->query($sSQL);
+	
+	$sSQL = "SELECT a.column_name, c_pk.table_name
+  FROM user_cons_columns a
+  JOIN user_constraints c ON a.owner = c.owner
+                        AND a.constraint_name = c.constraint_name
+  JOIN user_constraints c_pk ON c.r_owner = c_pk.owner
+                           AND c.r_constraint_name = c_pk.constraint_name
+ WHERE c.constraint_type = 'R'
+   AND a.table_name = '$tablename'";
+	$tmp=$lm->query($sSQL);
+	$refs = [];
+	foreach($tmp as $row)
+	{
+		$refs[strtolower($row['column_name'])] = $row['table_name'];
+	}
+	foreach($result as $row)
+	{
+		$column_name=strtolower($row['column_name']);
+
+		if($row['nullable']=="N")
+			$lm->required[$column_name]="*";
+
+		if($row['data_type']=="DATETIME")
+		{
+			$lm->form_input_control[$column_name]="--datetime";
+			$lm->grid_input_control[$column_name]="--datetime";
+		}
+		else if($row['data_type']=="DATE")
+		{
+			$lm->form_input_control[$column_name]="--date";
+			$lm->grid_input_control[$column_name]="--date";
+		}
+		else if($row['data_type']=="bit" || $row['data_type']=="tinyint(1)" || (strtoupper($column_name)=="ACTIVE"))
+		{
+			$lm->form_input_control[$column_name]="--checkbox";
+			$lm->grid_input_control[$column_name]="--checkbox";
+		}
+		else if(strtoupper($column_name)=="ID")
+		{
+			//$lm->form_input_control[$column_name]="--hidden";
+		}
+		else
+			$lm->grid_input_control[$column_name]="--text";
+		if(array_key_exists($column_name, $refs)) // || $row['Key']=='UNI')
+		{
+			{
+				$ref_table=$refs[$column_name];
+
+				{
+					$s_where="";
+					$s_order="";
+					if(strtolower(substr($ref_table,0,5))=='code_')
+					{
+						$s_where='where active=1';
+						$s_order='order by order_,id';
+					}
+					$lm->form_input_control[$column_name]= "select id, name from $ref_table $s_where $s_order --select".($row['nullable']=="Y"?"":"#");
+					$lm->grid_input_control[$column_name]= "select id, name from $ref_table $s_where $s_order --select".($row['nullable']=="Y"?"":"#");
+				}
+			}
+		}
+	}
+}
+else
 {
 	$sSQL="SHOW COLUMNS FROM $tablename";
 	$result=$lm->query($sSQL);
