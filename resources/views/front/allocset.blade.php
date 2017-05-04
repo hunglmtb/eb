@@ -302,6 +302,8 @@ var _configallocation = {
 										<td width="100"><b><font color="black">Alloc Type</font></b></td>
 										<td><font color="black"><b>Alloc from objects</b></font></td>
 										<td><font color="black"><b>Alloc to objects</b></font></td>
+								        <td><b><font color="black">Begin date</font></b></td>
+								        <td><b><font color="black">End date</font></b></td>
 										<td width="200">&nbsp;</td>
 									</tr>
 								</thead>
@@ -460,18 +462,26 @@ var _configallocation = {
 									<option value="{!!$re['ID']!!}">{!!$re['NAME']!!}</option> 
 								@endforeach
 							</select>
-								<div style="position: absolute; width: 400px; bottom: 10px; left: 50%; margin-left: -200px; text-align: center">
-									<input onClick="addRunner()" type="button" value="Add Runner"
-										name="B3" id="QaddRunner"> <input onClick="saveRunnerEdit()"
-										type="button" value="Save" style="display: none"
-										id="QsaveRunnerEdit"> <input onClick="saveRunnerClone()"
-										type="button" value="Save as New Runner" style="display: none"
-										id="QsaveRunnerCopy"> <input onClick="closeBoxEditRunner()"
-										type="button" value="Cancel" name="B4">
-								</div>
 							</td>
 						</tr>
 					</table>
+					<table  cellspacing="0" style="width:70%;margin-top:10px">
+						<tr>
+							<td width="12%">Begin Date</td>
+							<td width="30%"><input type="text" class="_datepicker" id="runner_begin_date"></td>
+							<td width="12%">End Date</td>
+							<td width="30%"><input type="text" class="_datepicker" id="runner_end_date"></td>
+						</tr>
+					</table>
+                    <div style="margin-top: 10px; margin-bottom: 5px; text-align: center">
+                        <input onClick="addRunner()" type="button" value="Add Runner"
+                            name="B3" id="QaddRunner"> <input onClick="saveRunnerEdit()"
+                            type="button" value="Save" style="display: none"
+                            id="QsaveRunnerEdit"> <input onClick="saveRunnerClone()"
+                            type="button" value="Save as New Runner" style="display: none"
+                            id="QsaveRunnerCopy"> <input onClick="closeBoxEditRunner()"
+                            type="button" value="Cancel" name="B4">
+                    </div>
 				</div>
 			</div>
 	</div>

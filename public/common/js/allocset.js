@@ -39,7 +39,9 @@ function AddJob() {
 		'ALLOC_COMP' : Number($("#chk_comp").prop("checked")),
 		'ALLOC_GASLIFT' : Number($("#chk_gaslift").prop("checked")),
 		'ALLOC_CONDENSATE' : Number($("#chk_condensate").prop("checked")),
-		'DAY_BY_DAY' : Number($("#chk_daybyday").prop("checked"))
+		'DAY_BY_DAY' : Number($("#chk_daybyday").prop("checked")),
+		'BEGIN_DATE' : $("#job_begin_date").val(),
+		'END_DATE' : $("#job_end_date").val()
 	}
 	
 	sendAjaxNotMessage('/addJob', param, function(data){
@@ -125,6 +127,11 @@ function editJob(job_id) {
 	$("#QAddJob").css("display", "none");
 	$("#QSaveJobEdit").css("display", "inline");
 
+    var begin_date = $("#Qbegindate_" + job_id).text();
+    var end_date = $("#Qenddate_" + job_id).text();
+	$("#job_begin_date").val(begin_date);
+	$("#job_end_date").val(end_date);
+
 	$("#QsaveEdit").attr("href", "javascript:saveEdit(" + job_id + ")");
 	showEditJob();
 }
@@ -160,7 +167,9 @@ function saveEdit(job_id) {
 			"alloc_water" : Number($("#chk_water").prop("checked")),
 			"alloc_gaslift" : Number($("#chk_gaslift").prop("checked")),
 			"alloc_condensate" : Number($("#chk_condensate").prop("checked")),
-			"alloc_comp" : Number($("#chk_comp").prop("checked"))
+			"alloc_comp" : Number($("#chk_comp").prop("checked")),
+			"begin_date" : $("#job_begin_date").val(),
+			"end_date" : $("#job_end_date").val()
 		};
 		
 		sendAjax('/editJob', param, function(data){
@@ -280,6 +289,9 @@ function editRunner(runner_id) {
 	$("#cboTheorValueType").val($("#theor_value_type_" + runner_id).text());
 	$("#cboAllocFromOption").val($("#runner_item" + runner_id).data("from_option"));
 
+    $("#runner_begin_date").val($("#Qbegindate_" + runner_id).text());
+    $("#runner_end_date").val($("#Qenddate_" + runner_id).text());
+
 	$("#objsFrom").html($("#Qobjectfrom_" + runner_id).html());
 	$("#objsFrom span")
 			.append(
@@ -360,7 +372,9 @@ function addRunner() {
 		"from_option" : $("#cboAllocFromOption").val(),
 		"obj_from" : vRunnerFrom,
 		"obj_to" : toObject	,
-		"runner_name" :  $("#txtRunnerName").val()	
+        "runner_name" :  $("#txtRunnerName").val(),	
+        "begin_date" : $("#runner_begin_date").val(),
+        "end_date" : $("#runner_end_date").val()
 	}
 	
 	sendAjaxNotMessage('/addrunner', param, function(data){
@@ -488,7 +502,9 @@ function saveRunnerEdit(runner_id) {
 				"theor_value_type" : $("#cboTheorValueType").val(),
 				"from_option" : $("#cboAllocFromOption").val(),
 				"obj_from" : fromObject,
-				"obj_to" : toObject
+				"obj_to" : toObject,
+				"begin_date" : $("#runner_begin_date").val(),
+				"end_date" : $("#runner_end_date").val()
 			}
 			
 			sendAjaxNotMessage(url, param, function(data){
