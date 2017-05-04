@@ -271,8 +271,13 @@ class AllocationController extends Controller {
 				else
 					$str .= "<td><span id='Qobjectto_" . $row->ID . "'>$o_out</span></td>";
 				
-				$str .= "<td><span id='Qbegindate_" . $row->ID . "'>$row->BEGIN_DATE</span></td>";
-				$str .= "<td><span id='Qenddate_" . $row->ID . "'>$row->END_DATE</span></td>";
+
+                $runner_begin_date_formart = date_create($row->BEGIN_DATE);
+                $runner_begin_date_formart = date_format($runner_begin_date_formart,"m/d/Y");
+                $runner_end_date_formart = date_create($row->END_DATE);
+                $runner_end_date_formart = date_format($runner_end_date_formart,"m/d/Y");
+				$str .= "<td><span id='Qbegindate_" . $row->ID . "'>$runner_begin_date_formart</span></td>";
+				$str .= "<td><span id='Qenddate_" . $row->ID . "'>$runner_end_date_formart</span></td>";
 				$str .= "<td width='170' style='font-size:8pt'>&nbsp;";
 				$str .= "<a href=\"javascript:checkRunner($row->ID)\">Simulate</a> |";
 				$str .= "<a href=\"javascript:deleteRunner($row->ID)\">Delete</a> |";

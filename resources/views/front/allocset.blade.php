@@ -132,8 +132,8 @@ var _configallocation = {
 			str += '	<td><span style="color:black;font-weight: normal;" id="QjobName_'+ data[i]['ID'] +'">'+ data[i]['NAME'] +'</span></td>';
 			str += '	<td><span style="color:black;font-weight: normal;" id="Qavt_'+ data[i]['ID'] +'" value="'+ data[i]['VALUE_TYPE'] +'">'+ data[i]['VALUE_TYPE_NAME'] +'</span></td>';
 			str += '	<td><span style="color:black;font-weight: normal;" id="Qallocphase_'+ data[i]['ID'] +'">'+ phase +'</span></td>';
-			str += '	<td><span style="color:black;font-weight: normal;" id="Qbegindate_'+ data[i]['ID'] +'">'+ (data[i]['BEGIN_DATE']?data[i]['BEGIN_DATE']:"") +'</span></td>';
-			str += '	<td><span style="color:black;font-weight: normal;" id="Qenddate_'+ data[i]['ID'] +'">'+ (data[i]['END_DATE']?data[i]['END_DATE']:"") +'</span></td>';
+			str += '	<td><span style="color:black;font-weight: normal;" id="Qbegindate_'+ data[i]['ID'] +'">'+ (data[i]['BEGIN_DATE'] ? formatDate(data[i]['BEGIN_DATE']):"") +'</span></td>';
+			str += '	<td><span style="color:black;font-weight: normal;" id="Qenddate_'+ data[i]['ID'] +'">'+ (data[i]['END_DATE'] ? formatDate(data[i]['END_DATE']):"") +'</span></td>';
 			str += '	<td align="center" style="font-size:8pt">&nbsp;';
 			str += '		<a href=\"javascript:checkJob('+ data[i]['ID'] +')\">Simulate</a> | ';
 			str += '		<a href=\"javascript:deleteJob('+ data[i]['ID'] +')\">Delete</a> | ';
