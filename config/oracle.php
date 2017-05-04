@@ -11,5 +11,8 @@ return [
 			'password' => env('DB_PASSWORD_ORACLE', '123456'),
 			'charset'  => env('DB_CHARSET', 'AL32UTF8'),
 			'prefix'   => env('DB_PREFIX', ''),
+    		'options' => [
+//     				PDO::ATTR_CASE => PDO::CASE_UPPER,
+    		]
 	],
 ];

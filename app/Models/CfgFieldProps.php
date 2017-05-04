@@ -69,6 +69,7 @@ class CfgFieldProps extends DynamicModel
     }
     
      public static function getFieldProperties($table,$field){
+     	\Helper::setGetterUpperCase();
      	$re_prop 				= CfgFieldProps::where(['TABLE_NAME'=>$table, 'COLUMN_NAME'=>$field])->select('*')->get();
      	$mdl					= \Helper::getModelName($table);
      	$objectExtension 		= method_exists($mdl,"getObjects")?$mdl::getObjects():[];

@@ -68,8 +68,8 @@ class Helper {
 		if ($collection) {
 			foreach($collection as $item ){
 				if($item){
-					$nameValue 	= $item->CODE;
-					$fvalue 	= $item->ID;
+					$nameValue 	= isset($item->CODE)?$item->CODE:"";
+					$fvalue 	= $item->ID!=""?$item->ID:$nameValue;
 					$optionName	= $item->NAME;
 					$optionName	= Lang::has("front/site.$optionName", $lang)?trans("front/site.$optionName"):$optionName;
 					$htmlFilter .= '<option name="'.$nameValue
@@ -291,6 +291,31 @@ class Helper {
 			$dbh 			= \DB::connection()->getPdo();
 	    	$dbh->setAttribute (\PDO::ATTR_CASE, \PDO::CASE_UPPER);
 		}
+	}
+	
+	public static function setGetterLowerCase(){
+		if(config('database.default')==='oracle'){
+			$dbh 			= \DB::connection()->getPdo();
+			$dbh->setAttribute (\PDO::ATTR_CASE, \PDO::CASE_LOWER);
+		}
+	}
+	
+	public static function setGetterNaturalCase(){
+		if(config('database.default')==='oracle'){
+			$dbh 			= \DB::connection()->getPdo();
+			$dbh->setAttribute (\PDO::ATTR_CASE, \PDO::CASE_NATURAL);
+		}
+	}
+	
+	
+	public static function extractColumns($columns){
+		$results = [];
+		foreach($columns as $column ){
+			if ($column&&isset($column->column_name)) {
+				$results[] = $column->column_name;
+			}
+		}
+		return $results;
 	}
 	
 	public static function getCommonGroupFilter($options = []){

@@ -188,34 +188,36 @@ class AdminController extends Controller {
 		
 		$result = array();
 		
+		
+		$userDataScope 		= UserDataScope::getTableName();
+		$loProductionUnit 	= LoProductionUnit::getTableName();
+		$loArea 			= LoArea::getTableName();
+		$facility 			= Facility::getTableName();
+		$user				= User::getTableName();
+		$userUserRole 		= UserUserRole::getTableName();
+		$userRole 			= UserRole::getTableName();
 		$listColumn = [
-				'a.ID', 'a.USERNAME','a.PASSWORD_CHANGED','b.PU_ID' , 'b.AREA_ID', 'b.FACILITY_ID', 'a.ID AS ROLE',
-				'pu.NAME AS PU_NAME','ar.NAME AS AREA_NAME','fa.NAME AS FACILITY_NAME', 'a.EXPIRE_DATE', 'a.ACTIVE', 
-				'a.ACTIVE AS STATUS', 'a.expire_date AS expire_status'
+				"$user.ID", "$user.USERNAME","$user.PASSWORD_CHANGED","$userDataScope.PU_ID" , "$userDataScope.AREA_ID",
+				"$userDataScope.FACILITY_ID", "$user.ID AS ROLE",
+				"$loProductionUnit.NAME AS PU_NAME","$loArea.NAME AS AREA_NAME","$facility.NAME AS FACILITY_NAME", 
+				"$user.EXPIRE_DATE", "$user.ACTIVE", "$user.ACTIVE AS STATUS", "$user.expire_date AS expire_status"
 		];
 		
-		$userDataScope = UserDataScope::getTableName();
-		$loProductionUnit = LoProductionUnit::getTableName();
-		$loArea = LoArea::getTableName();
-		$facility = Facility::getTableName();
-		$user = User::getTableName();
-				
-		$listData = DB::table($user.' AS a')
-		->leftJoin($userDataScope.' AS b', 'a.id', '=', 'b.user_id')
-		->leftJoin($loProductionUnit.' AS pu', 'pu.id', '=', 'b.PU_ID')
-		->leftJoin($loArea.' AS ar', 'ar.id', '=', 'b.AREA_ID')
-		->leftJoin($facility.' AS fa', 'fa.id', '=', 'b.FACILITY_ID')
-		->distinct("a.ID")
-		->groupBy("a.ID")
+		
+		$query = User::leftJoin($userDataScope, "$user.id", "=", "$userDataScope.user_id")
+		->leftJoin($loProductionUnit, "$loProductionUnit.id", '=', "$userDataScope.PU_ID")
+		->leftJoin($loArea, "$loArea.id", '=', "$userDataScope.AREA_ID")
+		->leftJoin($facility, "$userDataScope.FACILITY_ID", 'like', "%$facility.id")
+		->distinct("$user.ID")
+		->groupBy("$user.ID")
 		->select($listColumn)
-		->orderBy ( 'a.id', 'asc' )
-		->get ();
+		->orderBy ( "$user.id", 'asc' );
+		
+		$listData = $query->get ();
 		
 		foreach ( $listData as $data ) {
 			$sRole = "";
 			
-			$userUserRole = UserUserRole::getTableName();
-			$userRole = UserRole::getTableName();
 					
 			$subList = DB::table ( $userUserRole.' AS x' )
 			->join ( $userRole.' AS z', 'x.role_id', '=', 'z.id' )

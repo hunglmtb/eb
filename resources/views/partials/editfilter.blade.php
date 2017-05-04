@@ -21,7 +21,9 @@
 		
 		editBox.finishSelectingObjects = function(close){
 			var dataStore 	= editBox.buildFilterData();
-			var resultText 	= editBox.buildFilterText();
+			var resultText 	= "";
+			if(typeof editBox.buildFilterText == "function") 
+				resultText 	= editBox.buildFilterText();
 			if(typeof editBox.editSelectedObjects == "function") 
 				editBox.editSelectedObjects(dataStore,resultText);
 			editBox.closeEditWindow(close);

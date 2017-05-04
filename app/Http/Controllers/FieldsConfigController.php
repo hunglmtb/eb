@@ -42,20 +42,32 @@ class FieldsConfigController extends Controller {
 	}
 	
 	private function getFields($table) {
-		$cfg_field_props = collect($this->getFieldsEffected($table)->toArray());
+		$model 	= \Helper::getModelName($table);
+		$mdl 	= new $model;
+		$columns = $mdl->getTableColumns();
+		sort($columns);
 		
-		//\DB::enableQueryLog ();
-		$tmps = DB::table ('INFORMATION_SCHEMA.COLUMNS')
-		->where ( ['TABLE_NAME' => $table] )
-		->whereNotIn('COLUMN_NAME', $cfg_field_props)
-		->distinct ()
-		->select ('COLUMN_NAME')->get();
-		//\Log::info ( \DB::getQueryLog () );
+		$tmps = $columns;
 		
-		return $tmps;
+		$cfg_field_props = $this->getFieldsEffected($table);
+		if ($cfg_field_props) {
+// 			$field 		= config('database.default')==='oracle'?'column_name':'COLUMN_NAME';
+			$field 		= 'COLUMN_NAME';
+			$cColumns 	= $cfg_field_props->pluck($field)->toArray();
+			$tmps 		= array_diff($columns, $cColumns);
+		}
+		
+		$result = [];
+		foreach($tmps as $tmp){
+			$result[] = ['COLUMN_NAME'	=> $tmp];
+		}
+		
+		return $result;
 	}	
 	
 	private function getFieldsEffected($table) {
+		\Helper::setGetterUpperCase();
+		
 		$result = CfgFieldProps::where(['TABLE_NAME'=>$table])
 		->orderBy('FIELD_ORDER')->get(['COLUMN_NAME']);
 		

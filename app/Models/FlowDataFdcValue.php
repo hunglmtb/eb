@@ -6,7 +6,7 @@ use App\Models\FeatureFlowModel;
 class FlowDataFdcValue extends FeatureFlowModel
 {
 	protected $table = 'FLOW_DATA_FDC_VALUE';
-	protected $primaryKey = 'ID';
+	/* protected $primaryKey = 'ID';
 	
 	protected $fillable  = ['FLOW_ID',
 							'OCCUR_DATE',
@@ -40,5 +40,5 @@ class FlowDataFdcValue extends FeatureFlowModel
 							'CTV',
 							'STATUS_BY',
 							'STATUS_DATE',
-							'RECORD_STATUS'];
+							'RECORD_STATUS']; */
 }

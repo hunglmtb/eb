@@ -38,9 +38,9 @@ class FlowController extends CodeController {
     	$planType 		= array_key_exists('CodePlanType', $postData)?$postData['CodePlanType']:0;
     	$forecastType 	= array_key_exists('CodeForecastType', $postData)?$postData['CodeForecastType']:0;
     	
-    	$flow = Flow::getTableName();
-    	$codeFlowPhase = CodeFlowPhase::getTableName();
-    	
+    	$flow 			= Flow::getTableName();
+    	$codeFlowPhase 	= CodeFlowPhase::getTableName();
+    	 
     	$where = ['FACILITY_ID' => $facility_id, 'FDC_DISPLAY' => 1];
     	if ($record_freq>0) {
     		$where["$flow.RECORD_FREQUENCY"]= $record_freq;
@@ -66,6 +66,7 @@ class FlowController extends CodeController {
 			    			"$codeFlowPhase.name as PHASE_NAME",
 			    			"$codeFlowPhase.CODE as PHASE_CODE");
 		
+// 		\Helper::setGetterUpperCase();
     	$dataSet = Flow::join($codeFlowPhase,'PHASE_ID', '=', "$codeFlowPhase.ID")
 				    	->where($where)
 				    	->whereDate('EFFECTIVE_DATE', '<=', $occur_date)
@@ -83,7 +84,9 @@ class FlowController extends CodeController {
 		    			->orderBy('FL_FLOW_PHASE')
 		    			->get();
     	//  		\Log::info(\DB::getQueryLog());
+//     	\Helper::setGetterLowerCase();
     	return ['dataSet'=>$dataSet];
+    	   
     }
     
     public function getObjectIds($dataSet,$postData){

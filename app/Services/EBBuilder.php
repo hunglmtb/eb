@@ -24,4 +24,14 @@ class EBBuilder extends Builder {
 		}
 		return parent::orderBy($column, $direction);
 	}
+	
+	public function getColumnListing($table)
+	{
+		$columns = parent::getColumnListing($table);
+		if ($this->isOracleModel){
+			$results = \Helper::extractColumns($columns);
+			$columns = $results;
+		}
+		return $columns;
+	}
 }

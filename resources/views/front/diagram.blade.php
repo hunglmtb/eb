@@ -91,6 +91,7 @@ $(function(){
 	$("#sur_flow_phase").html($("#Qflowphase").html());	
 
 	$("#outlineContainer").css("height",150);	
+	
 });
 
 var diagram = {

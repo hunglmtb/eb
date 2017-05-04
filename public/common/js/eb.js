@@ -478,12 +478,14 @@ var actions = {
 					 		return ecollection;
 						},
 	isEditable 			: function (column,rowData,rights){
-						var rs = column.DATA_METHOD==1||column.DATA_METHOD=='1';
+						var field = typeof column.DATA_METHOD!="undefined"?column.DATA_METHOD:column.data_method;
+						var rs = field==1||field=='1';
 						if (rs) {
-							if(rowData.RECORD_STATUS=="A"){
+							var rField = typeof column.RECORD_STATUS=="string"?column.RECORD_STATUS:column.record_status;
+							if(rField=="A"){
 								rs =$.inArray("ADMIN_APPROVE", rights);
 							}
-							else if(rowData.RECORD_STATUS=="V"){
+							else if(rField=="V"){
 								rs =$.inArray("ADMIN_APPROVE", rights)&&$.inArray("ADMIN_VALIDATE", rights);
 							}
 						}
@@ -523,22 +525,34 @@ var actions = {
 	validates : function (input,value,property){
 //		if(property)
 	},
+	getPropertyValue: function (object,property){
+		if(typeof object[property] != "undefined") return object[property] ;
+		return object[property.toLowerCase()] ;
+	},
 	defaultRenderFirsColumn : function ( data, type, rowData ) {
 		var html = "<div class='firstColumn'>"+data+"</div>";
 		var extraHtml = "<div class='extraFirstColumn'>";
+		var phaseName	= rowData.hasOwnProperty('PHASE_NAME')?rowData['PHASE_NAME']:rowData['phase_name'];
 		if(rowData.hasOwnProperty('PHASE_CODE')){
-			extraHtml += "<div class='phase "+rowData['PHASE_CODE']+"'>"+
-					rowData['PHASE_NAME']+"</div>";
+			extraHtml += "<div class='phase "+rowData['PHASE_CODE']+"'>"+ phaseName+"</div>";
 		}
-		else if(rowData.hasOwnProperty('PHASE_NAME')){
-			extraHtml += "<div class='phase "+rowData['PHASE_NAME']+"'>"+
-			rowData['PHASE_NAME']+"</div>";
+		else if(rowData.hasOwnProperty('phase_code')){
+			extraHtml += "<div class='phase "+rowData['phase_code']+"'>"+phaseName+"</div>";
+		}
+		else if(rowData.hasOwnProperty('PHASE_NAME')||rowData.hasOwnProperty('phase_name')){
+			extraHtml += "<div class='phase "+phaseName+"'>"+phaseName+"</div>";
 		}
 		if(rowData.hasOwnProperty('STATUS_NAME')){
 			extraHtml +="<span class='eustatus'>"+rowData['STATUS_NAME']+"</span>";
 		}
+		else if(rowData.hasOwnProperty('status_name')){
+			extraHtml +="<span class='eustatus'>"+rowData['status_name']+"</span>";
+		}
 		if(rowData.hasOwnProperty('TYPE_CODE')){
 			extraHtml +="<span class='eventType'>"+rowData['TYPE_CODE']+"</span>";
+		}
+		else if(rowData.hasOwnProperty('type_code')){
+			extraHtml +="<span class='eventType'>"+rowData['type_code']+"</span>";
 		}
 		extraHtml += "</div>";
 		return html+extraHtml;
@@ -643,7 +657,8 @@ var actions = {
 		case "select":
 			editable['type'] = type;
 			editable['source'] = collection;
-			editable['value'] = cellData==null?(collection!=null&&collection[0]!=null?collection[0].ID:0):cellData;
+			editable['value'] = cellData==null?(collection!=null&&collection[0]!=null?
+					actions.getPropertyValue(collection[0],"ID"):0):cellData;
 //			$(td).editable(editable);
 //			return;
 	    	break;
@@ -726,9 +741,7 @@ var actions = {
 		    		if(configuration.number.DECIMAL_MARK=='comma') val = val.replace('.',',')
 					editable.input.$input.val(val);
     		  }
-//    		  if(typeof  editable.input.$input.get(0) != "undefined") editable.input.$input.get(0).select();
     		  editable.input.$input.attr('tabindex', -1);
-//    		  if(type=="timepicker") $(".table-condensed th").text("");
     	});
     	
     	$(td).on('hidden', function(e, reason) {
@@ -875,11 +888,8 @@ var actions = {
 		}
 		table.row( '#'+rowData['DT_RowId'] ).data(rowData);
 		table.columns().footer().draw(); 
-//        	table.draw(false);
 		//dependence columns
 		actions.dominoColumns(columnName,newValue,tab,rowData,collection,table,td);
-		/* var tabindex = $(this).attr('tabindex');
-            $('[tabindex=' + (tabindex +1)+ ']').focus(); */
 	},
 	
 	extensionHandle			:	function(tab,columnName,rowData,limit,successFunction){
@@ -934,7 +944,7 @@ var actions = {
 			if(typeof(dataSet) == "object" &&dataSet !=null &&dataSet.length>0){
 				sourceColumn = data.dataSet[dependence].sourceColumn;
 				ofId = data.dataSet[dependence].ofId;
-				cellData=dataSet[0]['ID'];
+				cellData	=	actions.getPropertyValue(dataSet[0],"ID");
 				rowData[dependence] = cellData;
 				if(typeof(actions.extraDataSet[sourceColumn]) == "undefined"){
 					actions.extraDataSet[sourceColumn] = [];
@@ -1142,7 +1152,6 @@ var actions = {
  						extensionButton.blur(function() {
  							var hid ='eb_' +tab+"_"+rowData.DT_RowId+"_"+columnName;
  							$("#" +hid).remove();
-//				 		    		$(td ).removeAttr( "tabindex" );
  						});
  						extensionButton.click(function(e){
  							actions.extensionHandle(tab,columnName,rowData,false,null,true);
@@ -1404,17 +1413,23 @@ var actions = {
 					uoms[index]["render"] = function ( data, type, row ) {
 						var result = $.grep(collection, function(e){
 							id = actions.getGrepValue(data,value,row);
-							return e['ID'] == id;
+							if(typeof e['ID'] != "undefined") return e['ID'] == id;
+							else return e['id'] == id;
 						});
-						if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined" &&result[0].hasOwnProperty('NAME')){
-							return value['COLUMN_NAME']=="ALLOC_TYPE"?result[0]['NAME']:result[0]['NAME'];
+						if(typeof(result) !== "undefined" && typeof(result[0]) !== "undefined"){
+							if(result[0].hasOwnProperty('NAME')){
+								return result[0]['NAME'];
+							}
+							else if(result[0].hasOwnProperty('name')){
+								return result[0]['name'];
+							} 
 						}
 						return data;
 					};
 				}
 	            $.each(collection, function( i, vl ) {
-	            	vl['value']	=vl['ID'];
-	            	vl['text']	=vl['NAME'];
+	            	vl['value']	= typeof(vl['ID']) !== "undefined"?vl['ID']:vl['id'];
+	            	vl['text']	= typeof(vl['NAME']) !== "undefined"?vl['NAME']:vl['name'];
 	            });
 	            uoms[index]["createdCell"] = function (td, cellData, rowData, row, col) {
 	            	var property = data.properties[col];
@@ -1445,7 +1460,9 @@ var actions = {
 			actions.extraDataSet = data.extraDataSet;
 		}
 		$.each(finalArray, function( i, cindex ) {
-			var type = typetoclass(data.properties[cindex].INPUT_TYPE);
+			var inputType = typeof data.properties[cindex].INPUT_TYPE != "undefined"?
+					data.properties[cindex].INPUT_TYPE:data.properties[cindex].input_type;
+			var type = typetoclass(inputType);
 			var cell = actions.getCellProperty(data,tab,type,cindex);
 			if(invisible!=null&&$.inArray(data.properties[cindex].data, invisible)>=0){
 				cell['visible']=false;

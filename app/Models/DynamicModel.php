@@ -42,9 +42,14 @@ class DynamicModel extends Model {
 	public function setTable($tableName){
 		$this->table = $tableName;
 	}
-	
+
 	public function getTableColumns() {
-		return $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
+		$columns = $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
+		/* if ($this->isOracleModel){
+			$results = \Helper::extractColumns($columns);
+			$columns = $results;
+		} */
+		return $columns;
 	}
 	
 	public function __get($key)
