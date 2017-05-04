@@ -8,6 +8,7 @@ use App\Models\DynamicModel;
 	public $timestamps = false;
 	public $primaryKey  = 'ID';
 	
+	protected $dates 	= ['BEGIN_DATE','END_DATE'];
 	protected $fillable  = [
 			'ID',
 			'CODE',

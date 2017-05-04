@@ -22,6 +22,9 @@ $currentSubmenu = '/allocset';
 </div>
 @stop
 @section('content')
+<style>
+._datepicker{width:120px}
+</style>
 <link rel="stylesheet" href="/common/css/admin.css">
 <link rel="stylesheet" href="/common/css/jquery-ui.css">
 <link rel="stylesheet" href="/common/css/allocation/style.css"/>
@@ -53,17 +56,12 @@ $(function(){
 	$("#date_end").val(
 			"" + zeroFill(1 + d.getMonth(), 2) + "/" + zeroFill(d.getDate(), 2)
 					+ "/" + d.getFullYear());
-	$("#date_begin").datepicker({
+	$("._datepicker").datepicker({
 		changeMonth : true,
 		changeYear : true,
-		dateFormat : "mm/dd/yy"
+		dateFormat : jsFormat
 	});
 
-	$("#date_end").datepicker({
-		changeMonth : true,
-		changeYear : true,
-		dateFormat : "mm/dd/yy"
-	});
 	var objTypeName = [ "", "Flow", "EnergyUnit", "Tank", "Storage", "Tank" ];
 	$('#cboObjType').change(function(e) {
 		$('#cboFacility').change();
@@ -134,6 +132,8 @@ var _configallocation = {
 			str += '	<td><span style="color:black;font-weight: normal;" id="QjobName_'+ data[i]['ID'] +'">'+ data[i]['NAME'] +'</span></td>';
 			str += '	<td><span style="color:black;font-weight: normal;" id="Qavt_'+ data[i]['ID'] +'" value="'+ data[i]['VALUE_TYPE'] +'">'+ data[i]['VALUE_TYPE_NAME'] +'</span></td>';
 			str += '	<td><span style="color:black;font-weight: normal;" id="Qallocphase_'+ data[i]['ID'] +'">'+ phase +'</span></td>';
+			str += '	<td><span style="color:black;font-weight: normal;" id="Qbegindate_'+ data[i]['ID'] +'">'+ (data[i]['BEGIN_DATE'] ? formatDate(data[i]['BEGIN_DATE']):"") +'</span></td>';
+			str += '	<td><span style="color:black;font-weight: normal;" id="Qenddate_'+ data[i]['ID'] +'">'+ (data[i]['END_DATE'] ? formatDate(data[i]['END_DATE']):"") +'</span></td>';
 			str += '	<td align="center" style="font-size:8pt">&nbsp;';
 			str += '		<a href=\"javascript:checkJob('+ data[i]['ID'] +')\">Simulate</a> | ';
 			str += '		<a href=\"javascript:deleteJob('+ data[i]['ID'] +')\">Delete</a> | ';
@@ -239,12 +239,12 @@ var _configallocation = {
 				cellspacing="1" id="table9">
 				<tr>
 					<td autofocus><b>&nbsp;From date</b></td>
-					<td><input style="width: 121; height: 22" type="text"
+					<td><input type="text"  class="_datepicker"
 						id="date_begin" name="date_begin" size="15" value="01/01/1900"></td>
 				</tr>
 				<tr>
 					<td><b>&nbsp;To date</b></td>
-					<td><input style="width: 121; height: 22" type="text" id="date_end"
+					<td><input type="text" class="_datepicker" id="date_end"
 						name="date_end" size="15" value="01/01/2100"></td>
 				</tr>
 				<tr>
@@ -272,6 +272,8 @@ var _configallocation = {
 								<td><b><font color="black">Job name</font></b></td>
 								<td width="120"><b><font color="black">Alloc value type</font></b></td>
 								<td><b><font color="black">Alloc phase</font></b></td>
+								<td><b><font color="black">Begin date</font></b></td>
+								<td><b><font color="black">End date</font></b></td>
 								<td width="200">&nbsp;</td>
 							</tr>
 						</thead>
@@ -300,6 +302,8 @@ var _configallocation = {
 										<td width="100"><b><font color="black">Alloc Type</font></b></td>
 										<td><font color="black"><b>Alloc from objects</b></font></td>
 										<td><font color="black"><b>Alloc to objects</b></font></td>
+								        <td><b><font color="black">Begin date</font></b></td>
+								        <td><b><font color="black">End date</font></b></td>
 										<td width="200">&nbsp;</td>
 									</tr>
 								</thead>
@@ -350,6 +354,8 @@ var _configallocation = {
 						<option value="{!!$re['ID']!!}">{!!$re['NAME']!!}</option> 
 					@endforeach
 				</select>
+				<br><br>
+				Begin date <input type="text" class="_datepicker" id="job_begin_date"> End date <input type="text" class="_datepicker" id="job_end_date">
 				<br> <br> Flow phase <span width="20%" class="chk_box"> <span
 					class="chk_phase"><input type="checkbox" id="chk_oil">Oil</span> <span
 					class="chk_phase"><input type="checkbox" id="chk_gas">Gas</span> <span
@@ -456,18 +462,26 @@ var _configallocation = {
 									<option value="{!!$re['ID']!!}">{!!$re['NAME']!!}</option> 
 								@endforeach
 							</select>
-								<div style="position: absolute; width: 400px; bottom: 10px; left: 50%; margin-left: -200px; text-align: center">
-									<input onClick="addRunner()" type="button" value="Add Runner"
-										name="B3" id="QaddRunner"> <input onClick="saveRunnerEdit()"
-										type="button" value="Save" style="display: none"
-										id="QsaveRunnerEdit"> <input onClick="saveRunnerClone()"
-										type="button" value="Save as New Runner" style="display: none"
-										id="QsaveRunnerCopy"> <input onClick="closeBoxEditRunner()"
-										type="button" value="Cancel" name="B4">
-								</div>
 							</td>
 						</tr>
 					</table>
+					<table  cellspacing="0" style="width:70%;margin-top:10px">
+						<tr>
+							<td width="12%">Begin Date</td>
+							<td width="30%"><input type="text" class="_datepicker" id="runner_begin_date"></td>
+							<td width="12%">End Date</td>
+							<td width="30%"><input type="text" class="_datepicker" id="runner_end_date"></td>
+						</tr>
+					</table>
+                    <div style="margin-top: 10px; margin-bottom: 5px; text-align: center">
+                        <input onClick="addRunner()" type="button" value="Add Runner"
+                            name="B3" id="QaddRunner"> <input onClick="saveRunnerEdit()"
+                            type="button" value="Save" style="display: none"
+                            id="QsaveRunnerEdit"> <input onClick="saveRunnerClone()"
+                            type="button" value="Save as New Runner" style="display: none"
+                            id="QsaveRunnerCopy"> <input onClick="closeBoxEditRunner()"
+                            type="button" value="Cancel" name="B4">
+                    </div>
 				</div>
 			</div>
 	</div>
@@ -519,7 +533,7 @@ function hide_edit_job(){
 function showEditJob(){
 	$("#box_edit_job").dialog({
 		width: 600,
-		height: 350,
+		//height: 350,
 		modal: true,
 		title: "Edit job"});
 }

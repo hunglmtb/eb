@@ -62,10 +62,10 @@ class AllocationController extends Controller {
 		$allocjob = AllocJob::getTableName ();
 		$code_alloc_value_type = CodeAllocValueType::getTableName();
 		
-		$result = DB::table ( $allocjob . ' AS a' )
-		->join ( $code_alloc_value_type . ' AS b', 'a.VALUE_TYPE', '=', 'b.ID' )
-		->where ( ['a.NETWORK_ID' => $network_id])
-		->orderBy('a.ID')->select('a.*', 'b.name AS VALUE_TYPE_NAME')->get();
+		$result = DB::table ( $allocjob)
+		->join ( $code_alloc_value_type, "$allocjob.VALUE_TYPE", '=', "$code_alloc_value_type.ID" )
+		->where ( ["$allocjob.NETWORK_ID" => $network_id])
+		->orderBy("$allocjob.ID")->select("$allocjob.*", "$code_alloc_value_type.name AS VALUE_TYPE_NAME")->get();
 		
 		return $result;
 	}
@@ -132,6 +132,8 @@ class AllocationController extends Controller {
 		$from_option = $data ['from_option'];
 		$obj_froms = explode ( ',', $data ['obj_from'] );
 		$obj_tos = explode ( ',', $data ['obj_to'] );
+        $begin_date = \Helper::parseDate($data ['begin_date']);
+        $end_date = \Helper::parseDate($data ['end_date']);
 		
 		$param1 = [
 			'NAME' =>$runner_name,
@@ -140,7 +142,9 @@ class AllocationController extends Controller {
 			'ALLOC_TYPE'=>$alloc_type,
 			'THEOR_VALUE_TYPE'=>$theor_value_type,
 			'THEOR_PHASE'=>$theor_phase,
-			'FROM_OPTION'=>$from_option
+			'FROM_OPTION'=>$from_option,
+            'BEGIN_DATE'=>$begin_date,
+            'END_DATE'=>$end_date
 		];
 		
 		$condition = array (
@@ -267,6 +271,13 @@ class AllocationController extends Controller {
 				else
 					$str .= "<td><span id='Qobjectto_" . $row->ID . "'>$o_out</span></td>";
 				
+
+                $runner_begin_date_formart = date_create($row->BEGIN_DATE);
+                $runner_begin_date_formart = date_format($runner_begin_date_formart,"m/d/Y");
+                $runner_end_date_formart = date_create($row->END_DATE);
+                $runner_end_date_formart = date_format($runner_end_date_formart,"m/d/Y");
+				$str .= "<td><span id='Qbegindate_" . $row->ID . "'>$runner_begin_date_formart</span></td>";
+				$str .= "<td><span id='Qenddate_" . $row->ID . "'>$runner_end_date_formart</span></td>";
 				$str .= "<td width='170' style='font-size:8pt'>&nbsp;";
 				$str .= "<a href=\"javascript:checkRunner($row->ID)\">Simulate</a> |";
 				$str .= "<a href=\"javascript:deleteRunner($row->ID)\">Delete</a> |";
@@ -505,6 +516,8 @@ class AllocationController extends Controller {
 		$gaslift = $data ['alloc_gaslift'];
 		$condensate = $data ['alloc_condensate'];
 		$daybyday = $data ['alloc_daybyday'];
+        $begin_date = \Helper::parseDate($data['begin_date']);
+        $end_date = \Helper::parseDate($data['end_date']);
 		if ($gas == 0)
 			$comp = 0;		
 		
@@ -526,7 +539,9 @@ class AllocationController extends Controller {
 				'ALLOC_COMP'=>$comp,
 				'ALLOC_GASLIFT'=>$gaslift,
 				'ALLOC_CONDENSATE'=>$condensate,
-				'DAY_BY_DAY'=>$daybyday
+				'DAY_BY_DAY'=>$daybyday,
+				'BEGIN_DATE'=>$begin_date,
+				'END_DATE'=>$end_date
 			];
 			
 			$tmp = AllocJob::updateOrCreate ( $condition, $allocjob );
@@ -566,7 +581,9 @@ class AllocationController extends Controller {
 				'ALLOC_COMP'=>$comp,
 				'ALLOC_GASLIFT'=>$gaslift,
 				'ALLOC_CONDENSATE'=>$condensate,
-				'DAY_BY_DAY'=>$daybyday
+				'DAY_BY_DAY'=>$daybyday,
+				'BEGIN_DATE'=>$begin_date,
+				'END_DATE'=>$end_date
 			];
 			
 			AllocJob::where(['ID'=>$job_id])->update($param);
@@ -589,8 +606,10 @@ class AllocationController extends Controller {
 		$theor_value_type = $data ['theor_value_type'];
 		$theor_phase = $data ['theor_phase'];
 		$from_option = $data ['from_option'];
+        $begin_date = \Helper::parseDate($data ['begin_date']);
+        $end_date = \Helper::parseDate($data ['end_date']);
 		//Update order
-		AllocRunner::where(['ID'=>$runner_id])->update(['NAME'=>$runner_name, 'ORDER'=>$order, 'ALLOC_TYPE'=>$alloc_type, 'THEOR_VALUE_TYPE'=>$theor_value_type, 'THEOR_PHASE'=>$theor_phase, 'FROM_OPTION'=>$from_option]);
+		AllocRunner::where(['ID'=>$runner_id])->update(['NAME'=>$runner_name, 'ORDER'=>$order, 'ALLOC_TYPE'=>$alloc_type, 'THEOR_VALUE_TYPE'=>$theor_value_type, 'THEOR_PHASE'=>$theor_phase, 'FROM_OPTION'=>$from_option, 'BEGIN_DATE'=>$begin_date, 'END_DATE'=>$end_date]);
 		
 		//Delete all Object in runner
 		AllocRunnerObjects::where(['RUNNER_ID'=>$runner_id])->delete();
