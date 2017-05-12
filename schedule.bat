@@ -1,1 +1,0 @@
-cd C:\xampp\htdocs\eblara\ & php artisan schedule:run
